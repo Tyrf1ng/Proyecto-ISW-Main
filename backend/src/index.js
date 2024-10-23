@@ -3,6 +3,7 @@ import cors from "cors";
 import morgan from "morgan";
 import cookieParser from "cookie-parser";
 import indexRoutes from "./routes/index.routes.js";
+import cursoRoutes from "./routes/curso.routes.js"; // <-- Importación de las rutas de cursos
 import session from "express-session";
 import passport from "passport";
 import express, { json, urlencoded } from "express";
@@ -21,20 +22,20 @@ async function setupServer() {
       cors({
         credentials: true,
         origin: true,
-      }),
+      })
     );
 
     app.use(
       urlencoded({
         extended: true,
         limit: "1mb",
-      }),
+      })
     );
 
     app.use(
       json({
         limit: "1mb",
-      }),
+      })
     );
 
     app.use(cookieParser());
@@ -51,7 +52,7 @@ async function setupServer() {
           httpOnly: true,
           sameSite: "strict",
         },
-      }),
+      })
     );
 
     app.use(passport.initialize());
@@ -59,8 +60,7 @@ async function setupServer() {
 
     passportJwtSetup();
 
-    app.use("/api", indexRoutes);
-
+    app.use("/api", indexRoutes); // Rutas principales
     app.listen(PORT, () => {
       console.log(`=> Servidor corriendo en ${HOST}:${PORT}/api`);
     });
@@ -82,5 +82,5 @@ async function setupAPI() {
 setupAPI()
   .then(() => console.log("=> API Iniciada exitosamente"))
   .catch((error) =>
-    console.log("Error en index.js -> setupAPI(), el error es: ", error),
+    console.log("Error en index.js -> setupAPI(), el error es: ", error)
   );
