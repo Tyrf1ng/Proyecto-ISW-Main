@@ -15,7 +15,7 @@ const CursoSchema = new EntitySchema({
       length: 255,
       nullable: false,
     },
-    año: {
+    nivel: {
       type: "int",
       nullable: false,
     },
