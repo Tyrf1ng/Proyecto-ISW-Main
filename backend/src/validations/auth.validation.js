@@ -13,7 +13,7 @@ const domainEmailValidator = (value, helper) => {
 export const authValidation = Joi.object({
   email: Joi.string()
     .min(15)
-    .max(35)
+    .max(50)
     .email()
     .required()
     .messages({
@@ -70,7 +70,7 @@ export const registerValidation = Joi.object({
     }),
   email: Joi.string()
     .min(15)
-    .max(35)
+    .max(50)
     .email()
     .required()
     .messages({
@@ -82,18 +82,18 @@ export const registerValidation = Joi.object({
       "string.max": "El correo electrónico debe tener como máximo 35 caracteres.",
     })
     .custom(domainEmailValidator, "Validación dominio email"),
-  password: Joi.string()
+    password: Joi.string()
     .min(8)
     .max(26)
-    .pattern(/^[a-zA-Z0-9]+$/)
+    .pattern(/^[a-zA-Z0-9@_\-]+$/)  // Se permite letras, números, @, _ y -
     .required()
     .messages({
       "string.empty": "La contraseña no puede estar vacía.",
-      "any.required": "La contraseña es obligatorio.",
+      "any.required": "La contraseña es obligatoria.",
       "string.base": "La contraseña debe ser de tipo texto.",
       "string.min": "La contraseña debe tener al menos 8 caracteres.",
       "string.max": "La contraseña debe tener como máximo 26 caracteres.",
-      "string.pattern.base": "La contraseña solo puede contener letras y números.",
+      "string.pattern.base": "La contraseña solo puede contener letras, números y los caracteres especiales @, _ y -.",
     }),
 })
   .unknown(false)
