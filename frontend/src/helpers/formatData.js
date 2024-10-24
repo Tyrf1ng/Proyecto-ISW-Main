@@ -30,3 +30,13 @@ export function formatPostUpdate(user) {
         createdAt: formatTempo(user.createdAt, "DD-MM-YYYY")
     };
 }
+
+export function formatCourseData(course) {
+    return {
+        ...course,
+        nombreCurso: startCase(course.nombreCurso),
+        nivel: startCase(course.nivel),
+        fechaInicio: formatTempo(course.fechaInicio, "DD-MM-YYYY"),
+        fechaFin: formatTempo(course.fechaFin, "DD-MM-YYYY")
+    };
+}

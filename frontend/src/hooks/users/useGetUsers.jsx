@@ -20,7 +20,7 @@ const useUsers = () => {
             console.error("Error: ", error);
         }
     };
-
+ 
     useEffect(() => {
         fetchUsers();
     }, []);
