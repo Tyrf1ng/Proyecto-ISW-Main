@@ -1,14 +1,14 @@
 "use strict";
 import { EntitySchema } from "typeorm";
 
-const DirectivoSchema = new EntitySchema({
-  name: "Directivo",
-  tableName: "directivo",
+const ApoderadoSchema = new EntitySchema({
+  name: "Apoderado",
+  tableName: "apoderado",
   columns: {
-    rut_directivo: {
+    rut_apoderado: {
       type: "varchar",
-        nullable: false,
       primary: true,
+      nullable: false,
     },
     nombre: {
       type: "varchar",
@@ -17,6 +17,7 @@ const DirectivoSchema = new EntitySchema({
     },
     apellido: {
       type: "varchar",
+      length: 255,
       nullable: false,
     },
     correo: {
@@ -29,6 +30,7 @@ const DirectivoSchema = new EntitySchema({
       length: 20,
       nullable: false,
     },
+
     createdAt: {
         type: "timestamp with time zone",
         default: () => "CURRENT_TIMESTAMP",
@@ -40,14 +42,15 @@ const DirectivoSchema = new EntitySchema({
         onUpdate: "CURRENT_TIMESTAMP",
         nullable: false,
       },
+    
   },
   relations: {
-    curso: {
+    alumno: {
       type: "one-to-many",
-      target: "Curso", // La entidad relacionada
-      joinColumn: { name: "rut_directivo" } ,
+      target: "Alumno", // La entidad relacionada
+      joinColumn: { name: "rut_apoderado" } ,
   }, },
 
 });
 
-export default DirectivoSchema;
+export default ApoderadoSchema;
