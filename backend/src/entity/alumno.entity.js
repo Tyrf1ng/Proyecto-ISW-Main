@@ -1,14 +1,14 @@
 "use strict";
 import { EntitySchema } from "typeorm";
 
-const DirectivoSchema = new EntitySchema({
-  name: "Directivo",
-  tableName: "directivo",
+const AlumnoSchema = new EntitySchema({
+  name: "Alumno",
+  tableName: "alumno",
   columns: {
-    rut_directivo: {
+    rut_alumno: {
       type: "varchar",
-        nullable: false,
       primary: true,
+      nullable: false,
     },
     nombre: {
       type: "varchar",
@@ -17,16 +17,22 @@ const DirectivoSchema = new EntitySchema({
     },
     apellido: {
       type: "varchar",
-      nullable: false,
-    },
-    correo: {
-      type: "varchar",
       length: 255,
       nullable: false,
     },
-    telefono: {
+    fechaNacimiento: {
+      type: "date",
+      nullable: false,
+    },
+    comuna: {
       type: "varchar",
-      length: 20,
+      length: 100,
+      nullable: false,
+    },
+
+    direccion: {
+      type: "varchar",
+      length: 255,
       nullable: false,
     },
     createdAt: {
@@ -40,14 +46,27 @@ const DirectivoSchema = new EntitySchema({
         onUpdate: "CURRENT_TIMESTAMP",
         nullable: false,
       },
+    // Relación con el Apoderado
+    rut_apoderado: {
+      type: "varchar",
+      nullable: false,
+    },
+    id_curso: {
+      type: "int",
+      nullable: false,
+  },
   },
   relations: {
     curso: {
-      type: "one-to-many",
+      type: "one-to-one",
       target: "Curso", // La entidad relacionada
-      joinColumn: { name: "rut_directivo" } ,
+      joinColumn: { name: "id_curso" } ,
+  },
+  apoderado:{
+    type: "one-to-one",
+    target: "Apoderado", // La entidad relacionada
+    joinColumn: { name: "rut_apoderado" },
   }, },
 
 });
-
-export default DirectivoSchema;
+export default AlumnoSchema;

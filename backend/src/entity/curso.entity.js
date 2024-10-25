@@ -5,7 +5,7 @@ const CursoSchema = new EntitySchema({
   name: "Curso",
   tableName: "cursos",
   columns: {
-    id: {
+    id_curso: {
       type: "int",
       primary: true,
       generated: true,
@@ -38,7 +38,7 @@ const CursoSchema = new EntitySchema({
   },
   relations: {
     directivo: {
-      type: "one-to-many",
+      type: "one-to-one",
       target: "Directivo", // La entidad relacionada
       joinColumn: { name: "rut_directivo" } ,
   }, },
