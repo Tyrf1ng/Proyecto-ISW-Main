@@ -1,7 +1,7 @@
 //DUDA DE COMO IMPLEMENTARLO BIEN
 
 
-/*
+
 "use strict";
 import { EntitySchema } from "typeorm";
 
@@ -11,10 +11,12 @@ const AnotacionesAsignaturaSchema = new EntitySchema({
   columns: {
     id_anotacion: {
       type: "int",
+      primary: true,
       generated: true,
     },
     id_asignatura: {
       type: "int",
+      primary: true,
       nullable: false,
     },
   },
@@ -33,4 +35,3 @@ const AnotacionesAsignaturaSchema = new EntitySchema({
 });
 
 export default AnotacionesAsignaturaSchema;
-*/
