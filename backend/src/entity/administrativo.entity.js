@@ -27,6 +27,10 @@ const AdministrativoSchema = new EntitySchema({
       type: "int",
       nullable: false,
     },
+    id_roles: {
+      type: "int",
+      nullable: false,
+    },
     createdAt: {
         type: "timestamp with time zone",
         default: () => "CURRENT_TIMESTAMP",
@@ -39,6 +43,12 @@ const AdministrativoSchema = new EntitySchema({
         nullable: false,
       },
   },
+  relations: {
+    roles: {
+      type: "many-to-one",
+      target: "Roles", 
+      joinColumn: { name: "id_role" } ,
+  }, },
 });
 
 export default AdministrativoSchema;

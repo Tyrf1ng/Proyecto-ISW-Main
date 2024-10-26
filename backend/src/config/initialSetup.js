@@ -2,8 +2,30 @@
 import User from "../entity/user.entity.js";
 import Curso from "../entity/curso.entity.js";
 import Directivo from "../entity/directivo.entity.js";
+import Roles from "../entity/roles.entity.js";
 import { AppDataSource } from "./configDb.js";
 import { encryptPassword } from "../helpers/bcrypt.helper.js";
+
+async function createRoles() {
+  try {
+    const RolesRepository = AppDataSource.getRepository(Roles);
+
+    const count = await RolesRepository.count();
+    if (count > 0) return;
+
+    await Promise.all([
+      RolesRepository.save(
+        RolesRepository.create({
+          id_role: 1,
+          nombre: "Administrador",
+        }),
+      ),
+    ]);
+    console.log("* => Roles creados exitosamente");
+  } catch (error) {
+    console.error("Error al crear roles:", error);
+  }
+}
 
 async function createUsers() {
   try {
@@ -97,7 +119,8 @@ async function createDirectivos() {
           nombre: "Benjamin",
           apellido: "Ortiz",
           correo: "benjamin@gmail.cl",
-          telefono: "987654321"
+          telefono: "987654321",
+          id_role: 1,
         }),
       ),
     ]);
@@ -140,4 +163,4 @@ async function createCursos() {
 
 
 
-export { createUsers, createCursos, createDirectivos };
+export { createUsers, createCursos, createDirectivos, createRoles };

@@ -3,13 +3,12 @@ import cors from "cors";
 import morgan from "morgan";
 import cookieParser from "cookie-parser";
 import indexRoutes from "./routes/index.routes.js";
-import cursoRoutes from "./routes/curso.routes.js"; // <-- Importación de las rutas de cursos
 import session from "express-session";
 import passport from "passport";
 import express, { json, urlencoded } from "express";
 import { cookieKey, HOST, PORT } from "./config/configEnv.js";
 import { connectDB } from "./config/configDb.js";
-import { createCursos, createDirectivos, createUsers } from "./config/initialSetup.js";
+import { createCursos, createDirectivos, createRoles, createUsers } from "./config/initialSetup.js";
 import { passportJwtSetup } from "./auth/passport.auth.js";
 
 async function setupServer() {
@@ -73,8 +72,9 @@ async function setupAPI() {
   try {
     await connectDB();
     await setupServer();
-    await createUsers();
+    await createRoles();
     await createDirectivos();
+    await createUsers();
     await createCursos();
   } catch (error) {
     console.log("Error en index.js -> setupAPI(), el error es: ", error);

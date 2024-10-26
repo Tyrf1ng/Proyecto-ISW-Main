@@ -35,6 +35,11 @@ const AlumnoSchema = new EntitySchema({
       length: 255,
       nullable: false,
     },
+
+    id_role: {
+      type: "int",
+      nullable: false,
+    },
     createdAt: {
         type: "timestamp with time zone",
         default: () => "CURRENT_TIMESTAMP",
@@ -61,12 +66,18 @@ const AlumnoSchema = new EntitySchema({
       type: "one-to-one",
       target: "Curso", // La entidad relacionada
       joinColumn: { name: "id_curso" } ,
+    },
+    apoderado:{
+      type: "one-to-one",
+      target: "Apoderado", // La entidad relacionada
+      joinColumn: { name: "rut_apoderado" },
+    }, 
+    roles: {
+      type: "many-to-one",
+      target: "Roles", 
+      joinColumn: { name: "id_role" } ,
+    },
   },
-  apoderado:{
-    type: "one-to-one",
-    target: "Apoderado", // La entidad relacionada
-    joinColumn: { name: "rut_apoderado" },
-  }, },
 
 });
 export default AlumnoSchema;

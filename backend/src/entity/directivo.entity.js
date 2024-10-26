@@ -29,6 +29,10 @@ const DirectivoSchema = new EntitySchema({
       length: 20,
       nullable: false,
     },
+    id_role: {
+      type: "int",
+      nullable: false,
+    },
     createdAt: {
         type: "timestamp with time zone",
         default: () => "CURRENT_TIMESTAMP",
@@ -46,7 +50,13 @@ const DirectivoSchema = new EntitySchema({
       type: "one-to-many",
       target: "Curso", // La entidad relacionada
       joinColumn: { name: "rut_directivo" } ,
-  }, },
+  }, 
+    roles: {
+      type: "many-to-one",
+      target: "Roles", 
+      joinColumn: { name: "id_role" } ,
+  },
+},
 
 });
 

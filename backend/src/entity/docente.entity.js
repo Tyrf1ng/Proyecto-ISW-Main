@@ -35,6 +35,10 @@ const DocentesSchema = new EntitySchema({
       type: "varchar",
       nullable: false,
     },
+    id_role: {
+      type: "int",
+      nullable: false,
+    },
     createdAt: {
         type: "timestamp with time zone",
         default: () => "CURRENT_TIMESTAMP",
@@ -47,6 +51,15 @@ const DocentesSchema = new EntitySchema({
         nullable: false,
       },
   },
-});
+
+relations: {
+  roles: {
+    type: "many-to-one",
+    target: "Roles", 
+    joinColumn: { name: "id_role" } ,
+    },
+  },
+}
+);
 
 export default DocentesSchema;

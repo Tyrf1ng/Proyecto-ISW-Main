@@ -30,7 +30,10 @@ const ApoderadoSchema = new EntitySchema({
       length: 20,
       nullable: false,
     },
-
+    id_role: {
+      type: "int",
+      nullable: false,
+    },
     createdAt: {
         type: "timestamp with time zone",
         default: () => "CURRENT_TIMESTAMP",
@@ -49,7 +52,13 @@ const ApoderadoSchema = new EntitySchema({
       type: "one-to-many",
       target: "Alumno", // La entidad relacionada
       joinColumn: { name: "rut_apoderado" } ,
-  }, },
+  },
+    roles: {
+      type: "many-to-one",
+      target: "Roles", 
+      joinColumn: { name: "id_role" } ,
+  },
+},
 
 });
 

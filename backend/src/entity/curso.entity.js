@@ -38,8 +38,8 @@ const CursoSchema = new EntitySchema({
   },
   relations: {
     directivo: {
-      type: "one-to-many",
-      target: "Directivo", // La entidad relacionada
+      type: "many-to-one",
+      target: "Directivo", 
       joinColumn: { name: "rut_directivo" } ,
   }, },
 

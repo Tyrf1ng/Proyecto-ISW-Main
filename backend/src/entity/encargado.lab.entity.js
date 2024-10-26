@@ -26,6 +26,10 @@ const Encargado_LabSchema = new EntitySchema({
       type: "int",
       nullable: false,
     },
+    id_role: {
+      type: "int",
+      nullable: false,
+    },
     createdAt: {
         type: "timestamp with time zone",
         default: () => "CURRENT_TIMESTAMP",
@@ -37,6 +41,14 @@ const Encargado_LabSchema = new EntitySchema({
         onUpdate: "CURRENT_TIMESTAMP",
         nullable: false,
       },
+  },
+
+  relations: {
+    roles: {
+      type: "many-to-one",
+      target: "Roles", 
+      joinColumn: { name: "id_role" } ,
+  },
   },
 });
 
