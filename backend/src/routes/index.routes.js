@@ -2,13 +2,12 @@
 import { Router } from "express";
 import userRoutes from "./user.routes.js";
 import authRoutes from "./auth.routes.js";
-import cursoRoutes from "./curso.routes.js";  // <-- Importar las rutas de cursos
+import cursoRoutes from "./curso.routes.js";
 
 const router = Router();
 
 router
     .use("/auth", authRoutes)
     .use("/user", userRoutes)
-    .use("/cursos", cursoRoutes);  // <-- Añadir las rutas de cursos
-
+    .use("/curso", cursoRoutes);
 export default router;

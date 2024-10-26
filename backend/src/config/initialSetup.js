@@ -1,5 +1,7 @@
 "use strict";
 import User from "../entity/user.entity.js";
+import Curso from "../entity/curso.entity.js";
+import Directivo from "../entity/directivo.entity.js";
 import { AppDataSource } from "./configDb.js";
 import { encryptPassword } from "../helpers/bcrypt.helper.js";
 
@@ -81,4 +83,54 @@ async function createUsers() {
   }
 }
 
-export { createUsers };
+async function createDirectivos() {
+  try {
+    const directivosRepository = AppDataSource.getRepository(Directivo);
+
+    const count = await directivosRepository.count();
+    if (count > 0) return;
+
+    await Promise.all([
+      directivosRepository.save(
+        directivosRepository.create({
+          rut_directivo: "21.282.977-3",
+          nombre: "Benjamin",
+          apellido: "Ortiz",
+          correo: "benjamin@gmail.cl",
+          telefono: "987654321"
+        }),
+      ),
+    ]);
+    console.log("* => Directivos creados exitosamente");
+  } catch (error) {
+    console.error("Error al crear directivos:", error);
+  }
+}
+
+async function createCursos() {
+  try {
+    const cursoRepository = AppDataSource.getRepository(Curso);
+
+    const count = await cursoRepository.count();
+    if (count > 0) return;
+
+    await Promise.all([
+      cursoRepository.save(
+        cursoRepository.create({
+          nombre: "5to STS",
+          nivel: 5,
+          rut_directivo: "21.282.977-3",
+        }),
+      ),
+    ]);
+    console.log("* => Cursos creados exitosamente");
+  } catch (error) {
+    console.error("Error al crear cursos:", error);
+  }
+}
+
+
+
+
+
+export { createUsers, createCursos, createDirectivos };
