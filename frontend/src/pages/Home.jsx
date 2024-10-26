@@ -7,10 +7,10 @@ const Home = () => {
   const { cursos } = useCursos();
 
   const columns = [
-    { title: "ID", field: "id_Curso", width: 350, responsive: 0 },
-    { title: "Nombre del curso", field: "nombreCurso", width: 300, responsive: 3 },
+    { title: "ID", field: "id_curso", width: 350, responsive: 0 },
+    { title: "Nombre del curso", field: "nombre", width: 300, responsive: 3 },
     { title: "Nivel", field: "nivel", width: 150, responsive: 2 },
-    { title: "Rut del docente", field: "rutDocente", width: 200, responsive: 2 },
+    { title: "Rut del docente", field: "rut_directivo", width: 200, responsive: 2 },
   ];
 
   return (

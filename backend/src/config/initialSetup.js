@@ -122,6 +122,13 @@ async function createCursos() {
           rut_directivo: "21.282.977-3",
         }),
       ),
+      cursoRepository.save(
+        cursoRepository.create({
+          nombre: "7mo SUS",
+          nivel: 7,
+          rut_directivo: "21.282.977-3",
+        }),
+      ),
     ]);
     console.log("* => Cursos creados exitosamente");
   } catch (error) {

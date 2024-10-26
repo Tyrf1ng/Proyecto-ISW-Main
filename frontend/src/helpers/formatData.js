@@ -34,9 +34,8 @@ export function formatPostUpdate(user) {
 export function formatCourseData(course) {
     return {
         ...course,
-        nombreCurso: startCase(course.nombreCurso),
+        nombre: startCase(course.nombre),
         nivel: startCase(course.nivel),
-        fechaInicio: formatTempo(course.fechaInicio, "DD-MM-YYYY"),
-        fechaFin: formatTempo(course.fechaFin, "DD-MM-YYYY")
+        rut_directivo: formatRut(course.rut_directivo)
     };
 }
