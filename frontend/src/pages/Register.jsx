@@ -58,7 +58,7 @@ const patternRut = new RegExp(/^(?:(?:[1-9]\d{0}|[1-2]\d{1})(\.\d{3}){2}|[1-9]\d
                         type: "email",
                         required: true,
                         minLength: 15,
-                        maxLength: 35,
+                        maxLength: 50,  // Cambiado a 50 caracteres
                         errorMessageData: errorEmail,
                         validate: {
                             emailDomain: (value) => value.endsWith('@gmail.cl') || value.endsWith('@gmail.com')|| 'El correo debe terminar en @gmail.cl o @gmail.com'
@@ -88,7 +88,7 @@ const patternRut = new RegExp(/^(?:(?:[1-9]\d{0}|[1-2]\d{1})(\.\d{3}){2}|[1-9]\d
                         required: true,
                         minLength: 8,
                         maxLength: 26,
-                        pattern: /^[a-zA-Z0-9]+$/,
+                        pattern: /^[a-zA-Z0-9@_-]+$/,
                         patternMessage: "Debe contener solo letras y números",
                     },
 				]}
