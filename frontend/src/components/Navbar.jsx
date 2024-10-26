@@ -44,6 +44,7 @@ const Navbar = () => {
 
     return (
         <nav className="navbar">
+            <h1 className="texto">Sistema de usuarios</h1>
             <div className={`nav-menu ${menuOpen ? 'activado' : ''}`}>
                 <ul>
                     <li>

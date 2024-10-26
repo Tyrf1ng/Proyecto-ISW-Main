@@ -3,7 +3,8 @@
 	width: 100%;
 	top: 0;
 	left: 0;
-	display: block;
+	display: flex;
+	justify-content: space-between;
 	background-color: #003366; /*Color de la navbar*/
 	height: 9vh;
 	z-index: 1000;
@@ -156,4 +157,10 @@
 			box-sizing: border-box;
         }
 	}
+}
+.texto {
+	color: white;
+	font-size: 1.5em;
+	font-weight: bold;
+	flex: 1;
 }
