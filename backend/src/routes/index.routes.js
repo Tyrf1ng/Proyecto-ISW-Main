@@ -9,6 +9,5 @@ const router = Router();
 router
     .use("/auth", authRoutes)
     .use("/user", userRoutes)
-    .use("/cursos", cursoRoutes);
-
+    .use("/curso", cursoRoutes);
 export default router;

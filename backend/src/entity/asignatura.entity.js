@@ -1,22 +1,21 @@
 "use strict";
 import { EntitySchema } from "typeorm";
 
-const CursoSchema = new EntitySchema({
-  name: "Curso",
-  tableName: "cursos",
+const AsignaturasSchema = new EntitySchema({
+  name: "Asignaturas",
+  tableName: "asignaturas",
   columns: {
-    id_curso: {
+    id_asignatura: {
       type: "int",
       primary: true,
       generated: true,
     },
     nombre: {
       type: "varchar",
-      length: 255,
       nullable: false,
     },
-    nivel: {
-      type: "int",
+    rut_docente: {
+      type: "varchar",
       nullable: false,
     },
     createdAt: {
@@ -30,19 +29,14 @@ const CursoSchema = new EntitySchema({
         onUpdate: "CURRENT_TIMESTAMP",
         nullable: false,
       },
-    // Relación con el Directivo
-    rut_directivo: {
-      type: "varchar",
-      nullable: false,
+  },
+  relations: { 
+    docente: {
+        type: "one-to-one",
+        target: "Docentes", // La entidad relacionada
+        joinColumn: { name: "rut_docente" } ,
     },
   },
-  relations: {
-    directivo: {
-      type: "one-to-one",
-      target: "Directivo", // La entidad relacionada
-      joinColumn: { name: "rut_directivo" } ,
-  }, },
-
 });
 
-export default CursoSchema;
+export default AsignaturasSchema;

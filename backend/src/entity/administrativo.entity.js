@@ -1,21 +1,29 @@
 "use strict";
 import { EntitySchema } from "typeorm";
 
-const CursoSchema = new EntitySchema({
-  name: "Curso",
-  tableName: "cursos",
+const AdministrativoSchema = new EntitySchema({
+  name: "Administrativo",
+  tableName: "administrativo",
   columns: {
-    id_curso: {
-      type: "int",
+    rut_administrativo: {
+      type: "varchar",
       primary: true,
-      generated: true,
+      nullable: false,
     },
     nombre: {
       type: "varchar",
       length: 255,
       nullable: false,
     },
-    nivel: {
+    apellido: {
+      type: "varchar",
+      nullable: false,
+    },
+    email: {
+      type: "varchar",
+      nullable: false,
+    },
+    telefono: {
       type: "int",
       nullable: false,
     },
@@ -30,19 +38,7 @@ const CursoSchema = new EntitySchema({
         onUpdate: "CURRENT_TIMESTAMP",
         nullable: false,
       },
-    // Relación con el Directivo
-    rut_directivo: {
-      type: "varchar",
-      nullable: false,
-    },
   },
-  relations: {
-    directivo: {
-      type: "one-to-one",
-      target: "Directivo", // La entidad relacionada
-      joinColumn: { name: "rut_directivo" } ,
-  }, },
-
 });
 
-export default CursoSchema;
+export default AdministrativoSchema;
