@@ -3,7 +3,6 @@ import cors from "cors";
 import morgan from "morgan";
 import cookieParser from "cookie-parser";
 import indexRoutes from "./routes/index.routes.js";
-import cursoRoutes from "./routes/curso.routes.js"; // <-- Importación de las rutas de cursos
 import session from "express-session";
 import passport from "passport";
 import express, { json, urlencoded } from "express";

@@ -5,11 +5,7 @@ const CursoSchema = new EntitySchema({
   name: "Curso",
   tableName: "cursos",
   columns: {
-<<<<<<< HEAD
-    id: {
-=======
     id_curso: {
->>>>>>> origin/main
       type: "int",
       primary: true,
       generated: true,
@@ -34,42 +30,13 @@ const CursoSchema = new EntitySchema({
         onUpdate: "CURRENT_TIMESTAMP",
         nullable: false,
       },
-<<<<<<< HEAD
-    // Relación con el usuario
-    usuarioId: {
-      type: "int",
-=======
     // Relación con el Directivo
     rut_directivo: {
       type: "varchar",
->>>>>>> origin/main
       nullable: false,
     },
   },
   relations: {
-<<<<<<< HEAD
-    usuario: {
-      type: "many-to-one",
-      target: "User", // La entidad relacionada
-      joinColumn: { name: "usuarioId" },
-      onDelete: "CASCADE", // Si el usuario se elimina, también se elimina el curso
-    },
-  },
-  indices: [
-    {
-      name: "IDX_CURSO",
-      columns: ["id"],
-      unique: true,
-    },
-    {
-      name: "IDX_CURSO_USUARIO",
-      columns: ["usuarioId"],
-    },
-  ],
-});
-
-export default CursoSchema;
-=======
     directivo: {
       type: "many-to-one",
       target: "Directivo", 
@@ -79,4 +46,3 @@ export default CursoSchema;
 });
 
 export default CursoSchema;
->>>>>>> origin/main
