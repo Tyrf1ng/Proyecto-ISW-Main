@@ -10,10 +10,6 @@ const AsistenciasSchema = new EntitySchema({
       primary: true,
       generated: true,
     },
-    valor: {
-      type: "boolean",
-      nullable: false,
-    },
     rut_alumno: {
       type: "varchar",
       nullable: false,
@@ -43,7 +39,8 @@ const AsistenciasSchema = new EntitySchema({
     asignatura: {
         type: "one-to-one",
         target: "Asignaturas", // La entidad relacionada
-        joinColumn: { name: "id_asigntura" } ,
+        joinColumn: { name: "id_asignatura" },
+
     },
   },
 });
