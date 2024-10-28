@@ -97,18 +97,17 @@ export async function updateNota(id_nota, nuevoValor) {
     try {
         const notasRepository = AppDataSource.getRepository(Notas);
 
-        // Actualiza directamente el valor sin buscar primero el objeto completo
+       
         const result = await notasRepository.update(
-            { id_nota: id_nota },  // Buscar la nota por id
-            { valor: nuevoValor }   // Actualizar el campo valor
+            { id_nota: id_nota },  
+            { valor: nuevoValor }   
         );
 
-        // Verifica si alguna fila fue afectada por la actualización
         if (result.affected === 0) {
             return [null, "No se encontró la nota"];
         }
 
-        return [{ id_nota, valor: nuevoValor }, null];  // Devolver el id y el nuevo valor actualizado
+        return [{ id_nota, valor: nuevoValor }, null]; 
     } catch (error) {
         console.error("Error al actualizar la nota:", error);
         return [null, "Error interno del servidor"];
