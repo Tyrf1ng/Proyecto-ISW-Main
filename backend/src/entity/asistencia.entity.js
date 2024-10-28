@@ -43,7 +43,8 @@ const AsistenciasSchema = new EntitySchema({
     asignatura: {
         type: "one-to-one",
         target: "Asignaturas", // La entidad relacionada
-        joinColumn: { name: "id_asigntura" } ,
+        joinColumn: { name: "id_asignatura" },
+
     },
   },
 });
