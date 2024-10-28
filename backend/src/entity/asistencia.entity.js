@@ -10,10 +10,6 @@ const AsistenciasSchema = new EntitySchema({
       primary: true,
       generated: true,
     },
-    valor: {
-      type: "boolean",
-      nullable: false,
-    },
     rut_alumno: {
       type: "varchar",
       nullable: false,
