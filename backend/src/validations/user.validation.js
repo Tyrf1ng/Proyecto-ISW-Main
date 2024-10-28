@@ -4,7 +4,11 @@ import Joi from "joi";
 const domainEmailValidator = (value, helper) => {
   if (!value.endsWith("@gmail.com") && !value.endsWith("@gmail.cl")) {
     return helper.message(
+<<<<<<< HEAD
       "El correo electrónico debe ser del dominio @gmail.cl o @gmail.com."
+=======
+      "El correo electrónico debe ser del dominio @gmail.cl o @gmail.com"
+>>>>>>> origin/main
     );
   }
   return value;
@@ -26,7 +30,7 @@ export const userQueryValidation = Joi.object({
     .messages({
       "string.empty": "El correo electrónico no puede estar vacío.",
       "string.base": "El correo electrónico debe ser de tipo string.",
-      "string.email": "El correo electrónico debe finalizar en @gmail.cl.",
+      "string.email": "El correo electrónico debe finalizar en @gmail.cl o @gmail.com",
       "string.min":
         "El correo electrónico debe tener como mínimo 15 caracteres.",
       "string.max":
@@ -73,7 +77,7 @@ export const userBodyValidation = Joi.object({
     .messages({
       "string.empty": "El correo electrónico no puede estar vacío.",
       "string.base": "El correo electrónico debe ser de tipo string.",
-      "string.email": "El correo electrónico debe finalizar en @gmail.cl.",
+      "string.email": "El correo electrónico debe finalizar en @gmail.cl o @gmail.com.",
       "string.min":
         "El correo electrónico debe tener como mínimo 15 caracteres.",
       "string.max":
@@ -83,27 +87,27 @@ export const userBodyValidation = Joi.object({
   password: Joi.string()
     .min(8)
     .max(26)
-    .pattern(/^[a-zA-Z0-9]+$/)
+    .pattern(/^[a-zA-Z0-9%&#!.+,-]+$/)
     .messages({
       "string.empty": "La contraseña no puede estar vacía.",
       "string.base": "La contraseña debe ser de tipo string.",
       "string.min": "La contraseña debe tener como mínimo 8 caracteres.",
       "string.max": "La contraseña debe tener como máximo 26 caracteres.",
       "string.pattern.base":
-        "La contraseña solo puede contener letras y números.",
+        "La contraseña solo puede contener letras, números y carcateres los % & # ! . + ,-.",
     }),
   newPassword: Joi.string()
     .min(8)
     .max(26)
     .allow("")
-    .pattern(/^[a-zA-Z0-9]+$/)
+    .pattern(/^[a-zA-Z0-9%&#!.+,-]+$/)
     .messages({
       "string.empty": "La nueva contraseña no puede estar vacía.",
       "string.base": "La nueva contraseña debe ser de tipo string.",
       "string.min": "La nueva contraseña debe tener como mínimo 8 caracteres.",
       "string.max": "La nueva contraseña debe tener como máximo 26 caracteres.",
       "string.pattern.base":
-        "La nueva contraseña solo puede contener letras y números.",
+        "La nueva contraseña solo puede contener letras, números y carcateres los % & # ! . + ,-",
     }),
   rut: Joi.string()
     .min(9)

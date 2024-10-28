@@ -1,5 +1,6 @@
 "use strict";
 import { Router } from "express";
+<<<<<<< HEAD
 import { isAdmin } from "../middlewares/authorization.middleware.js";
 import { authenticateJwt } from "../middlewares/authentication.middleware.js";
 import {
@@ -23,4 +24,15 @@ router
   .patch("/detail/", updateCurso) // Actualizar un curso existente
   .delete("/detail/", deleteCurso); // Eliminar un curso específico
 
+=======
+import {
+    getCurso,
+    getCursos,
+  } from "../controllers/curso.controller.js"
+const router = Router();
+
+router
+  .get("/", getCursos)         
+  .get("/detail/", getCurso);  
+>>>>>>> origin/main
 export default router;

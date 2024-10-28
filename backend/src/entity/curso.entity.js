@@ -5,7 +5,11 @@ const CursoSchema = new EntitySchema({
   name: "Curso",
   tableName: "cursos",
   columns: {
+<<<<<<< HEAD
     id: {
+=======
+    id_curso: {
+>>>>>>> origin/main
       type: "int",
       primary: true,
       generated: true,
@@ -30,13 +34,20 @@ const CursoSchema = new EntitySchema({
         onUpdate: "CURRENT_TIMESTAMP",
         nullable: false,
       },
+<<<<<<< HEAD
     // Relación con el usuario
     usuarioId: {
       type: "int",
+=======
+    // Relación con el Directivo
+    rut_directivo: {
+      type: "varchar",
+>>>>>>> origin/main
       nullable: false,
     },
   },
   relations: {
+<<<<<<< HEAD
     usuario: {
       type: "many-to-one",
       target: "User", // La entidad relacionada
@@ -58,3 +69,14 @@ const CursoSchema = new EntitySchema({
 });
 
 export default CursoSchema;
+=======
+    directivo: {
+      type: "many-to-one",
+      target: "Directivo", 
+      joinColumn: { name: "rut_directivo" } ,
+  }, },
+
+});
+
+export default CursoSchema;
+>>>>>>> origin/main
