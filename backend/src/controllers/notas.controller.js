@@ -1,10 +1,12 @@
 "use strict";
 import {
+    deleteNota,
     getNota,
     getNotasAlumno,
     getNotasAsignatura,
     getNotasCurso,
     updateNota
+   
 } from "../services/notas.service.js";
 import {
     handleErrorClient,
@@ -79,3 +81,35 @@ export const updateNotaController = async (req, res) => {
 
     return res.json(notaActualizada);
 };
+
+export async function createNotaController(req, res) {
+    try {
+        const { id_asignatura, rut_alumno, nota } = req.body;
+
+        const [notaCreada, errorNota] = await createNota({
+            id_asignatura,
+            rut_alumno,
+            tipo,
+            nota,
+        });
+
+        if (errorNota) return handleErrorClient(res, 404, errorNota);
+
+        handleSuccess(res, 201, "Nota creada", notaCreada);
+    } catch (error) {
+        handleErrorServer(res, 500, error.message);
+    }
+}
+export async function deleteNotasController(req, res) {
+    try {
+        const { id_nota } = req.params;
+
+        const [nota, errorNota] = await deleteNota(id_nota);
+
+        if (errorNota) return handleErrorClient(res, 404, errorNota);
+
+        handleSuccess(res, 200, "Nota eliminada", nota);
+    } catch (error) {
+        handleErrorServer(res, 500, error.message);
+    }
+}

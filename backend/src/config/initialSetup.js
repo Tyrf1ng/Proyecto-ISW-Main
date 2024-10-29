@@ -163,4 +163,5 @@ async function createCursos() {
 
 
 
+
 export { createUsers, createCursos, createDirectivos, createRoles };

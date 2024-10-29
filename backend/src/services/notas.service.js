@@ -113,3 +113,28 @@ export async function updateNota(id_nota, nuevoValor) {
         return [null, "Error interno del servidor"];
     }
 }
+
+//funcion para crear una nota
+export async function createNota(data) {
+    try {
+        const notasRepository = AppDataSource.getRepository(Notas);
+        const nota = notasRepository.create(data);
+        const savedNota = await notasRepository.save(nota);
+        return [savedNota, null];
+    } catch (error) {
+        console.error("Error al crear la nota:", error);
+        return [null, "Error interno del servidor"];
+    }
+}
+
+//funcion para eliminar una nota
+export async function deleteNota(id_nota) {
+    try {
+        const notasRepository = AppDataSource.getRepository(Notas);
+        const result = await notasRepository.delete(id_nota);
+        return result.affected ? [true, null] : [null, "No se encontró la nota"];
+    } catch (error) {
+        console.error("Error al eliminar la nota:", error);
+        return [null, "Error interno del servidor"];
+    }
+}
