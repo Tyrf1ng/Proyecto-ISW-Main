@@ -1,5 +1,4 @@
 "use strict";
-import User from "../entity/user.entity.js";
 import Curso from "../entity/curso.entity.js";
 import Directivo from "../entity/directivo.entity.js";
 import Roles from "../entity/roles.entity.js";
@@ -50,29 +49,7 @@ async function createRoles() {
   }
 }
 
-async function createUsers() {
-  try {
-    const userRepository = AppDataSource.getRepository(User);
 
-    const count = await userRepository.count();
-    if (count > 0) return;
-
-    await Promise.all([
-      userRepository.save(
-        userRepository.create({
-          nombreCompleto: "Diego Alexis Salazar Jara",
-          rut: "21.308.770-3",
-          email: "administrador2024@gmail.cl",
-          password: await encryptPassword("admin1234"),
-          rol: "administrador",
-        }),
-      ),
-    ]);
-    console.log("* => Usuarios creados exitosamente");
-  } catch (error) {
-    console.error("Error al crear usuarios:", error);
-  }
-}
 
 async function createDirectivos() {
   try {
@@ -87,7 +64,7 @@ async function createDirectivos() {
           rut_directivo: "21.282.977-3",
           nombre: "Benjamin",
           apellido: "Ortiz",
-          correo: "benjamin@gmail.cl",
+          email: "benjamin@gmail.cl",
           password: await encryptPassword("admin123"),
           telefono: "987654321",
           id_role: 1,
@@ -143,6 +120,7 @@ async function createDocente() {
           nombre: "SKibidi",
           apellido: "Docente",
           email:"Skibidi@gmail.cl",
+          password: await encryptPassword("admin123"),
           telefono: "987654321",
           comuna:"Hualpen(Dde las papas queman)",
           direccion:"Calle falsa 123",
@@ -193,6 +171,7 @@ async function createApoderado() {
           apellido: "Pl",
           telefono: "987654321",
           email:"mochap@gmail.cl",
+          password: await encryptPassword("admin123"),
           id_role: "4",
         }),
       ),
@@ -220,6 +199,8 @@ async function createAlumnos() {
           fechaNacimiento: "2000-01-01",
           comuna: "Lajino de corazón",
           direccion: "Calle falsa 123",
+          email:"skibidi@gmail.cl",
+          password: await encryptPassword("skibidi123"),
           id_curso: "1",
           rut_apoderado: "21.070.073-0",
           id_role: "3",
@@ -257,9 +238,8 @@ async function createAnotaciones() {
 }
 
 
-export { createUsers
-  , createCursos
-  , createDirectivos
+export { createCursos 
+  ,createDirectivos
   , createRoles
   , createDocente
   , createAsignaturas

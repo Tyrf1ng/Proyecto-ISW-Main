@@ -25,6 +25,11 @@ const ApoderadoSchema = new EntitySchema({
       length: 255,
       nullable: false,
     },
+    password: {
+      type: "varchar",
+      length: 255,
+      nullable: false,
+    },
     telefono: {
       type: "varchar",
       length: 20,

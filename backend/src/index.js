@@ -15,8 +15,7 @@ import { createAlumnos
         ,createCursos
         ,createDirectivos
         ,createDocente
-        ,createRoles
-        ,createUsers } from "./config/initialSetup.js";
+        ,createRoles} from "./config/initialSetup.js";
 import { passportJwtSetup } from "./auth/passport.auth.js";
 
 async function setupServer() {
@@ -88,7 +87,6 @@ async function setupAPI() {
     await createAlumnos();
     await createAsignaturas();
     await createAnotaciones();
-    await createUsers();
   } catch (error) {
     console.log("Error en index.js -> setupAPI(), el error es: ", error);
   }
