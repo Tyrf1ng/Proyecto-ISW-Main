@@ -23,6 +23,10 @@ const AdministrativoSchema = new EntitySchema({
       type: "varchar",
       nullable: false,
     },
+    password: {
+      type: "varchar",
+      nullable: false,
+    },
     telefono: {
       type: "int",
       nullable: false,

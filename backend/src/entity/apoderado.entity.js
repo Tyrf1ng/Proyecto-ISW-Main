@@ -20,7 +20,12 @@ const ApoderadoSchema = new EntitySchema({
       length: 255,
       nullable: false,
     },
-    correo: {
+    email: {
+      type: "varchar",
+      length: 255,
+      nullable: false,
+    },
+    password: {
       type: "varchar",
       length: 255,
       nullable: false,
