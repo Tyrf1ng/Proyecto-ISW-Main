@@ -78,11 +78,10 @@ export async function getAnotacionesCursoService(id_curso) {
 
 export async function createAnotacionService(data) {
     try {
-        const { descripcion, fecha, tipo, id_asignatura, rut_alumno } = data;
+        const { descripcion, tipo, id_asignatura, rut_alumno } = data;
         const AnotacionRepository = AppDataSource.getRepository(Anotaciones);
         const newAnotacion = AnotacionRepository.create({
             descripcion: descripcion,
-            fecha: fecha,
             tipo: tipo,
             id_asignatura: id_asignatura,
             rut_alumno: rut_alumno
@@ -95,38 +94,52 @@ export async function createAnotacionService(data) {
     }
 }
 
-export async function updateAnotacionService(data) {
+export async function updateAnotacionService(id_anotacion, datosActualizados) {
     try {
-        const { id_anotacion, descripcion, fecha, tipo, id_asignatura, rut_alumno } = data;
         const AnotacionRepository = AppDataSource.getRepository(Anotaciones);
-        const AnotacionFound = await AnotacionRepository.findOne({ id_anotacion: id_anotacion });
-        if (!AnotacionFound) return [null, "Anotacion no encontrada"];
-        AnotacionFound.descripcion = descripcion;
-        AnotacionFound.fecha = fecha;
-        AnotacionFound.tipo = tipo;
-        AnotacionFound.id_asignatura = id_asignatura;
-        AnotacionFound.rut_alumno = rut_alumno;
+
+        const AnotacionFound = await AnotacionRepository.findOne({
+            where: { id_anotacion: parseInt(id_anotacion, 10) }
+        });
+
+        if (!AnotacionFound) {
+            console.error(`Anotación con ID ${id_anotacion} no encontrada`);
+            return [null, "Anotación no encontrada"];
+        }
+
+        if (datosActualizados.id_asignatura) {
+            datosActualizados.id_asignatura = parseInt(datosActualizados.id_asignatura, 10);
+        }
+
+        AnotacionRepository.merge(AnotacionFound, datosActualizados);
         await AnotacionRepository.save(AnotacionFound);
+
         return [AnotacionFound, null];
-    }
-    catch (error) {
-        console.error("Error al actualizar la anotacion:", error);
+    } catch (error) {
+        console.error("Error al actualizar la anotación:", error);
         return [null, "Error interno del servidor"];
     }
 }
 
+
+
 export async function deleteAnotacionService(id_anotacion) {
     try {
         const AnotacionRepository = AppDataSource.getRepository(Anotaciones);
-        const AnotacionFound = await AnotacionRepository.findOne({ id_anotacion: id_anotacion });
-        if (!AnotacionFound) return [null, "Anotacion no encontrada"];
+        const AnotacionFound = await AnotacionRepository.findOne({ where: { id_anotacion: id_anotacion } });
+        if (!AnotacionFound) {
+            console.error(`Anotación con ID ${id_anotacion} no encontrada`);
+            return [null, "Anotación no encontrada"];
+        }
         await AnotacionRepository.remove(AnotacionFound);
         return [AnotacionFound, null];
     } catch (error) {
-        console.error("Error al eliminar la anotacion:", error);
+        console.error("Error específico al eliminar la anotación:", error);
         return [null, "Error interno del servidor"];
     }
-}   
+}
+
+ 
 
 
 
