@@ -19,10 +19,15 @@ const DirectivoSchema = new EntitySchema({
       type: "varchar",
       nullable: false,
     },
-    correo: {
+    email: {
       type: "varchar",
       length: 255,
       nullable: false,
+    },
+    password: {
+      type: "varchar",
+      length: 255,
+      nullable: false
     },
     telefono: {
       type: "varchar",
