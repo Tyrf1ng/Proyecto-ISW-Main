@@ -76,6 +76,7 @@ export async function getNotasAsignatura(id_asignatura) {
     }
 }
 
+
 //funcion para traer una nota por id
 //FUNCIONA NO TOCAR
 export async function getNota(id_nota) {
@@ -91,26 +92,58 @@ export async function getNota(id_nota) {
     }
 }
 
+
+
 //funcion para actualizar una nota
 //FUNCIONA NO TOCAR
 export async function updateNota(id_nota, nuevoValor) {
     try {
         const notasRepository = AppDataSource.getRepository(Notas);
 
-        // Actualiza directamente el valor sin buscar primero el objeto completo
+       
         const result = await notasRepository.update(
-            { id_nota: id_nota },  // Buscar la nota por id
-            { valor: nuevoValor }   // Actualizar el campo valor
+            { id_nota: id_nota },  
+            { valor: nuevoValor }   
         );
 
-        // Verifica si alguna fila fue afectada por la actualización
         if (result.affected === 0) {
             return [null, "No se encontró la nota"];
         }
 
-        return [{ id_nota, valor: nuevoValor }, null];  // Devolver el id y el nuevo valor actualizado
+        return [{ id_nota, valor: nuevoValor }, null]; 
     } catch (error) {
         console.error("Error al actualizar la nota:", error);
+        return [null, "Error interno del servidor"];
+    }
+}
+
+
+
+//funcion para crear una nota
+//FUNCIONA NO TOCAR
+export async function createNota(data) {
+    try {
+        const notasRepository = AppDataSource.getRepository(Notas);
+        const nota = notasRepository.create(data);
+        const savedNota = await notasRepository.save(nota);
+        return [savedNota, null];
+    } catch (error) {
+        console.error("Error al crear la nota:", error);
+        return [null, "Error interno del servidor"];
+    }
+}
+
+
+
+//funcion para eliminar una nota
+//FUNCIONA NO TOCAR
+export async function deleteNota(id_nota) {
+    try {
+        const notasRepository = AppDataSource.getRepository(Notas);
+        const result = await notasRepository.delete(id_nota);
+        return result.affected ? [true, null] : [null, "No se encontró la nota"];
+    } catch (error) {
+        console.error("Error al eliminar la nota:", error);
         return [null, "Error interno del servidor"];
     }
 }

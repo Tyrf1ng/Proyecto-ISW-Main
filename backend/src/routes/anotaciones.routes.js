@@ -17,11 +17,11 @@ router
 
 router
   .get("/", getAnotaciones)         
-  .get("/detail/", getAnotacion)
+  .get("/anotacion/:id_anotacion", getAnotacion)
   .get("/asignatura/:id_asignatura", getAnotacionesAsignatura)
   .get("/alumno/:rut_alumno", getAnotacionesAlumno)
   .get("/curso/:id_curso", getAnotacionesCurso)
-  .post("/", createAnotacion)
-  .put("/:id_anotacion", updateAnotacion)
-  .delete("/:id_anotacion", deleteAnotacion)
+  .post("/crear/", createAnotacion)
+  .put("/actualizar/:id_anotacion", updateAnotacion)
+  .delete("/borrar/:id_anotacion", deleteAnotacion)
   export default router;
