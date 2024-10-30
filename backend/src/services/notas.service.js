@@ -115,6 +115,7 @@ export async function updateNota(id_nota, nuevoValor) {
 }
 
 //funcion para crear una nota
+//FUNCIONA NO TOCAR
 export async function createNota(data) {
     try {
         const notasRepository = AppDataSource.getRepository(Notas);
@@ -128,6 +129,7 @@ export async function createNota(data) {
 }
 
 //funcion para eliminar una nota
+//FUNCIONA NO TOCAR
 export async function deleteNota(id_nota) {
     try {
         const notasRepository = AppDataSource.getRepository(Notas);

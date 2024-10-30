@@ -1,5 +1,6 @@
 "use strict";
 import {
+    createNota,
     deleteNota,
     getNota,
     getNotasAlumno,
@@ -84,22 +85,26 @@ export const updateNotaController = async (req, res) => {
 
 export async function createNotaController(req, res) {
     try {
-        const { id_asignatura, rut_alumno, nota } = req.body;
+        const { id_asignatura, rut_alumno, valor, tipo } = req.body;
+        if (!id_asignatura || !rut_alumno || !valor || !tipo) {
+            return handleErrorClient(res, 400, "Faltan datos obligatorios");
+        }
 
         const [notaCreada, errorNota] = await createNota({
             id_asignatura,
             rut_alumno,
             tipo,
-            nota,
+            valor,
         });
 
-        if (errorNota) return handleErrorClient(res, 404, errorNota);
+        if (errorNota) return handleErrorClient(res, 400, errorNota);
 
         handleSuccess(res, 201, "Nota creada", notaCreada);
     } catch (error) {
         handleErrorServer(res, 500, error.message);
     }
 }
+
 export async function deleteNotasController(req, res) {
     try {
         const { id_nota } = req.params;
