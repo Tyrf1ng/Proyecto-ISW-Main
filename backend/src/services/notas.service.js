@@ -76,6 +76,7 @@ export async function getNotasAsignatura(id_asignatura) {
     }
 }
 
+
 //funcion para traer una nota por id
 //FUNCIONA NO TOCAR
 export async function getNota(id_nota) {
@@ -90,6 +91,8 @@ export async function getNota(id_nota) {
         return [null, "Error interno del servidor"];
     }
 }
+
+
 
 //funcion para actualizar una nota
 //FUNCIONA NO TOCAR
@@ -114,6 +117,8 @@ export async function updateNota(id_nota, nuevoValor) {
     }
 }
 
+
+
 //funcion para crear una nota
 //FUNCIONA NO TOCAR
 export async function createNota(data) {
@@ -127,6 +132,8 @@ export async function createNota(data) {
         return [null, "Error interno del servidor"];
     }
 }
+
+
 
 //funcion para eliminar una nota
 //FUNCIONA NO TOCAR
