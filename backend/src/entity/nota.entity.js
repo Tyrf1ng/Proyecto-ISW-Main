@@ -41,12 +41,12 @@ const NotasSchema = new EntitySchema({
   relations: { 
     alumno: {
         type: "one-to-one",
-        target: "Alumno", // La entidad relacionada
+        target: "Alumno", 
         joinColumn: { name: "rut_alumno" } ,
     },
     asignatura: {
         type: "one-to-one",
-        target: "Asignaturas", // La entidad relacionada
+        target: "Asignaturas", 
         joinColumn: { name: "id_asigntura" } ,
     },
   },

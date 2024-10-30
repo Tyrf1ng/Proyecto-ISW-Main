@@ -41,12 +41,12 @@ const AnotacionesSchema = new EntitySchema({
   relations: { 
     alumno: {
         type: "many-to-one",
-        target: "Alumno", // La entidad relacionada
+        target: "Alumno", 
         joinColumn: { name: "rut_alumno" } ,
     },
     asignatura: {
         type: "many-to-one",
-        target: "Asignaturas", // La entidad relacionada
+        target: "Asignaturas", 
         joinColumn: { name: "id_asignatura" } ,
     },
   },

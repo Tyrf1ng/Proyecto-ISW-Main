@@ -34,12 +34,12 @@ const EncargadolabDocenteSchema = new EntitySchema({
   relations: { 
     encargado_lab: {
         type: "one-to-one",
-        target: "Encargado_Lab", // La entidad relacionada
+        target: "Encargado_Lab", 
         joinColumn: { name: "rut_encargado" } ,
     },
     docentes: {
         type: "one-to-one",
-        target: "Docentes", // La entidad relacionada
+        target: "Docentes", 
         joinColumn: { name: "rut_docente" } ,
     },
   },

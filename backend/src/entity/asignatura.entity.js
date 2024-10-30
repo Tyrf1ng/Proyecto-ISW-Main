@@ -33,7 +33,7 @@ const AsignaturasSchema = new EntitySchema({
   relations: { 
     docente: {
         type: "one-to-one",
-        target: "Docentes", // La entidad relacionada
+        target: "Docentes", 
         joinColumn: { name: "rut_docente" } ,
     },
   },

@@ -8,7 +8,6 @@ import {
 } from "../services/asistencia.service.js";
 import { handleErrorClient, handleErrorServer, handleSuccess } from "../handlers/responseHandlers.js";
 
-// Obtener todas las asistencias
 export async function getAllAsistencias(req, res) {
   try {
     const [asistencias, error] = await getAllAsistenciasService();
@@ -21,7 +20,6 @@ export async function getAllAsistencias(req, res) {
   }
 }
 
-// Obtener una asistencia por ID
 export async function getAsistenciaById(req, res) {
   try {
     const [asistencia, error] = await getAsistenciaService({ id_asistencia: req.params.id });
@@ -32,7 +30,6 @@ export async function getAsistenciaById(req, res) {
   }
 }
 
-// Crear una nueva asistencia
 export async function createAsistencia(req, res) {
   try {
     const [asistencia, error] = await createAsistenciaService(req.body);
@@ -43,7 +40,6 @@ export async function createAsistencia(req, res) {
   }
 }
 
-// Actualizar una asistencia existente
 export async function updateAsistencia(req, res) {
   try {
     const [asistencia, error] = await updateAsistenciaService(req.params.id, req.body);
@@ -54,7 +50,6 @@ export async function updateAsistencia(req, res) {
   }
 }
 
-// Eliminar una asistencia
 export async function deleteAsistencia(req, res) {
   try {
     const [result, error] = await deleteAsistenciaService(req.params.id);

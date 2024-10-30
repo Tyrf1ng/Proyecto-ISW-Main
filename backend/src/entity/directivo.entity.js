@@ -53,7 +53,7 @@ const DirectivoSchema = new EntitySchema({
   relations: {
     curso: {
       type: "one-to-many",
-      target: "Curso", // La entidad relacionada
+      target: "Curso",
       joinColumn: { name: "rut_directivo" } ,
   }, 
     roles: {
