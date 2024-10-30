@@ -87,14 +87,14 @@ async function createCursos() {
     await Promise.all([
       cursoRepository.save(
         cursoRepository.create({
-          nombre: "5to STS",
+          nombre: "5to",
           nivel: 5,
           rut_directivo: "21.282.977-3",
         }),
       ),
       cursoRepository.save(
         cursoRepository.create({
-          nombre: "7mo SUS",
+          nombre: "7mo",
           nivel: 7,
           rut_directivo: "21.282.977-3",
         }),
@@ -117,12 +117,12 @@ async function createDocente() {
       DocenteRepository.save(
         DocenteRepository.create({
           rut_docente: "21.137.508-6",
-          nombre: "SKibidi",
+          nombre: "Juna",
           apellido: "Docente",
-          email:"Skibidi@gmail.cl",
+          email:"Juan@gmail.cl",
           password: await encryptPassword("admin123"),
           telefono: "987654321",
-          comuna:"Hualpen(Dde las papas queman)",
+          comuna:"Hualpen",
           direccion:"Calle falsa 123",
           id_role: "2",
         }),
@@ -144,7 +144,7 @@ async function createAsignaturas() {
     await Promise.all([
       AsignaturasRepository.save(
         AsignaturasRepository.create({
-          nombre: "Sexualidad Humana",
+          nombre: "Matematicas",
           rut_docente: "21.137.508-6",
         }),
       ),
@@ -167,10 +167,10 @@ async function createApoderado() {
       ApoderadoRepository.save(
         ApoderadoRepository.create({
           rut_apoderado: "21.070.073-0",
-          nombre: "Mochap",
-          apellido: "Pl",
+          nombre: "Joaquin",
+          apellido: "Soto",
           telefono: "987654321",
-          email:"mochap@gmail.cl",
+          email:"soto12@gmail.cl",
           password: await encryptPassword("admin123"),
           id_role: "4",
         }),
@@ -195,12 +195,12 @@ async function createAlumnos() {
         AlumnosRepository.create({
           rut_alumno: "20.960.538-4",
           nombre: "Jonathan",
-          apellido: "Toilet",
+          apellido: "Ortiz",
           fechaNacimiento: "2000-01-01",
-          comuna: "Lajino de corazón",
-          direccion: "Calle falsa 123",
-          email:"skibidi@gmail.cl",
-          password: await encryptPassword("skibidi123"),
+          comuna: "Laja",
+          direccion: "Calle falsa 321",
+          email:"jonthan@gmail.cl",
+          password: await encryptPassword("user123"),
           id_curso: "1",
           rut_apoderado: "21.070.073-0",
           id_role: "3",
@@ -224,7 +224,7 @@ async function createAnotaciones() {
     await Promise.all([
       AnotacionesRepository.save(
         AnotacionesRepository.create({
-          descripcion: "Jugando lol en horario de clases",
+          descripcion: "Distrayendo a compañeros en horario de clases",
           rut_alumno: "20.960.538-4",
           tipo: "Negativa",
           id_asignatura: "1",
