@@ -1,6 +1,8 @@
 "use strict";  
 import { Router } from "express";
 import {  
+    createNotaController,
+    deleteNotasController,
     getNotaController,
     getNotasAlumnoController, 
     getNotasAsignaturaController,
@@ -17,6 +19,9 @@ router
     .get("/alumno/:rut_alumno", getNotasAlumnoController)
     .get("/asignatura/:id_asignatura", getNotasAsignaturaController)
     .get("/curso/:id_curso", getNotasCursoController)
-    .patch("/:id_nota", updateNotaController);
+    .patch("/:id_nota", updateNotaController)
+    .delete("/borrar/:id_nota", deleteNotasController)
+    .post("/crear/", createNotaController);
+
 
 export default router;
