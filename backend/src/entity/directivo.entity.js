@@ -19,10 +19,15 @@ const DirectivoSchema = new EntitySchema({
       type: "varchar",
       nullable: false,
     },
-    correo: {
+    email: {
       type: "varchar",
       length: 255,
       nullable: false,
+    },
+    password: {
+      type: "varchar",
+      length: 255,
+      nullable: false
     },
     telefono: {
       type: "varchar",
@@ -48,7 +53,7 @@ const DirectivoSchema = new EntitySchema({
   relations: {
     curso: {
       type: "one-to-many",
-      target: "Curso", // La entidad relacionada
+      target: "Curso",
       joinColumn: { name: "rut_directivo" } ,
   }, 
     roles: {

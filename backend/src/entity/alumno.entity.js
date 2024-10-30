@@ -20,6 +20,16 @@ const AlumnoSchema = new EntitySchema({
       length: 255,
       nullable: false,
     },
+    email: {
+      type: "varchar",
+      length: 255,
+      nullable: false,
+    },
+    password: {
+      type: "varchar",
+      length: 255,
+      nullable: false,
+    },
     fechaNacimiento: {
       type: "date",
       nullable: false,
@@ -51,7 +61,6 @@ const AlumnoSchema = new EntitySchema({
         onUpdate: "CURRENT_TIMESTAMP",
         nullable: false,
       },
-    // Relación con el Apoderado
     rut_apoderado: {
       type: "varchar",
       nullable: false,
@@ -64,12 +73,12 @@ const AlumnoSchema = new EntitySchema({
   relations: {
     curso: {
       type: "one-to-one",
-      target: "Curso", // La entidad relacionada
+      target: "Curso", 
       joinColumn: { name: "id_curso" } ,
     },
     apoderado:{
       type: "one-to-one",
-      target: "Apoderado", // La entidad relacionada
+      target: "Apoderado", 
       joinColumn: { name: "rut_apoderado" },
     }, 
     roles: {

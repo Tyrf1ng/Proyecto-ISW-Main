@@ -18,6 +18,10 @@ const AsistenciasSchema = new EntitySchema({
       type: "int",
       nullable: false,
     },
+    Tipo: {
+      type: "varchar",
+      nullable: false,
+    },
     createdAt: {
         type: "timestamp with time zone",
         default: () => "CURRENT_TIMESTAMP",
@@ -32,13 +36,13 @@ const AsistenciasSchema = new EntitySchema({
   },
   relations: { 
     alumno: {
-        type: "one-to-one",
-        target: "Alumno", // La entidad relacionada
+        type: "many-to-one",
+        target: "Alumno", 
         joinColumn: { name: "rut_alumno" } ,
     },
     asignatura: {
-        type: "one-to-one",
-        target: "Asignaturas", // La entidad relacionada
+        type: "many-to-one",
+        target: "Asignaturas",
         joinColumn: { name: "id_asignatura" },
 
     },
