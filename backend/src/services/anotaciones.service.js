@@ -1,5 +1,8 @@
 "use strict";
+import { In } from "typeorm";
 import Anotaciones from "../entity/anotacion.entity.js";
+import Alumno from "../entity/alumno.entity.js";
+import AsignaturaCursoSchema from "../entity/asignatura.curso.entity.js";
 import { AppDataSource } from "../config/configDb.js";
 
 
@@ -64,13 +67,35 @@ export async function getAnotacionesAlumnoService(rut_alumno) {
 
 export async function getAnotacionesCursoService(id_curso) {
     try {
+        const AlumnoRepository = AppDataSource.getRepository(Alumno);
         const AnotacionRepository = AppDataSource.getRepository(Anotaciones);
-        const anotaciones = await AnotacionRepository.find( { id_curso: id_curso } );
-        if (!anotaciones || anotaciones.length === 0) return [null, "No hay anotaciones"];
+        const AsignaturaCursoRepository = AppDataSource.getRepository(AsignaturaCursoSchema);
+
+        // Obtener las asignaturas asociadas al curso específico
+        const asignaturasDelCurso = await AsignaturaCursoRepository.find({ where: { id_curso } });
+        const idsAsignaturas = asignaturasDelCurso.map(ac => ac.id_asignatura);
+
+        if (idsAsignaturas.length === 0) return [null, "No hay asignaturas para este curso"];
+
+        // Obtener los alumnos del curso especificado
+        const alumnos = await AlumnoRepository.find({ where: { id_curso } });
+        const rutsAlumnos = alumnos.map(alumno => alumno.rut_alumno);
+
+        // Si no hay alumnos en el curso, no habrá anotaciones
+        if (rutsAlumnos.length === 0) return [null, "No hay anotaciones para este curso"];
+
+        // Buscar anotaciones para los alumnos del curso y para las asignaturas relacionadas
+        const anotaciones = await AnotacionRepository.find({
+            where: {
+                rut_alumno: In(rutsAlumnos),
+                id_asignatura: In(idsAsignaturas),
+            },
+        });
+
+        if (!anotaciones || anotaciones.length === 0) return [null, "No hay anotaciones para este curso"];
         
         return [anotaciones, null];
-    }
-    catch (error) {   
+    } catch (error) {
         console.error("Error al obtener las anotaciones:", error);
         return [null, "Error interno del servidor"];
     }
