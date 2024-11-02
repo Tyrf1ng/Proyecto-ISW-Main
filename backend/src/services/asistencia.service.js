@@ -2,7 +2,7 @@
 import AsistenciasSchema from "../entity/asistencia.entity.js";
 import { AppDataSource } from "../config/configDb.js";
 
-// Obtener una asistencia por criterios de búsqueda
+
 export async function getAsistenciaService(query) {
   try {
     const { id_asistencia, valor, rut_alumno, id_asignatura } = query;
@@ -27,7 +27,6 @@ export async function getAsistenciaService(query) {
   }
 }
 
-// Obtener todas las asistencias
 export async function getAllAsistenciasService() {
   try {
     const asistenciaRepository = AppDataSource.getRepository(AsistenciasSchema);
@@ -42,7 +41,6 @@ export async function getAllAsistenciasService() {
   }
 }
 
-// Crear una nueva asistencia
 export async function createAsistenciaService(data) {
   try {
     const asistenciaRepository = AppDataSource.getRepository(AsistenciasSchema);
@@ -55,7 +53,6 @@ export async function createAsistenciaService(data) {
   }
 }
 
-// Actualizar una asistencia existente
 export async function updateAsistenciaService(id, data) {
   try {
     const asistenciaRepository = AppDataSource.getRepository(AsistenciasSchema);
@@ -68,7 +65,6 @@ export async function updateAsistenciaService(id, data) {
   }
 }
 
-// Eliminar una asistencia
 export async function deleteAsistenciaService(id) {
   try {
     const asistenciaRepository = AppDataSource.getRepository(AsistenciasSchema);

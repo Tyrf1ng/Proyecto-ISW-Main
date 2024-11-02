@@ -1,9 +1,6 @@
 "use strict";
 import { EntitySchema } from "typeorm";
 
-
-
-
 const observacionesSchema = new EntitySchema({
     name: "Observacion",
     tableName: "observaciones",
@@ -44,13 +41,13 @@ const observacionesSchema = new EntitySchema({
     },
     relations: { 
       administrativo: {
-          type: "many-to-one",
-          target: "administrativo", // La entidad relacionada
+          type: "one-to-many",
+          target: "administrativo",
           joinColumn: { name: "rut_administrativo" } ,
       },
         alumno: {
             type: "many-to-one",
-            target: "alumno", // La entidad relacionada
+            target: "alumno",
             joinColumn: { name: "rut_alumno" } ,
         },
     },
