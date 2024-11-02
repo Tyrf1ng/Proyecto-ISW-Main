@@ -13,7 +13,6 @@ return (
 function PageRoot() {
 return (
     <>
-        <Navbar />
         <Outlet />
     </>
 );
