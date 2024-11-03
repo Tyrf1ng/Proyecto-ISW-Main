@@ -15,7 +15,7 @@ import { createAlumnos
         ,createCursos
         ,createDirectivos
         ,createDocente
-        ,createRoles} from "./config/initialSetup.js";
+        ,createRoles } from "./config/initialSetup.js";
 import { passportJwtSetup } from "./auth/passport.auth.js";
 
 async function setupServer() {

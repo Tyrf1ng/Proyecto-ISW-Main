@@ -15,7 +15,6 @@ router
     .use("/asistencias", asistenciaRoutes)
     .use("/anotaciones", anotacionRoutes)
     .use("/notas", notasRoutes)
-    .use("/asistencias", asistenciaRoutes)
     .use("/labs", labRoutes);
 
 export default router;

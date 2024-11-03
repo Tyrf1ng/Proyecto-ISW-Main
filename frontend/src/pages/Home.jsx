@@ -28,6 +28,46 @@ const NAVIGATION = [
     title: 'Anotaciones',
     icon: <ClassIcon />,
   },
+  {
+    segment: 'notas',
+    title: 'Notas',
+    icon: <ClassIcon />,
+  },
+  {
+    segment: 'asignaturas',
+    title: 'Asignaturas',
+    icon: <ClassIcon />,
+  },
+  {
+    segment: 'alumnos',
+    title: 'Alumnos',
+    icon: <ClassIcon />,
+  },
+  {
+    segment: 'apoderados',
+    title: 'Apoderados',
+    icon: <ClassIcon />,
+  },
+  {
+    segment: 'docentes',
+    title: 'Docentes',
+    icon: <ClassIcon />,
+  },
+  {
+    segment: 'directivos',
+    title: 'Directivos',
+    icon: <ClassIcon />,
+  },
+  {
+    segment: 'roles',
+    title: 'Roles',
+    icon: <ClassIcon />,
+  },
+  {
+    segment: 'usuarios',
+    title: 'Usuarios',
+    icon: <ClassIcon />,
+  },
 ];
 
 const customTheme = createTheme({
