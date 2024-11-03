@@ -2,6 +2,7 @@
 import {
     createNota,
     deleteNota,
+    getAllNotas,
     getNota,
     getNotasAlumno,
     getNotasAsignatura,
@@ -119,6 +120,20 @@ export async function deleteNotasController(req, res) {
         if (errorNota) return handleErrorClient(res, 404, errorNota);
 
         handleSuccess(res, 200, "Nota eliminada", nota);
+    } catch (error) {
+        handleErrorServer(res, 500, error.message);
+    }
+}
+
+export async function getAllNotasController(req, res) {
+    try {
+        const [notas, errorNotas] = await getAllNotas();
+
+        if (errorNotas) return handleErrorClient(res, 404, errorNotas);
+
+        notas.length === 0
+            ? handleSuccess(res, 204)
+            : handleSuccess(res, 200, "Notas encontradas", notas);
     } catch (error) {
         handleErrorServer(res, 500, error.message);
     }
