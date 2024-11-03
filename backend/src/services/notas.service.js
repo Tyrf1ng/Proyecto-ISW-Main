@@ -147,3 +147,14 @@ export async function deleteNota(id_nota) {
         return [null, "Error interno del servidor"];
     }
 }
+
+export async function getAllNotas() {
+    try {
+        const notasRepository = AppDataSource.getRepository(Notas);
+        const notas = await notasRepository.find();
+        return [notas, null];
+    } catch (error) {
+        console.error("Error al obtener las notas:", error);
+        return [null, "Error interno del servidor"];
+    }
+}
