@@ -6,25 +6,36 @@ import AsignaturaCursoSchema from "../entity/asignatura.curso.entity.js";
 import { AppDataSource } from "../config/configDb.js";
 
 
-export async function getAnotacionService(query) {
+
+export async function getAnotacionService(id_anotacion) {
     try {
-        const { id_anotacion, descripcion, createdAt, tipo, id_asignatura, rut_alumno } = query;
-    
+        const id = parseInt(id_anotacion, 10);
+        if (isNaN(id)) {
+            console.error("El ID de anotación proporcionado no es un número válido:", id_anotacion);
+            return [null, "ID de anotación no válido"];
+        }
+
         const AnotacionRepository = AppDataSource.getRepository(Anotaciones);
-    
+
         const AnotacionFound = await AnotacionRepository.findOne({
-        where: [{ id_anotacion: id_anotacion }, { descripcion: descripcion }, { fecha: createdAt },
-             { tipo: tipo }, { id_asignatura: id_asignatura }, { rut_alumno: rut_alumno }],
+            where: { id_anotacion: id }
         });
-    
-        if (!AnotacionFound) return [null, "Anotacion no encontrada"];
-        console.log(AnotacionFound);
+
+        if (!AnotacionFound) {
+            console.error(`Anotación con ID ${id_anotacion} no encontrada`);
+            return [null, "Anotación no encontrada"];
+        }
+
         return [AnotacionFound, null];
     } catch (error) {
-        console.error("Error al obtener la anotacion:", error);
+        console.error("Error al obtener la anotación:", error);
         return [null, "Error interno del servidor"];
     }
-    }
+}
+
+
+
+    
 export async function getAnotacionesService() {
     try {
         const AnotacionRepository = AppDataSource.getRepository(Anotaciones);
@@ -54,12 +65,18 @@ export async function getAnotacionesAsignaturaService(id_asignatura) {
 export async function getAnotacionesAlumnoService(rut_alumno) {
     try {
         const AnotacionRepository = AppDataSource.getRepository(Anotaciones);
-        const anotaciones = await AnotacionRepository.find( { rut_alumno: rut_alumno } );
-        if (!anotaciones || anotaciones.length === 0) return [null, "No hay anotaciones"];
-        
+
+        // Buscar las anotaciones asociadas al alumno en específico
+        const anotaciones = await AnotacionRepository.find({
+            where: { rut_alumno: rut_alumno }
+        });
+
+        if (!anotaciones || anotaciones.length === 0) {
+            return [null, "No hay anotaciones para este alumno"];
+        }
+
         return [anotaciones, null];
-    }
-    catch (error) {   
+    } catch (error) {
         console.error("Error al obtener las anotaciones:", error);
         return [null, "Error interno del servidor"];
     }
