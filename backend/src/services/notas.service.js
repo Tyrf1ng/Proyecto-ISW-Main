@@ -63,18 +63,28 @@ export async function getNotasAsignatura(id_asignatura) {
     try {
         const notasRepository = AppDataSource.getRepository(Notas);
         const notas = await notasRepository.find({
-            where: { id_asignatura: id_asignatura }
-        }
-    );
+            where: { id_asignatura: id_asignatura },
+            relations: ["asignatura"]
+        });
+
         if (!notas || notas.length === 0) return [null, "No hay notas"];
 
-        const notasData = notas.map(({ ...nota }) => nota);
+        const notasData = notas.map(nota => ({
+            id: nota.id,
+            rut_alumno: nota.rut_alumno,
+            valor: nota.valor,
+            tipo: nota.tipo,
+            id_asignatura: nota.id_asignatura,
+            nombre_asignatura: nota.asignatura.nombre
+        }));
+
         return [notasData, null];
     } catch (error) {
         console.error("Error al obtener las notas:", error);
         return [null, "Error interno del servidor"];
     }
 }
+
 
 
 //funcion para traer una nota por id
