@@ -18,33 +18,32 @@ const AsistenciasSchema = new EntitySchema({
       type: "int",
       nullable: false,
     },
-    Tipo: {
+    tipo: {  // Cambiado de "Tipo" a "tipo"
       type: "varchar",
       nullable: false,
     },
     createdAt: {
-        type: "timestamp with time zone",
-        default: () => "CURRENT_TIMESTAMP",
-        nullable: false,
-      },
-      updatedAt: {
-        type: "timestamp with time zone",
-        default: () => "CURRENT_TIMESTAMP",
-        onUpdate: "CURRENT_TIMESTAMP",
-        nullable: false,
-      },
+      type: "timestamp with time zone",
+      default: () => "CURRENT_TIMESTAMP",
+      nullable: false,
+    },
+    updatedAt: {
+      type: "timestamp with time zone",
+      default: () => "CURRENT_TIMESTAMP",
+      onUpdate: "CURRENT_TIMESTAMP",
+      nullable: false,
+    },
   },
   relations: { 
     alumno: {
-        type: "many-to-one",
-        target: "Alumno", 
-        joinColumn: { name: "rut_alumno" } ,
+      type: "many-to-one",
+      target: "Alumno", 
+      joinColumn: { name: "rut_alumno" },
     },
     asignatura: {
-        type: "many-to-one",
-        target: "Asignaturas",
-        joinColumn: { name: "id_asignatura" },
-
+      type: "many-to-one",
+      target: "Asignaturas",
+      joinColumn: { name: "id_asignatura" },
     },
   },
 });
