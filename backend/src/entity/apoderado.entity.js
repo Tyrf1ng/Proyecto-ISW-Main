@@ -20,7 +20,12 @@ const ApoderadoSchema = new EntitySchema({
       length: 255,
       nullable: false,
     },
-    correo: {
+    email: {
+      type: "varchar",
+      length: 255,
+      nullable: false,
+    },
+    password: {
       type: "varchar",
       length: 255,
       nullable: false,
@@ -48,18 +53,12 @@ const ApoderadoSchema = new EntitySchema({
     
   },
   relations: {
-    alumno: {
-      type: "one-to-many",
-      target: "Alumno", // La entidad relacionada
-      joinColumn: { name: "rut_apoderado" } ,
-  },
     roles: {
       type: "many-to-one",
       target: "Roles", 
       joinColumn: { name: "id_role" } ,
   },
 },
-
 });
 
 export default ApoderadoSchema;

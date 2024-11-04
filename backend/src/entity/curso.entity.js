@@ -30,7 +30,6 @@ const CursoSchema = new EntitySchema({
         onUpdate: "CURRENT_TIMESTAMP",
         nullable: false,
       },
-    // Relación con el Directivo
     rut_directivo: {
       type: "varchar",
       nullable: false,

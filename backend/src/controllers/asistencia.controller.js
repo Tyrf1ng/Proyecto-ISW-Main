@@ -8,7 +8,6 @@ import {
 } from "../services/asistencia.service.js";
 import { handleErrorClient, handleErrorServer, handleSuccess } from "../handlers/responseHandlers.js";
 
-
 export async function getAllAsistencias(req, res) {
   try {
     const [asistencias, error] = await getAllAsistenciasService();
@@ -20,7 +19,6 @@ export async function getAllAsistencias(req, res) {
     handleErrorServer(res, 500, error.message);
   }
 }
-
 
 export async function getAsistenciaById(req, res) {
   try {

@@ -37,12 +37,12 @@ const Ficha_EstudianteSchema = new EntitySchema({
   relations: {
     administrativo: {
       type: "one-to-one",
-      target: "Administrativo", // La entidad relacionada
+      target: "Administrativo",
       joinColumn: { name: "rut_administrativo" } ,
     }, 
     alumno: {
         type: "one-to-one",
-        target: "Alumno", // La entidad relacionada
+        target: "Alumno", 
         joinColumn: { name: "rut_alumno" } ,
     },
   },

@@ -22,6 +22,10 @@ const AnotacionesSchema = new EntitySchema({
       type: "varchar",
       nullable: false,
     },
+    id_asignatura: {
+      type: "int",
+      nullable: false,
+    },
     createdAt: {
         type: "timestamp with time zone",
         default: () => "CURRENT_TIMESTAMP",
@@ -36,9 +40,14 @@ const AnotacionesSchema = new EntitySchema({
   },
   relations: { 
     alumno: {
-        type: "one-to-one",
-        target: "Alumno", // La entidad relacionada
+        type: "many-to-one",
+        target: "Alumno", 
         joinColumn: { name: "rut_alumno" } ,
+    },
+    asignatura: {
+        type: "many-to-one",
+        target: "Asignaturas", 
+        joinColumn: { name: "id_asignatura" } ,
     },
   },
 });
