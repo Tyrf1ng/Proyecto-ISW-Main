@@ -10,3 +10,12 @@ export const AllNotas = async () => {
         return error.response;
     }
 }
+
+export const NotasAsignatura = async (id_asignatura) => {
+    try {
+        const response = await axios.get(`/notas/asignatura/${id_asignatura}`);
+        return response;
+    } catch (error) {
+        return error.response;
+    }
+}

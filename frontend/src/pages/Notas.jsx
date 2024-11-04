@@ -4,8 +4,6 @@ import { TableRow, TableCell, Typography, Box, TextField } from '@mui/material';
 import { AllNotas } from '../services/notas.service.js';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
-
-
 const customTheme = createTheme({
   cssVariables: {
     colorSchemeSelector: 'data-toolpad-color-scheme',
@@ -40,6 +38,7 @@ const columns = [
   { dataKey: 'id_nota', label: 'ID De la Nota', numeric: true, width: 100 },
   { dataKey: 'rut_alumno', label: 'Rut del alumno', numeric: false, width: 100 },
   { dataKey: 'id_asignatura', label: 'Asignatura', numeric: true, width: 200 },
+  { dataKey: 'nombre_asignatura', label: 'Nombre de la Asignatura', numeric: false, width: 200 },
   { dataKey: 'tipo', label: 'Descripcion', numeric: false, width: 100 },
   { dataKey: 'valor', label: 'Nota', numeric: true, width: 100 },
 ];
@@ -47,8 +46,9 @@ const columns = [
 function Notas() {
   const [data, setData] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [asignaturaId, setAsignaturaId] = useState('');
 
-  const fetchNotas = async () => {
+  const fetchAllNotas = async () => {
     try {
       const response = await AllNotas();
       setData(response.data.data);
@@ -57,20 +57,28 @@ function Notas() {
       console.error('Error fetching notas', error);
     }
   };
-  
+
   useEffect(() => {
-    fetchNotas();
+    fetchAllNotas();
   }, []);
 
   const handleSearch = (event) => {
     setSearchTerm(event.target.value);
   };
 
+  const handleAsignaturaIdChange = (event) => {
+    setAsignaturaId(event.target.value);
+  };
+
   const filteredData = data.filter((row) => {
-    return columns.some((column) => {
+    const matchesSearchTerm = columns.some((column) => {
       const cellValue = row[column.dataKey];
       return cellValue && cellValue.toString().toLowerCase().includes(searchTerm.toLowerCase());
     });
+
+    const matchesAsignaturaId = asignaturaId ? row.id_asignatura.toString() === asignaturaId : true;
+
+    return matchesSearchTerm && matchesAsignaturaId;
   });
 
   function renderTable() {
@@ -115,7 +123,6 @@ function Notas() {
     );
   }
 
-
   return (
     <ThemeProvider theme={customTheme}>
       <Box sx={{ padding: 2 }}>
@@ -125,6 +132,14 @@ function Notas() {
           fullWidth
           value={searchTerm}
           onChange={handleSearch}
+          sx={{ marginBottom: 2 }}
+        />
+        <TextField
+          label="ID de Asignatura"
+          variant="outlined"
+          fullWidth
+          value={asignaturaId}
+          onChange={handleAsignaturaIdChange}
           sx={{ marginBottom: 2 }}
         />
         {renderTable()}
