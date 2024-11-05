@@ -23,7 +23,7 @@ const horarioBodyValidation = Joi.object({
 });
 //--------------------------------------------------//
 
-
+// FUNCIONA NO TOCAR
 export async function getHorario(req, res) {
     try {
         const { id_horario } = req.params; 
@@ -35,7 +35,7 @@ export async function getHorario(req, res) {
     }
 }
 
-
+// FUNCIONA NO TOCAR
 export async function getHorarios(req, res) {
     try {
         const [horarios, errorHorarios] = await getHorariosService();
@@ -47,7 +47,7 @@ export async function getHorarios(req, res) {
     }
 }
 
-
+// FUNCIONA NO TOCAR
 export async function createHorario(req, res) {
     try {
         const { hora_inicio, hora_fin } = req.body;
@@ -67,7 +67,7 @@ export async function createHorario(req, res) {
     }
 }
 
-
+// FUNCIONA NO TOCAR
 export async function updateHorario(req, res) {
     try {
         const { id_horario } = req.params;
@@ -84,7 +84,7 @@ export async function updateHorario(req, res) {
     }
 }
 
-
+// FUNCIONA NO TOCAR
 export async function deleteHorario(req, res) {
     try {
         const { id_horario } = req.params;

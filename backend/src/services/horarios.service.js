@@ -1,7 +1,7 @@
 import { AppDataSource } from "../config/configDb.js"; 
 import Horarios from "../entity/horarios.entity.js"; 
 
-
+// FUNCIONA NO TOCAR
 export async function getHorariosService() {
     try {
         const horariosRepository = AppDataSource.getRepository(Horarios);
@@ -17,7 +17,7 @@ export async function getHorariosService() {
     }
 }
 
-
+// FUNCIONA NO TOCAR
 export async function getHorarioService(id) {
     try {
         const horariosRepository = AppDataSource.getRepository(Horarios);
@@ -35,7 +35,7 @@ export async function getHorarioService(id) {
     }
 }
 
-
+// FUNCIONA NO TOCAR
 export async function createHorarioService(data) {
     try {
         const horariosRepository = AppDataSource.getRepository(Horarios);
@@ -51,7 +51,7 @@ export async function createHorarioService(data) {
     }
 }
 
-
+// FUNCIONA NO TOCAR
 export async function updateHorarioService(id_horario, data) {
     try {
         const horariosRepository = AppDataSource.getRepository(Horarios);
@@ -76,7 +76,7 @@ export async function updateHorarioService(id_horario, data) {
     }
 }
 
-
+// FUNCIONA NO TOCAR
 export async function deleteHorarioService(id_horario) {
     try {
         const horariosRepository = AppDataSource.getRepository(Horarios);

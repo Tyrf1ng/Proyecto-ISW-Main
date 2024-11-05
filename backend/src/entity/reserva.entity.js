@@ -15,7 +15,7 @@ const ReservaSchema = new EntitySchema({
             nullable: false,
         },
         rut_docente: {
-            type: "int",
+            type: "varchar",
             nullable: false,
         },
         fecha: {
@@ -40,17 +40,17 @@ const ReservaSchema = new EntitySchema({
     },
     relations: { 
         lab: {
-            type: "one-to-one",
+            type: "many-to-one",
             target: "Labs", 
             joinColumn: { name: "id_lab" } ,
         },
         docente: {
-            type: "one-to-one",
+            type: "many-to-one",
             target: "Docentes", 
             joinColumn: { name: "rut_docente" } ,
         },
         horarios: {
-            type: "one-to-one",
+            type: "many-to-one",
             target: "Horarios", 
             joinColumn: { name: "id_horario" } ,
         },
