@@ -1,6 +1,7 @@
 import { AppDataSource } from "../config/configDb.js"; // Asegúrate de que la ruta sea correcta
 import Labs from "../entity/lab.entity.js"; // Asegúrate de que la ruta sea correcta
 
+//Funciona NO TOCAR
 export async function getLabsService() {
     try {
     const labRepository = AppDataSource.getRepository(Labs);
@@ -19,98 +20,86 @@ export async function getLabsService() {
     }
 }
 
-export async function getLabService(query) {
+
+//Funciona NO TOCAR
+export async function getLabService(id) {
     try {
-    const { id, name } = query;
+        const labRepository = AppDataSource.getRepository(Labs);
 
-    const labRepository = AppDataSource.getRepository(Labs);
+        const labFound = await labRepository.findOne({
+            where: { id_lab: id },
+        });
 
-    const labFound = await labRepository.findOne({
-        where: [{ id: id }, { name: name }],
-    });
+        if (!labFound) return [null, "Laboratorio no encontrado"];
 
-    if (!labFound) return [null, "Laboratorio no encontrado"];
+        const { ...labData } = labFound;
 
-    // No hay campo 'password' en LabsSchema, así que no es necesario excluirlo
-    const { ...labData } = labFound;
-
-    return [labData, null];
+        return [labData, null];
     } catch (error) {
-    console.error("Error obtener el laboratorio:", error);
-    return [null, "Error interno del servidor"];
+        console.error("Error al obtener el laboratorio:", error);
+        return [null, "Error interno del servidor"];
     }
 }
 
-export async function createLabService(body) {
+
+//Funciona NO TOCAR
+export async function createLabService(data) {
     try {
-    const labRepository = AppDataSource.getRepository(Labs);
+        const labRepository = AppDataSource.getRepository(Labs);
 
-    // Verifica si ya existe un laboratorio con el mismo nombre
-    const existingLab = await labRepository.findOne({
-        where: [{ name: body.name }],
-    });
+        // Verifica si ya existe un laboratorio con el mismo nombre
+        const existingLab = await labRepository.findOne({
+            where: { nombre: data.nombre },
+        });
 
-    if (existingLab) return [null, "El laboratorio ya existe"];
+        if (existingLab) return [null, "El laboratorio ya existe"];
 
-    // Crea un nuevo laboratorio
-    const newLab = labRepository.create(body);
-    await labRepository.save(newLab);
+        // Crea un nuevo laboratorio
+        const lab = labRepository.create(data);
+        const savedLab = await labRepository.save(lab);
 
-    return [newLab, null];
+        return [savedLab, null];
     } catch (error) {
-    console.error("Error al crear el laboratorio:", error);
-    return [null, "Error interno del servidor"];
+        console.error("Error al crear el laboratorio:", error);
+        return [null, "Error interno del servidor"];
     }
 }
 
-export async function updateLabService(query, body) {
+
+//Funciona NO TOCAR
+export async function updateLabService(id_lab, data) {
     try {
-    const { id, name } = query;
+        const labRepository = AppDataSource.getRepository(Labs);
 
-    const labRepository = AppDataSource.getRepository(Labs);
+        // Actualiza el laboratorio con los nuevos datos
+        const result = await labRepository.update(
+            { id_lab: id_lab },  // Condición de búsqueda
+            data                 // Nuevos datos
+        );
 
-    const labFound = await labRepository.findOne({
-        where: [{ id: id }, { name: name }],
-    });
+        if (result.affected === 0) {
+            return [null, "Laboratorio no encontrado"];
+        }
 
-    if (!labFound) return [null, "Laboratorio no encontrado"];
+        // Obtén el laboratorio actualizado
+        const updatedLab = await labRepository.findOneBy({ id_lab: id_lab });
 
-    const existingLab = await labRepository.findOne({
-        where: [{ name: body.name }],
-    });
-
-    if (existingLab && existingLab.id !== labFound.id) {
-        return [null, "Ya existe un laboratorio con el mismo nombre"];
-    }
-
-    labRepository.merge(labFound, body);
-
-    await labRepository.save(labFound);
-
-    return [labFound, null];
+        return [updatedLab, null];
     } catch (error) {
-    console.error("Error al actualizar el laboratorio:", error);
-    return [null, "Error interno del servidor"];
+        console.error("Error al actualizar el laboratorio:", error);
+        return [null, "Error interno del servidor"];
     }
 }
 
-export async function deleteLabService(query) {
+
+//Funciona NO TOCAR
+export async function deleteLabService(id_lab) {
     try {
-    const { id, name } = query;
-
-    const labRepository = AppDataSource.getRepository(Labs);
-
-    const labFound = await labRepository.findOne({
-        where: [{ id: id }, { name: name }],
-    });
-
-    if (!labFound) return [null, "Laboratorio no encontrado"];
-
-    await labRepository.remove(labFound);
-
-    return [labFound, null];
+        const labRepository = AppDataSource.getRepository(Labs);
+        const result = await labRepository.delete(id_lab);
+        return result.affected ? [true, null] : [null, "Laboratorio no encontrado"];
     } catch (error) {
-    console.error("Error al eliminar el laboratorio:", error);
-    return [null, "Error interno del servidor"];
+        console.error("Error al eliminar el laboratorio:", error);
+        return [null, "Error interno del servidor"];
     }
 }
