@@ -12,27 +12,31 @@ const customTheme = createTheme({
     light: {
       palette: {
         background: {
-          default: '#002952', // Fondo azul para el área general
-          paper: '#000000', // Fondo negro para la tabla
-        },
-        text: {
-          primary: '#FFFFFF', // Texto blanco para mejor contraste
+          default: '#FFF',
+          paper: '#EEEEF9',
         },
       },
     },
     dark: {
       palette: {
         background: {
-          default: '#002952', // Fondo azul para el área general
-          paper: '#000000', // Fondo negro para la tabla
-        },
-        text: {
-          primary: '#FFFFFF', // Texto blanco para mejor contraste
+          default: 'radial-gradient(circle,#090B11 , #002952)',
+          paper: '#002952',
         },
       },
     },
   },
+  breakpoints: {
+    values: {
+      xs: 0,
+      sm: 600,
+      md: 600,
+      lg: 1200,
+      xl: 1536,
+    },
+  },
 });
+
 
 const columns = [
   { dataKey: 'id_nota', label: 'ID De la Nota', numeric: true, width: 100 },
