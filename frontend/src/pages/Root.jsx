@@ -1,21 +1,12 @@
-import { Outlet } from 'react-router-dom';
-import Navbar from '@components/Navbar';
+import DashboardLayoutAccount from '@components/Dashboard';
 import { AuthProvider } from '@context/AuthContext';
 
-function Root()  {
-return (
+function Root() {
+  return (
     <AuthProvider>
-        <PageRoot/>
+      <DashboardLayoutAccount />
     </AuthProvider>
-);
-}
-
-function PageRoot() {
-return (
-    <>
-        <Outlet />
-    </>
-);
+  );
 }
 
 export default Root;
