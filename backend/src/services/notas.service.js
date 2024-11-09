@@ -67,7 +67,20 @@ export async function getNotasAsignatura(id_asignatura) {
             relations: ["asignatura"]
         });
 
+            where: { id_asignatura: id_asignatura },
+            relations: ["asignatura"]
+        });
+
         if (!notas || notas.length === 0) return [null, "No hay notas"];
+
+        const notasData = notas.map(nota => ({
+            id: nota.id,
+            rut_alumno: nota.rut_alumno,
+            valor: nota.valor,
+            tipo: nota.tipo,
+            id_asignatura: nota.id_asignatura,
+            nombre_asignatura: nota.asignatura.nombre
+        }));
 
         const notasData = notas.map(nota => ({
             id: nota.id,
@@ -84,8 +97,6 @@ export async function getNotasAsignatura(id_asignatura) {
         return [null, "Error interno del servidor"];
     }
 }
-
-
 
 //funcion para traer una nota por id
 //FUNCIONA NO TOCAR
