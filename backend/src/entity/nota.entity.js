@@ -47,7 +47,7 @@ const NotasSchema = new EntitySchema({
     asignatura: {
         type: "one-to-one",
         target: "Asignaturas", 
-        joinColumn: { name: "id_asigntura" } ,
+        joinColumn: { name: "id_asignatura" } ,
     },
   },
 });
