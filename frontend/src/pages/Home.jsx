@@ -81,6 +81,7 @@ const customTheme = createTheme({
           default: '#FFF',
           paper: '#EEEEF9',
         },
+        defaultChannel: '255 255 255', // Agrega esto en formato RGB
       },
     },
     dark: {
@@ -89,6 +90,7 @@ const customTheme = createTheme({
           default: 'radial-gradient(circle,#090B11 , #002952)',
           paper: '#002952',
         },
+        defaultChannel: '9 11 17', // Agrega esto en formato RGB
       },
     },
   },
@@ -102,6 +104,7 @@ const customTheme = createTheme({
     },
   },
 });
+
 
 function DemoPageContent({ pathname }) {
   return (
@@ -123,7 +126,7 @@ DemoPageContent.propTypes = {
   pathname: PropTypes.string.isRequired,
 };
 
-function DashboardLayoutAccount(props) {
+function Home(props) {
   const { window } = props;
   const navigate = useNavigate();
 
@@ -163,38 +166,14 @@ function DashboardLayoutAccount(props) {
           background: (theme) => theme.palette.background.default,
         }}
       >
-        <AppProvider
-          session={session}
-          authentication={authentication}
-          navigation={NAVIGATION}
-          router={router}
-          theme={customTheme}
-          window={demoWindow}
-          branding={{
-            logo: <SchoolIcon sx={{ marginX: 2, marginTop: 1 }} />,
-            title: 'Aplicacion para liceo',
-          }}
-        >
-          <DashboardLayout defaultSidebarCollapsed>
-            {session && session.user ? (
-              <Typography variant="h6" sx={{ p: 2 }}>
-                Bienvenido
-              </Typography>
-            ) : (
-              <Typography variant="h6" sx={{ p: 2 }}>
-                No has iniciado sesión
-              </Typography>
-            )}
-            <DemoPageContent pathname={router.pathname} />
-          </DashboardLayout>
-        </AppProvider>
+        <Typography>Hola!</Typography>
       </Box>
     </ThemeProvider>
   );
 }
 
-DashboardLayoutAccount.propTypes = {
+Home.propTypes = {
   window: PropTypes.func,
 };
 
-export default DashboardLayoutAccount;
+export default Home;
