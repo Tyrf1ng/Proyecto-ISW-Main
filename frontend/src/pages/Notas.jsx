@@ -1,155 +1,137 @@
-import React, { useEffect, useState } from 'react';
-import VirtuosoTableComponents from '../components/Table';
-import { TableRow, TableCell, Typography, Box, TextField } from '@mui/material';
-import { AllNotas } from '../services/notas.service.js';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+import React, { useState } from 'react';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Paper from '@mui/material/Paper';
+import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
+import Modal from '@mui/material/Modal';
+import useNotas from '@hooks/notas/useNotas';
+import { createNota } from '@services/notas.service.js';
 
-const customTheme = createTheme({
-  cssVariables: {
-    colorSchemeSelector: 'data-toolpad-color-scheme',
-  },
-  colorSchemes: {
-    light: {
-      palette: {
-        background: {
-          default: '#FFF',
-          paper: '#EEEEF9',
-        },
-      },
-    },
-    dark: {
-      palette: {
-        background: {
-          default: 'radial-gradient(circle,#090B11 , #002952)',
-          paper: '#002952',
-        },
-      },
-    },
-  },
-  breakpoints: {
-    values: {
-      xs: 0,
-      sm: 600,
-      md: 600,
-      lg: 1200,
-      xl: 1536,
-    },
-  },
-});
-
-
-const columns = [
-  { dataKey: 'id_nota', label: 'ID De la Nota', numeric: true, width: 100 },
-  { dataKey: 'rut_alumno', label: 'Rut del alumno', numeric: false, width: 100 },
-  { dataKey: 'id_asignatura', label: 'Asignatura', numeric: true, width: 200 },
-  { dataKey: 'nombre_asignatura', label: 'Nombre de la Asignatura', numeric: false, width: 200 },
-  { dataKey: 'tipo', label: 'Descripcion', numeric: false, width: 100 },
-  { dataKey: 'valor', label: 'Nota', numeric: true, width: 100 },
-];
-
-function Notas() {
-  const [data, setData] = useState([]);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [asignaturaId, setAsignaturaId] = useState('');
-
-  const fetchAllNotas = async () => {
-    try {
-      const response = await AllNotas();
-      setData(response.data.data);
-      console.log(response.data);
-    } catch (error) {
-      console.error('Error fetching notas', error);
-    }
-  };
-
-  useEffect(() => {
-    fetchAllNotas();
-  }, []);
-
-  const handleSearch = (event) => {
-    setSearchTerm(event.target.value);
-  };
-
-  const handleAsignaturaIdChange = (event) => {
-    setAsignaturaId(event.target.value);
-  };
-
-  const filteredData = data.filter((row) => {
-    const matchesSearchTerm = columns.some((column) => {
-      const cellValue = row[column.dataKey];
-      return cellValue && cellValue.toString().toLowerCase().includes(searchTerm.toLowerCase());
-    });
-
-    const matchesAsignaturaId = asignaturaId ? row.id_asignatura.toString() === asignaturaId : true;
-
-    return matchesSearchTerm && matchesAsignaturaId;
+const Notas = () => {
+  const { notas = [], fetchNotas } = useNotas(); // Asegura que `notas` sea un array
+  const [filterText, setFilterText] = useState('');
+  const [open, setOpen] = useState(false);
+  const [newNota, setNewNota] = useState({
+    tipo: '',
+    rut_alumno: '',
+    valor: '',
+    id_asignatura: '',
   });
 
-  function renderTable() {
-    if (!Array.isArray(data) || data.length === 0) {
-      return <Typography>No hay notas disponibles.</Typography>;
-    }
+  // Filtrar las notas por descripción
+  const filteredNotas = Array.isArray(notas)
+    ? notas.filter((nota) => nota.tipo.toLowerCase().includes(filterText.toLowerCase()))
+    : [];
 
-    return (
-      <VirtuosoTableComponents.Scroller>
-        <VirtuosoTableComponents.Table sx={{ backgroundColor: 'background.paper' }}>
-          <VirtuosoTableComponents.TableHead>
-            <TableRow>
-              {columns.map((column) => (
-                <TableCell
-                  key={column.dataKey}
-                  variant="head"
-                  align={column.numeric ? 'right' : 'left'}
-                  style={{ width: column.width }}
-                  sx={{ backgroundColor: 'background.paper', color: 'text.primary' }}
-                >
-                  {column.label}
-                </TableCell>
-              ))}
-            </TableRow>
-          </VirtuosoTableComponents.TableHead>
-          <VirtuosoTableComponents.TableBody>
-            {filteredData.map((row) => (
-              <TableRow key={row.id_nota}>
-                {columns.map((column) => (
-                  <TableCell
-                    key={column.dataKey}
-                    align={column.numeric ? 'right' : 'left'}
-                  >
-                    {row[column.dataKey]}
-                  </TableCell>
-                ))}
-              </TableRow>
-            ))}
-          </VirtuosoTableComponents.TableBody>
-        </VirtuosoTableComponents.Table>
-      </VirtuosoTableComponents.Scroller>
-    );
-  }
+  const handleFilterChange = (e) => setFilterText(e.target.value);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setNewNota({ ...newNota, [name]: value });
+  };
+
+  const handleSubmit = async () => {
+    try {
+      await createNota(newNota);
+      fetchNotas();
+      handleClose();
+    } catch (error) {
+      console.error("Error al crear la nota: ", error);
+    }
+  };
 
   return (
-    <ThemeProvider theme={customTheme}>
-      <Box sx={{ padding: 2 }}>
-        <TextField
-          label="Buscar"
-          variant="outlined"
-          fullWidth
-          value={searchTerm}
-          onChange={handleSearch}
-          sx={{ marginBottom: 2 }}
-        />
-        <TextField
-          label="ID de Asignatura"
-          variant="outlined"
-          fullWidth
-          value={asignaturaId}
-          onChange={handleAsignaturaIdChange}
-          sx={{ marginBottom: 2 }}
-        />
-        {renderTable()}
-      </Box>
-    </ThemeProvider>
+    <Box sx={{ padding: 4 }}>
+      <Typography variant="h4" gutterBottom>Notas</Typography>
+      <TextField
+        label="Filtrar por asignatura"
+        variant="outlined"
+        value={filterText}
+        onChange={handleFilterChange}
+        sx={{ marginBottom: 2 }}
+      />
+      <Button variant="contained" color="primary" onClick={handleOpen} sx={{ marginBottom: 2 }}>
+        Crear Nota
+      </Button>
+      <TableContainer component={Paper}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>Tipo</TableCell>
+              <TableCell>RUT del Alumno</TableCell>
+              <TableCell>Valor</TableCell>
+              <TableCell>Asignatura</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {filteredNotas.map((nota) => (
+              <TableRow key={nota.id_nota}>
+                <TableCell>{nota.tipo}</TableCell>
+                <TableCell>{nota.rut_alumno}</TableCell>
+                <TableCell>{nota.valor}</TableCell>
+                <TableCell>{nota.nombre_asignatura}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+
+      {/* Modal para crear una nueva nota */}
+      <Modal open={open} onClose={handleClose}>
+        <Box sx={{ width: 400, padding: 3 }}>
+          <Typography variant="h6" gutterBottom>Crear Nueva Nota</Typography>
+          <TextField
+            label="Tipo"
+            name="tipo"
+            variant="outlined"
+            fullWidth
+            margin="normal"
+            value={newNota.tipo}
+            onChange={handleInputChange}
+          />
+          <TextField
+            label="RUT del Alumno"
+            name="rut_alumno"
+            variant="outlined"
+            fullWidth
+            margin="normal"
+            value={newNota.rut_alumno}
+            onChange={handleInputChange}
+          />
+          <TextField
+            label="Valor"
+            name="valor"
+            variant="outlined"
+            fullWidth
+            margin="normal"
+            value={newNota.valor}
+            onChange={handleInputChange}
+          />
+          <TextField
+            label="ID Asignatura"
+            name="id_asignatura"
+            variant="outlined"
+            fullWidth
+            margin="normal"
+            value={newNota.id_asignatura}
+            onChange={handleInputChange}
+          />
+          <Button variant="contained" color="primary" onClick={handleSubmit} sx={{ marginTop: 2 }}>
+            Guardar
+          </Button>
+        </Box>
+      </Modal>
+    </Box>
   );
-}
+};
 
 export default Notas;

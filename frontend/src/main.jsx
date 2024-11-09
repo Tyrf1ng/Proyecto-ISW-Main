@@ -8,6 +8,7 @@ import Login from '@pages/Login';
 import Error404 from '@pages/Error404';
 import ProtectedRoute from '@components/ProtectedRoute';
 import Anotaciones from '@pages/Anotaciones';
+import Notas from '@pages/Notas';
 import '@styles/styles.css';
 
 const router = createBrowserRouter([
@@ -19,6 +20,7 @@ const router = createBrowserRouter([
       { path: 'home', element: <Home /> },
       { path: 'cursos', element: <Cursos /> },
       { path: 'anotaciones', element: <Anotaciones /> },
+      { path: 'notas', element: <Notas /> },
       {
         path: 'users',
         element: (

@@ -25,6 +25,11 @@ const NAVIGATION = [
     title: 'Anotaciones',
     icon: <SchoolIcon />,
   },
+  {
+    segment: 'notas',
+    title: 'Notas',
+    icon: <SchoolIcon />,
+  }
 ];
 
 const customTheme = createTheme({
