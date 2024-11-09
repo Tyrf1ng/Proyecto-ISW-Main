@@ -7,7 +7,7 @@ import Users from '@pages/Users';
 import Login from '@pages/Login';
 import Error404 from '@pages/Error404';
 import ProtectedRoute from '@components/ProtectedRoute';
-import Notas from '@pages/Notas';
+import Anotaciones from '@pages/Anotaciones';
 import '@styles/styles.css';
 
 const router = createBrowserRouter([
@@ -18,6 +18,7 @@ const router = createBrowserRouter([
     children: [
       { path: 'home', element: <Home /> },
       { path: 'cursos', element: <Cursos /> },
+      { path: 'anotaciones', element: <Anotaciones /> },
       {
         path: 'users',
         element: (

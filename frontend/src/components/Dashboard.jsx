@@ -53,10 +53,18 @@ const customTheme = createTheme({
 function DashboardLayoutAccount() {
   const navigate = useNavigate();
 
+  // Cargar usuario de sessionStorage al iniciar sesión
   const [session, setSession] = React.useState(() => {
     const usuarioGuardado = JSON.parse(sessionStorage.getItem('usuario'));
     return usuarioGuardado ? { user: usuarioGuardado } : null;
   });
+
+  // Redirige al usuario si no está autenticado
+  React.useEffect(() => {
+    if (!session || !session.user) {
+      navigate('/auth');
+    }
+  }, [session, navigate]);
 
   const authentication = React.useMemo(() => {
     return {
@@ -80,7 +88,7 @@ function DashboardLayoutAccount() {
   return (
     <ThemeProvider theme={customTheme}>
       <Box sx={{ minHeight: '100vh', background: (theme) => theme.palette.background.default }}>
-      <AppProvider
+        <AppProvider
           session={session}
           authentication={authentication}
           navigation={NAVIGATION}
@@ -91,16 +99,7 @@ function DashboardLayoutAccount() {
           }}
         >
           <DashboardLayout>
-            {session && session.user ? (
-              <Typography variant="h6" sx={{ p: 2 }}>
-                Bienvenido
-              </Typography>
-            ) : (
-              <Typography variant="h6" sx={{ p: 2 }}>
-                No has iniciado sesión
-              </Typography>
-            )}
-            {/* Aquí se renderizan las rutas hijas */}
+            {/* Renderiza el contenido directamente si el usuario está autenticado */}
             <Outlet />
           </DashboardLayout>
         </AppProvider>
