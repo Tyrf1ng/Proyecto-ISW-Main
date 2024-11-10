@@ -63,19 +63,27 @@ export async function getNotasAsignatura(id_asignatura) {
     try {
         const notasRepository = AppDataSource.getRepository(Notas);
         const notas = await notasRepository.find({
-            where: { id_asignatura: id_asignatura }
-        }
-    );
+            where: { id_asignatura: id_asignatura },
+            relations: ["asignatura"]
+        });
+
         if (!notas || notas.length === 0) return [null, "No hay notas"];
 
-        const notasData = notas.map(({ ...nota }) => nota);
+        const notasData = notas.map(nota => ({
+            id_nota: nota.id_nota,
+            rut_alumno: nota.rut_alumno,
+            valor: nota.valor,
+            tipo: nota.tipo,
+            id_asignatura: nota.id_asignatura,
+            nombre_asignatura: nota.asignatura.nombre
+        }));
+
         return [notasData, null];
     } catch (error) {
         console.error("Error al obtener las notas:", error);
         return [null, "Error interno del servidor"];
     }
 }
-
 
 //funcion para traer una nota por id
 //FUNCIONA NO TOCAR
@@ -144,6 +152,29 @@ export async function deleteNota(id_nota) {
         return result.affected ? [true, null] : [null, "No se encontró la nota"];
     } catch (error) {
         console.error("Error al eliminar la nota:", error);
+        return [null, "Error interno del servidor"];
+    }
+}
+
+export async function getAllNotas() {
+    try {
+        const notasRepository = AppDataSource.getRepository(Notas);
+        const notas = await notasRepository.find({
+            relations: ["asignatura", "alumno"], 
+        });
+        
+        // Formatear el resultado para incluir solo el nombre de la asignatura
+        const notasConDatos = notas.map(nota => ({
+            ...nota,
+            nombre_asignatura: nota.asignatura.nombre, 
+            nombre_alumno: nota.alumno.nombre,
+            apellido_alumno: nota.alumno.apellido,
+        }));
+        
+        
+        return [notasConDatos, null];
+    } catch (error) {
+        console.error("Error al obtener las notas:", error);
         return [null, "Error interno del servidor"];
     }
 }

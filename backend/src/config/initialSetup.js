@@ -117,9 +117,9 @@ async function createDocente() {
       DocenteRepository.save(
         DocenteRepository.create({
           rut_docente: "21.137.508-6",
-          nombre: "Juna",
+          nombre: "Juan",
           apellido: "Docente",
-          email:"Juan@gmail.cl",
+          email:"juandocente@gmail.cl",
           password: await encryptPassword("admin123"),
           telefono: "987654321",
           comuna:"Hualpen",
@@ -244,3 +244,5 @@ export { createCursos
   , createDocente
   , createAsignaturas
   , createApoderado, createAlumnos, createAnotaciones };
+
+  

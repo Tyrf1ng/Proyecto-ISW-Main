@@ -2,6 +2,7 @@
 import {
     createNota,
     deleteNota,
+    getAllNotas,
     getNota,
     getNotasAlumno,
     getNotasAsignatura,
@@ -14,6 +15,8 @@ import {
     handleErrorServer,
     handleSuccess,
   } from "../handlers/responseHandlers.js";
+
+import { notasQueryValidation } from "../validations/notas.validation.js";
 
 export async function getNotasCursoController(req, res) {
     try {
@@ -75,9 +78,10 @@ export async function getNotaController(req, res) {
 export const updateNotaController = async (req, res) => {
     const { id_nota } = req.params;
     const { nuevoValor } = req.body;  
-    const [notaActualizada, error] = await updateNota(id_nota, nuevoValor);
+    const { error } = notasQueryValidation.validate(nuevoValor);
+    const [ notaActualizada ] = await updateNota(id_nota, nuevoValor);
     if (error) {
-        return res.status(404).json({ message: error });
+        return  handleErrorClient(res, 400, "Faltan datos obligatorios", error.message);
     }
 
     return res.json(notaActualizada);
@@ -86,16 +90,18 @@ export const updateNotaController = async (req, res) => {
 export async function createNotaController(req, res) {
     try {
         const { id_asignatura, rut_alumno, valor, tipo } = req.body;
-        if (!id_asignatura || !rut_alumno || !valor || !tipo) {
-            return handleErrorClient(res, 400, "Faltan datos obligatorios");
+        const { error } = notasQueryValidation.validate(req.body);
+        if (error) {
+            return handleErrorClient(res, 400, "Faltan datos obligatorios", error.message);
         }
 
-        const [notaCreada, errorNota] = await createNota({
+        const [notaCreada] = await createNota({
             id_asignatura,
             rut_alumno,
             tipo,
             valor,
         });
+        const { errorNota } = notasQueryValidation.validate(notaCreada);
 
         if (errorNota) return handleErrorClient(res, 400, errorNota);
 
@@ -114,6 +120,20 @@ export async function deleteNotasController(req, res) {
         if (errorNota) return handleErrorClient(res, 404, errorNota);
 
         handleSuccess(res, 200, "Nota eliminada", nota);
+    } catch (error) {
+        handleErrorServer(res, 500, error.message);
+    }
+}
+
+export async function getAllNotasController(req, res) {
+    try {
+        const [notas, errorNotas] = await getAllNotas();
+
+        if (errorNotas) return handleErrorClient(res, 404, errorNotas);
+
+        notas.length === 0
+            ? handleSuccess(res, 204)
+            : handleSuccess(res, 200, "Notas encontradas", notas);
     } catch (error) {
         handleErrorServer(res, 500, error.message);
     }
