@@ -10,32 +10,58 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
 import Modal from '@mui/material/Modal';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 import useAnotaciones from '@hooks/anotaciones/useAnotaciones';
-import { createAnotacion } from '@services/anotaciones.service.js';
+import { createAnotacion, deleteAnotacion, updateAnotacion } from '@services/anotaciones.service.js';
 
 const Anotaciones = () => {
   const { anotaciones, fetchAnotaciones } = useAnotaciones();
   const [filterText, setFilterText] = useState('');
   const [open, setOpen] = useState(false);
+  const [editMode, setEditMode] = useState(false);
+  const [currentAnotacion, setCurrentAnotacion] = useState(null);
   const [newAnotacion, setNewAnotacion] = useState({
-    tipo: '',
+    tipo: 'Positiva',
     rut_alumno: '',
     descripcion: '',
     id_asignatura: '',
     fecha: new Date().toISOString(),
   });
 
-  // Filtrar las anotaciones por descripción
-  const filteredAnotaciones = anotaciones.filter((anotacion) =>
-    anotacion.descripcion.toLowerCase().includes(filterText.toLowerCase())
-  );
+  // Verificar que anotaciones sea un array, de lo contrario usar un array vacío
+  const filteredAnotaciones = Array.isArray(anotaciones)
+    ? anotaciones.filter((anotacion) =>
+        anotacion.descripcion.toLowerCase().includes(filterText.toLowerCase())
+      )
+    : [];
 
   const handleFilterChange = (e) => {
     setFilterText(e.target.value);
   };
 
-  const handleOpen = () => setOpen(true);
+  const handleOpen = (anotacion = null) => {
+    if (anotacion) {
+      setEditMode(true);
+      setCurrentAnotacion(anotacion);
+      setNewAnotacion(anotacion);
+    } else {
+      setEditMode(false);
+      setNewAnotacion({
+        tipo: 'Positiva',
+        rut_alumno: '',
+        descripcion: '',
+        id_asignatura: '',
+        fecha: new Date().toISOString(),
+      });
+    }
+    setOpen(true);
+  };
+
   const handleClose = () => setOpen(false);
 
   const handleInputChange = (e) => {
@@ -43,13 +69,30 @@ const Anotaciones = () => {
     setNewAnotacion({ ...newAnotacion, [name]: value });
   };
 
+  const handleSelectChange = (e) => {
+    setNewAnotacion({ ...newAnotacion, tipo: e.target.value });
+  };
+
   const handleSubmit = async () => {
     try {
-      await createAnotacion(newAnotacion);
+      if (editMode) {
+        await updateAnotacion(currentAnotacion.id_anotacion, newAnotacion);
+      } else {
+        await createAnotacion(newAnotacion);
+      }
       fetchAnotaciones();
       handleClose();
     } catch (error) {
-      console.error("Error al crear la anotación: ", error);
+      console.error("Error al guardar la anotación: ", error);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      await deleteAnotacion(id);
+      fetchAnotaciones();
+    } catch (error) {
+      console.error("Error al eliminar la anotación: ", error);
     }
   };
 
@@ -58,16 +101,17 @@ const Anotaciones = () => {
       <Typography variant="h4" gutterBottom>
         Anotaciones
       </Typography>
-      <TextField
-        label="Filtrar por descripción"
-        variant="outlined"
-        value={filterText}
-        onChange={handleFilterChange}
-        sx={{ marginBottom: 2 }}
-      />
-      <Button variant="contained" color="primary" onClick={handleOpen} sx={{ marginBottom: 2 }}>
-        Crear Anotación
-      </Button>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 2 }}>
+        <TextField
+          label="Filtrar por descripción"
+          variant="outlined"
+          value={filterText}
+          onChange={handleFilterChange}
+        />
+        <Button variant="contained" color="primary" onClick={() => handleOpen()}>
+          Crear Anotación
+        </Button>
+      </Box>
       <TableContainer component={Paper}>
         <Table>
           <TableHead>
@@ -76,42 +120,63 @@ const Anotaciones = () => {
               <TableCell>RUT del Alumno</TableCell>
               <TableCell>Descripción</TableCell>
               <TableCell>Fecha de Creación</TableCell>
+              <TableCell>Acciones</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {filteredAnotaciones.map((anotacion) => (
-              <TableRow key={anotacion.id_anotacion}>
-                <TableCell>{anotacion.tipo}</TableCell>
-                <TableCell>{anotacion.rut_alumno}</TableCell>
-                <TableCell>{anotacion.descripcion}</TableCell>
-                <TableCell>{new Date(anotacion.createdAt).toLocaleDateString()}</TableCell>
+            {filteredAnotaciones.length > 0 ? (
+              filteredAnotaciones.map((anotacion) => (
+                <TableRow key={anotacion.id_anotacion}>
+                  <TableCell>{anotacion.tipo}</TableCell>
+                  <TableCell>{anotacion.rut_alumno}</TableCell>
+                  <TableCell sx={{ maxWidth: 300, wordBreak: 'break-word' }}>
+                    {anotacion.descripcion}
+                  </TableCell>
+                  <TableCell>{new Date(anotacion.createdAt).toLocaleDateString()}</TableCell>
+                  <TableCell>
+                    <IconButton color="primary" onClick={() => handleOpen(anotacion)}>
+                      <EditIcon />
+                    </IconButton>
+                    <IconButton color="secondary" onClick={() => handleDelete(anotacion.id_anotacion)}>
+                      <DeleteIcon />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={5} align="center">
+                  El alumno de momento no posee anotaciones
+                </TableCell>
               </TableRow>
-            ))}
+            )}
           </TableBody>
         </Table>
       </TableContainer>
 
-      {/* Modal para crear una nueva anotación */}
+      {/* Modal para crear o editar una anotación */}
       <Modal open={open} onClose={handleClose}>
         <Box sx={{ ...modalStyle, width: 400 }}>
           <Typography variant="h6" gutterBottom>
-            Crear Nueva Anotación
+            {editMode ? "Editar Anotación" : "Crear Nueva Anotación"}
           </Typography>
-          <TextField
+          <Select
             label="Tipo"
             name="tipo"
             variant="outlined"
             fullWidth
-            margin="normal"
             value={newAnotacion.tipo}
-            onChange={handleInputChange}
-          />
+            onChange={handleSelectChange}
+          >
+            <MenuItem value="Positiva">Positiva</MenuItem>
+            <MenuItem value="Negativa">Negativa</MenuItem>
+          </Select>
           <TextField
             label="RUT del Alumno"
             name="rut_alumno"
             variant="outlined"
             fullWidth
-            margin="normal"
+            margin="dense"
             value={newAnotacion.rut_alumno}
             onChange={handleInputChange}
           />
@@ -120,7 +185,7 @@ const Anotaciones = () => {
             name="descripcion"
             variant="outlined"
             fullWidth
-            margin="normal"
+            margin="dense"
             value={newAnotacion.descripcion}
             onChange={handleInputChange}
           />
@@ -129,12 +194,12 @@ const Anotaciones = () => {
             name="id_asignatura"
             variant="outlined"
             fullWidth
-            margin="normal"
+            margin="dense"
             value={newAnotacion.id_asignatura}
             onChange={handleInputChange}
           />
           <Button variant="contained" color="primary" onClick={handleSubmit} sx={{ marginTop: 2 }}>
-            Guardar
+            {editMode ? "Actualizar" : "Guardar"}
           </Button>
         </Box>
       </Modal>
