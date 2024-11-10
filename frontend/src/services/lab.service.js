@@ -22,7 +22,7 @@ export async function createLab(lab) {
 
 export async function updateLab(lab) {
     try {
-        const response = await axios.put(`/labs/${lab.id_lab}`, lab);
+        const response = await axios.patch(`/labs/update/${lab.id_lab}`, lab);
         return response.data;
     } catch (error) {
         console.error("Error al actualizar el laboratorio: ", error.response ? error.response.data : error.message);
@@ -32,7 +32,7 @@ export async function updateLab(lab) {
 
 export async function deleteLab(id_lab) {
     try {
-        const response = await axios.delete(`/labs/${id_lab}`);
+        const response = await axios.delete(`/labs/delete/${id_lab}`);
         return response.data;
     } catch (error) {
         console.error("Error al eliminar el laboratorio: ", error.response ? error.response.data : error.message);

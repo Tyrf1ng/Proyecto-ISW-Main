@@ -75,6 +75,9 @@ export async function deleteLabService(id_lab) {
         const result = await labRepository.delete(id_lab);
         return result.affected ? [true, null] : [null, "Laboratorio no encontrado"];
     } catch (error) {
+        if (error.code === "23503") {
+            return [null, "No se puede eliminar el laboratorio porque está referenciado en reservas"];
+        }
         console.error("Error al eliminar el laboratorio:", error);
         return [null, "Error interno del servidor"];
     }

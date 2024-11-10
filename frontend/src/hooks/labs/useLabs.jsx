@@ -6,7 +6,6 @@ const useLabs = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Obtiene los laboratorios y actualiza el estado.
   const fetchLabs = async () => {
     setLoading(true);
     try {
@@ -20,12 +19,11 @@ const useLabs = () => {
     }
   };
 
-  // Crea un nuevo laboratorio y lo añade a la lista.
   const addLab = async (lab) => {
     setLoading(true);
     try {
       const response = await createLab(lab);
-      setLabs([...labs, response]); // Añade el nuevo laboratorio a la lista
+      setLabs([...labs, response]);
     } catch (error) {
       setError(error);
       console.error("Error al crear el laboratorio: ", error);
@@ -34,7 +32,6 @@ const useLabs = () => {
     }
   };
 
-  // Actualiza un laboratorio existente en la lista.
   const editLab = async (lab) => {
     setLoading(true);
     try {
@@ -48,14 +45,17 @@ const useLabs = () => {
     }
   };
 
-  // Elimina un laboratorio de la lista.
   const removeLab = async (id_lab) => {
     setLoading(true);
     try {
-      await deleteLab(id_lab);
-      setLabs(labs.filter((lab) => lab.id_lab !== id_lab));
+      const response = await deleteLab(id_lab);
+      if (response.error) {
+        setError(response.error);
+      } else {
+        setLabs(labs.filter((lab) => lab.id_lab !== id_lab));
+      }
     } catch (error) {
-      setError(error);
+      setError(error.message);
       console.error("Error al eliminar el laboratorio: ", error);
     } finally {
       setLoading(false);
@@ -64,7 +64,7 @@ const useLabs = () => {
 
   useEffect(() => {
     fetchLabs();
-  }, []); // Se llama una vez al montar el componente
+  }, []);
 
   return { labs, fetchLabs, addLab, editLab, removeLab, loading, error };
 };

@@ -21,6 +21,15 @@ const labBodyValidation = Joi.object({
     capacidad: Joi.number().integer().required(),
 });
 
+// Definición del esquema de validación para la actualización
+const labUpdateValidation = Joi.object({
+    id_lab: Joi.number().integer().required(),
+    nombre: Joi.string().max(255).required(),
+    capacidad: Joi.number().integer().required(),
+    createdAt: Joi.date().optional(),
+    updatedAt: Joi.date().optional(),
+});
+
 //Funciona NO TOCAR
 export async function getLab(req, res) {
     try {
@@ -71,7 +80,7 @@ export async function updateLab(req, res) {
     try {
         const { id_lab } = req.params;
         const { body } = req;
-        const { error: bodyError } = labBodyValidation.validate(body);
+        const { error: bodyError } = labUpdateValidation.validate({ id_lab, ...body });
         if (bodyError) return handleErrorClient(res, 400, bodyError.message);
 
         const [lab, errorLab] = await updateLabService(id_lab, body);
