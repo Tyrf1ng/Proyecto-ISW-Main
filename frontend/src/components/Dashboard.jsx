@@ -29,6 +29,11 @@ const NAVIGATION = [
     segment: 'notas',
     title: 'Notas',
     icon: <SchoolIcon />,
+  },
+  {
+    segment: 'asistencias',
+    title: 'Asistencias',
+    icon: <SchoolIcon />,
   }
 ];
 
@@ -100,7 +105,7 @@ function DashboardLayoutAccount() {
           theme={customTheme}
           branding={{
             logo: <SchoolIcon sx={{ marginX: 2, marginTop: 1 }} />,
-            title: 'Aplicacion para liceo',
+            title: 'SmeBook',
           }}
         >
           <DashboardLayout>

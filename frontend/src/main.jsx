@@ -10,6 +10,7 @@ import ProtectedRoute from '@components/ProtectedRoute';
 import Anotaciones from '@pages/Anotaciones';
 import Notas from '@pages/Notas';
 import '@styles/styles.css';
+import Asistencias from '@pages/Asistencias';
 
 const router = createBrowserRouter([
   {
@@ -21,6 +22,7 @@ const router = createBrowserRouter([
       { path: 'cursos', element: <Cursos /> },
       { path: 'anotaciones', element: <Anotaciones /> },
       { path: 'notas', element: <Notas /> },
+      {path: 'asistencias', element: <Asistencias />},
       {
         path: 'users',
         element: (
