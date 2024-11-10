@@ -3,17 +3,19 @@ import { useEffect, useState } from 'react';
 import { AllLabs, createLab, updateLab, deleteLab } from '@services/lab.service.js';
 
 
-
+// Define estados locales para almacenar los laboratorios, el estado de carga y los errores.
 const useLabs = () => {
   const [labs, setLabs] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+
+// Obtiene los laboratorios y actualiza el estado.
   const fetchLabs = async () => {
     setLoading(true);
     try {
       const response = await AllLabs();
-      setLabs(response.data); // Asegúrate de acceder correctamente a los laboratorios en `response`
+      setLabs(response.data);
     } catch (error) {
       setError(error);
       console.error("Error al obtener los laboratorios: ", error);
@@ -22,6 +24,8 @@ const useLabs = () => {
     }
   };
 
+
+// Crea un nuevo laboratorio y lo añade a la lista.
   const addLab = async (lab) => {
     setLoading(true);
     try {
@@ -35,6 +39,8 @@ const useLabs = () => {
     }
   };
 
+
+// Actualiza un laboratorio existente en la lista.
   const editLab = async (lab) => {
     setLoading(true);
     try {
@@ -48,6 +54,8 @@ const useLabs = () => {
     }
   };
 
+
+// Elimina un laboratorio de la lista.
   const removeLab = async (id_lab) => {
     setLoading(true);
     try {

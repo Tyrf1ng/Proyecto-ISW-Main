@@ -1,7 +1,5 @@
 import axios from "./root.service.js";
 
-
-
 export async function AllLabs() { 
     try {
         const response = await axios.get('/labs/');
@@ -22,7 +20,7 @@ export async function Lab(id_lab) {
 
 export async function createLab(lab) {
     try {
-        const response = await axios.post('/labs/crear/', lab);
+        const response = await axios.post('/labs/create', lab);
         return response;
     } catch (error) {
         return error.response;
@@ -32,6 +30,15 @@ export async function createLab(lab) {
 export async function updateLab(lab) {
     try {
         const response = await axios.put(`/labs/${lab.id_lab}`, lab);
+        return response;
+    } catch (error) {
+        return error.response;
+    }
+}
+
+export async function deleteLab(id_lab) {
+    try {
+        const response = await axios.delete(`/labs/${id_lab}`);
         return response;
     } catch (error) {
         return error.response;
