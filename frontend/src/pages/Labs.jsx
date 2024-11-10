@@ -24,7 +24,7 @@ const Labs = () => {
 
   // Filtrar los laboratorios por nombre
   const filteredLabs = Array.isArray(labs)
-    ? labs.filter((lab) => lab.nombre.toLowerCase().includes(filterText.toLowerCase()))
+    ? labs.filter((lab) => lab.nombre && lab.nombre.toLowerCase().includes(filterText.toLowerCase()))
     : [];
 
   const handleFilterChange = (e) => setFilterText(e.target.value);
@@ -40,6 +40,7 @@ const Labs = () => {
     try {
       await addLab(newLab); // Usa addLab del hook useLabs
       handleClose();
+      fetchLabs(); // Refresca la lista de laboratorios después de añadir uno nuevo
     } catch (error) {
       console.error("Error al crear el laboratorio: ", error);
     }
