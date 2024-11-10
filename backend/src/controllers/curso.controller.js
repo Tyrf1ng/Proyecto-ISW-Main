@@ -48,8 +48,8 @@ export async function createCursoController(req, res) {
 
 export async function updateCursoController(req, res) {
     try {
-        const { id } = req.params;
-        const [curso, errorCurso] = await updateCurso(id, req.body);
+        const { id_curso } = req.params;
+        const [curso, errorCurso] = await updateCurso(id_curso, req.body);
         if (errorCurso) return handleErrorClient(res, 404, errorCurso);
         handleSuccess(res, 200, "Curso actualizado", curso);
     } catch (error) {
@@ -57,13 +57,17 @@ export async function updateCursoController(req, res) {
     }
 }
 
+
+// deleteCursoController en curso.controller.js
 export async function deleteCursoController(req, res) {
     try {
-        const { id } = req.params;
-        const [curso, errorCurso] = await deleteCurso(id);
+        const { id_curso } = req.params; 
+        const [curso, errorCurso] = await deleteCurso(id_curso);
         if (errorCurso) return handleErrorClient(res, 404, errorCurso);
         handleSuccess(res, 200, "Curso eliminado", curso);
     } catch (error) {
         handleErrorServer(res, 500, error.message);
     }
 }
+
+

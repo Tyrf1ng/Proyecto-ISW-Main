@@ -47,10 +47,10 @@ export async function createCurso(curso) {
 }
 
 //funcion para actualizar un curso
-export async function updateCurso(id, curso) {
+export async function updateCurso(id_curso, curso) {
     try {
         const cursoRepository = AppDataSource.getRepository(Cursos);
-        const cursoActualizado = await cursoRepository.update(id, curso);
+        const cursoActualizado = await cursoRepository.update(id_curso, curso);
         if (!cursoActualizado.affected) return [null, "Curso no encontrado"];
         return [cursoActualizado, null];
     } catch (error) {
@@ -60,10 +60,10 @@ export async function updateCurso(id, curso) {
 }
 
 //funcion para eliminar un curso
-export async function deleteCurso(id) {
+export async function deleteCurso(id_curso) {
     try {
         const cursoRepository = AppDataSource.getRepository(Cursos);
-        const cursoEliminado = await cursoRepository.delete(id);
+        const cursoEliminado = await cursoRepository.delete(id_curso);
         if (!cursoEliminado.affected) return [null, "Curso no encontrado"];
         return [cursoEliminado, null];
     } catch (error) {
