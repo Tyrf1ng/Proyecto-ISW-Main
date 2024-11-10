@@ -18,7 +18,7 @@ router
     .use("/anotaciones", anotacionRoutes)
     .use("/notas", notasRoutes)
     .use("/asistencias", asistenciaRoutes)
-    .use("/lab", labRoutes)
+    .use("/labs", labRoutes)
     .use("/horario", horariosRoutes)
     .use("/reserva", reservaRoutes);
 
