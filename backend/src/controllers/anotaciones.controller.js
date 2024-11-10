@@ -13,16 +13,18 @@ import { handleErrorClient, handleErrorServer, handleSuccess } from "../handlers
 
 
 export async function getAnotacion(req, res) {
-    try {
-        const { id_anotacion, descripcion, createdAt, tipo, id_asignatura, rut_alumnos } = req.query;
-        const [anotacion, errorAnotacion] = await getAnotacionService
-        ({ id_anotacion, descripcion, createdAt, tipo, id_asignatura, rut_alumnos });
-        if (errorAnotacion) return handleErrorClient(res, 404, errorAnotacion);
-        handleSuccess(res, 200, "Anotacion encontrada", anotacion);
-    } catch (error) {
-        handleErrorServer(res, 500, error.message);
+    const { id_anotacion } = req.params;
+
+    // Llamada al servicio con el id como parámetro directo
+    const [anotacion, error] = await getAnotacionService(id_anotacion);
+
+    if (error) {
+        return res.status(404).json({ status: "Client error", message: error });
     }
+
+    return res.json(anotacion);
 }
+
 export async function getAnotaciones(req, res) {
     try {
         const [anotaciones, errorAnotaciones] = await getAnotacionesService();

@@ -13,10 +13,22 @@ import {
     handleSuccess,
     } from "../handlers/responseHandlers.js";
 
+//--------------------------------------------------//
+    import Joi from "joi";
+
+// Definición del esquema de validación
+const labBodyValidation = Joi.object({
+    nombre: Joi.string().max(255).required(),
+    capacidad: Joi.number().integer().required(),
+  });
+//--------------------------------------------------//
+
+
+//Funciona NO TOCAR
 export async function getLab(req, res) {
     try {
-        const { id, name } = req.query;
-        const [lab, errorLab] = await getLabService({ id, name });
+        const { id_lab } = req.params; 
+        const [lab, errorLab] = await getLabService(id_lab);
         if (errorLab) return handleErrorClient(res, 404, errorLab);
         handleSuccess(res, 200, "Laboratorio encontrado", lab);
     } catch (error) {
@@ -24,57 +36,64 @@ export async function getLab(req, res) {
     }
 }
 
+
+//Funciona NO TOCAR
 export async function getLabs(req, res) {
     try {
         const [labs, errorLabs] = await getLabsService();
         if (errorLabs) return handleErrorClient(res, 404, errorLabs);
-        labs.length === 0
-            ? handleSuccess(res, 204)
-            : handleSuccess(res, 200, "Laboratorios encontrados", labs);
-    }catch (error) {
-        handleErrorServer(
-            res,
-            500,
-            error.message,
-        );
+        if (labs.length === 0) return handleSuccess(res, 204, "No hay laboratorios");
+        handleSuccess(res, 200, "Laboratorios encontrados", labs);
+    } catch (error) {
+        handleErrorServer(res, 500, error.message);
     }
 }
 
+
+//Funciona NO TOCAR
 export async function createLab(req, res) {
     try {
-        const { body } = req;
-        const { error: bodyError } = labBodyValidation.validate(body);
+        const { nombre, capacidad } = req.body;
+        if (!nombre || !capacidad) {
+            return handleErrorClient(res, 400, "Faltan datos obligatorios");
+        }
+
+        const { error: bodyError } = labBodyValidation.validate({ nombre, capacidad });
         if (bodyError) return handleErrorClient(res, 400, bodyError.message);
-        const [lab, errorLab] = await createLabService(body);
+
+        const [lab, errorLab] = await createLabService({ nombre, capacidad });
         if (errorLab) return handleErrorClient(res, 400, errorLab);
+
         handleSuccess(res, 201, "Laboratorio creado", lab);
     } catch (error) {
         handleErrorServer(res, 500, error.message);
     }
 }
 
+
+//Funciona NO TOCAR
 export async function updateLab(req, res) {
     try {
-        const { id, name } = req.query;
+        const { id_lab } = req.params;
         const { body } = req;
-        const { error: queryError } = labQueryValidation.validate({ id, name });
-        if (queryError) return handleErrorClient(res, 400, queryError.message);
         const { error: bodyError } = labBodyValidation.validate(body);
         if (bodyError) return handleErrorClient(res, 400, bodyError.message);
-        const [lab, errorLab] = await updateLabService({ id, name }, body);
+
+        const [lab, errorLab] = await updateLabService(id_lab, body);
         if (errorLab) return handleErrorClient(res, 404, errorLab);
+
         handleSuccess(res, 200, "Laboratorio actualizado", lab);
     } catch (error) {
         handleErrorServer(res, 500, error.message);
     }
 }
 
+
+//Funciona NO TOCAR
 export async function deleteLab(req, res) {
     try {
-        const { id, name } = req.query;
-        const { error } = labQueryValidation.validate({ id, name });
-        if (error) return handleErrorClient(res, 400, error.message);
-        const [lab, errorLab] = await deleteLabService({ id, name });
+        const { id_lab } = req.params;
+        const [lab, errorLab] = await deleteLabService(id_lab);
         if (errorLab) return handleErrorClient(res, 404, errorLab);
         handleSuccess(res, 200, "Laboratorio eliminado", lab);
     } catch (error) {
