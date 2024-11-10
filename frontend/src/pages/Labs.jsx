@@ -12,10 +12,9 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Modal from '@mui/material/Modal';
 import useLabs from '@hooks/labs/useLabs';
-import { createLab } from '@services/lab.service.js';
 
 const Labs = () => {
-  const { labs = [], fetchLabs } = useLabs(); // Asegura que `labs` sea un array
+  const { labs = [], fetchLabs, addLab } = useLabs(); // Asegúrate de incluir addLab
   const [filterText, setFilterText] = useState('');
   const [open, setOpen] = useState(false);
   const [newLab, setNewLab] = useState({
@@ -39,8 +38,7 @@ const Labs = () => {
 
   const handleSubmit = async () => {
     try {
-      await createLab(newLab);
-      fetchLabs();
+      await addLab(newLab); // Usa addLab del hook useLabs
       handleClose();
     } catch (error) {
       console.error("Error al crear el laboratorio: ", error);
@@ -67,14 +65,14 @@ const Labs = () => {
           <TableHead>
             <TableRow>
               <TableCell>Nombre</TableCell>
-              <TableCell>Capacidad</TableCell> {/* Mueve la columna "Capacidad" al final */}
+              <TableCell>Capacidad</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {filteredLabs.map((lab) => (
               <TableRow key={lab.id_lab}>
                 <TableCell>{lab.nombre}</TableCell>
-                <TableCell>{lab.capacidad}</TableCell> {/* Mueve la celda "Capacidad" al final */}
+                <TableCell>{lab.capacidad}</TableCell>
               </TableRow>
             ))}
           </TableBody>

@@ -26,18 +26,18 @@ const useLabs = () => {
 
 
 // Crea un nuevo laboratorio y lo añade a la lista.
-  const addLab = async (lab) => {
+const addLab = async (lab) => {
     setLoading(true);
     try {
-      const response = await createLab(lab);
-      setLabs([...labs, response.data]); // Añade el nuevo laboratorio a la lista
+        const response = await createLab(lab);
+        setLabs([...labs, response]); // Añade el nuevo laboratorio a la lista
     } catch (error) {
-      setError(error);
-      console.error("Error al crear el laboratorio: ", error);
+        setError(error);
+        console.error("Error al crear el laboratorio: ", error);
     } finally {
-      setLoading(false);
+        setLoading(false);
     }
-  };
+};
 
 
 // Actualiza un laboratorio existente en la lista.
@@ -55,7 +55,7 @@ const useLabs = () => {
   };
 
 
-// Elimina un laboratorio de la lista.
+  // Elimina un laboratorio de la lista.
   const removeLab = async (id_lab) => {
     setLoading(true);
     try {

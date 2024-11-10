@@ -21,9 +21,9 @@ export async function Lab(id_lab) {
 export async function createLab(lab) {
     try {
         const response = await axios.post('/labs/create', lab);
-        return response;
+        return response.data; // Asegúrate de devolver los datos de la respuesta
     } catch (error) {
-        return error.response;
+        return error.response.data;
     }
 }
 
