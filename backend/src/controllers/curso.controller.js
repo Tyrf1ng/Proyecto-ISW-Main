@@ -5,6 +5,7 @@ import{
     deleteCurso,
     getCurso,
     getCursos,
+    getCursosByProfesor,
     updateCurso,
 }from "../services/curso.service.js";
 import {
@@ -70,4 +71,16 @@ export async function deleteCursoController(req, res) {
     }
 }
 
+export async function getCursosByProfesorController(req, res) {
+    try {
+        const { id_curso } = req.params;
+        const [cursos, errorCursos] = await getCursosByProfesor(id_curso);
+        if (errorCursos) return handleErrorClient(res, 404, errorCursos);
+        cursos.length === 0
+            ? handleSuccess(res, 204)
+            : handleSuccess(res, 200, "Cursos encontrados", cursos);
+    } catch (error) {
+        handleErrorServer(res, 500, error.message);
+    }
+}   
 

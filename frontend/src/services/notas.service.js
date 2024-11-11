@@ -11,14 +11,15 @@ export const AllNotas = async () => {
     }
 }
 
-export const NotasAsignatura = async (id_asignatura) => {
+export const NotasCurso = async (id_curso) => {
     try {
-        const response = await axios.get(`/notas/asignatura/${id_asignatura}`);
-        return response;
+      const response = await axios.get(`/api/notas/curso/${id_curso}`);
+      return response.data; // Devuelve las notas del curso
     } catch (error) {
-        return error.response;
+      console.error('Error al obtener las notas de la asignatura', error);
+      return error.response.data;
     }
-}
+  };
 
 export const createNota = async (nota) => {
     try {

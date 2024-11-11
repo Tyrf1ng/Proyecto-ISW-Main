@@ -9,6 +9,7 @@ import Error404 from '@pages/Error404';
 import ProtectedRoute from '@components/ProtectedRoute';
 import Anotaciones from '@pages/Anotaciones';
 import Notas from '@pages/Notas';
+import VerNotas from '@pages/VerNotas';
 import '@styles/styles.css';
 import Asistencias from '@pages/Asistencias';
 
@@ -31,6 +32,7 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
+      { path: 'notas/:cursoId', element: <VerNotas /> },
     ],
   },
   { path: '/auth', element: <Login /> },

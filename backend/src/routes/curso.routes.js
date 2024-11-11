@@ -4,6 +4,7 @@ import {
     createCursoController,
     deleteCursoController,
     getCursoController,
+    getCursosByProfesorController,
     getCursosController,
     updateCursoController,
 } from "../controllers/curso.controller.js";
@@ -17,6 +18,7 @@ router
 router
     .get("/:id_curso", getCursoController)
     .get("/", getCursosController)
+    .get("/profesor/:id_curso", getCursosByProfesorController)
     .post("/crear/", createCursoController)
     .patch("/actualizar/:id_curso", updateCursoController)
     .delete("/borrar/:id_curso", deleteCursoController);
