@@ -9,6 +9,7 @@ import Error404 from '@pages/Error404';
 import ProtectedRoute from '@components/ProtectedRoute';
 import Anotaciones from '@pages/Anotaciones';
 import Notas from '@pages/Notas';
+import Labs from '@pages/Labs'; // Importa el nuevo componente Labs
 import VerNotas from '@pages/VerNotas';
 import '@styles/styles.css';
 import Asistencias from '@pages/Asistencias';
@@ -25,6 +26,7 @@ const router = createBrowserRouter([
       { path: 'cursos', element: <Cursos /> },
       { path: 'anotaciones', element: <Anotaciones /> },
       { path: 'notas', element: <Notas /> },
+      { path: 'labs', element: <Labs /> }, // Agrega la nueva ruta para Labs
       { path: 'asistencias', element: <Asistencias /> },
       { path: 'VerAsistencias/:id_curso', element: <VerAsistencias /> }, 
       { path: 'RegistrarAsistencias/:id_curso', element: <RegistrarAsistencias /> }, 

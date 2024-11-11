@@ -1,8 +1,5 @@
-// Importa las funciones necesarias del servicio de laboratorios.
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import { AllLabs, createLab, updateLab, deleteLab } from '@services/lab.service.js';
-
-
 
 const useLabs = () => {
   const [labs, setLabs] = useState([]);
@@ -13,7 +10,7 @@ const useLabs = () => {
     setLoading(true);
     try {
       const response = await AllLabs();
-      setLabs(response.data); // Asegúrate de acceder correctamente a los laboratorios en `response`
+      setLabs(response.data);
     } catch (error) {
       setError(error);
       console.error("Error al obtener los laboratorios: ", error);
@@ -26,7 +23,7 @@ const useLabs = () => {
     setLoading(true);
     try {
       const response = await createLab(lab);
-      setLabs([...labs, response.data]); // Añade el nuevo laboratorio a la lista
+      setLabs([...labs, response]);
     } catch (error) {
       setError(error);
       console.error("Error al crear el laboratorio: ", error);
@@ -39,7 +36,7 @@ const useLabs = () => {
     setLoading(true);
     try {
       const response = await updateLab(lab);
-      setLabs(labs.map(l => (l.id_lab === lab.id_lab ? response.data : l))); // Actualiza el laboratorio en la lista
+      setLabs(labs.map((l) => (l.id_lab === lab.id_lab ? response : l)));
     } catch (error) {
       setError(error);
       console.error("Error al actualizar el laboratorio: ", error);
@@ -51,10 +48,14 @@ const useLabs = () => {
   const removeLab = async (id_lab) => {
     setLoading(true);
     try {
-      await deleteLab(id_lab);
-      setLabs(labs.filter(l => l.id_lab !== id_lab)); // Elimina el laboratorio de la lista
+      const response = await deleteLab(id_lab);
+      if (response.error) {
+        setError(response.error);
+      } else {
+        setLabs(labs.filter((lab) => lab.id_lab !== id_lab));
+      }
     } catch (error) {
-      setError(error);
+      setError(error.message);
       console.error("Error al eliminar el laboratorio: ", error);
     } finally {
       setLoading(false);
@@ -63,7 +64,7 @@ const useLabs = () => {
 
   useEffect(() => {
     fetchLabs();
-  }, []); // Se llama una vez al montar el componente
+  }, []);
 
   return { labs, fetchLabs, addLab, editLab, removeLab, loading, error };
 };
