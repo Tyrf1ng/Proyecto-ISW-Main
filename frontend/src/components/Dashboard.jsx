@@ -16,7 +16,7 @@ const NAVIGATION = [
     icon: <SchoolIcon />,
   },
   {
-    segment: 'cursos',
+    segment: 'Asistencias',
     title: 'Cursos',
     icon: <SchoolIcon />,
   },
@@ -109,7 +109,7 @@ function DashboardLayoutAccount() {
           theme={customTheme}
           branding={{
             logo: <SchoolIcon sx={{ marginX: 2, marginTop: 1 }} />,
-            title: <Typography sx={{ color: '#FFF', fontWeight:'bold',fontSize:20 }}>SmeBook</Typography>,
+            title: "SmeBook", // Deja esto como un string
           }}
         >
           <DashboardLayout>
