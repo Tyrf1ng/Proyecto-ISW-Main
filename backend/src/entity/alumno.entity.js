@@ -77,7 +77,7 @@ const AlumnoSchema = new EntitySchema({
       joinColumn: { name: "id_curso" } ,
     },
     apoderado:{
-      type: "one-to-one",
+      type: "one-to-many",
       target: "Apoderado", 
       joinColumn: { name: "rut_apoderado" },
     }, 
