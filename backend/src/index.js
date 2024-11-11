@@ -12,6 +12,7 @@ import { createAlumnos
         ,createAnotaciones
         ,createApoderado 
         ,createAsignaturas 
+        ,createCursoDirectivos
         ,createCursos
         ,createDirectivos
         ,createDocente
@@ -82,6 +83,7 @@ async function setupAPI() {
     await createRoles();
     await createDirectivos();
     await createCursos();
+    await createCursoDirectivos();
     await createDocente();
     await createApoderado();
     await createAlumnos();
