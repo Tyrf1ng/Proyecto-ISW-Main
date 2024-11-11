@@ -18,7 +18,7 @@ const AsistenciasSchema = new EntitySchema({
       type: "int",
       nullable: false,
     },
-    Tipo: {
+    tipo: {
       type: "varchar",
       nullable: false,
     },

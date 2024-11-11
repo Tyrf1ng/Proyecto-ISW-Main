@@ -163,10 +163,10 @@ function Home(props) {
       <Box
         sx={{
           minHeight: '100vh',
-          background: (theme) => theme.palette.background.default,
+          background:' #E6EFF8',
         }}
       >
-        <Typography>Hola!</Typography>
+        <Typography sx={{ color: '#000' }}>Hola!</Typography>
       </Box>
     </ThemeProvider>
   );

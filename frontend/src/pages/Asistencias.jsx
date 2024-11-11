@@ -1,49 +1,48 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { getCursos } from '../services/cursos.service';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
-import { getCursos } from '@services/cursos.service.js';
+import Paper from '@mui/material/Paper';
 
-
-const Notas = () => {
+const Asistencia = () => {
   const [cursos, setCursos] = useState([]);
   const [cargando, setCargando] = useState(true);
-  const navigate = useNavigate(); // Hook para redirigir
+  const navigate = useNavigate();
 
   useEffect(() => {
     const cargarCursos = async () => {
       try {
         const cursosObtenidos = await getCursos();
         setCursos(cursosObtenidos);
+        console.log("Cursos obtenidos:", cursosObtenidos);
       } catch (error) {
         console.error('Error al cargar los cursos:', error);
       } finally {
         setCargando(false);
       }
     };
-
     cargarCursos();
   }, []);
 
-  const registrarNotas = (cursoId) => {
-    alert(`Registrar notas para el curso con ID: ${cursoId}`);
+  const registrarAsistencia = (id_curso) => {
+    navigate(`/RegistrarAsistencias/${id_curso}`);
   };
 
-  const verNotas = (cursoId) => {
-    // Redirige a la página VerNotas pasando el ID del curso como parámetro
-    navigate(`/notas/${cursoId}`);
+  const verAsistencias = (id_curso) => {
+    console.log("id_curso en Asistencias.jsx:", id_curso);
+    navigate(`/VerAsistencias/${id_curso}`);
   };
 
   if (cargando) {
-    return <p>Cargando Asignatura..</p>;
+    return <p>Cargando cursos...</p>;
   }
 
   return (
     <Box sx={{ padding: 4, backgroundColor: '#E6EFF8', minHeight: '100vh' }}>
       <Typography variant="h4" gutterBottom align="center" sx={{ color: '#133B5C' }}>
-        Mis Asignaturas
+        Mis cursos
       </Typography>
       <Box
         sx={{
@@ -55,34 +54,41 @@ const Notas = () => {
       >
         {cursos.map((curso, index) => (
           <Paper
-            key={curso.id || index} // Asegúrate de que la key sea única
+            key={curso.id_curso || index}
             sx={{
               width: '80%',
-              padding: 2,
+              padding: 3,
               display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              backgroundColor: '#BBDEFB',
+              flexDirection: 'column',
+              backgroundColor: '#E3F2FD',
               borderRadius: '8px',
               color: '#133B5C',
             }}
           >
-            <Typography variant="h6">{curso.nombre}</Typography>
-            <Box>
+            <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+              {curso.nombre}
+            </Typography>
+            <Typography variant="subtitle1" sx={{ color: '#5C6BC0' }}>
+              Coordinador: [Nombre del Coordinador]
+            </Typography>
+            <Typography variant="body2" sx={{ marginBottom: 2, color: '#757575' }}>
+              Código: {curso.codigo} - Nivel: {curso.nivel}
+            </Typography>
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
               <Button
                 variant="contained"
                 color="primary"
-                onClick={() => registrarNotas(curso.id)}
+                onClick={() => registrarAsistencia(curso.id_curso)}
                 sx={{ marginRight: 1 }}
               >
-                Registrar Notas
+                Registrar Asistencia
               </Button>
               <Button
                 variant="contained"
                 color="primary"
-                onClick={() => verNotas(curso.id)} // Redirige a la página de notas
+                onClick={() => verAsistencias(curso.id_curso)}
               >
-                Ver Notas
+                Ver Asistencias
               </Button>
             </Box>
           </Paper>
@@ -92,4 +98,4 @@ const Notas = () => {
   );
 };
 
-export default Notas;
+export default Asistencia;

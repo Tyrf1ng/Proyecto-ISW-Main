@@ -10,3 +10,11 @@ export async function getCursos() {
         return error.response.data;
     }
 }
+export async function getCurso(id_curso) {
+    try {
+        const { data } = await axios.get(`/cursos/${id_curso}`);
+        return data.data;
+    } catch (error) {
+        return error.response.data;
+    }
+}   

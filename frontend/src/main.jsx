@@ -10,7 +10,11 @@ import ProtectedRoute from '@components/ProtectedRoute';
 import Anotaciones from '@pages/Anotaciones';
 import Notas from '@pages/Notas';
 import Labs from '@pages/Labs'; // Importa el nuevo componente Labs
+import VerNotas from '@pages/VerNotas';
 import '@styles/styles.css';
+import Asistencias from '@pages/Asistencias';
+import VerAsistencias from '@pages/VerAsistencias';
+import RegistrarAsistencias from '@pages/RegistrarAsistencias';
 
 const router = createBrowserRouter([
   {
@@ -23,6 +27,9 @@ const router = createBrowserRouter([
       { path: 'anotaciones', element: <Anotaciones /> },
       { path: 'notas', element: <Notas /> },
       { path: 'labs', element: <Labs /> }, // Agrega la nueva ruta para Labs
+      { path: 'asistencias', element: <Asistencias /> },
+      { path: 'VerAsistencias/:id_curso', element: <VerAsistencias /> }, 
+      { path: 'RegistrarAsistencias/:id_curso', element: <RegistrarAsistencias /> }, 
       {
         path: 'users',
         element: (
@@ -31,10 +38,12 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
+      { path: 'notas/:cursoId', element: <VerNotas /> },
     ],
   },
   { path: '/auth', element: <Login /> },
 ]);
+
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <RouterProvider router={router} />

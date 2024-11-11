@@ -64,17 +64,15 @@ export async function getNotasAsignatura(id_asignatura) {
         const notasRepository = AppDataSource.getRepository(Notas);
         const notas = await notasRepository.find({
             where: { id_asignatura: id_asignatura },
-            relations: ["asignatura"]
+            relations: ["asignatura", "alumno"]
         });
 
         if (!notas || notas.length === 0) return [null, "No hay notas"];
 
         const notasData = notas.map(nota => ({
-            id_nota: nota.id_nota,
-            rut_alumno: nota.rut_alumno,
-            valor: nota.valor,
-            tipo: nota.tipo,
-            id_asignatura: nota.id_asignatura,
+            ...nota,
+            nombre_alumno: nota.alumno.nombre,
+            apellido_alumno: nota.alumno.apellido,
             nombre_asignatura: nota.asignatura.nombre
         }));
 
