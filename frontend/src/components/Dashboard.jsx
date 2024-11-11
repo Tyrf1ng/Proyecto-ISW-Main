@@ -16,7 +16,7 @@ const NAVIGATION = [
     icon: <SchoolIcon />,
   },
   {
-    segment: 'cursos',
+    segment: 'Asistencias',
     title: 'Cursos',
     icon: <SchoolIcon />,
   },
@@ -28,11 +28,6 @@ const NAVIGATION = [
   {
     segment: 'notas',
     title: 'Notas',
-    icon: <SchoolIcon />,
-  },
-  {
-    segment: 'asistencias',
-    title: 'Asistencias',
     icon: <SchoolIcon />,
   }
 ];
