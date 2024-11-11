@@ -7,7 +7,8 @@ import SchoolIcon from '@mui/icons-material/School';
 import { DashboardLayout } from '@toolpad/core/DashboardLayout';
 import { useNavigate, Outlet } from "react-router-dom";
 import { logout } from '@services/auth.service.js';
-import Typography from '@mui/material/Typography';
+import { Typography } from '@mui/material';
+
 
 const NAVIGATION = [
   {
@@ -109,7 +110,7 @@ function DashboardLayoutAccount() {
           theme={customTheme}
           branding={{
             logo: <SchoolIcon sx={{ marginX: 2, marginTop: 1 }} />,
-            title: <Typography sx={{ color: '#FFF', fontWeight:'bold',fontSize:20 }}>SmeBook</Typography>,
+            title: "SmeBook", // Deja esto como un string
           }}
         >
           <DashboardLayout>
