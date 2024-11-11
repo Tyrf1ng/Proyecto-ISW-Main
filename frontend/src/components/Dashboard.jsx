@@ -35,11 +35,6 @@ const NAVIGATION = [
     segment: 'labs', // Nueva entrada para Labs
     title: 'Laboratorios',
   },
-    {
-    segment: 'asistencias',
-    title: 'Asistencias',
-    icon: <SchoolIcon />,
-  }
 ];
 
 const customTheme = createTheme({

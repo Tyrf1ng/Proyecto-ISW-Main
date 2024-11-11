@@ -1,10 +1,10 @@
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { getCursos } from '../services/cursos.service';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
-import Paper from '@mui/material/Paper';
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { getCursos } from "../services/cursos.service";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
+import Paper from "@mui/material/Paper";
 
 const Asistencia = () => {
   const [cursos, setCursos] = useState([]);
@@ -18,7 +18,7 @@ const Asistencia = () => {
         setCursos(cursosObtenidos);
         console.log("Cursos obtenidos:", cursosObtenidos);
       } catch (error) {
-        console.error('Error al cargar los cursos:', error);
+        console.error("Error al cargar los cursos:", error);
       } finally {
         setCargando(false);
       }
@@ -35,20 +35,30 @@ const Asistencia = () => {
     navigate(`/VerAsistencias/${id_curso}`);
   };
 
+  const verNotas = (cursoId) => {
+    // Redirige a la página VerNotas pasando el ID del curso como parámetro
+    navigate(`/notas/${cursoId}`);
+  };
+
   if (cargando) {
     return <p>Cargando cursos...</p>;
   }
 
   return (
-    <Box sx={{ padding: 4, backgroundColor: '#E6EFF8', minHeight: '100vh' }}>
-      <Typography variant="h4" gutterBottom align="center" sx={{ color: '#133B5C' }}>
+    <Box sx={{ padding: 4, backgroundColor: "#E6EFF8", minHeight: "100vh" }}>
+      <Typography
+        variant="h4"
+        gutterBottom
+        align="center"
+        sx={{ color: "#133B5C" }}
+      >
         Mis cursos
       </Typography>
       <Box
         sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
           gap: 2,
         }}
       >
@@ -56,25 +66,28 @@ const Asistencia = () => {
           <Paper
             key={curso.id_curso || index}
             sx={{
-              width: '80%',
+              width: "80%",
               padding: 3,
-              display: 'flex',
-              flexDirection: 'column',
-              backgroundColor: '#E3F2FD',
-              borderRadius: '8px',
-              color: '#133B5C',
+              display: "flex",
+              flexDirection: "column",
+              backgroundColor: "#E3F2FD",
+              borderRadius: "8px",
+              color: "#133B5C",
             }}
           >
-            <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+            <Typography variant="h6" sx={{ fontWeight: "bold" }}>
               {curso.nombre}
             </Typography>
-            <Typography variant="subtitle1" sx={{ color: '#5C6BC0' }}>
+            <Typography variant="subtitle1" sx={{ color: "#5C6BC0" }}>
               Coordinador: [Nombre del Coordinador]
             </Typography>
-            <Typography variant="body2" sx={{ marginBottom: 2, color: '#757575' }}>
+            <Typography
+              variant="body2"
+              sx={{ marginBottom: 2, color: "#757575" }}
+            >
               Código: {curso.codigo} - Nivel: {curso.nivel}
             </Typography>
-            <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
+            <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 1 }}>
               <Button
                 variant="contained"
                 color="primary"
@@ -87,8 +100,17 @@ const Asistencia = () => {
                 variant="contained"
                 color="primary"
                 onClick={() => verAsistencias(curso.id_curso)}
+                sx={{ marginRight: 1 }}
               >
                 Ver Asistencias
+              </Button>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => verNotas(curso.notas)}
+                sx={{ marginRight: 1 }}
+              >
+                Ver notas
               </Button>
             </Box>
           </Paper>
