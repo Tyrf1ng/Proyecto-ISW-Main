@@ -1,7 +1,6 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
 import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { AppProvider } from '@toolpad/core/AppProvider';
 import SchoolIcon from '@mui/icons-material/School';
@@ -31,6 +30,10 @@ const NAVIGATION = [
     icon: <SchoolIcon />,
   },
   {
+    segment: 'labs', // Nueva entrada para Labs
+    title: 'Laboratorios',
+  },
+    {
     segment: 'asistencias',
     title: 'Asistencias',
     icon: <SchoolIcon />,
