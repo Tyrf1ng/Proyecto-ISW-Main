@@ -7,6 +7,7 @@ import SchoolIcon from '@mui/icons-material/School';
 import { DashboardLayout } from '@toolpad/core/DashboardLayout';
 import { useNavigate, Outlet } from "react-router-dom";
 import { logout } from '@services/auth.service.js';
+import { Typography } from '@mui/material';
 
 const NAVIGATION = [
   {
