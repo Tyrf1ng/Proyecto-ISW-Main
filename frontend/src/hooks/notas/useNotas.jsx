@@ -1,23 +1,32 @@
 import { useEffect, useState } from 'react';
-import { AllNotas } from '@services/notas.service.js';
+import {  NotasCurso } from '@services/notas.service.js';
 
-const useNotas = () => {
+
+const useNotasCurso = (id_curso) => {
   const [notas, setNotas] = useState([]);
+  const [loading, setLoading] = useState(true); // Estado de carga
+  const [error, setError] = useState(null); // Estado de error
 
   const fetchNotas = async () => {
     try {
-      const response = await AllNotas();
-      setNotas(response.data); // Asegúrate de acceder correctamente a las notas en `response`
-    } catch (error) {
-      console.error("Error al obtener las notas: ", error);
+      setLoading(true);
+      const response = await NotasCurso(id_curso); // Llama al servicio para obtener las notas
+      setNotas(response.data); // Almacena las notas en el estado
+    } catch (err) {
+      setError('Error al obtener las notas'); // Establece el error si la llamada falla
+      console.error(err);
+    } finally {
+      setLoading(false); // Finaliza el estado de carga
     }
   };
 
   useEffect(() => {
-    fetchNotas();
-  }, []); // Se llama una vez al montar el componente
+    if (id_curso) {
+      fetchNotas(); // Solo hace la llamada si id_asignatura está disponible
+    }
+  }, [id_curso]); // Vuelve a ejecutar si cambia id_asignatura
 
-  return { notas, fetchNotas };
+  return { notas, loading, error, fetchNotas };
 };
 
-export default useNotas;
+export default useNotasCurso;

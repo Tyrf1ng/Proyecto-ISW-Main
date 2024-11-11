@@ -1,135 +1,93 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
-import Modal from '@mui/material/Modal';
-import useNotas from '@hooks/notas/useNotas';
-import { createNota } from '@services/notas.service.js';
+import { getCursos } from '@services/cursos.service.js';
+
 
 const Notas = () => {
-  const { notas = [], fetchNotas } = useNotas(); // Asegura que `notas` sea un array
-  const [filterText, setFilterText] = useState('');
-  const [open, setOpen] = useState(false);
-  const [newNota, setNewNota] = useState({
-    tipo: '',
-    rut_alumno: '',
-    valor: '',
-    id_asignatura: '',
-  });
+  const [cursos, setCursos] = useState([]);
+  const [cargando, setCargando] = useState(true);
+  const navigate = useNavigate(); // Hook para redirigir
 
-  // Filtrar las notas por descripción
-  const filteredNotas = Array.isArray(notas)
-    ? notas.filter((nota) => nota.tipo.toLowerCase().includes(filterText.toLowerCase()))
-    : [];
+  useEffect(() => {
+    const cargarCursos = async () => {
+      try {
+        const cursosObtenidos = await getCursos();
+        setCursos(cursosObtenidos);
+      } catch (error) {
+        console.error('Error al cargar los cursos:', error);
+      } finally {
+        setCargando(false);
+      }
+    };
 
-  const handleFilterChange = (e) => setFilterText(e.target.value);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+    cargarCursos();
+  }, []);
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setNewNota({ ...newNota, [name]: value });
+  const registrarNotas = (cursoId) => {
+    alert(`Registrar notas para el curso con ID: ${cursoId}`);
   };
 
-  const handleSubmit = async () => {
-    try {
-      await createNota(newNota);
-      fetchNotas();
-      handleClose();
-    } catch (error) {
-      console.error("Error al crear la nota: ", error);
-    }
+  const verNotas = (cursoId) => {
+    // Redirige a la página VerNotas pasando el ID del curso como parámetro
+    navigate(`/notas/${cursoId}`);
   };
+
+  if (cargando) {
+    return <p>Cargando Asignatura..</p>;
+  }
 
   return (
-    <Box sx={{ padding: 4 }}>
-      <Typography variant="h4" gutterBottom>Notas</Typography>
-      <TextField
-        label="Filtrar por asignatura"
-        variant="outlined"
-        value={filterText}
-        onChange={handleFilterChange}
-        sx={{ marginBottom: 2 }}
-      />
-      <Button variant="contained" color="primary" onClick={handleOpen} sx={{ marginBottom: 2 }}>
-        Crear Nota
-      </Button>
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Tipo</TableCell>
-              <TableCell>RUT del Alumno</TableCell>
-              <TableCell>Valor</TableCell>
-              <TableCell>Asignatura</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {filteredNotas.map((nota) => (
-              <TableRow key={nota.id_nota}>
-                <TableCell>{nota.tipo}</TableCell>
-                <TableCell>{nota.rut_alumno}</TableCell>
-                <TableCell>{nota.valor}</TableCell>
-                <TableCell>{nota.nombre_asignatura}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-
-      {/* Modal para crear una nueva nota */}
-      <Modal open={open} onClose={handleClose}>
-        <Box sx={{ width: 400, padding: 3 }}>
-          <Typography variant="h6" gutterBottom>Crear Nueva Nota</Typography>
-          <TextField
-            label="Tipo"
-            name="tipo"
-            variant="outlined"
-            fullWidth
-            margin="normal"
-            value={newNota.tipo}
-            onChange={handleInputChange}
-          />
-          <TextField
-            label="RUT del Alumno"
-            name="rut_alumno"
-            variant="outlined"
-            fullWidth
-            margin="normal"
-            value={newNota.rut_alumno}
-            onChange={handleInputChange}
-          />
-          <TextField
-            label="Valor"
-            name="valor"
-            variant="outlined"
-            fullWidth
-            margin="normal"
-            value={newNota.valor}
-            onChange={handleInputChange}
-          />
-          <TextField
-            label="ID Asignatura"
-            name="id_asignatura"
-            variant="outlined"
-            fullWidth
-            margin="normal"
-            value={newNota.id_asignatura}
-            onChange={handleInputChange}
-          />
-          <Button variant="contained" color="primary" onClick={handleSubmit} sx={{ marginTop: 2 }}>
-            Guardar
-          </Button>
-        </Box>
-      </Modal>
+    <Box sx={{ padding: 4, backgroundColor: '#E6EFF8', minHeight: '100vh' }}>
+      <Typography variant="h4" gutterBottom align="center" sx={{ color: '#133B5C' }}>
+        Mis Asignaturas
+      </Typography>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: 2,
+        }}
+      >
+        {cursos.map((curso, index) => (
+          <Paper
+            key={curso.id || index} // Asegúrate de que la key sea única
+            sx={{
+              width: '80%',
+              padding: 2,
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              backgroundColor: '#BBDEFB',
+              borderRadius: '8px',
+              color: '#133B5C',
+            }}
+          >
+            <Typography variant="h6">{curso.nombre}</Typography>
+            <Box>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => registrarNotas(curso.id)}
+                sx={{ marginRight: 1 }}
+              >
+                Registrar Notas
+              </Button>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => verNotas(curso.id)} // Redirige a la página de notas
+              >
+                Ver Notas
+              </Button>
+            </Box>
+          </Paper>
+        ))}
+      </Box>
     </Box>
   );
 };
