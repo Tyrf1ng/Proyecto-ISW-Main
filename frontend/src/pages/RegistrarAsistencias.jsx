@@ -11,7 +11,7 @@ import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
 
 const RegistrarAsistencias = () => {
-  const { cursoId } = useParams();
+  const { id_curso } = useParams();
   const [rutAlumno, setRutAlumno] = useState('');
   const [estado, setEstado] = useState('');
   const [observacion, setObservacion] = useState('');
@@ -21,7 +21,7 @@ const RegistrarAsistencias = () => {
     e.preventDefault();
     try {
       const data = {
-        id_asignatura: cursoId,
+        id_asignatura: id_curso,
         rut_alumno: rutAlumno,
         tipo: estado,
         observacion: estado === 'Justificado' ? observacion : null,

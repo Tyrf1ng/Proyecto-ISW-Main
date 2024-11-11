@@ -2,30 +2,40 @@
 import { In } from "typeorm";
 import Asistencia from "../entity/asistencia.entity.js";
 import { AppDataSource } from "../config/configDb.js";
-import alumnos from "../entity/alumno.entity.js";
+import Alumno from "../entity/alumno.entity.js"; // Corrigiendo el nombre para que esté en mayúscula
 
-//funcion para traer todas las asistencias de un curso
+// Función para traer todas las asistencias de un curso, incluyendo nombre y apellido del alumno
 export async function getAsistenciasCurso(id_curso) {
     try {
-        const alumnoRepository = AppDataSource.getRepository(alumnos);
-        const alumno = await alumnoRepository.find({
+        const alumnoRepository = AppDataSource.getRepository(Alumno);
+        const alumnos = await alumnoRepository.find({
             where: { id_curso: id_curso }
         });
 
-        if (!alumno || alumno.length === 0) {
+        if (!alumnos || alumnos.length === 0) {
             return [null, "No hay alumnos en este curso"];
         }
 
-        const rutAlumnos = alumno.map(alumno => alumno.rut_alumno);
+        const rutAlumnos = alumnos.map(alumno => alumno.rut_alumno);
         const asistenciaRepository = AppDataSource.getRepository(Asistencia);
-        const asistencia = await asistenciaRepository.find({
-            where: { rut_alumno: In(rutAlumnos) }
+        
+        // Realizamos el join para incluir los datos del alumno
+        const asistencias = await asistenciaRepository.find({
+            where: { rut_alumno: In(rutAlumnos) },
+            relations: ["alumno"] // Esto incluye la relación con el alumno
         });
 
-        if (!asistencia || asistencia.length === 0) {
+        if (!asistencias || asistencias.length === 0) {
             return [null, "No hay asistencias para este curso"];
         }
-        const asistenciasData = asistencia.map(({ ...asistencia }) => asistencia);
+
+        // Formatear los datos para incluir nombre y apellido del alumno
+        const asistenciasData = asistencias.map(asistencia => ({
+            ...asistencia,
+            nombre: asistencia.alumno?.nombres,
+            apellido: asistencia.alumno?.apellidos
+        }));
+
         return [asistenciasData, null];
         
     } catch (error) {
@@ -108,6 +118,9 @@ export async function updateAsistencia(id_asistencia, nuevoTipo) {
 //funcion para crear una asistencia
 export async function createAsistencia(data) {
     try {
+        // Log para verificar los datos recibidos
+        console.log("Datos recibidos para crear asistencia:", data);
+
         const asistenciaRepository = AppDataSource.getRepository(Asistencia);
         const asistencia = asistenciaRepository.create(data);
         const savedAsistencia = await asistenciaRepository.save(asistencia);
@@ -117,6 +130,7 @@ export async function createAsistencia(data) {
         return [null, "Error interno del servidor"];
     }
 }
+
 
 //funcion para eliminar una asistencia
 export async function deleteAsistencia(id_asistencia) {

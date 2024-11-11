@@ -16,6 +16,9 @@ const Asistencia = () => {
       try {
         const cursosObtenidos = await getCursos();
         setCursos(cursosObtenidos);
+        console.log("Cursos obtenidos:", cursosObtenidos);
+        
+
       } catch (error) {
         console.error('Error al cargar los cursos:', error);
       } finally {
@@ -26,13 +29,15 @@ const Asistencia = () => {
     cargarCursos();
   }, []);
 
-  const registrarAsistencia = (cursoId) => {
-    navigate(`/RegistrarAsistencias/${cursoId}`); // Redirect to RegistrarAsistencias
+  const registrarAsistencia = (id_curso) => {
+    navigate(`/RegistrarAsistencias/${id_curso}`); // Redirect to RegistrarAsistencias
   };
 
-  const verAsistencias = (cursoId) => {
-    navigate(`/VerAsistencias/${cursoId}`); // Redirect to VerAsistencias
+  const verAsistencias = (id_curso) => {
+    console.log("id_curso en Asistencias.jsx:", id_curso);
+    navigate(`/VerAsistencias/${id_curso}`);
   };
+  
 
   if (cargando) {
     return <p>Cargando cursos...</p>;
@@ -53,7 +58,7 @@ const Asistencia = () => {
       >
         {cursos.map((curso, index) => (
           <Paper
-            key={curso.id || index}
+            key={curso.id_curso || index} 
             sx={{
               width: '80%',
               padding: 2,
@@ -70,7 +75,7 @@ const Asistencia = () => {
               <Button
                 variant="contained"
                 color="primary"
-                onClick={() => registrarAsistencia(curso.id)}
+                onClick={() => registrarAsistencia(curso.id_curso)} // cambie de curso.id a curso.id_curso
                 sx={{ marginRight: 1 }}
               >
                 Registrar Asistencia
@@ -78,7 +83,7 @@ const Asistencia = () => {
               <Button
                 variant="contained"
                 color="primary"
-                onClick={() => verAsistencias(curso.id)}
+                onClick={() => verAsistencias(curso.id_curso)} // cambie de curso.id a curso.id_curso
               >
                 Ver Asistencias
               </Button>

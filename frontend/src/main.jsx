@@ -25,8 +25,8 @@ const router = createBrowserRouter([
       { path: 'anotaciones', element: <Anotaciones /> },
       { path: 'notas', element: <Notas /> },
       { path: 'asistencias', element: <Asistencias /> },
-      { path: 'VerAsistencias/:cursoId', element: <VerAsistencias /> }, // Sin barra al final
-      { path: 'RegistrarAsistencias/:cursoId', element: <RegistrarAsistencias /> }, // Sin barra al final
+      { path: 'VerAsistencias/:id_curso', element: <VerAsistencias /> }, 
+      { path: 'RegistrarAsistencias/:id_curso', element: <RegistrarAsistencias /> }, 
       {
         path: 'users',
         element: (
