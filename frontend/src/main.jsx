@@ -11,6 +11,8 @@ import Anotaciones from '@pages/Anotaciones';
 import Notas from '@pages/Notas';
 import '@styles/styles.css';
 import Asistencias from '@pages/Asistencias';
+import VerAsistencias from '@pages/VerAsistencias';
+import RegistrarAsistencias from '@pages/RegistrarAsistencias';
 
 const router = createBrowserRouter([
   {
@@ -22,7 +24,9 @@ const router = createBrowserRouter([
       { path: 'cursos', element: <Cursos /> },
       { path: 'anotaciones', element: <Anotaciones /> },
       { path: 'notas', element: <Notas /> },
-      {path: 'asistencias', element: <Asistencias />},
+      { path: 'asistencias', element: <Asistencias /> },
+      { path: 'VerAsistencias/:cursoId', element: <VerAsistencias /> }, // Sin barra al final
+      { path: 'RegistrarAsistencias/:cursoId', element: <RegistrarAsistencias /> }, // Sin barra al final
       {
         path: 'users',
         element: (
@@ -35,6 +39,7 @@ const router = createBrowserRouter([
   },
   { path: '/auth', element: <Login /> },
 ]);
+
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <RouterProvider router={router} />

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import { getCursos } from '../services/cursos.service';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -8,6 +9,7 @@ import Paper from '@mui/material/Paper';
 const Asistencia = () => {
   const [cursos, setCursos] = useState([]);
   const [cargando, setCargando] = useState(true);
+  const navigate = useNavigate(); // Initialize useNavigate
 
   useEffect(() => {
     const cargarCursos = async () => {
@@ -25,11 +27,11 @@ const Asistencia = () => {
   }, []);
 
   const registrarAsistencia = (cursoId) => {
-    alert(`Asistencia registrada para el curso con ID: ${cursoId}`);
+    navigate(`/RegistrarAsistencias/${cursoId}`); // Redirect to RegistrarAsistencias
   };
 
   const verAsistencias = (cursoId) => {
-    alert(`Mostrando asistencias para el curso con ID: ${cursoId}`);
+    navigate(`/VerAsistencias/${cursoId}`); // Redirect to VerAsistencias
   };
 
   if (cargando) {
@@ -51,7 +53,7 @@ const Asistencia = () => {
       >
         {cursos.map((curso, index) => (
           <Paper
-            key={curso.id || index} // Asegúrate de que la key sea única
+            key={curso.id || index}
             sx={{
               width: '80%',
               padding: 2,
