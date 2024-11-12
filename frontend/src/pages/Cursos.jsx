@@ -1,14 +1,15 @@
-import { useState, useEffect } from "react";
+import { useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { getCursos } from "../services/cursos.service";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import Button from "@mui/material/Button";
 import Paper from "@mui/material/Paper";
+import { CursoContext } from "../context/CursoContext"; // Importa el contexto
 
-const Asistencia = () => {
+const Cursos = () => {
   const [cursos, setCursos] = useState([]);
   const [cargando, setCargando] = useState(true);
+  const { setIdCurso } = useContext(CursoContext); // Usa el contexto
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -26,18 +27,9 @@ const Asistencia = () => {
     cargarCursos();
   }, []);
 
-  const registrarAsistencia = (id_curso) => {
-    navigate(`/RegistrarAsistencias/${id_curso}`);
-  };
-
-  const verAsistencias = (id_curso) => {
-    console.log("id_curso en Asistencias.jsx:", id_curso);
-    navigate(`/VerAsistencias/${id_curso}`);
-  };
-
-  const verNotas = (cursoId) => {
-    // Redirige a la página VerNotas pasando el ID del curso como parámetro
-    navigate(`/notas/${cursoId}`);
+  const seleccionarCurso = (id_curso) => {
+    setIdCurso(id_curso); // Establece el ID del curso seleccionado en el contexto
+    navigate("/inicio"); // Redirige al Dashboard o a la página principal
   };
 
   if (cargando) {
@@ -62,9 +54,10 @@ const Asistencia = () => {
           gap: 2,
         }}
       >
-        {cursos.map((curso, index) => (
+        {cursos.map((curso) => (
           <Paper
-            key={curso.id_curso || index}
+            key={curso.id_curso}
+            onClick={() => seleccionarCurso(curso.id_curso)} // Hacer clic para seleccionar el curso
             sx={{
               width: "80%",
               padding: 3,
@@ -73,6 +66,8 @@ const Asistencia = () => {
               backgroundColor: "#E3F2FD",
               borderRadius: "8px",
               color: "#133B5C",
+              cursor: "pointer", // Cambia el cursor para indicar que es clickeable
+              "&:hover": { backgroundColor: "#D1E3F5" }, // Efecto hover
             }}
           >
             <Typography variant="h6" sx={{ fontWeight: "bold" }}>
@@ -87,32 +82,6 @@ const Asistencia = () => {
             >
               Código: {curso.codigo} - Nivel: {curso.nivel}
             </Typography>
-            <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 1 }}>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={() => registrarAsistencia(curso.id_curso)}
-                sx={{ marginRight: 1 }}
-              >
-                Registrar Asistencia
-              </Button>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={() => verAsistencias(curso.id_curso)}
-                sx={{ marginRight: 1 }}
-              >
-                Ver Asistencias
-              </Button>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={() => verNotas(curso.notas)}
-                sx={{ marginRight: 1 }}
-              >
-                Ver notas
-              </Button>
-            </Box>
           </Paper>
         ))}
       </Box>
@@ -120,4 +89,4 @@ const Asistencia = () => {
   );
 };
 
-export default Asistencia;
+export default Cursos;

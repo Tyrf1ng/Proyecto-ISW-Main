@@ -1,7 +1,7 @@
 import ReactDOM from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Root from '@pages/Root'; // El layout principal
-import Home from '@pages/Home';
+import Inicio from '@pages/Inicio';
 import Cursos from '@pages/Cursos';
 import Users from '@pages/Users';
 import Login from '@pages/Login';
@@ -21,7 +21,7 @@ const router = createBrowserRouter([
     element: <Root />,
     errorElement: <Error404 />,
     children: [
-      { path: 'home', element: <Home /> },
+      { path: 'inicio', element: <Inicio /> },
       { path: 'cursos', element: <Cursos /> },
       { path: 'anotaciones', element: <Anotaciones /> },
       { path: 'notas', element: <Notas /> },

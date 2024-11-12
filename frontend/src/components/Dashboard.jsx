@@ -11,7 +11,7 @@ import { logout } from '@services/auth.service.js';
 
 const NAVIGATION = [
   {
-    segment: 'Home',
+    segment: 'Inicio',
     title: 'Inicio',
     icon: <SchoolIcon />,
   },
@@ -110,8 +110,7 @@ function DashboardLayoutAccount() {
             title: "SmeBook", // Deja esto como un string
           }}
         >
-          <DashboardLayout hideNavigation={hideNavigation}>
-            {/* Renderiza el contenido directamente si el usuario está autenticado */}
+          <DashboardLayout hideNavigation={hideNavigation} >
             <Outlet />
           </DashboardLayout>
         </AppProvider>
