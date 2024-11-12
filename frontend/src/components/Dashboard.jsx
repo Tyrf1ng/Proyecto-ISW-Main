@@ -31,10 +31,16 @@ const NAVIGATION = [
     icon: <SchoolIcon />,
   },
   {
-    segment: 'labs', // Nueva entrada para Labs
+    segment: 'labs',
     title: 'Laboratorios',
+    icon: <SchoolIcon />,
   },
-    {
+  {
+    segment: 'horarios',
+    title: 'Horarios',
+    icon: <SchoolIcon />,
+  },
+  {
     segment: 'asistencias',
     title: 'Asistencias',
     icon: <SchoolIcon />,
