@@ -34,7 +34,7 @@ const DirectivoSchema = new EntitySchema({
       length: 20,
       nullable: false,
     },
-    id_role: {
+    id_roles: {
       type: "int",
       nullable: false,
     },
@@ -59,7 +59,7 @@ const DirectivoSchema = new EntitySchema({
     roles: {
       type: "many-to-one",
       target: "Roles", 
-      joinColumn: { name: "id_role" } ,
+      joinColumn: { name: "id_roles" } ,
   },
 },
 

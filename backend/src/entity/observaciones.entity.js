@@ -15,7 +15,7 @@ const observacionesSchema = new EntitySchema({
         nullable: false,
       },
       rut_administrativo: {
-        type: "int",
+        type: "varchar",
         nullable: false,
       },
         rut_alumno: {
