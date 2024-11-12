@@ -29,7 +29,7 @@ const Login = () => {
         try {
             const response = await login(data);
             if (response.status === 'Success') {
-                navigate('/home');
+                navigate('/Cursos');
             } else if (response.status === 'Client error') {
                 errorData(response.details);
             }
