@@ -8,7 +8,6 @@ import { DashboardLayout } from '@toolpad/core/DashboardLayout';
 import { useNavigate, Outlet } from "react-router-dom";
 import { logout } from '@services/auth.service.js';
 
-
 const NAVIGATION = [
   {
     segment: 'Inicio',
@@ -31,9 +30,15 @@ const NAVIGATION = [
     icon: <SchoolIcon />,
   },
   {
-    segment: 'labs', // Nueva entrada para Labs
+    segment: 'labs',
     title: 'Laboratorios',
+    icon: <SchoolIcon />,
   },
+  {
+    segment: 'horarios',
+    title: 'Horarios',
+    icon: <SchoolIcon />,
+  }
 ];
 
 const customTheme = createTheme({

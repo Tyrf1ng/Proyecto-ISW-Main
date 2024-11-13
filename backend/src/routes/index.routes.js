@@ -19,7 +19,7 @@ router
     .use("/notas", notasRoutes)
     .use("/asistencias", asistenciaRoutes)
     .use("/labs", labRoutes)
-    .use("/horario", horariosRoutes)
+    .use("/horarios", horariosRoutes)
     .use("/reserva", reservaRoutes);
 
 export default router;

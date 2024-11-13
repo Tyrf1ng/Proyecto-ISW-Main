@@ -82,3 +82,4 @@ export async function deleteLabService(id_lab) {
         return [null, "Error interno del servidor"];
     }
 }
+
