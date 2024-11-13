@@ -18,10 +18,6 @@ const Ficha_EstudianteSchema = new EntitySchema({
       type: "varchar",
       nullable: false,
     },
-    rut_administrativo: {
-      type: "varchar",
-      nullable: false,
-    },
     createdAt: {
         type: "timestamp with time zone",
         default: () => "CURRENT_TIMESTAMP",
@@ -35,11 +31,6 @@ const Ficha_EstudianteSchema = new EntitySchema({
       },
   },
   relations: {
-    administrativo: {
-      type: "one-to-one",
-      target: "Administrativo",
-      joinColumn: { name: "rut_administrativo" } ,
-    }, 
     alumno: {
         type: "one-to-one",
         target: "Alumno", 

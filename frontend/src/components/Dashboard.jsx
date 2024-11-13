@@ -7,16 +7,15 @@ import SchoolIcon from '@mui/icons-material/School';
 import { DashboardLayout } from '@toolpad/core/DashboardLayout';
 import { useNavigate, Outlet } from "react-router-dom";
 import { logout } from '@services/auth.service.js';
-import { Typography } from '@mui/material';
 
 const NAVIGATION = [
   {
-    segment: 'Home',
+    segment: 'Inicio',
     title: 'Inicio',
     icon: <SchoolIcon />,
   },
   {
-    segment: 'Asistencias',
+    segment: 'Cursos',
     title: 'Cursos',
     icon: <SchoolIcon />,
   },
@@ -38,11 +37,6 @@ const NAVIGATION = [
   {
     segment: 'horarios',
     title: 'Horarios',
-    icon: <SchoolIcon />,
-  },
-  {
-    segment: 'asistencias',
-    title: 'Asistencias',
     icon: <SchoolIcon />,
   }
 ];
@@ -105,6 +99,9 @@ function DashboardLayoutAccount() {
     };
   }, [navigate]);
 
+  const hideNavigation = location.pathname === '/Cursos';
+
+
   return (
     <ThemeProvider theme={customTheme}>
       <Box sx={{ minHeight: '100vh', background: (theme) => theme.palette.background.default }}>
@@ -118,8 +115,7 @@ function DashboardLayoutAccount() {
             title: "SmeBook", // Deja esto como un string
           }}
         >
-          <DashboardLayout>
-            {/* Renderiza el contenido directamente si el usuario está autenticado */}
+          <DashboardLayout hideNavigation={hideNavigation} >
             <Outlet />
           </DashboardLayout>
         </AppProvider>

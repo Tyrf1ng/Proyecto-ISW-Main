@@ -39,7 +39,7 @@ const DocentesSchema = new EntitySchema({
       type: "varchar",
       nullable: false,
     },
-    id_role: {
+    id_roles: {
       type: "int",
       nullable: false,
     },
@@ -60,7 +60,7 @@ relations: {
   roles: {
     type: "many-to-one",
     target: "Roles", 
-    joinColumn: { name: "id_role" } ,
+    joinColumn: { name: "id_roles" } ,
     },
   },
 }

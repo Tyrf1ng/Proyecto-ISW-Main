@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState, useContext } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Table from '@mui/material/Table';
@@ -18,8 +18,10 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import useAnotaciones from '@hooks/anotaciones/useAnotaciones';
 import { createAnotacion, deleteAnotacion, updateAnotacion } from '@services/anotaciones.service.js';
+import { CursoContext } from '../context/CursoContext'; // Importa el contexto
 
 const Anotaciones = () => {
+  const { idCurso } = useContext(CursoContext); // Usa el idCurso del contexto
   const { anotaciones, fetchAnotaciones } = useAnotaciones();
   const [filterText, setFilterText] = useState('');
   const [open, setOpen] = useState(false);
@@ -33,12 +35,10 @@ const Anotaciones = () => {
     fecha: new Date().toISOString(),
   });
 
-  // Verificar que anotaciones sea un array, de lo contrario usar un array vacío
-  const filteredAnotaciones = Array.isArray(anotaciones)
-    ? anotaciones.filter((anotacion) =>
-        anotacion.descripcion.toLowerCase().includes(filterText.toLowerCase())
-      )
-    : [];
+  // Filtrar anotaciones según el texto ingresado
+  const filteredAnotaciones = anotaciones.filter((anotacion) =>
+    anotacion.descripcion.toLowerCase().includes(filterText.toLowerCase())
+  );
 
   const handleFilterChange = (e) => {
     setFilterText(e.target.value);
@@ -80,7 +80,7 @@ const Anotaciones = () => {
       } else {
         await createAnotacion(newAnotacion);
       }
-      fetchAnotaciones();
+      fetchAnotaciones(); // Vuelve a cargar las anotaciones
       handleClose();
     } catch (error) {
       console.error("Error al guardar la anotación: ", error);
@@ -90,7 +90,7 @@ const Anotaciones = () => {
   const handleDelete = async (id) => {
     try {
       await deleteAnotacion(id);
-      fetchAnotaciones();
+      fetchAnotaciones(); // Vuelve a cargar las anotaciones
     } catch (error) {
       console.error("Error al eliminar la anotación: ", error);
     }
@@ -99,7 +99,7 @@ const Anotaciones = () => {
   return (
     <Box sx={{ padding: 4 }}>
       <Typography variant="h4" gutterBottom>
-        Anotaciones
+        Anotaciones {idCurso ? `del Curso: ${idCurso}` : ''}
       </Typography>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 2 }}>
         <TextField
@@ -146,7 +146,7 @@ const Anotaciones = () => {
             ) : (
               <TableRow>
                 <TableCell colSpan={5} align="center">
-                  El alumno de momento no posee anotaciones
+                  No hay anotaciones para este curso
                 </TableCell>
               </TableRow>
             )}

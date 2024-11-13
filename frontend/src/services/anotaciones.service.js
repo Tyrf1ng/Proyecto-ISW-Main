@@ -1,11 +1,12 @@
 import axios from './root.service.js';
 
-export async function getAnotaciones() {
+export async function getAnotacionesCurso(idCurso) {
   try {
-    const { data } = await axios.get('/anotaciones/');
+    const { data } = await axios.get(`/anotaciones/curso/${idCurso}`);
     return data.data;
   } catch (error) {
-    return error.response.data;
+    console.error("Error al obtener anotaciones del curso: ", error);
+    throw error;
   }
 }
 
