@@ -8,25 +8,42 @@ import alumnos from "../entity/alumno.entity.js";
 //Funciona no tocar
 export async function getNotasCurso(id_curso) {
     try {
+        // Obtener todos los alumnos asociados al curso específico
         const alumnoRepository = AppDataSource.getRepository(alumnos);
         const alumno = await alumnoRepository.find({
-            where: { id_curso: id_curso }
+            where: { id_curso: id_curso },
         });
 
         if (!alumno || alumno.length === 0) {
             return [null, "No hay alumnos en este curso"];
         }
 
-        const rutAlumnos = alumno.map(alumno => alumno.rut_alumno)
+        // Extraer los rut de los alumnos para filtrar las notas
+        const rutAlumnos = alumno.map(alumnos => alumnos.rut_alumno);
+
+        // Buscar las notas correspondientes a los alumnos en el curso y sus asignaturas relacionadas
         const notaRepository = AppDataSource.getRepository(Notas);
-        const nota = await notaRepository.find({
-            where: { rut_alumno: In(rutAlumnos) } 
+        const notas = await notaRepository.find({
+            where: { rut_alumno: In(rutAlumnos) },
+            relations: ["asignatura", "alumno"], // Incluye las relaciones necesarias
         });
 
-        if (!nota || nota.length === 0) {
+        if (!notas || notas.length === 0) {
             return [null, "No hay notas para este curso"];
         }
-        const notasData = nota.map(({ ...nota }) => nota);
+
+        // Mapear los datos para devolver los detalles de alumno y asignatura junto con la nota
+        const notasData = notas.map(nota => ({
+            id_nota: nota.id_nota,
+            tipo: nota.tipo,
+            valor: nota.valor,
+            rut_alumno: nota.alumno.rut_alumno,
+            nombre_alumno: nota.alumno.nombre,
+            apellido_alumno: nota.alumno.apellido,
+            nombre_asignatura: nota.asignatura.nombre,
+            id_asignatura: nota.asignatura.id_asignatura,
+        }));
+
         return [notasData, null];
         
     } catch (error) {

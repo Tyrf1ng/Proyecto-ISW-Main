@@ -73,14 +73,32 @@ export async function deleteCursoController(req, res) {
 
 export async function getCursosByProfesorController(req, res) {
     try {
-        const { id_curso } = req.params;
-        const [cursos, errorCursos] = await getCursosByProfesor(id_curso);
-        if (errorCursos) return handleErrorClient(res, 404, errorCursos);
-        cursos.length === 0
-            ? handleSuccess(res, 204)
-            : handleSuccess(res, 200, "Cursos encontrados", cursos);
-    } catch (error) {
-        handleErrorServer(res, 500, error.message);
-    }
-}   
+        const { rut_docente } = req.params;
+        if (!rut_docente) {
+            return res.status(400).json({
+                status: "Error",
+                message: "El parámetro 'rut_docente' es obligatorio"
+            });
+        }
+        const [cursos, mensaje] = await getCursosByProfesor(rut_docente);
 
+        // Validar la respuesta del servicio
+        if (!cursos) {
+            return res.status(404).json({
+                status: "Error",
+                message: mensaje
+            });
+        }
+        return res.status(200).json({
+            status: "Success",
+            message: mensaje,
+            data: cursos
+        });
+    } catch (error) {
+        console.error("Error en obtenerCursosPorProfesor:", error);
+        return res.status(500).json({
+            status: "Error",
+            message: "Error interno del servidor"
+        });
+    }
+}

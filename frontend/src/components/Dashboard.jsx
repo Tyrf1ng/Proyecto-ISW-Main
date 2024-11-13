@@ -25,7 +25,7 @@ const NAVIGATION = [
     icon: <SchoolIcon />,
   },
   {
-    segment: 'notas',
+    segment: 'VerNotas',
     title: 'Notas',
     icon: <SchoolIcon />,
   },

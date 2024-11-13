@@ -1,9 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { useParams } from 'react-router-dom';
-import useNotasAsignatura from '@hooks/notas/useNotas'; // Importa el hook para obtener las notas
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import TextField from '@mui/material/TextField';
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -11,74 +9,83 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
+import { CursoContext } from '@context/CursoContext';
+import useNotasCurso from '@hooks/notas/useNotas';
+import TextField from '@mui/material/TextField';
+
 
 const VerNotas = () => {
-  const { cursoId } = useParams(); // Obtener el ID del curso desde la URL
-  const { notas = [], fetchNotas } = useNotasAsignatura(cursoId); // Usar el hook con el ID del curso
-  const [filterIdAsignatura, setFilterIdAsignatura] = useState('');
+  const { idCurso } = useContext(CursoContext); // Obtener el ID del curso desde la URL
+  const { notas, fetchNotas } = useNotasCurso(idCurso); // Obtener las notas del curso
+  const [filterText, setFilterText] = useState('');
+  const filteredNotas = notas.filter((notas) =>
+    notas.nombre_alumno.toLowerCase().includes(filterText.toLowerCase())
+  );
+
+
+  const handleFilterChange = (e) => {
+    setFilterText(e.target.value);
+  };
+
 
   useEffect(() => {
-    fetchNotas(); // Llamar a fetchNotas cada vez que el cursoId cambie
-  }, [cursoId]);
-
-  // Filtrar las notas por ID de asignatura
-  const filteredNotas = Array.isArray(notas)
-    ? notas.filter((nota) => !filterIdAsignatura || nota.id_asignatura === Number(filterIdAsignatura))
-    : [];
-
-  // Manejar el cambio en el campo de filtro por ID de asignatura
-  const handleFilterIdAsignaturaChange = (e) => setFilterIdAsignatura(e.target.value);
-
-  // Evitar que se envíe el formulario al presionar Enter
-  const handleKeyPress = (e) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
+    if (idCurso) {
+      fetchNotas();
     }
-  };
+  }, [idCurso, fetchNotas]);
 
   return (
     <Box sx={{ padding: 4 }}>
-      <Typography variant="h4" gutterBottom>Notas del Curso {cursoId}</Typography>
-
-      {/* Filtro por ID de asignatura */}
-      <TextField
-        label="Filtrar por ID de asignatura"
-        variant="outlined"
-        value={filterIdAsignatura}
-        onChange={handleFilterIdAsignaturaChange}
-        onKeyDown={handleKeyPress}
-        sx={{ marginBottom: 2 }}
-      />
-
-      {/* Tabla para mostrar las notas filtradas */}
+      <Typography variant="h4" gutterBottom>
+        Notas del Curso {idCurso ? `del Curso: ${idCurso}` : ''}
+      </Typography>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 3 }}>
+        <TextField
+          label="Filtrar por Nombre del alumno"
+          variant="outlined"
+          value={filterText}
+          onChange={handleFilterChange}
+        />
+        </Box>
       <TableContainer component={Paper}>
-        <Table>
+      <Table>
           <TableHead>
             <TableRow>
               <TableCell>Tipo</TableCell>
-              <TableCell>RUT del Alumno</TableCell>
+              <TableCell>Alumno</TableCell>
+              <TableCell>RUT</TableCell>
               <TableCell>Valor</TableCell>
               <TableCell>Asignatura</TableCell>
               <TableCell>ID Asignatura</TableCell>
-              <TableCell>Nombre del Alumno</TableCell>
+              <TableCell>Acciones</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {filteredNotas.map((nota) => (
-              <TableRow key={nota.id_nota}>
-                <TableCell>{nota.tipo}</TableCell>
-                <TableCell>{nota.rut_alumno}</TableCell>
-                <TableCell>{nota.valor}</TableCell>
-                <TableCell>{nota.nombre_asignatura}</TableCell>
-                <TableCell>{nota.id_asignatura}</TableCell>
-                <TableCell>{nota.nombre_alumno} {nota.apellido_alumno}</TableCell>
+            {filteredNotas.length > 0 ? (
+              filteredNotas.map((nota) => (
+                <TableRow key={nota.id_nota}>
+                  <TableCell>{nota.tipo}</TableCell>
+                  <TableCell>{`${nota.nombre_alumno} ${nota.apellido_alumno}`}</TableCell>
+                  <TableCell>{nota.rut_alumno}</TableCell>
+                  <TableCell>{nota.valor}</TableCell>
+                  <TableCell>{nota.nombre_asignatura}</TableCell>
+                  <TableCell>{nota.id_asignatura}</TableCell>
+
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={7} align="center">
+                  No hay notas el alumno para este curso 
+                </TableCell>
               </TableRow>
-            ))}
+            )}
           </TableBody>
         </Table>
       </TableContainer>
     </Box>
   );
 };
+          
 
 export default VerNotas;

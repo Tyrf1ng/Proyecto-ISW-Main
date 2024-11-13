@@ -83,6 +83,7 @@ export async function getCursosByProfesor(rut_docente) {
 
         // Obtener las asignaturas asociadas al docente específico
         const asignaturasDelDocente = await AsignaturaRepository.find({ where: { rut_docente } });
+
         const idsAsignaturas = asignaturasDelDocente.map(asignatura => asignatura.id_asignatura);
 
         if (idsAsignaturas.length === 0) return [null, "No hay asignaturas para este docente"];

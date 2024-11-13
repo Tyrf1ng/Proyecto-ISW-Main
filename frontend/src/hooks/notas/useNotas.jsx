@@ -1,30 +1,30 @@
-import { useEffect, useState } from 'react';
-import {  NotasCurso } from '@services/notas.service.js';
-
+import { useEffect, useState, useCallback } from 'react';
+import { NotasCurso } from '@services/notas.service.js';
 
 const useNotasCurso = (id_curso) => {
   const [notas, setNotas] = useState([]);
-  const [loading, setLoading] = useState(true); // Estado de carga
-  const [error, setError] = useState(null); // Estado de error
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const fetchNotas = async () => {
+  const fetchNotas = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await NotasCurso(id_curso); // Llama al servicio para obtener las notas
-      setNotas(response.data); // Almacena las notas en el estado
+      const response = await NotasCurso(id_curso);
+      setNotas(Array.isArray(response.data) ? response.data : []);
+      setError(null); // Limpia cualquier error anterior
     } catch (err) {
-      setError('Error al obtener las notas'); // Establece el error si la llamada falla
+      setError(err.response?.data?.message || 'Error al obtener las notas');
       console.error(err);
     } finally {
-      setLoading(false); // Finaliza el estado de carga
+      setLoading(false);
     }
-  };
+  }, [id_curso]);
 
   useEffect(() => {
     if (id_curso) {
-      fetchNotas(); // Solo hace la llamada si id_asignatura está disponible
+      fetchNotas();
     }
-  }, [id_curso]); // Vuelve a ejecutar si cambia id_asignatura
+  }, [id_curso, fetchNotas]);
 
   return { notas, loading, error, fetchNotas };
 };

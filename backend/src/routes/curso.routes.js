@@ -18,7 +18,7 @@ router
 router
     .get("/:id_curso", getCursoController)
     .get("/", getCursosController)
-    .get("/profesor/:id_curso", getCursosByProfesorController)
+    .get("/profesor/:rut_docente", getCursosByProfesorController)
     .post("/crear/", createCursoController)
     .patch("/actualizar/:id_curso", updateCursoController)
     .delete("/borrar/:id_curso", deleteCursoController);
