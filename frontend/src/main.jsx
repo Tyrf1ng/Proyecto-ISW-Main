@@ -12,6 +12,7 @@ import Notas from '@pages/Notas';
 import Labs from '@pages/Labs'; // Importa el nuevo componente Labs
 import Horarios from '@pages/Horarios'; // Importa el nuevo componente Horarios
 import VerNotas from '@pages/VerNotas';
+import Asistencias from '@pages/Asistencias';
 import '@styles/styles.css';
 import VerAsistencias from '@pages/VerAsistencias';
 import RegistrarAsistencias from '@pages/RegistrarAsistencias';
@@ -28,10 +29,9 @@ const router = createBrowserRouter([
       { path: 'notas', element: <Notas /> },
       { path: 'labs', element: <Labs /> },
       { path: 'horarios', element: <Horarios /> },
+      { path: 'asistencias', element: <Asistencias /> },
       { path: 'VerAsistencias/:id_curso', element: <VerAsistencias /> },
       { path: 'RegistrarAsistencias/:id_curso', element: <RegistrarAsistencias /> },
-      { path: 'VerAsistencias/:id_curso', element: <VerAsistencias /> }, 
-      { path: 'RegistrarAsistencias/:id_curso', element: <RegistrarAsistencias /> }, 
       {
         path: 'users',
         element: (
