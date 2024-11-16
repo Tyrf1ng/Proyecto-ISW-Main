@@ -2,7 +2,7 @@ import * as React from 'react';
 import PropTypes from 'prop-types';
 import Box from '@mui/material/Box';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { AppProvider } from '@toolpad/core/AppProvider';
+import { AppProvider } from '@toolpad/core/react-router-dom';
 import SchoolIcon from '@mui/icons-material/School';
 import { DashboardLayout } from '@toolpad/core/DashboardLayout';
 import { useNavigate, Outlet } from "react-router-dom";
