@@ -72,7 +72,7 @@ const AlumnoSchema = new EntitySchema({
   },
   relations: {
     curso: {
-      type: "one-to-one",
+      type: "Many-to-one",
       target: "Curso", 
       joinColumn: { name: "id_curso" } ,
     },

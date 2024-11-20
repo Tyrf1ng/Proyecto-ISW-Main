@@ -280,7 +280,7 @@ async function createAlumnos() {
           fechaNacimiento: "2000-01-01",
           comuna: "Laja",
           direccion: "Calle falsa 321",
-          email:"tyrfing@gmail.cl",
+          email: "tyrfing@gmail.cl",
           password: await encryptPassword("iep123"),
           id_curso: 1,
           rut_apoderado: "8.714.763-0",
@@ -295,19 +295,110 @@ async function createAlumnos() {
           fechaNacimiento: "2000-01-01",
           comuna: "Santiago",
           direccion: "Calle falsa 321",
-          email:"allende@gmail.cl",
+          email: "allende@gmail.cl",
           password: await encryptPassword("com123"),
           id_curso: 2,
           rut_apoderado: "8.714.763-0",
           id_roles: 3,
         })
       ),
+      AlumnosRepository.save(
+        AlumnosRepository.create({
+          rut_alumno: "21.345.678-9",
+          nombre: "Camila",
+          apellido: "Pérez",
+          fechaNacimiento: "2003-04-12",
+          comuna: "Concepción",
+          direccion: "Avenida Los Leones 456",
+          email: "camila.perez@gmail.cl",
+          password: await encryptPassword("cami123"),
+          id_curso: 1,
+          rut_apoderado: "8.714.763-0",
+          id_roles: 3,
+        })
+      ),
+      AlumnosRepository.save(
+        AlumnosRepository.create({
+          rut_alumno: "13.245.678-5",
+          nombre: "Andrés",
+          apellido: "González",
+          fechaNacimiento: "2004-06-23",
+          comuna: "Valparaíso",
+          direccion: "Pasaje El Sol 789",
+          email: "andres.gonzalez@gmail.cl",
+          password: await encryptPassword("andres123"),
+          id_curso: 1,
+          rut_apoderado: "8.714.763-0",
+          id_roles: 3,
+        })
+      ),
+      AlumnosRepository.save(
+        AlumnosRepository.create({
+          rut_alumno: "18.567.432-0",
+          nombre: "Valentina",
+          apellido: "López",
+          fechaNacimiento: "2005-11-30",
+          comuna: "Antofagasta",
+          direccion: "Calle Luna 321",
+          email: "valentina.lopez@gmail.cl",
+          password: await encryptPassword("valen123"),
+          id_curso: 1,
+          rut_apoderado: "8.714.763-0",
+          id_roles: 3,
+        })
+      ),
+      AlumnosRepository.save(
+        AlumnosRepository.create({
+          rut_alumno: "15.987.654-3",
+          nombre: "Carlos",
+          apellido: "Martínez",
+          fechaNacimiento: "2002-03-15",
+          comuna: "Rancagua",
+          direccion: "Avenida Central 567",
+          email: "carlos.martinez@gmail.cl",
+          password: await encryptPassword("carlos123"),
+          id_curso: 1,
+          rut_apoderado: "8.714.763-0",
+          id_roles: 3,
+        })
+      ),
+      AlumnosRepository.save(
+        AlumnosRepository.create({
+          rut_alumno: "17.654.321-8",
+          nombre: "Fernanda",
+          apellido: "Rojas",
+          fechaNacimiento: "2001-09-10",
+          comuna: "Puerto Montt",
+          direccion: "Calle Sur 234",
+          email: "fernanda.rojas@gmail.cl",
+          password: await encryptPassword("fernanda123"),
+          id_curso: 1,
+          rut_apoderado: "8.714.763-0",
+          id_roles: 3,
+        })
+      ),
+      AlumnosRepository.save(
+        AlumnosRepository.create({
+          rut_alumno: "16.543.210-7",
+          nombre: "Diego",
+          apellido: "Hernández",
+          fechaNacimiento: "2000-07-18",
+          comuna: "Iquique",
+          direccion: "Pasaje Norte 111",
+          email: "diego.hernandez@gmail.cl",
+          password: await encryptPassword("diego123"),
+          id_curso: 1,
+          rut_apoderado: "8.714.763-0",
+          id_roles: 3,
+        })
+      ),
     ]);
-    console.log("* => Alumnos creadas exitosamente");
+    console.log("* => Alumnos creados exitosamente");
   } catch (error) {
     console.error("Error al crear alumnos", error);
   }
 }
+
 
 
 async function createAnotaciones() {

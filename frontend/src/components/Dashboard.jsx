@@ -4,9 +4,13 @@ import Box from '@mui/material/Box';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { AppProvider } from '@toolpad/core/react-router-dom';
 import SchoolIcon from '@mui/icons-material/School';
+import StickyNote2Icon from '@mui/icons-material/StickyNote2';
+import ManageSearchIcon from '@mui/icons-material/ManageSearch';
+import AddIcon from '@mui/icons-material/Add';
 import { DashboardLayout } from '@toolpad/core/DashboardLayout';
 import { useNavigate, Outlet } from "react-router-dom";
 import { logout } from '@services/auth.service.js';
+import Add from '@mui/icons-material/Add';
 
 const NAVIGATION = [
   {
@@ -22,7 +26,19 @@ const NAVIGATION = [
   {
     segment: 'anotaciones',
     title: 'Anotaciones',
-    icon: <SchoolIcon />,
+    icon: <StickyNote2Icon />,
+    children: [
+      {
+        segment: 'add_anotaciones',
+        title: 'Añadir anotaciones',
+        icon: <AddIcon />,
+      },
+      {
+        segment: 'ver_anotaciones',
+        title: 'Ver todas las anotaciones',
+        icon: <ManageSearchIcon />,
+      },
+    ]
   },
   {
     segment: 'VerNotas',
