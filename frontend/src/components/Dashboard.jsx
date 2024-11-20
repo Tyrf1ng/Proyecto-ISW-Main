@@ -38,6 +38,11 @@ const NAVIGATION = [
     segment: 'horarios',
     title: 'Horarios',
     icon: <SchoolIcon />,
+  },
+  {
+    segment: 'reservas', // Añade el segmento para Reservas
+    title: 'Reservas',
+    icon: <SchoolIcon />,
   }
 ];
 
@@ -100,7 +105,6 @@ function DashboardLayoutAccount() {
   }, [navigate]);
 
   const hideNavigation = location.pathname === '/Cursos';
-
 
   return (
     <ThemeProvider theme={customTheme}>

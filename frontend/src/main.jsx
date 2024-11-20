@@ -10,10 +10,11 @@ import ProtectedRoute from '@components/ProtectedRoute';
 import Anotaciones from '@pages/Anotaciones';
 import Labs from '@pages/Labs'; // Importa el nuevo componente Labs
 import Horarios from '@pages/Horarios'; // Importa el nuevo componente Horarios
-import VerNotas from '@pages/VerNotas';;
-import '@styles/styles.css';
+import VerNotas from '@pages/VerNotas';
 import VerAsistencias from '@pages/VerAsistencias';
 import RegistrarAsistencias from '@pages/RegistrarAsistencias';
+import Reservas from '@pages/Reservas'; // Importa el nuevo componente Reservas
+import '@styles/styles.css';
 
 const router = createBrowserRouter([
   {
@@ -29,6 +30,7 @@ const router = createBrowserRouter([
       { path: 'horarios', element: <Horarios /> },
       { path: 'VerAsistencias/:id_curso', element: <VerAsistencias /> },
       { path: 'RegistrarAsistencias/:id_curso', element: <RegistrarAsistencias /> },
+      { path: 'reservas', element: <Reservas /> }, // Añade la ruta para Reservas
       {
         path: 'users',
         element: (
@@ -37,7 +39,6 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
-    
     ],
   },
   { path: '/auth', element: <Login /> },
