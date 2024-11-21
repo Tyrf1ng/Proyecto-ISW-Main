@@ -1,16 +1,15 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
 import Box from '@mui/material/Box';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { createTheme } from '@mui/material/styles';
 import { AppProvider } from '@toolpad/core/react-router-dom';
 import SchoolIcon from '@mui/icons-material/School';
 import StickyNote2Icon from '@mui/icons-material/StickyNote2';
 import ManageSearchIcon from '@mui/icons-material/ManageSearch';
 import AddIcon from '@mui/icons-material/Add';
 import { DashboardLayout } from '@toolpad/core/DashboardLayout';
-import { useNavigate, Outlet } from "react-router-dom";
+import { useNavigate, Outlet } from 'react-router-dom';
 import { logout } from '@services/auth.service.js';
-import Add from '@mui/icons-material/Add';
 
 const NAVIGATION = [
   {
@@ -38,7 +37,7 @@ const NAVIGATION = [
         title: 'Ver todas las anotaciones',
         icon: <ManageSearchIcon />,
       },
-    ]
+    ],
   },
   {
     segment: 'VerNotas',
@@ -56,13 +55,16 @@ const NAVIGATION = [
     icon: <SchoolIcon />,
   },
   {
-    segment: 'reservas', // Añade el segmento para Reservas
+    segment: 'reservas',
     title: 'Reservas',
     icon: <SchoolIcon />,
-  }
+  },
 ];
 
 const customTheme = createTheme({
+  cssVariables: {
+    colorSchemeSelector: 'data-toolpad-color-scheme',
+  },
   colorSchemes: {
     light: {
       palette: {
@@ -70,7 +72,12 @@ const customTheme = createTheme({
           default: '#FFF',
           paper: '#EEEEF9',
         },
-        defaultChannel: '255 255 255',
+        primary: {
+          main: '#1976d2',
+        },
+        secondary: {
+          main: '#9c27b0',
+        },
       },
     },
     dark: {
@@ -79,8 +86,26 @@ const customTheme = createTheme({
           default: 'radial-gradient(circle,#090B11 , #002952)',
           paper: '#002952',
         },
-        defaultChannel: '9 11 17',
+        primary: {
+          main: '#90caf9',
+        },
+        secondary: {
+          main: '#f48fb1',
+        },
+        text: {
+          primary: '#ffffff',
+          secondary: '#bbbbbb',
+        },
       },
+    },
+  },
+  breakpoints: {
+    values: {
+      xs: 0,
+      sm: 600,
+      md: 600,
+      lg: 1200,
+      xl: 1536,
     },
   },
 });
@@ -88,59 +113,53 @@ const customTheme = createTheme({
 function DashboardLayoutAccount() {
   const navigate = useNavigate();
 
-  // Cargar usuario de sessionStorage al iniciar sesión
   const [session, setSession] = React.useState(() => {
     const usuarioGuardado = JSON.parse(sessionStorage.getItem('usuario'));
     return usuarioGuardado ? { user: usuarioGuardado } : null;
   });
 
-  // Redirige al usuario si no está autenticado
   React.useEffect(() => {
     if (!session || !session.user) {
       navigate('/auth');
     }
   }, [session, navigate]);
 
-  const authentication = React.useMemo(() => {
-    return {
-      signIn: () => {
-        const user = {
-          email: 'example@domain.com',
-          image: 'https://example.com/image.jpg',
-        };
-        sessionStorage.setItem('usuario', JSON.stringify(user));
-        setSession({ user });
-      },
-      signOut: () => {
-        logout();
-        sessionStorage.removeItem('usuario');
-        setSession(null);
-        navigate('/auth');
-      },
-    };
-  }, [navigate]);
+  const authentication = React.useMemo(() => ({
+    signIn: () => {
+      const user = {
+        email: 'example@domain.com',
+        image: 'https://example.com/image.jpg',
+      };
+      sessionStorage.setItem('usuario', JSON.stringify(user));
+      setSession({ user });
+    },
+    signOut: () => {
+      logout();
+      sessionStorage.removeItem('usuario');
+      setSession(null);
+      navigate('/auth');
+    },
+  }), [navigate]);
 
   const hideNavigation = location.pathname === '/Cursos';
 
   return (
-    <ThemeProvider theme={customTheme}>
+    <AppProvider
+      session={session}
+      authentication={authentication}
+      navigation={NAVIGATION}
+      branding={{
+        logo: <SchoolIcon sx={{ marginX: 2, marginTop: 1 }} />,
+        title: 'SmeBook',
+      }}
+      theme={customTheme}
+    >
       <Box sx={{ minHeight: '100vh', background: (theme) => theme.palette.background.default }}>
-        <AppProvider
-          session={session}
-          authentication={authentication}
-          navigation={NAVIGATION}
-          theme={customTheme}
-          branding={{
-            logo: <SchoolIcon sx={{ marginX: 2, marginTop: 1 }} />,
-            title: "SmeBook", // Deja esto como un string
-          }}
-        >
-          <DashboardLayout hideNavigation={hideNavigation} >
-            <Outlet />
-          </DashboardLayout>
-        </AppProvider>
+        <DashboardLayout hideNavigation={hideNavigation}>
+          <Outlet />
+        </DashboardLayout>
       </Box>
-    </ThemeProvider>
+    </AppProvider>
   );
 }
 
