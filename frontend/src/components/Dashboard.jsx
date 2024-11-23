@@ -4,6 +4,7 @@ import Box from '@mui/material/Box';
 import { createTheme } from '@mui/material/styles';
 import { AppProvider } from '@toolpad/core/react-router-dom';
 import SchoolIcon from '@mui/icons-material/School';
+import HistoryEduRoundedIcon from '@mui/icons-material/HistoryEduRounded';
 import StickyNote2Icon from '@mui/icons-material/StickyNote2';
 import ManageSearchIcon from '@mui/icons-material/ManageSearch';
 import AddIcon from '@mui/icons-material/Add';
@@ -40,9 +41,22 @@ const NAVIGATION = [
     ],
   },
   {
-    segment: 'VerNotas',
+    segment: 'notas',
     title: 'Notas',
-    icon: <SchoolIcon />,
+    icon: <HistoryEduRoundedIcon />,
+    children: [
+      {
+        segment: 'add_notas',
+        title: 'Añadir notas',
+        icon: <AddIcon />,
+      },
+      {
+        segment: 'VerNotas',
+        title: 'Ver todas las notas',
+        icon: <ManageSearchIcon />,
+      },
+    ],
+  
   },
   {
     segment: 'labs',

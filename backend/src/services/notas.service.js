@@ -121,26 +121,27 @@ export async function getNota(id_nota) {
 //FUNCIONA NO TOCAR
 export async function updateNota(id_nota, nuevoValor) {
     try {
-        const notasRepository = AppDataSource.getRepository(Notas);
+        const parsedValor = parseFloat(nuevoValor);
+        if (isNaN(parsedValor)) {
+            return [null, "El valor debe ser un número válido"];
+        }
 
-       
+        const notasRepository = AppDataSource.getRepository(Notas);
         const result = await notasRepository.update(
-            { id_nota: id_nota },  
-            { valor: nuevoValor }   
+            { id_nota: id_nota },
+            { valor: parsedValor }
         );
 
         if (result.affected === 0) {
             return [null, "No se encontró la nota"];
         }
 
-        return [{ id_nota, valor: nuevoValor }, null]; 
+        return [{ id_nota, valor: parsedValor }, null]; 
     } catch (error) {
         console.error("Error al actualizar la nota:", error);
         return [null, "Error interno del servidor"];
     }
 }
-
-
 
 //funcion para crear una nota
 //FUNCIONA NO TOCAR

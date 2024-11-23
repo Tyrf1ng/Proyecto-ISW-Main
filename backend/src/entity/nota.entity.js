@@ -15,7 +15,7 @@ const NotasSchema = new EntitySchema({
       nullable: false,
     },
     valor: {
-      type: "float",
+      type: "double precision",
       nullable: false,
     },
     rut_alumno: {
@@ -40,12 +40,12 @@ const NotasSchema = new EntitySchema({
   },
   relations: { 
     alumno: {
-        type: "one-to-one",
+        type: "many-to-one",
         target: "Alumno", 
         joinColumn: { name: "rut_alumno" } ,
     },
     asignatura: {
-        type: "one-to-one",
+        type: "many-to-one",
         target: "Asignaturas", 
         joinColumn: { name: "id_asignatura" } ,
     },
