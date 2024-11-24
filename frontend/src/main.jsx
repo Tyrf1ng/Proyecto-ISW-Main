@@ -1,5 +1,5 @@
 import ReactDOM from 'react-dom/client';
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom";
 import Root from '@pages/Root'; // El layout principal
 import Inicio from '@pages/Inicio';
 import Cursos from '@pages/Cursos';
@@ -42,11 +42,15 @@ const router = createBrowserRouter([
           {path: 'VerNotas', element: <VerNotas/>},
     ],
   },
-      { path: 'labs', element: <Labs /> },
-      { path: 'horarios', element: <Horarios /> },
       { path: 'VerAsistencias/:id_curso', element: <VerAsistencias /> },
       { path: 'RegistrarAsistencias/:id_curso', element: <RegistrarAsistencias /> },
-      { path: 'reservas', element: <Reservas /> }, // Añade la ruta para Reservas
+      { path: 'gestion_reservas', element: <Outlet />, // Añade la ruta para Reservas
+      children: [
+        { path: 'labs', element: <Labs /> },
+        { path: 'horarios', element: <Horarios /> },
+        { path: 'reservas', element: <Reservas /> },
+  ],
+},
       {
         path: 'users',
         element: (
