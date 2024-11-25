@@ -3,6 +3,7 @@ import { Router } from "express";
 import {  
     createNotaController,
     deleteNotasController,
+    getAllNotasController,
     getNotaController,
     getNotasAlumnoController, 
     getNotasAsignaturaController,
@@ -15,6 +16,7 @@ import {
 const router = Router();
 
 router
+    .get("/", getAllNotasController)
     .get("/:id_nota", getNotaController)
     .get("/alumno/:rut_alumno", getNotasAlumnoController)
     .get("/asignatura/:id_asignatura", getNotasAsignaturaController)

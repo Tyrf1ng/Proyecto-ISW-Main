@@ -30,18 +30,7 @@ const CursoSchema = new EntitySchema({
         onUpdate: "CURRENT_TIMESTAMP",
         nullable: false,
       },
-    rut_directivo: {
-      type: "varchar",
-      nullable: false,
-    },
   },
-  relations: {
-    directivo: {
-      type: "many-to-one",
-      target: "Directivo", 
-      joinColumn: { name: "rut_directivo" } ,
-  }, },
-
 });
 
 export default CursoSchema;

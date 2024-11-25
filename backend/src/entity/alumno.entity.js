@@ -46,7 +46,7 @@ const AlumnoSchema = new EntitySchema({
       nullable: false,
     },
 
-    id_role: {
+    id_roles: {
       type: "int",
       nullable: false,
     },
@@ -72,19 +72,19 @@ const AlumnoSchema = new EntitySchema({
   },
   relations: {
     curso: {
-      type: "one-to-one",
+      type: "Many-to-one",
       target: "Curso", 
       joinColumn: { name: "id_curso" } ,
     },
     apoderado:{
-      type: "one-to-one",
+      type: "one-to-many",
       target: "Apoderado", 
       joinColumn: { name: "rut_apoderado" },
     }, 
     roles: {
       type: "many-to-one",
       target: "Roles", 
-      joinColumn: { name: "id_role" } ,
+      joinColumn: { name: "id_roles" } ,
     },
   },
 

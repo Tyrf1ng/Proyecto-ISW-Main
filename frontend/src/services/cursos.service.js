@@ -10,3 +10,22 @@ export async function getCursos() {
         return error.response.data;
     }
 }
+export async function getCurso(id_curso) {
+    try {
+        const { data } = await axios.get(`/cursos/${id_curso}`);
+        return data.data;
+    } catch (error) {
+        return error.response.data;
+    }
+}   
+
+export async function getCursosByProfesor(rut_docente) {
+    try {
+        console.log('RUT enviado al backend:', rut_docente);  // Verificar el RUT
+        const response = await axios.get(`/cursos/profesor/${rut_docente}`);
+        return response.data.data;
+    } catch (error) {
+        console.error('Error al obtener cursos por profesor:', error);
+        throw error;
+    }
+}

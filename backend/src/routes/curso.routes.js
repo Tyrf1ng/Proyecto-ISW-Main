@@ -1,12 +1,26 @@
 "use strict";
 import { Router } from "express";
 import {
-    getCurso,
-    getCursos,
-  } from "../controllers/curso.controller.js"
+    createCursoController,
+    deleteCursoController,
+    getCursoController,
+    getCursosByProfesorController,
+    getCursosController,
+    updateCursoController,
+} from "../controllers/curso.controller.js";
+import { authenticateJwt } from "../middlewares/authentication.middleware.js";
+
 const router = Router();
 
 router
-  .get("/", getCursos)         
-  .get("/detail/", getCurso);  
+    .use(authenticateJwt)
+
+router
+    .get("/:id_curso", getCursoController)
+    .get("/", getCursosController)
+    .get("/profesor/:rut_docente", getCursosByProfesorController)
+    .post("/crear/", createCursoController)
+    .patch("/actualizar/:id_curso", updateCursoController)
+    .delete("/borrar/:id_curso", deleteCursoController);
+
 export default router;

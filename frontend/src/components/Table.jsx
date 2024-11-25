@@ -1,11 +1,16 @@
-import useTable from '@hooks/table/useTable.jsx';
+import React from 'react';
+import { TableContainer, Paper, Table, TableHead, TableRow, TableBody, TableCell } from '@mui/material';
 
-export default function Table({ data, columns, filter, dataToFilter, initialSortName, onSelectionChange }) {
-  const { tableRef } = useTable({ data, columns, filter, dataToFilter, initialSortName, onSelectionChange });
+const VirtuosoTableComponents = {
+  Scroller: React.forwardRef((props, ref) => (
+    <TableContainer component={Paper} {...props} ref={ref} />
+  )),
+  Table: (props) => (
+    <Table {...props} sx={{ borderCollapse: 'separate', tableLayout: 'fixed' }} />
+  ),
+  TableHead: React.forwardRef((props, ref) => <TableHead {...props} ref={ref} />),
+  TableRow,
+  TableBody: React.forwardRef((props, ref) => <TableBody {...props} ref={ref} />),
+};
 
-  return (
-    <div className='table-container'>
-      <div ref={tableRef}></div>
-    </div>
-  );
-}
+export default VirtuosoTableComponents;

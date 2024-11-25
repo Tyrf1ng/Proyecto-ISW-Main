@@ -1,22 +1,15 @@
-import { Outlet } from 'react-router-dom';
-import Navbar from '@components/Navbar';
+import DashboardLayoutAccount from '@components/Dashboard';
 import { AuthProvider } from '@context/AuthContext';
+import { CursoProvider } from '../context/CursoContext'; // Asegúrate de importar el CursoProvider
 
-function Root()  {
-return (
+function Root() {
+  return (
     <AuthProvider>
-        <PageRoot/>
+      <CursoProvider> {/* Asegúrate de envolver tu aplicación con CursoProvider */}
+        <DashboardLayoutAccount />
+      </CursoProvider>
     </AuthProvider>
-);
-}
-
-function PageRoot() {
-return (
-    <>
-        <Navbar />
-        <Outlet />
-    </>
-);
+  );
 }
 
 export default Root;

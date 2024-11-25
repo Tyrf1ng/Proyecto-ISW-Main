@@ -18,12 +18,12 @@ const AsignaturaCursoSchema = new EntitySchema({
   },
   relations: {
     asignaturas: {
-      type: "many-to-one",
+      type: "one-to-many",
       target: "Asignaturas",
       joinColumn: { name: "id_asignatura" },
     },
     cursos: {
-      type: "many-to-one",
+      type: "one-to-many",
       target: "Curso",
       joinColumn: { name: "id_curso" },
     },

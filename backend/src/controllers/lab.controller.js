@@ -11,18 +11,24 @@ import {
     handleErrorClient,
     handleErrorServer,
     handleSuccess,
-    } from "../handlers/responseHandlers.js";
+} from "../handlers/responseHandlers.js";
 
-//--------------------------------------------------//
-    import Joi from "joi";
+import Joi from "joi";
 
 // Definición del esquema de validación
 const labBodyValidation = Joi.object({
     nombre: Joi.string().max(255).required(),
     capacidad: Joi.number().integer().required(),
-  });
-//--------------------------------------------------//
+});
 
+// Definición del esquema de validación para la actualización
+const labUpdateValidation = Joi.object({
+    id_lab: Joi.number().integer().required(),
+    nombre: Joi.string().max(255).required(),
+    capacidad: Joi.number().integer().required(),
+    createdAt: Joi.date().optional(),
+    updatedAt: Joi.date().optional(),
+});
 
 //Funciona NO TOCAR
 export async function getLab(req, res) {
@@ -36,7 +42,6 @@ export async function getLab(req, res) {
     }
 }
 
-
 //Funciona NO TOCAR
 export async function getLabs(req, res) {
     try {
@@ -49,10 +54,10 @@ export async function getLabs(req, res) {
     }
 }
 
-
 //Funciona NO TOCAR
 export async function createLab(req, res) {
     try {
+        console.log("Solicitud recibida para crear laboratorio:", req.body); // Agrega este log
         const { nombre, capacidad } = req.body;
         if (!nombre || !capacidad) {
             return handleErrorClient(res, 400, "Faltan datos obligatorios");
@@ -70,13 +75,12 @@ export async function createLab(req, res) {
     }
 }
 
-
 //Funciona NO TOCAR
 export async function updateLab(req, res) {
     try {
         const { id_lab } = req.params;
         const { body } = req;
-        const { error: bodyError } = labBodyValidation.validate(body);
+        const { error: bodyError } = labUpdateValidation.validate({ id_lab, ...body });
         if (bodyError) return handleErrorClient(res, 400, bodyError.message);
 
         const [lab, errorLab] = await updateLabService(id_lab, body);
@@ -87,7 +91,6 @@ export async function updateLab(req, res) {
         handleErrorServer(res, 500, error.message);
     }
 }
-
 
 //Funciona NO TOCAR
 export async function deleteLab(req, res) {

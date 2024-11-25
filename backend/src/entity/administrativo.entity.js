@@ -51,7 +51,7 @@ const AdministrativoSchema = new EntitySchema({
     roles: {
       type: "many-to-one",
       target: "Roles", 
-      joinColumn: { name: "id_role" } ,
+      joinColumn: { name: "id_roles" } ,
   }, },
 });
 
