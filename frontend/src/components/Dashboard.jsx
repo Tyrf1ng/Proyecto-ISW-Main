@@ -11,7 +11,8 @@ import AddIcon from '@mui/icons-material/Add';
 import { DashboardLayout } from '@toolpad/core/DashboardLayout';
 import { useNavigate, Outlet } from 'react-router-dom';
 import { logout } from '@services/auth.service.js';
-
+import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
+import CollectionsBookmarkIcon from '@mui/icons-material/CollectionsBookmark';
 const NAVIGATION = [
   {
     segment: 'Inicio',
@@ -21,7 +22,24 @@ const NAVIGATION = [
   {
     segment: 'Cursos',
     title: 'Cursos',
-    icon: <SchoolIcon />,
+    icon: <CollectionsBookmarkIcon />,
+  },
+  {
+    segment: 'asistencias',
+    title: 'Asistencias',
+    icon: <PeopleAltIcon/>,
+    children: [
+      {
+        segment: 'add_asistencias',
+        title: 'Añadir asistencias',
+        icon: <AddIcon />,
+      },
+      {
+        segment: 'ver_asistencias',
+        title: 'Ver todas las asistencias',
+        icon: <ManageSearchIcon />,
+      },
+    ]
   },
   {
     segment: 'anotaciones',

@@ -1,22 +1,28 @@
-import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { getAsistenciasCurso } from "../services/Asistencias.service"; // Importar el servicio adecuado
+import { useState, useEffect, useContext } from "react";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import CircularProgress from "@mui/material/CircularProgress";
-import { format } from "date-fns"; // Importar date-fns
+import TextField from "@mui/material/TextField";
+import { CursoContext } from "../context/CursoContext"; // Importa el contexto
+import { getAsistenciasCurso } from "../services/Asistencias.service"; // Importar el servicio
 
 const VerAsistencias = () => {
-  const { id_curso } = useParams();
-  console.log("id_curso:", id_curso);
+  const { idCurso } = useContext(CursoContext);
   const [asistencias, setAsistencias] = useState([]);
+  const [filterText, setFilterText] = useState("");
   const [cargando, setCargando] = useState(true);
 
   useEffect(() => {
     const cargarAsistencias = async () => {
       try {
-        const datosAsistencias = await getAsistenciasCurso(id_curso);
+        const datosAsistencias = await getAsistenciasCurso(idCurso);
         setAsistencias(datosAsistencias || []); // Asegurarse de que los datos se asignen correctamente
       } catch (error) {
         console.error("Error al cargar las asistencias:", error);
@@ -24,50 +30,79 @@ const VerAsistencias = () => {
         setCargando(false);
       }
     };
-
+    console.log("id_curso proporcionado por CursoContext:", idCurso);
     cargarAsistencias();
-  }, [id_curso]);
+  }, [idCurso]);
+
+  // Filtrar asistencias según el texto ingresado
+  const filteredAsistencias = asistencias.filter((asistencia) =>
+    `${asistencia.alumno.nombre} ${asistencia.alumno.apellido}`
+      .toLowerCase()
+      .includes(filterText.toLowerCase())
+  );
+
+  const handleFilterChange = (e) => {
+    setFilterText(e.target.value);
+  };
 
   if (cargando) {
     return <CircularProgress />;
   }
 
   return (
-    <Box sx={{ padding: 4, backgroundColor: "#E6EFF8", minHeight: "100vh" }}>
-      <Typography
-        variant="h4"
-        gutterBottom
-        align="center"
-        sx={{ color: "#133B5C" }}
-      >
-        Asistencias del Curso
+    <Box sx={{ padding: 4 }}>
+      <Typography variant="h4" gutterBottom>
+        Asistencias {idCurso ? `del Curso: ${idCurso}` : ""}
       </Typography>
-      {asistencias.length === 0 ? (
-        <Typography variant="h6" align="center" sx={{ color: "#133B5C" }}>
-          No hay asistencias registradas para este curso.
-        </Typography>
-      ) : (
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-          {asistencias.map((asistencia, index) => (
-            <Paper
-              key={index}
-              sx={{
-                padding: 2,
-                backgroundColor: "#BBDEFB",
-                borderRadius: "8px",
-                color: "#133B5C",
-              }}
-            >
-              <Typography variant="body1">
-                Fecha:{" "}
-                {format(new Date(asistencia.createdAt), "dd/MM/yyyy HH:mm")} -
-                {asistencia.alumno.nombre} {asistencia.alumno.apellido} - Rut:{" "}
-                {asistencia.rut_alumno} - Estado: {asistencia.tipo}
-              </Typography>
-            </Paper>
-          ))}
-        </Box>
-      )}
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: 2,
+        }}
+      >
+        <TextField
+          label="Filtrar por nombre"
+          variant="outlined"
+          value={filterText}
+          onChange={handleFilterChange}
+        />
+      </Box>
+      <TableContainer component={Paper}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>Fecha</TableCell>
+              <TableCell>Nombre del Alumno</TableCell>
+              <TableCell>RUT</TableCell>
+              <TableCell>Estado</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {filteredAsistencias.length > 0 ? (
+              filteredAsistencias.map((asistencia, index) => (
+                <TableRow key={index}>
+                  <TableCell>
+                    {new Date(asistencia.createdAt).toLocaleString()}
+                  </TableCell>
+                  <TableCell>
+                    {asistencia.alumno.nombre} {asistencia.alumno.apellido}
+                  </TableCell>
+                  <TableCell>{asistencia.rut_alumno}</TableCell>
+                  <TableCell>{asistencia.tipo}</TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={4} align="center">
+                  No hay asistencias registradas para este curso.
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </TableContainer>
     </Box>
   );
 };

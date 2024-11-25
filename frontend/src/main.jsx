@@ -29,6 +29,14 @@ const router = createBrowserRouter([
       { path: 'inicio', element: <Inicio /> },
       { path: 'cursos', element: <Cursos /> },
       {
+        path: 'asistencias', 
+        element: <Outlet/>,
+        children:[
+          {path: 'add_asistencias', element: <RegistrarAsistencias />},
+          {path: 'ver_asistencias', element: <VerAsistencias />}
+        ]
+      },
+      {
         path: 'anotaciones',
         element: <Anotaciones />, // Componente principal de anotaciones
         children: [

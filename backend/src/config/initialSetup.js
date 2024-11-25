@@ -185,7 +185,20 @@ async function createDocente() {
           comuna:"Hualpen",
           direccion:"Calle falsa 123",
           id_roles: 2,
-        }),
+          }),
+        ),
+        DocenteRepository.save(
+          DocenteRepository.create({
+            rut_docente: "5.126.663-4",
+            nombre: "Michelle",
+            apellido: "Bachelet",
+            email:"Michelle@gmail.cl",
+            password: await encryptPassword("michelle123"),
+            telefono: "987654321",
+            comuna:"Concepcion",
+            direccion:"Calle falsa 123",
+            id_roles: 2,
+          }),
       ),
     ]);
     console.log("* => Docentes creados exitosamente");
@@ -208,7 +221,14 @@ async function createAsignaturas() {
           rut_docente: "5.126.663-3",
         }),
       ),
+      AsignaturasRepository.save(
+        AsignaturasRepository.create({
+          nombre: "Lenguaje",
+          rut_docente: "5.126.663-4",
+        }),
+      ),
     ]);
+    
     console.log("* => Asignaturas creadas exitosamente");
   } catch (error) {
     console.error("Error al crear asignaturas:", error);
@@ -438,6 +458,14 @@ async function createAsistencia() {
           tipo: "Presente",
           rut_alumno: "20.960.538-4",
           id_asignatura: 1,
+        }),
+      ),
+      AsistenciaRepository.save(
+        AsistenciaRepository.create({
+          fecha: "2021-09-01",
+          tipo: "Presente",
+          rut_alumno: "4.705.624-1",
+          id_asignatura: 2,
         }),
       ),
     ]);
