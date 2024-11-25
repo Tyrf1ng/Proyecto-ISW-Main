@@ -128,7 +128,7 @@ const Reservas = () => {
 
   return (
     <Box sx={{ padding: 4 }}>
-      <Typography variant="h4" gutterBottom>Reservas</Typography>
+      <Typography variant="h4"   gutterBottom align="center">Reservas</Typography>
       {error && <Alert severity="error">{error}</Alert>}
       <Snackbar
         open={!!deleteError}

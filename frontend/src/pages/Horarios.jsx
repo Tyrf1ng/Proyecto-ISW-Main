@@ -110,8 +110,8 @@ const Horarios = () => {
     }, [horarios]);
 
     return (
-        <Box sx={{ padding: 4, backgroundColor: '#E6EFF8', minHeight: '100vh' }}>
-            <Typography variant="h4" gutterBottom align="center" sx={{ color: '#133B5C' }}>
+        <Box sx={{ padding: 4, minHeight: '100vh' }}>
+            <Typography variant="h4" gutterBottom align="center" sx={{ color: '#E3F2FD' }}>
                 Horarios
             </Typography>
             {error && <Alert severity="error">{error}</Alert>}
@@ -182,10 +182,10 @@ const Horarios = () => {
                         },
                       }}
                     InputLabelProps={{
-                        style: { color: '#133B5C' },
+                        style: { color: '#E3F2FD' },
                     }}
                     InputProps={{
-                        style: { color: '#133B5C' },
+                        style: { color: '#E3F2FD' },
                     }}
                 />
                 <Button variant="contained" color="primary" onClick={handleOpen}>
@@ -196,33 +196,33 @@ const Horarios = () => {
                 <Table>
                     <TableHead>
                         <TableRow>
-                            <TableCell sx={{ backgroundColor: '#E3F2FD', color: '#133B5C' }}>
+                            <TableCell sx={{ color: '#E3F2FD' }}>
                                 N° de Horario
                             </TableCell>
-                            <TableCell sx={{ backgroundColor: '#E3F2FD', color: '#133B5C' }}>
+                            <TableCell sx={{ color: '#E3F2FD' }}>
                                 Hora de Inicio
                                 <IconButton size="small" onClick={() => handleSort('hora_inicio')}>
                                     {sortConfig.key === 'hora_inicio' && sortConfig.direction === 'asc' ? <ArrowUpwardIcon /> : <ArrowDownwardIcon />}
                                 </IconButton>
                             </TableCell>
-                            <TableCell sx={{ backgroundColor: '#E3F2FD', color: '#133B5C' }}>
+                            <TableCell sx={{ color: '#E3F2FD' }}>
                                 Hora de Fin
                                 <IconButton size="small" onClick={() => handleSort('hora_fin')}>
                                     {sortConfig.key === 'hora_fin' && sortConfig.direction === 'asc' ? <ArrowUpwardIcon /> : <ArrowDownwardIcon />}
                                 </IconButton>
                             </TableCell>
-                            <TableCell sx={{ backgroundColor: '#E3F2FD', color: '#133B5C' }}>Acciones</TableCell>
+                            <TableCell sx={{ color: '#E3F2FD' }}>Acciones</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
                         {sortedHorarios.map((horario) => (
                             <TableRow key={horario.id_horario}>
-                                <TableCell sx={{ backgroundColor: '#E3F2FD', color: '#133B5C' }}>{horario.id_horario}</TableCell>
-                                <TableCell sx={{ backgroundColor: '#E3F2FD', color: '#133B5C' }}>{horario.hora_inicio}</TableCell>
-                                <TableCell sx={{ backgroundColor: '#E3F2FD', color: '#133B5C' }}>{horario.hora_fin}</TableCell>
-                                <TableCell sx={{ backgroundColor: '#E3F2FD', color: '#133B5C' }}>
+                                <TableCell sx={{ color: '#E3F2FD' }}>{horario.id_horario}</TableCell>
+                                <TableCell sx={{ color: '#E3F2FD' }}>{horario.hora_inicio}</TableCell>
+                                <TableCell sx={{ color: '#E3F2FD' }}>{horario.hora_fin}</TableCell>
+                                <TableCell sx={{ color: '#E3F2FD' }}>
                                     <IconButton onClick={() => handleEditOpen(horario)}>
-                                        <EditIcon sx={{ color: '#133B5C' }} />
+                                        <EditIcon sx={{ color: '#E3F2FD' }} />
                                     </IconButton>
                                     <IconButton onClick={() => handleDeleteOpen(horario)} color="error">
                                         <DeleteIcon />

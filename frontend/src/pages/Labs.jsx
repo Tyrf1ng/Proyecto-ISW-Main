@@ -135,7 +135,7 @@ const Labs = () => {
 
   return (
     <Box sx={{ padding: 4 }}>
-      <Typography variant="h4" gutterBottom>Laboratorios</Typography>
+      <Typography variant="h4"  gutterBottom align="center">Laboratorios</Typography>
       {error && <Alert severity="error">{error}</Alert>}
       <Snackbar
         open={!!deleteError}
