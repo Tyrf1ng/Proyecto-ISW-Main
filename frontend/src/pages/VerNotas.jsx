@@ -38,7 +38,6 @@ const VerNotas = () => {
     `${nota.nombre_alumno.toLowerCase()} ${nota.apellido_alumno.toLowerCase()}`.includes(filterText.toLowerCase())
   );
 
-
   const handleFilterChange = (e) => {
     setFilterText(e.target.value);
   };
@@ -51,7 +50,14 @@ const VerNotas = () => {
     if (nota) {
       setEditMode(true);
       setCurrentNota(nota);
-      setNewNota(nota);
+      setNewNota({
+        tipo: nota.tipo,
+        valor: String(nota.valor), // Convertimos el valor a string
+        rut_alumno: nota.rut_alumno,
+        nombre_alumno: nota.nombre_alumno,
+        apellido_alumno: nota.apellido_alumno,
+        id_asignatura: nota.id_asignatura,
+      });
     } else {
       setEditMode(false);
       setNewNota({
@@ -67,36 +73,47 @@ const VerNotas = () => {
   };
 
   const handleClose = () => setOpen(false);
-  
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+  
     if (name === 'valor') {
-        setNewNota({ ...newNota, [name]: parseFloat(value) });
-    } else {
+      // Verificar que el valor sea un número válido y no mayor a 7.0
+      if (!isNaN(value) && value !== '' && parseFloat(value) <= 7.0) {
         setNewNota({ ...newNota, [name]: value });
+      } else if (parseFloat(value) > 7.0) {
+        alert('El valor de la nota no puede ser mayor a 7.0');
+      } else {
+        setNewNota({ ...newNota, [name]: '' });
+      }
+    } else {
+      setNewNota({ ...newNota, [name]: value });
     }
-};
+  };
 
   const handleSubmit = async () => {
     try {
-        if (editMode) {
-            // Asegúrate de que 'newNota.valor' sea un número
-            await updateNota(currentNota.id_nota, newNota.valor);
-        } else {
-            console.warn("Funcionalidad de creación no implementada en este componente.");
+      if (editMode) {
+        const valorNumerico = parseFloat(newNota.valor);
+        if (isNaN(valorNumerico)) {
+          alert('El valor debe ser un número válido');
+          return;
         }
-        fetchNotas();
-        handleClose();
+        await updateNota(currentNota.id_nota, valorNumerico);  // Enviamos el valor como número
+      } else {
+        console.warn("Funcionalidad de creación no implementada en este componente.");
+      }
+      fetchNotas();  // Refrescar las notas
+      handleClose();
     } catch (error) {
-        console.error("Error al guardar la nota: ", error);
+      console.error("Error al guardar la nota: ", error);
     }
-};
-
+  };
 
   const handleDelete = async (id) => {
     try {
       await deleteNota(id);
-      fetchNotas();
+      fetchNotas();  // Refrescar las notas
     } catch (error) {
       console.error("Error al eliminar la nota: ", error);
     }
@@ -181,15 +198,6 @@ const VerNotas = () => {
             fullWidth
             margin="dense"
             value={newNota.rut_alumno}
-            onChange={handleInputChange}
-          />
-          <TextField
-            label="ID Asignatura"
-            name="id_asignatura"
-            variant="outlined"
-            fullWidth
-            margin="dense"
-            value={newNota.id_asignatura}
             onChange={handleInputChange}
           />
           <Button variant="contained" color="primary" onClick={handleSubmit} sx={{ marginTop: 2 }}>
