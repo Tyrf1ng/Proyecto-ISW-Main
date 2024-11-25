@@ -59,19 +59,26 @@ const NAVIGATION = [
   
   },
   {
-    segment: 'labs',
-    title: 'Laboratorios',
+    segment: 'gestion_reservas',
+    title: 'Gestion Reservas Laboratorio',
     icon: <SchoolIcon />,
-  },
-  {
-    segment: 'horarios',
-    title: 'Horarios',
-    icon: <SchoolIcon />,
-  },
-  {
-    segment: 'reservas',
-    title: 'Reservas',
-    icon: <SchoolIcon />,
+    children: [
+      {
+        segment: 'reservas',
+        title: 'Reservas',
+        icon: <SchoolIcon />,
+      },
+      {
+        segment: 'labs',
+        title: 'Laboratorios',
+        icon: <SchoolIcon />,
+      },
+      {
+        segment: 'horarios',
+        title: 'Horarios',
+        icon: <SchoolIcon />,
+      },
+    ],
   },
 ];
 
