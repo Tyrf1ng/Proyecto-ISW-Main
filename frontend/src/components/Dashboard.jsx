@@ -45,13 +45,13 @@ const NAVIGATION = [
     title: 'Notas',
     icon: <HistoryEduRoundedIcon />,
     children: [
-      {
-        segment: 'add_notas',
+      /*{
+        segment: 'add',
         title: 'Añadir notas',
         icon: <AddIcon />,
-      },
+      },*/
       {
-        segment: 'VerNotas',
+        segment: 'Ver',
         title: 'Ver todas las notas',
         icon: <ManageSearchIcon />,
       },

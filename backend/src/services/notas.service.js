@@ -121,22 +121,39 @@ export async function getNota(id_nota) {
 //FUNCIONA NO TOCAR
 export async function updateNota(id_nota, nuevoValor) {
     try {
+        // Asegúrate de que 'nuevoValor' sea un número
         const parsedValor = parseFloat(nuevoValor);
         if (isNaN(parsedValor)) {
             return [null, "El valor debe ser un número válido"];
         }
 
+        // Verifica si el 'id_nota' es válido
+        if (!id_nota) {
+            return [null, "El id de la nota es requerido"];
+        }
+
+        // Repositorio de TypeORM para interactuar con la tabla Notas
         const notasRepository = AppDataSource.getRepository(Notas);
+
+        // Verifica si la nota con 'id_nota' existe antes de intentar actualizarla
+        const notaExistente = await notasRepository.findOneBy({ id_nota });
+        if (!notaExistente) {
+            return [null, "No se encontró la nota"];
+        }
+
+        // Actualiza la nota en la base de datos
         const result = await notasRepository.update(
             { id_nota: id_nota },
             { valor: parsedValor }
         );
 
+        // Verifica si la actualización realmente afectó filas
         if (result.affected === 0) {
-            return [null, "No se encontró la nota"];
+            return [null, "No se pudo actualizar la nota"];
         }
 
-        return [{ id_nota, valor: parsedValor }, null]; 
+        // Devuelve la nota actualizada si todo salió bien
+        return [{ id_nota, valor: parsedValor }, null];
     } catch (error) {
         console.error("Error al actualizar la nota:", error);
         return [null, "Error interno del servidor"];

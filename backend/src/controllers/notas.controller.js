@@ -77,24 +77,27 @@ export async function getNotaController(req, res) {
 
 export const updateNotaController = async (req, res) => {
     const { id_nota } = req.params;
-    const { valor } = req.body;  // Asegúrate de que 'valor' es lo que estás esperando desde el frontend
+    const { valor } = req.body;  // Asegúrate de que 'valor' sea lo que estás esperando desde el frontend
 
-    // Valida si el valor es correcto (por ejemplo, si es un número)
-    const { error } = notasQueryValidation.validate({ valor });  // Corrige la validación si es necesario
-
-    if (error) {
-        return handleErrorClient(res, 400, "Faltan datos obligatorios", error.message);
+    // Valida si el valor es correcto y asegúrate de que sea un número
+    const parsedValor = parseFloat(valor);
+    if (isNaN(parsedValor)) {
+        return handleErrorClient(res, 400, "El valor debe ser un número válido");
     }
 
-    const [notaActualizada, errorMessage] = await updateNota(id_nota, valor);  // Pasar 'valor' directamente
+    // Llama a la función de actualización
+    const [notaActualizada, errorMessage] = await updateNota(id_nota, parsedValor);  // Pasa el valor convertido
 
     if (errorMessage) {
         return handleErrorClient(res, 400, "No se pudo actualizar la nota", errorMessage);
     }
 
-    return res.json(notaActualizada);
+    // Responde con éxito y los datos de la nota actualizada
+    return res.status(200).json({
+        message: "Nota actualizada correctamente",
+        data: notaActualizada
+    });
 };
-
 export async function createNotaController(req, res) {
     try {
         const { id_asignatura, rut_alumno, valor, tipo } = req.body;

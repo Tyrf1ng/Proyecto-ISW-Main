@@ -10,8 +10,9 @@ import ProtectedRoute from '@components/ProtectedRoute';
 import Anotaciones from '@pages/Anotaciones';
 import Labs from '@pages/Labs'; // Importa el nuevo componente Labs
 import Horarios from '@pages/Horarios'; // Importa el nuevo componente Horarios
-import VerNotas from '@pages/VerNotas';;
-//import Add_notas from '@pages/Add_notas';
+import VerNotas from '@pages/VerNotas';
+import Notas from '@pages/Notas';
+import Add_notas from '@pages/Add_notas';
 import Add_anotaciones from '@pages/Add_anotaciones'
 import Ver_anotaciones from '@pages/Ver_anotaciones'
 import '@styles/styles.css';
@@ -36,10 +37,10 @@ const router = createBrowserRouter([
           { path: 'ver_anotaciones', element: <Ver_anotaciones /> },
         ],
       },
-      { path: 'Notas', element: <VerNotas />,
+      { path: 'Notas', element: <Notas />,
         children: [
-          //{path: 'add_notas', element: <Add_notas/>},
-          {path: 'VerNotas', element: <VerNotas/>},
+          {path: 'add', element: <Add_notas/>},
+          {path: 'Ver', element: <VerNotas/>},
     ],
   },
       { path: 'labs', element: <Labs /> },
