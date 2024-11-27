@@ -18,3 +18,13 @@ export async function createAsistencia(data) {
     throw error;
   }
 }
+
+export const getAsistenciasPorAlumno = async (rutAlumno) => {
+  try {
+    const response = await axios.get(`/asistencias/alumno/${rutAlumno}`);
+    return response.data?.data || []; // Asegúrate de manejar correctamente la estructura de respuesta
+  } catch (error) {
+    console.error("Error al obtener las asistencias por alumno:", error);
+    throw error;
+  }
+};

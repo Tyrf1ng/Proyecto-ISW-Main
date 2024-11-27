@@ -102,6 +102,14 @@ const NAVIGATION_BY_ROLE = {
   alumno: [
     { segment: 'Inicio', title: 'Inicio', icon: <SchoolIcon /> },
     {
+      segment: 'asistencias',
+      title: 'Asistencias',
+      icon: <PeopleAltIcon />,
+      children: [
+        { segment: 'alumno', title: 'Ver Asistencias', icon: <ManageSearchIcon /> }, // Nueva opción
+      ],
+    },
+    {
       segment: 'notas',
       title: 'Notas',
       icon: <HistoryEduRoundedIcon />,
@@ -121,6 +129,7 @@ const NAVIGATION_BY_ROLE = {
     { segment: 'horarios', title: 'Horarios', icon: <SchoolIcon /> },
   ],
 };
+
 
 const customTheme = createTheme({
   cssVariables: {
