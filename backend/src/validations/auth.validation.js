@@ -26,7 +26,7 @@ export const authValidation = Joi.object({
     })
     .custom(domainEmailValidator, "Validación dominio email"),
   password: Joi.string()
-    .min(8)
+    .min(6)
     .max(26)
     .pattern(/^[a-zA-Z0-9]+$/)
     .required()
@@ -83,7 +83,7 @@ export const registerValidation = Joi.object({
     })
     .custom(domainEmailValidator, "Validación dominio email"),
     password: Joi.string()
-    .min(8)
+    .min(6)
     .max(26)
     .pattern(/^[a-zA-Z0-9@_\-]+$/)  // Se permite letras, números, @, _ y -
     .required()
