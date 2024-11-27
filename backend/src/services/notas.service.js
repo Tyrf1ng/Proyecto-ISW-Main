@@ -55,22 +55,36 @@ export async function getNotasCurso(id_curso) {
 
 //funcion para traer todas las notas de un alumno
 //FUNCIONA NO TOCAR
+//función para traer todas las notas de un alumno
 export async function getNotasAlumno(rut_alumno) {
     try {
         const notasRepository = AppDataSource.getRepository(Notas);
-        const nota = await notasRepository.find({
-            where: { rut_alumno: rut_alumno }
+        const notas = await notasRepository.find({
+            where: { rut_alumno: rut_alumno },
+            relations: ["asignatura", "alumno"], // Incluye las relaciones necesarias
         });
-        
-        if (!nota || nota.length === 0) return [null, "No hay notas"];
-        const notaData = nota.map(n => n);     
-        return [notaData, null];  
 
+        if (!notas || notas.length === 0) return [null, "No hay notas"];
+
+        // Mapear los datos para devolver información adicional del alumno y asignatura
+        const notasConDatos = notas.map(nota => ({
+            id_nota: nota.id_nota,
+            tipo: nota.tipo,
+            valor: nota.valor,
+            rut_alumno: nota.alumno.rut_alumno,
+            nombre_alumno: nota.alumno.nombre,
+            apellido_alumno: nota.alumno.apellido,
+            nombre_asignatura: nota.asignatura.nombre,
+            id_asignatura: nota.asignatura.id_asignatura,
+        }));
+
+        return [notasConDatos, null];
     } catch (error) {
         console.error("Error al obtener las notas:", error);
         return [null, "Error interno del servidor"];
     }
 }
+
 
 
 //funcion para traer todas las notas de un asignatura por alumno

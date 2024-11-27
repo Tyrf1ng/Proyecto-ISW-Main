@@ -1,6 +1,7 @@
 "use strict";
 import { Router } from "express";
 import { login, logout, register } from "../controllers/auth.controller.js";
+import authorize from "../middlewares/authorization.middleware.js";
 
 const router = Router();
 

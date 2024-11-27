@@ -19,20 +19,27 @@ export async function login(req, res) {
     if (error) {
       return handleErrorClient(res, 400, "Error de validación", error.message);
     }
+
     const [accessToken, errorToken] = await loginService(body);
 
-    if (errorToken) return handleErrorClient(res, 400, "Error iniciando sesión", errorToken);
+    if (errorToken) {
+      return handleErrorClient(res, 400, "Error iniciando sesión", errorToken.message);
+    }
 
     res.cookie("jwt", accessToken, {
       httpOnly: true,
       maxAge: 24 * 60 * 60 * 1000,
     });
 
-    handleSuccess(res, 200, "Inicio de sesión exitoso", { token: accessToken });
+    handleSuccess(res, 200, "Inicio de sesión exitoso", {
+      token: accessToken,
+    });
   } catch (error) {
+    console.error("Error en login:", error);
     handleErrorServer(res, 500, error.message);
   }
 }
+
 
 export async function register(req, res) {
   try {

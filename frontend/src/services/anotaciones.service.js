@@ -40,3 +40,13 @@ export async function deleteAnotacion(id) {
     throw error;
   }
 }
+
+export async function getAnotacionesAlumno(rutAlumno) {
+  try {
+    const { data } = await axios.get(`/anotaciones/alumno/${rutAlumno}`);
+    return data.data; // Ajusta según la estructura de tu respuesta del backend
+  } catch (error) {
+    console.error('Error al obtener anotaciones del alumno:', error);
+    throw error;
+  }
+}

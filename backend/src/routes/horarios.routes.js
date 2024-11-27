@@ -7,12 +7,15 @@ import {
     getHorarios,
     updateHorario,
     } from "../controllers/horarios.controller.js"
+
+import authorize from "../middlewares/authorization.middleware.js";
+   
 const router = Router();
 
 router
-    .get("/", getHorarios)         
-    .get("/:id_horario", getHorario)
-    .patch("/update/:id_horario", updateHorario)
-    .delete("/delete/:id_horario", deleteHorario) 
-    .post("/create", createHorario);
+    .get("/",authorize(["Encargado de Laboratorio","Administrador","Directivo","Docente"]), getHorarios)         
+    .get("/:id_horario",authorize(["Encargado de Laboratorio","Administrador","Directivo","Docente"]), getHorario)
+    .patch("/update/:id_horario",authorize(["Encargado de Laboratorio","Administrador","Directivo"]), updateHorario)
+    .delete("/delete/:id_horario",authorize(["Encargado de Laboratorio","Administrador","Directivo"]), deleteHorario) 
+    .post("/create",authorize(["Encargado de Laboratorio","Administrador","Directivo"]), createHorario);
 export default router;

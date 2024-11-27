@@ -21,10 +21,16 @@ export function authenticateJwt(req, res, next) {
         401,
         "No tienes permiso para acceder a este recurso",
         { info: info ? info.message : "No se encontró el usuario" }
-      )
+      );
     }
-
-    req.user = user;
+    
+    // Incluye rol y nombre en la solicitud
+    req.user = {
+      nombre: user.nombre,
+      apellido: user.apellido,
+      email: user.email,
+      rol: user.roles?.nombre,
+    };
     next();
   })(req, res, next);
 }
