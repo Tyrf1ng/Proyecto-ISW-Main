@@ -3,7 +3,7 @@ import Typography from '@mui/material/Typography';
 
 function Inicio() {
   const [rolUsuario, setRolUsuario] = useState('');
-  const [usuario, setUsuario] = useState({ nombre: '', apellido: '' });
+  const [usuario, setUsuario] = useState({ nombre: '', apellido: '', rut: '' });
 
   useEffect(() => {
     const usuarioGuardado = JSON.parse(sessionStorage.getItem('usuario'));
@@ -12,8 +12,9 @@ function Inicio() {
       setUsuario({
         nombre: usuarioGuardado.nombre,
         apellido: usuarioGuardado.apellido,
+        rut: usuarioGuardado.rut, // Extraer el RUT del usuario
       });
-      console.log("Tipo de usuario:", usuarioGuardado.tipo); // Aquí puedes comprobar el tipo
+      console.log('Datos del usuario:', usuarioGuardado);
     }
   }, []);
   
@@ -25,6 +26,9 @@ function Inicio() {
       </Typography>
       <Typography variant="h6">
         {rolUsuario ? `Rol: ${rolUsuario}` : 'Cargando rol...'}
+      </Typography>
+      <Typography variant="h6">
+        {usuario.rut ? `RUT: ${usuario.rut}` : 'Cargando RUT...'}
       </Typography>
     </div>
   );
