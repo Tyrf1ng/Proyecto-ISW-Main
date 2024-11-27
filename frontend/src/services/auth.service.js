@@ -11,31 +11,31 @@ export async function login(dataUser) {
         });
         const { status, data } = response;
         if (status === 200) {
-            const { nombreCompleto, email, rut, rol } = jwtDecode(data.data.token);
-            const userData = { nombreCompleto, email, rut, rol };
+            const { nombre, apellido, email, rut, rol, tipo } = jwtDecode(data.data.token);
+            const userData = { nombre, apellido, email, rut, rol, tipo };
             sessionStorage.setItem('usuario', JSON.stringify(userData));
-            axios.defaults.headers.common['Authorization'] = `Bearer ${data.token}`;
-            cookies.set('jwt-auth', data.data.token, {path:'/'});
-            return response.data
+            axios.defaults.headers.common['Authorization'] = `Bearer ${data.data.token}`;
+            cookies.set('jwt-auth', data.data.token, { path: '/' });
+            return response.data;
         }
     } catch (error) {
-        return error.response.data;
+        return error.response?.data || { message: 'Error interno del servidor' };
     }
 }
 
 export async function register(data) {
     try {
         const dataRegister = convertirMinusculas(data);
-        const { nombreCompleto, email, rut, password } = dataRegister
+        const { nombreCompleto, email, rut, password } = dataRegister;
         const response = await axios.post('/auth/register', {
             nombreCompleto,
             email,
             rut,
-            password
+            password,
         });
         return response.data;
     } catch (error) {
-        return error.response.data;
+        return error.response?.data || { message: 'Error interno del servidor' };
     }
 }
 

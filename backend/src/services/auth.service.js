@@ -7,54 +7,57 @@ import Directivo from "../entity/directivo.entity.js";
 import Encargado_Lab from "../entity/encargado.lab.entity.js";
 import jwt from "jsonwebtoken";
 import { AppDataSource } from "../config/configDb.js";
-import { comparePassword, encryptPassword } from "../helpers/bcrypt.helper.js";
+import { comparePassword } from "../helpers/bcrypt.helper.js";
 import { ACCESS_TOKEN_SECRET } from "../config/configEnv.js";
+
+// Mapa de roles según el id_roles
+const ROLES_MAP = {
+  1: "Directivo",
+  2: "Docente",
+  3: "Alumno",
+  4: "Apoderado",
+  5: "Administrativo",
+  6: "Encargado de Laboratorio",
+};
 
 export async function loginService(user) {
   try {
     const { email, password } = user;
 
-    const createErrorMessage = (dataInfo, message) => ({
-      dataInfo,
-      message,
-    });
-
     const repositories = [
-      AppDataSource.getRepository(Directivo),
-      AppDataSource.getRepository(Docentes),
-      AppDataSource.getRepository(Apoderado),
-      AppDataSource.getRepository(Alumno),
-      AppDataSource.getRepository(Administrativo),
-      AppDataSource.getRepository(Encargado_Lab),
+      { repo: AppDataSource.getRepository(Directivo) },
+      { repo: AppDataSource.getRepository(Docentes) },
+      { repo: AppDataSource.getRepository(Apoderado) },
+      { repo: AppDataSource.getRepository(Alumno) },
+      { repo: AppDataSource.getRepository(Administrativo) },
+      { repo: AppDataSource.getRepository(Encargado_Lab) },
     ];
 
     let userFound = null;
-    let userType = null;
 
-    for (const repository of repositories) {
-      userFound = await repository.findOne({ where: { email } });
-      if (userFound) {
-        userType = repository.metadata.name; // Obtiene el nombre de la entidad
-        break; // Sale del bucle si encuentra al usuario
-      }
+    for (const { repo } of repositories) {
+      userFound = await repo.findOne({ where: { email } });
+      if (userFound) break; // Detiene la búsqueda si encuentra al usuario
     }
 
     if (!userFound) {
-      return [null, createErrorMessage("email", "El correo electrónico es incorrecto")];
+      return [null, { message: "Usuario no encontrado", field: "email" }];
     }
 
     const isMatch = await comparePassword(password, userFound.password);
-
     if (!isMatch) {
-      return [null, createErrorMessage("password", "La contraseña es incorrecta")];
+      return [null, { message: "Contraseña incorrecta", field: "password" }];
     }
 
+    // Determina el nombre del rol basado en id_roles
+    const rolNombre = ROLES_MAP[userFound.id_roles] || "Usuario Desconocido";
+
     const payload = {
-      nombreCompleto: userFound.nombreCompleto,
+      nombre: userFound.nombre,
+      apellido: userFound.apellido,
       email: userFound.email,
       rut: userFound.rut,
-      rol: userFound.rol,
-      tipo: userType, // Añade el tipo de usuario al payload
+      rol: rolNombre, // Asigna el nombre del rol al token
     };
 
     const accessToken = jwt.sign(payload, ACCESS_TOKEN_SECRET, {
@@ -63,8 +66,8 @@ export async function loginService(user) {
 
     return [accessToken, null];
   } catch (error) {
-    console.error("Error al iniciar sesión:", error);
-    return [null, "Error interno del servidor"];
+    console.error("Error en loginService:", error);
+    return [null, { message: "Error interno del servidor" }];
   }
 }
 
