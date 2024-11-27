@@ -1,21 +1,28 @@
 import { useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { getCursos } from "../services/cursos.service";
+import { getCursosByProfesor } from "../services/cursos.service"; // Importa la función actualizada
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Paper from "@mui/material/Paper";
-import { CursoContext } from "../context/CursoContext"; // Importa el contexto
+import { CursoContext } from "../context/CursoContext"; // Contexto de cursos
+import { useAuth } from "../context/AuthContext"; // Contexto de autenticación
 
 const Cursos = () => {
   const [cursos, setCursos] = useState([]);
   const [cargando, setCargando] = useState(true);
-  const { setIdCurso } = useContext(CursoContext); // Usa el contexto
+  const { setIdCurso } = useContext(CursoContext); // Contexto de cursos
+  const { user } = useAuth(); // Contexto de autenticación
   const navigate = useNavigate();
 
   useEffect(() => {
     const cargarCursos = async () => {
+      if (!user || !user.rut) {
+        console.error("El usuario no tiene un RUT asociado.");
+        setCargando(false);
+        return;
+      }
       try {
-        const cursosObtenidos = await getCursos();
+        const cursosObtenidos = await getCursosByProfesor(user.rut); // Usa el RUT del profesor
         setCursos(cursosObtenidos);
         console.log("Cursos obtenidos:", cursosObtenidos);
       } catch (error) {
@@ -25,15 +32,19 @@ const Cursos = () => {
       }
     };
     cargarCursos();
-  }, []);
+  }, [user]);
 
   const seleccionarCurso = (id_curso) => {
     setIdCurso(id_curso); // Establece el ID del curso seleccionado en el contexto
-    navigate("/inicio"); // Redirige al Dashboard o a la página principal
+    navigate("/inicio"); // Redirige a la página principal o Dashboard
   };
 
   if (cargando) {
     return <p>Cargando cursos...</p>;
+  }
+
+  if (cursos.length === 0) {
+    return <p>No hay cursos disponibles para este profesor.</p>;
   }
 
   return (
@@ -57,7 +68,7 @@ const Cursos = () => {
         {cursos.map((curso) => (
           <Paper
             key={curso.id_curso}
-            onClick={() => seleccionarCurso(curso.id_curso)} // Hacer clic para seleccionar el curso
+            onClick={() => seleccionarCurso(curso.id_curso)}
             sx={{
               width: "80%",
               padding: 3,
@@ -66,15 +77,15 @@ const Cursos = () => {
               backgroundColor: "#E3F2FD",
               borderRadius: "8px",
               color: "#133B5C",
-              cursor: "pointer", // Cambia el cursor para indicar que es clickeable
-              "&:hover": { backgroundColor: "#D1E3F5" }, // Efecto hover
+              cursor: "pointer",
+              "&:hover": { backgroundColor: "#D1E3F5" },
             }}
           >
             <Typography variant="h6" sx={{ fontWeight: "bold" }}>
               {curso.nombre}
             </Typography>
             <Typography variant="subtitle1" sx={{ color: "#5C6BC0" }}>
-              Coordinador: [Nombre del Coordinador]
+              Coordinador: {curso.coordinador || "N/A"}
             </Typography>
             <Typography
               variant="body2"
