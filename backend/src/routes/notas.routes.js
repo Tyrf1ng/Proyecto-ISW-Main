@@ -12,18 +12,19 @@ import {
     
  } 
     from "../controllers/notas.controller.js";
+import authorize from "../middlewares/authorization.middleware.js";
 
 const router = Router();
 
 router
-    .get("/", getAllNotasController)
-    .get("/:id_nota", getNotaController)
-    .get("/alumno/:rut_alumno", getNotasAlumnoController)
-    .get("/asignatura/:id_asignatura", getNotasAsignaturaController)
-    .get("/curso/:id_curso", getNotasCursoController)
-    .patch("/actualizar/:id_nota", updateNotaController)
-    .delete("/borrar/:id_nota", deleteNotasController)
-    .post("/crear/", createNotaController);
+    .get("/",authorize(["Directivo","Administrador"]), getAllNotasController)
+    .get("/:id_nota",authorize(["Directivo","Administrador","Docente"]), getNotaController)
+    .get("/alumno/:rut_alumno",authorize(["Directivo","Administrador","Docente","Alumno"]), getNotasAlumnoController)
+    .get("/asignatura/:id_asignatura",authorize(["Directivo","Administrador","Docente"]), getNotasAsignaturaController)
+    .get("/curso/:id_curso",authorize(["Directivo","Administrador","Docente"]), getNotasCursoController)
+    .patch("/actualizar/:id_nota",authorize(["Directivo","Administrador","Docente"]), updateNotaController)
+    .delete("/borrar/:id_nota",authorize(["Directivo","Administrador","Docente"]), deleteNotasController)
+    .post("/crear/",authorize(["Directivo","Administrador","Docente"]), createNotaController);
 
 
 export default router;
