@@ -15,6 +15,7 @@ import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import CollectionsBookmarkIcon from '@mui/icons-material/CollectionsBookmark';
 
 // Configuración de navegación por roles
+
 const NAVIGATION_BY_ROLE = {
   directivo: [
     { segment: 'GestionUsuarios', title: 'Gestión de Usuarios', icon: <SchoolIcon /> },
@@ -35,16 +36,8 @@ const NAVIGATION_BY_ROLE = {
       title: 'Asistencias',
       icon: <PeopleAltIcon />,
       children: [
-        {
-          segment: 'add_asistencias',
-          title: 'Añadir asistencias',
-          icon: <AddIcon />,
-        },
-        {
-          segment: 'ver_asistencias',
-          title: 'Ver todas las asistencias',
-          icon: <ManageSearchIcon />,
-        },
+        { segment: 'add_asistencias', title: 'Añadir asistencias', icon: <AddIcon /> },
+        { segment: 'ver_asistencias', title: 'Ver todas las asistencias', icon: <ManageSearchIcon /> },
       ],
     },
     {
@@ -52,16 +45,8 @@ const NAVIGATION_BY_ROLE = {
       title: 'Anotaciones',
       icon: <StickyNote2Icon />,
       children: [
-        {
-          segment: 'add_anotaciones',
-          title: 'Añadir anotaciones',
-          icon: <AddIcon />,
-        },
-        {
-          segment: 'ver_anotaciones',
-          title: 'Ver todas las anotaciones',
-          icon: <ManageSearchIcon />,
-        },
+        { segment: 'add_anotaciones', title: 'Añadir anotaciones', icon: <AddIcon /> },
+        { segment: 'ver_anotaciones', title: 'Ver todas las anotaciones', icon: <ManageSearchIcon /> },
       ],
     },
     {
@@ -69,11 +54,7 @@ const NAVIGATION_BY_ROLE = {
       title: 'Notas',
       icon: <HistoryEduRoundedIcon />,
       children: [
-        {
-          segment: 'Ver',
-          title: 'Ver todas las notas',
-          icon: <ManageSearchIcon />,
-        },
+        { segment: 'Ver', title: 'Ver todas las notas', icon: <ManageSearchIcon /> },
       ],
     },
     {
@@ -81,21 +62,9 @@ const NAVIGATION_BY_ROLE = {
       title: 'Gestion Reservas Laboratorio',
       icon: <SchoolIcon />,
       children: [
-        {
-          segment: 'reservas',
-          title: 'Reservas',
-          icon: <SchoolIcon />,
-        },
-        {
-          segment: 'labs',
-          title: 'Laboratorios',
-          icon: <SchoolIcon />,
-        },
-        {
-          segment: 'horarios',
-          title: 'Horarios',
-          icon: <SchoolIcon />,
-        },
+        { segment: 'reservas', title: 'Reservas', icon: <SchoolIcon /> },
+        { segment: 'labs', title: 'Laboratorios', icon: <SchoolIcon /> },
+        { segment: 'horarios', title: 'Horarios', icon: <SchoolIcon /> },
       ],
     },
   ],
@@ -106,7 +75,15 @@ const NAVIGATION_BY_ROLE = {
       title: 'Asistencias',
       icon: <PeopleAltIcon />,
       children: [
-        { segment: 'alumno', title: 'Ver Asistencias', icon: <ManageSearchIcon /> }, // Nueva opción
+        { segment: 'alumno', title: 'Ver Asistencias', icon: <ManageSearchIcon /> },
+      ],
+    },
+    {
+      segment: 'anotaciones',
+      title: 'Anotaciones',
+      icon: <StickyNote2Icon />,
+      children: [
+        { segment: 'alumno', title: 'Ver Anotaciones del Alumno', icon: <ManageSearchIcon /> },
       ],
     },
     {
@@ -118,15 +95,17 @@ const NAVIGATION_BY_ROLE = {
       ],
     },
   ],
-  apoderado: [
-    { segment: 'Inicio', title: 'Inicio', icon: <SchoolIcon /> },
-  ],
-  administrativo: [
-    { segment: 'gestion_reservas', title: 'Gestión Reservas Laboratorio', icon: <SchoolIcon /> },
-  ],
-  encargado_laboratorio: [
-    { segment: 'labs', title: 'Laboratorios', icon: <SchoolIcon /> },
-    { segment: 'horarios', title: 'Horarios', icon: <SchoolIcon /> },
+  "encargado de laboratorio": [
+    {
+      segment: 'gestion_reservas',
+      title: 'Gestion Reservas Laboratorio',
+      icon: <SchoolIcon />,
+      children: [
+        { segment: 'reservas', title: 'Reservas', icon: <SchoolIcon /> },
+        { segment: 'labs', title: 'Laboratorios', icon: <SchoolIcon /> },
+        { segment: 'horarios', title: 'Horarios', icon: <SchoolIcon /> },
+      ],
+    },
   ],
 };
 

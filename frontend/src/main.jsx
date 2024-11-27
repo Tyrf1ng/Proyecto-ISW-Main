@@ -11,7 +11,9 @@ import Anotaciones from '@pages/Anotaciones';
 import Labs from '@pages/Labs'; // Importa el nuevo componente Labs
 import Horarios from '@pages/Horarios'; // Importa el nuevo componente Horarios
 import VerNotas from '@pages/VerNotas';
+import Ver_Nota_Alumno from '@pages/Ver_Nota_Alumno';
 import Ver_Asistencias_Para_Alumno from '@pages/Ver_Asistencias_Para_Alumno'; // Importa el nuevo componente
+import Ver_Anotaciones_Para_Alumno from '@pages/Ver_Anotaciones_Para_Alumno'; // Importa el nuevo componente
 import Notas from '@pages/Notas';
 import Add_notas from '@pages/Add_notas';
 import Add_anotaciones from '@pages/Add_anotaciones';
@@ -36,7 +38,7 @@ const router = createBrowserRouter([
         children: [
           { path: 'add_asistencias', element: <RegistrarAsistencias /> },
           { path: 'ver_asistencias', element: <VerAsistencias /> },
-          { path: 'alumno', element: <Ver_Asistencias_Para_Alumno /> }, // Nueva ruta para Ver_Asistencias_Para_Alumno
+          { path: 'alumno', element: <Ver_Asistencias_Para_Alumno /> }, // Ruta para asistencias por alumno
         ]
       },
       {
@@ -45,6 +47,7 @@ const router = createBrowserRouter([
         children: [
           { path: 'add_anotaciones', element: <Add_anotaciones /> },
           { path: 'ver_anotaciones', element: <Ver_anotaciones /> },
+          { path: 'alumno', element: <Ver_Anotaciones_Para_Alumno /> }, // Ruta para anotaciones por alumno
         ],
       },
       {
@@ -53,6 +56,7 @@ const router = createBrowserRouter([
         children: [
           { path: 'add', element: <Add_notas /> },
           { path: 'Ver', element: <VerNotas /> },
+          { path: 'Ver_Nota_Alumno', element: <Ver_Nota_Alumno /> },
         ],
       },
       { path: 'gestion_reservas',

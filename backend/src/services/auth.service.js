@@ -57,7 +57,7 @@ export async function loginService(user) {
       apellido: userFound.apellido,
       email: userFound.email,
       rut: userFound.rut_alumno || userFound.rut_docente || userFound.rut_apoderado 
-      || userFound.rut_administrativo || userFound.rut_directivo || userFound.rut_encargado_lab,
+      || userFound.rut_administrativo || userFound.rut_directivo || userFound.rut_encargado,
       rol: rolNombre, // Asigna el nombre del rol al token
     };
 

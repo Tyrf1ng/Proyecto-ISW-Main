@@ -1,4 +1,5 @@
 "use strict";
+import authorize from "../middlewares/authorization.middleware.js";
 import { Router } from "express";
 import {
     createAlumno,
@@ -17,7 +18,7 @@ router
   .use(authenticateJwt);
 
 router
-  .get("/", getAlumnos) // Obtener todos los alumnos
+  .get("/", authorize(["Alumno","Docente"]), getAlumnos ) // Obtener todos los alumnos
   .get("/rut/:rut_alumno", getAlumnoByRut) // Obtener un alumno por RUT
   .get("/curso/:id_curso", getAlumnosByCurso) // Obtener alumnos de un curso
   .get("/buscar", getAlumnosByNombre) // Buscar alumnos por nombre (y opcionalmente curso)
