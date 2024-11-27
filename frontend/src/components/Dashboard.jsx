@@ -106,7 +106,7 @@ const NAVIGATION_BY_ROLE = {
       title: 'Notas',
       icon: <HistoryEduRoundedIcon />,
       children: [
-        { segment: 'Ver', title: 'Ver todas las notas', icon: <ManageSearchIcon /> },
+        { segment: 'Ver_Nota_Alumno', title: 'Ver Nota por RUT', icon: <ManageSearchIcon /> },
       ],
     },
   ],

@@ -1,7 +1,5 @@
 import axios from "./root.service.js";
 
-
-
 export const AllNotas = async () => {
     try {
         const response = await axios.get('/notas/');
@@ -46,5 +44,15 @@ export const updateNota = async (id, valor) => {
         return response;
     } catch (error) {
         return error.response;
+    }
+};
+
+export const getNotasPorRUT = async (rutAlumno) => {
+    try {
+        const response = await axios.get(`/notas/alumno/${rutAlumno}`);
+        return response.data; // Devuelve las notas del alumno
+    } catch (error) {
+        console.error('Error al obtener las notas por RUT:', error);
+        return error.response.data;
     }
 };
