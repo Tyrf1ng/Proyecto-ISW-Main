@@ -4,7 +4,7 @@ import { getAlumnosByCurso } from '../services/alumnos.service';
 import { createAnotacion } from '@services/anotaciones.service.js';
 
 function Add_anotaciones() {
-  const { idCurso } = useContext(CursoContext); // Obtén el curso actual del contexto
+  const { idCurso } = useContext(CursoContext);
   const [newAnotacion, setNewAnotacion] = useState({
     tipo: 'Positiva',
     rut_alumno: '',
@@ -13,11 +13,13 @@ function Add_anotaciones() {
     fecha: new Date().toISOString(),
   });
   const [message, setMessage] = useState('');
-  const [alumnos, setAlumnos] = useState([]); // Siempre inicializa como un array vacío
+  const [messageType, setMessageType] = useState('');
+  const [alumnos, setAlumnos] = useState([]);
+  const [filteredAlumnos, setFilteredAlumnos] = useState([]);
   const [selectedAlumno, setSelectedAlumno] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [isListVisible, setIsListVisible] = useState(false);
 
-  // Cargar alumnos del curso actual
   useEffect(() => {
     const cargarAlumnos = async () => {
       if (!idCurso) {
@@ -26,9 +28,9 @@ function Add_anotaciones() {
       }
       try {
         const alumnosData = await getAlumnosByCurso(idCurso);
-        console.log("Datos recibidos de la API:", alumnosData); // Verifica los datos
         if (Array.isArray(alumnosData)) {
           setAlumnos(alumnosData);
+          setFilteredAlumnos(alumnosData);
         } else {
           console.error("Formato inesperado de datos:", alumnosData);
         }
@@ -36,11 +38,20 @@ function Add_anotaciones() {
         console.error("Error al cargar alumnos:", error);
       }
     };
-  
+
     cargarAlumnos();
   }, [idCurso]);
 
-  // Manejar cambios en los campos del formulario
+  const handleSearchChange = (e) => {
+    const query = e.target.value.toLowerCase();
+    setSearchTerm(query);
+    const filtered = alumnos.filter((alumno) =>
+      `${alumno.nombre} ${alumno.apellido}`.toLowerCase().includes(query)
+    );
+    setFilteredAlumnos(filtered);
+    setIsListVisible(filtered.length > 0);
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setNewAnotacion({ ...newAnotacion, [name]: value });
@@ -50,31 +61,29 @@ function Add_anotaciones() {
     setNewAnotacion({ ...newAnotacion, tipo: e.target.value });
   };
 
-  // Manejar cambios en el alumno seleccionado
-  const handleAlumnoChange = (event, value) => {
-    if (value) {
-      setSelectedAlumno(value);
-      setNewAnotacion({ ...newAnotacion, rut_alumno: value.rut_alumno });
-    } else {
-      setSelectedAlumno(null);
-      setNewAnotacion({ ...newAnotacion, rut_alumno: '' });
-    }
+  const handleAlumnoSelect = (alumno) => {
+    setSelectedAlumno(alumno);
+    setNewAnotacion({ ...newAnotacion, rut_alumno: alumno.rut_alumno });
+    setSearchTerm(`${alumno.nombre} ${alumno.apellido}`);
+    setIsListVisible(false);
   };
 
-  // Enviar la anotación al backend
   const handleSubmit = async () => {
     if (!newAnotacion.rut_alumno) {
       setMessage('Debe seleccionar un alumno.');
+      setMessageType('warning');
       return;
     }
     if (!newAnotacion.descripcion.trim()) {
       setMessage('La descripción no puede estar vacía.');
+      setMessageType('warning');
       return;
     }
 
     try {
       await createAnotacion(newAnotacion);
       setMessage('Anotación creada exitosamente');
+      setMessageType('success');
       setNewAnotacion({
         tipo: 'Positiva',
         rut_alumno: '',
@@ -83,17 +92,61 @@ function Add_anotaciones() {
         fecha: new Date().toISOString(),
       });
       setSelectedAlumno(null);
+      setFilteredAlumnos(alumnos);
     } catch (error) {
       console.error('Error al crear la anotación:', error);
       setMessage('Hubo un error al crear la anotación');
+      setMessageType('error');
     }
+  };
+
+  const renderMessage = () => {
+    if (messageType === 'success') {
+      return (
+        <div className="fixed top-5 right-5 w-full max-w-sm overflow-hidden bg-[#111827] rounded-lg shadow-md z-50">
+          <div className="px-4 py-2 -mx-3">
+            <div className="mx-3">
+              <span className="font-semibold text-emerald-500">Success</span>
+              <p className="text-sm text-gray-100">{message}</p>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    if (messageType === 'error') {
+      return (
+        <div className="fixed top-5 right-5 w-full max-w-sm overflow-hidden bg-[#111827] rounded-lg shadow-md z-50">
+          <div className="px-4 py-2 -mx-3">
+            <div className="mx-3">
+              <span className="font-semibold text-red-500">Error</span>
+              <p className="text-sm text-gray-100">{message}</p>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    if (messageType === 'warning') {
+      return (
+        <div className="fixed top-5 right-5 w-full max-w-sm overflow-hidden bg-[#111827] rounded-lg shadow-md z-50">
+          <div className="px-4 py-2 -mx-3">
+            <div className="mx-3">
+              <span className="font-semibold text-yellow-400">Warning</span>
+              <p className="text-sm text-gray-100">{message}</p>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    return null;
   };
 
   return (
     <div className="p-6 max-w-3xl mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-md">
       <h2 className="text-2xl font-semibold text-gray-800 dark:text-white mb-6">Añadir Anotaciones</h2>
 
-      {/* Select Tipo de Anotación */}
       <div className="mb-4">
         <label htmlFor="tipo" className="block text-sm text-gray-500 dark:text-gray-300">Tipo de Anotación</label>
         <select
@@ -101,27 +154,41 @@ function Add_anotaciones() {
           id="tipo"
           value={newAnotacion.tipo}
           onChange={handleSelectChange}
-          className="mt-2 block w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 placeholder-gray-400/70 dark:placeholder-gray-500 px-4 py-2 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40"
+          className="mt-2 block w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300"
         >
           <option value="Positiva">Positiva</option>
           <option value="Negativa">Negativa</option>
         </select>
       </div>
 
-      {/* Autocomplete para seleccionar el alumno */}
       <div className="mb-4">
         <label htmlFor="alumno" className="block text-sm text-gray-500 dark:text-gray-300">Buscar Alumno</label>
         <input
           type="text"
           id="alumno"
-          value={selectedAlumno ? `${selectedAlumno.nombre} ${selectedAlumno.apellido}` : ''}
-          onChange={e => handleAlumnoChange(e, e.target.value)}
+          value={searchTerm}
+          onChange={handleSearchChange}
           placeholder="Buscar Alumno"
-          className="mt-2 block w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 placeholder-gray-400/70 dark:placeholder-gray-500 px-4 py-2 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40"
+          className="mt-2 block w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300"
         />
       </div>
 
-      {/* Campo de descripción */}
+      {isListVisible && filteredAlumnos.length > 0 && (
+        <div className="mb-4 max-h-64 overflow-y-auto">
+          <ul className="mt-2 bg-white dark:bg-gray-900 shadow-lg rounded-lg">
+            {filteredAlumnos.map((alumno) => (
+              <li
+                key={alumno.rut_alumno}
+                onClick={() => handleAlumnoSelect(alumno)}
+                className="px-4 py-2 cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-700 text-gray-800 dark:text-white"
+              >
+                {alumno.nombre} {alumno.apellido}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
       <div className="mb-4">
         <label htmlFor="descripcion" className="block text-sm text-gray-500 dark:text-gray-300">Descripción</label>
         <textarea
@@ -131,26 +198,20 @@ function Add_anotaciones() {
           onChange={handleInputChange}
           placeholder="Ingrese la descripción"
           rows="4"
-          className="mt-2 block w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 placeholder-gray-400/70 dark:placeholder-gray-500 px-4 py-2 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40"
+          className="mt-2 block w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300 resize-none"
         ></textarea>
       </div>
 
-      {/* Botón con Tailwind CSS */}
       <div className="mt-4">
         <button
           onClick={handleSubmit}
-          className="px-6 py-2 font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-blue-600 rounded-lg hover:bg-blue-500 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-80 w-full"
+          className="px-6 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-500 w-full"
         >
           Guardar Anotación
         </button>
       </div>
 
-      {/* Mensaje de confirmación o error */}
-      {message && (
-        <div className={`mt-4 text-sm ${message.includes('error') ? 'text-red-500' : 'text-green-500'}`}>
-          {message}
-        </div>
-      )}
+      {renderMessage()}
     </div>
   );
 }
