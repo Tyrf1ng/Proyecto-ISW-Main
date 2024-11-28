@@ -1,12 +1,4 @@
 import { useContext, useEffect, useState } from 'react';
-import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
-import TextField from '@mui/material/TextField';
-import Button from '@mui/material/Button';
-import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
-import Autocomplete from '@mui/material/Autocomplete';
-import CircularProgress from '@mui/material/CircularProgress';
 import { CursoContext } from '../context/CursoContext';
 import { getAlumnosByCurso } from '../services/alumnos.service';
 import { createAnotacion } from '@services/anotaciones.service.js';
@@ -47,9 +39,6 @@ function Add_anotaciones() {
   
     cargarAlumnos();
   }, [idCurso]);
-  
-  
-  
 
   // Manejar cambios en los campos del formulario
   const handleInputChange = (e) => {
@@ -101,74 +90,68 @@ function Add_anotaciones() {
   };
 
   return (
-    <Box sx={{ padding: 4 }}>
-      <Typography variant="h4" gutterBottom>
-        Añadir Anotaciones
-      </Typography>
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, marginTop: 3 }}>
-        <Select
-          label="Tipo de Anotación"
+    <div className="p-6 max-w-3xl mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-md">
+      <h2 className="text-2xl font-semibold text-gray-800 dark:text-white mb-6">Añadir Anotaciones</h2>
+
+      {/* Select Tipo de Anotación */}
+      <div className="mb-4">
+        <label htmlFor="tipo" className="block text-sm text-gray-500 dark:text-gray-300">Tipo de Anotación</label>
+        <select
           name="tipo"
-          variant="outlined"
-          fullWidth
+          id="tipo"
           value={newAnotacion.tipo}
           onChange={handleSelectChange}
+          className="mt-2 block w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 placeholder-gray-400/70 dark:placeholder-gray-500 px-4 py-2 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40"
         >
-          <MenuItem value="Positiva">Positiva</MenuItem>
-          <MenuItem value="Negativa">Negativa</MenuItem>
-        </Select>
-        <Autocomplete
-  options={alumnos || []} // Asegura que siempre sea un array
-  getOptionLabel={(option) =>
-    option.nombre && option.apellido
-      ? `${option.nombre} ${option.apellido}`
-      : 'Alumno sin nombre'
-  }
-  renderInput={(params) => (
-    <TextField
-      {...params}
-      label="Buscar Alumno"
-      variant="outlined"
-      InputProps={{
-        ...params.InputProps,
-        endAdornment: (
-          <>
-            {loading ? <CircularProgress size={20} /> : null}
-            {params.InputProps.endAdornment}
-          </>
-        ),
-      }}
-    />
-  )}
-  onChange={handleAlumnoChange}
-  value={selectedAlumno}
-  noOptionsText="No se encontraron alumnos"
-  loading={loading}
-/>
+          <option value="Positiva">Positiva</option>
+          <option value="Negativa">Negativa</option>
+        </select>
+      </div>
 
+      {/* Autocomplete para seleccionar el alumno */}
+      <div className="mb-4">
+        <label htmlFor="alumno" className="block text-sm text-gray-500 dark:text-gray-300">Buscar Alumno</label>
+        <input
+          type="text"
+          id="alumno"
+          value={selectedAlumno ? `${selectedAlumno.nombre} ${selectedAlumno.apellido}` : ''}
+          onChange={e => handleAlumnoChange(e, e.target.value)}
+          placeholder="Buscar Alumno"
+          className="mt-2 block w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 placeholder-gray-400/70 dark:placeholder-gray-500 px-4 py-2 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40"
+        />
+      </div>
 
-        <TextField
-          label="Descripción"
+      {/* Campo de descripción */}
+      <div className="mb-4">
+        <label htmlFor="descripcion" className="block text-sm text-gray-500 dark:text-gray-300">Descripción</label>
+        <textarea
           name="descripcion"
-          variant="outlined"
-          fullWidth
-          multiline
-          minRows={3}
+          id="descripcion"
           value={newAnotacion.descripcion}
           onChange={handleInputChange}
-        />
-        <Button variant="contained" color="primary" onClick={handleSubmit}>
+          placeholder="Ingrese la descripción"
+          rows="4"
+          className="mt-2 block w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 placeholder-gray-400/70 dark:placeholder-gray-500 px-4 py-2 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40"
+        ></textarea>
+      </div>
+
+      {/* Botón con Tailwind CSS */}
+      <div className="mt-4">
+        <button
+          onClick={handleSubmit}
+          className="px-6 py-2 font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-blue-600 rounded-lg hover:bg-blue-500 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-80 w-full"
+        >
           Guardar Anotación
-        </Button>
-        {message && (
-          <Typography
-            color={message.includes('error') ? 'error.main' : 'success.main'}
-          >
-            {message}
-          </Typography>
-        )}
-      </Box>
-    </Box>
+        </button>
+      </div>
+
+      {/* Mensaje de confirmación o error */}
+      {message && (
+        <div className={`mt-4 text-sm ${message.includes('error') ? 'text-red-500' : 'text-green-500'}`}>
+          {message}
+        </div>
+      )}
+    </div>
   );
 }
 

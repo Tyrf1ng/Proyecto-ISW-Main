@@ -1,22 +1,10 @@
 import { useState, useContext } from 'react';
-import Box from '@mui/material/Box';
+import { Box, Modal, IconButton, Select, MenuItem } from '@mui/material';
 import Typography from '@mui/material/Typography';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
-import Button from '@mui/material/Button';
-import IconButton from '@mui/material/IconButton';
-import Modal from '@mui/material/Modal';
-import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
+import Button from '@mui/material/Button'; // Lo podemos eliminar si no se usa
 import useAnotaciones from '@hooks/anotaciones/useAnotaciones';
+import TableComponent from '../components/Table';  // Importar el componente de la tabla
 import { createAnotacion, deleteAnotacion, updateAnotacion } from '@services/anotaciones.service.js';
 import { CursoContext } from '../context/CursoContext'; // Importa el contexto
 
@@ -35,7 +23,6 @@ const Ver_anotaciones = () => {
     fecha: new Date().toISOString(),
   });
 
-  // Filtrar anotaciones según el texto ingresado
   const filteredAnotaciones = anotaciones.filter((anotacion) =>
     anotacion.descripcion.toLowerCase().includes(filterText.toLowerCase())
   );
@@ -97,80 +84,50 @@ const Ver_anotaciones = () => {
   };
 
   return (
-    <Box sx={{ padding: 4 }}>
-      <Typography variant="h4" gutterBottom>
-        Anotaciones {idCurso ? `del Curso: ${idCurso}` : ''}
-      </Typography>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 2 }}>
-        <TextField
-          label="Filtrar por descripción"
-          variant="outlined"
-          value={filterText}
-          onChange={handleFilterChange}
-        />
-        <Button variant="contained" color="primary" onClick={() => handleOpen()}>
-          Crear Anotación
-        </Button>
-      </Box>
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Tipo</TableCell>
-              <TableCell>RUT del Alumno</TableCell>
-              <TableCell>Descripción</TableCell>
-              <TableCell>Fecha de Creación</TableCell>
-              <TableCell>Acciones</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {filteredAnotaciones.length > 0 ? (
-              filteredAnotaciones.map((anotacion) => (
-                <TableRow key={anotacion.id_anotacion}>
-                  <TableCell>{anotacion.tipo}</TableCell>
-                  <TableCell>{anotacion.rut_alumno}</TableCell>
-                  <TableCell sx={{ maxWidth: 300, wordBreak: 'break-word' }}>
-                    {anotacion.descripcion}
-                  </TableCell>
-                  <TableCell>{new Date(anotacion.createdAt).toLocaleDateString()}</TableCell>
-                  <TableCell>
-                    <IconButton color="primary" onClick={() => handleOpen(anotacion)}>
-                      <EditIcon />
-                    </IconButton>
-                    <IconButton color="secondary" onClick={() => handleDelete(anotacion.id_anotacion)}>
-                      <DeleteIcon />
-                    </IconButton>
-                  </TableCell>
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={5} align="center">
-                  No hay anotaciones para este curso
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </TableContainer>
+    <div className="p-4 bg-gray-50 dark:bg-gray-800">
+
+      <div className="flex justify-between items-center mb-4">
+        <div className="w-full">
+          <label htmlFor="filter" className="block text-sm text-gray-500 dark:text-gray-300">
+            Filtrar por descripción
+          </label>
+          <input
+            id="filter"
+            type="text"
+            value={filterText}
+            onChange={handleFilterChange}
+            placeholder="Filtrar anotaciones..."
+            className="block bg-gray-50 mt-2 w-full placeholder-gray-400/70 dark:placeholder-gray-500 rounded-lg border border-gray-200 px-5 py-2.5 text-gray-700 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-300"
+          />
+        </div>
+      </div>
+
+      {/* Tabla de anotaciones */}
+      <TableComponent 
+        anotaciones={filteredAnotaciones} 
+        handleOpen={handleOpen} 
+        handleDelete={handleDelete} 
+      />
 
       {/* Modal para crear o editar una anotación */}
       <Modal open={open} onClose={handleClose}>
-        <Box sx={{ ...modalStyle, width: 400 }}>
-          <Typography variant="h6" gutterBottom>
+        <Box className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-6 rounded-lg shadow-xl w-96">
+          <Typography variant="h6" className="text-xl font-semibold mb-4">
             {editMode ? "Editar Anotación" : "Crear Nueva Anotación"}
           </Typography>
+
           <Select
             label="Tipo"
             name="tipo"
-            variant="outlined"
-            fullWidth
             value={newAnotacion.tipo}
             onChange={handleSelectChange}
+            fullWidth
+            className="mb-4"
           >
             <MenuItem value="Positiva">Positiva</MenuItem>
             <MenuItem value="Negativa">Negativa</MenuItem>
           </Select>
+
           <TextField
             label="RUT del Alumno"
             name="rut_alumno"
@@ -179,7 +136,9 @@ const Ver_anotaciones = () => {
             margin="dense"
             value={newAnotacion.rut_alumno}
             onChange={handleInputChange}
+            className="mb-4"
           />
+
           <TextField
             label="Descripción"
             name="descripcion"
@@ -188,7 +147,9 @@ const Ver_anotaciones = () => {
             margin="dense"
             value={newAnotacion.descripcion}
             onChange={handleInputChange}
+            className="mb-4"
           />
+
           <TextField
             label="ID Asignatura"
             name="id_asignatura"
@@ -197,25 +158,21 @@ const Ver_anotaciones = () => {
             margin="dense"
             value={newAnotacion.id_asignatura}
             onChange={handleInputChange}
+            className="mb-4"
           />
-          <Button variant="contained" color="primary" onClick={handleSubmit} sx={{ marginTop: 2 }}>
+
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleSubmit}
+            className="w-full"
+          >
             {editMode ? "Actualizar" : "Guardar"}
           </Button>
         </Box>
       </Modal>
-    </Box>
+    </div>
   );
-};
-
-// Estilos para el modal
-const modalStyle = {
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  bgcolor: 'background.paper',
-  boxShadow: 24,
-  p: 4,
 };
 
 export default Ver_anotaciones;

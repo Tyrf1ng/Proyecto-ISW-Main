@@ -1,36 +1,25 @@
-import * as React from 'react';
-import PropTypes from 'prop-types';
-import Box from '@mui/material/Box';
-import { createTheme } from '@mui/material/styles';
-import { AppProvider } from '@toolpad/core/react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { logout } from '@services/auth.service.js';
+import '@styles/index.css'; 
 import SchoolIcon from '@mui/icons-material/School';
 import HistoryEduRoundedIcon from '@mui/icons-material/HistoryEduRounded';
-import StickyNote2Icon from '@mui/icons-material/StickyNote2';
+import { Outlet } from 'react-router-dom';
 import ManageSearchIcon from '@mui/icons-material/ManageSearch';
 import AddIcon from '@mui/icons-material/Add';
-import { DashboardLayout } from '@toolpad/core/DashboardLayout';
-import { useNavigate, Outlet } from 'react-router-dom';
-import { logout } from '@services/auth.service.js';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import CollectionsBookmarkIcon from '@mui/icons-material/CollectionsBookmark';
+// Importar logo local
+import logo from '../images/components/logo.svg'; 
 
-// Configuración de navegación por roles
-
+// Configuración de navegación por roles (se mantiene igual)
 const NAVIGATION_BY_ROLE = {
   directivo: [
     { segment: 'GestionUsuarios', title: 'Gestión de Usuarios', icon: <SchoolIcon /> },
   ],
   docente: [
-    {
-      segment: 'Inicio',
-      title: 'Inicio',
-      icon: <SchoolIcon />,
-    },
-    {
-      segment: 'Cursos',
-      title: 'Cursos',
-      icon: <CollectionsBookmarkIcon />,
-    },
+    { segment: 'Inicio', title: 'Inicio', icon: <SchoolIcon /> },
+    { segment: 'Cursos', title: 'Cursos', icon: <CollectionsBookmarkIcon /> },
     {
       segment: 'asistencias',
       title: 'Asistencias',
@@ -43,10 +32,10 @@ const NAVIGATION_BY_ROLE = {
     {
       segment: 'anotaciones',
       title: 'Anotaciones',
-      icon: <StickyNote2Icon />,
+      icon: <HistoryEduRoundedIcon />,
       children: [
-        { segment: 'add_anotaciones', title: 'Añadir anotaciones', icon: <AddIcon /> },
-        { segment: 'ver_anotaciones', title: 'Ver todas las anotaciones', icon: <ManageSearchIcon /> },
+        { segment: 'add_anotaciones', title: 'Añadir anotaciones', icon: <ManageSearchIcon /> },
+        { segment: 'ver_anotaciones', title: 'Ver todas las Anotaciones', icon: <ManageSearchIcon /> },
       ],
     },
     {
@@ -54,17 +43,7 @@ const NAVIGATION_BY_ROLE = {
       title: 'Notas',
       icon: <HistoryEduRoundedIcon />,
       children: [
-        { segment: 'Ver', title: 'Ver todas las notas', icon: <ManageSearchIcon /> },
-      ],
-    },
-    {
-      segment: 'gestion_reservas',
-      title: 'Gestion Reservas Laboratorio',
-      icon: <SchoolIcon />,
-      children: [
-        { segment: 'reservas', title: 'Reservas', icon: <SchoolIcon /> },
-        { segment: 'labs', title: 'Laboratorios', icon: <SchoolIcon /> },
-        { segment: 'horarios', title: 'Horarios', icon: <SchoolIcon /> },
+        { segment: 'ver_notas', title: 'Ver Notas', icon: <ManageSearchIcon /> },
       ],
     },
   ],
@@ -75,15 +54,7 @@ const NAVIGATION_BY_ROLE = {
       title: 'Asistencias',
       icon: <PeopleAltIcon />,
       children: [
-        { segment: 'alumno', title: 'Ver Asistencias', icon: <ManageSearchIcon /> },
-      ],
-    },
-    {
-      segment: 'anotaciones',
-      title: 'Anotaciones',
-      icon: <StickyNote2Icon />,
-      children: [
-        { segment: 'alumno', title: 'Ver Anotaciones del Alumno', icon: <ManageSearchIcon /> },
+        { segment: 'ver_asistencias', title: 'Ver Asistencias', icon: <ManageSearchIcon /> },
       ],
     },
     {
@@ -91,86 +62,25 @@ const NAVIGATION_BY_ROLE = {
       title: 'Notas',
       icon: <HistoryEduRoundedIcon />,
       children: [
-        { segment: 'Ver_Nota_Alumno', title: 'Ver Nota por RUT', icon: <ManageSearchIcon /> },
-      ],
-    },
-  ],
-  "encargado de laboratorio": [
-    {
-      segment: 'gestion_reservas',
-      title: 'Gestion Reservas Laboratorio',
-      icon: <SchoolIcon />,
-      children: [
-        { segment: 'reservas', title: 'Reservas', icon: <SchoolIcon /> },
-        { segment: 'labs', title: 'Laboratorios', icon: <SchoolIcon /> },
-        { segment: 'horarios', title: 'Horarios', icon: <SchoolIcon /> },
+        { segment: 'ver_notas', title: 'Ver Notas', icon: <ManageSearchIcon /> },
       ],
     },
   ],
 };
 
-
-const customTheme = createTheme({
-  cssVariables: {
-    colorSchemeSelector: 'data-toolpad-color-scheme',
-  },
-  colorSchemes: {
-    light: {
-      palette: {
-        background: { default: '#FFF', paper: '#EEEEF9' },
-        primary: { main: '#1976d2' },
-        secondary: { main: '#9c27b0' },
-      },
-    },
-    dark: {
-      palette: {
-        background: { default: 'radial-gradient(circle,#090B11 , #002952)', paper: '#002952' },
-        primary: { main: '#90caf9' },
-        secondary: { main: '#f48fb1' },
-        text: { primary: '#ffffff', secondary: '#bbbbbb' },
-      },
-    },
-  },
-  breakpoints: {
-    values: { xs: 0, sm: 600, md: 600, lg: 1200, xl: 1536 },
-  },
-});
-
-function DashboardLayoutAccount() {
+const DashboardLayoutAccount = () => {
   const navigate = useNavigate();
-
-  // Recupera la sesión desde sessionStorage
-  const [session, setSession] = React.useState(() => {
+  const [session, setSession] = useState(() => {
     const usuarioGuardado = JSON.parse(sessionStorage.getItem('usuario'));
     return usuarioGuardado ? { user: usuarioGuardado, role: usuarioGuardado.rol } : null;
   });
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!session || !session.user) {
-      navigate('/auth');
+      navigate('/auth'); // Redirigir si no está logueado
     }
   }, [session, navigate]);
 
-  // Funciones de autenticación
-  const authentication = React.useMemo(() => ({
-    signIn: () => {
-      const user = {
-        email: 'example@domain.com',
-        image: 'https://example.com/image.jpg',
-        role: 'user',
-      };
-      sessionStorage.setItem('usuario', JSON.stringify(user));
-      setSession({ user, role: user.role });
-    },
-    signOut: () => {
-      logout();
-      sessionStorage.removeItem('usuario');
-      setSession(null);
-      navigate('/auth');
-    },
-  }), [navigate]);
-
-  // Configura la navegación según el rol
   const navigation = React.useMemo(() => {
     if (session?.role) {
       return NAVIGATION_BY_ROLE[session.role.toLowerCase()] || [];
@@ -178,30 +88,99 @@ function DashboardLayoutAccount() {
     return [];
   }, [session]);
 
-  const hideNavigation = location.pathname === '/Cursos';
+  const handleLogout = async () => {
+    try {
+      logout();  // Llama a tu función logout desde auth.service.js
+      sessionStorage.removeItem('usuario');
+      navigate('/auth');
+    } catch (error) {
+      console.error('Error al cerrar sesión:', error);
+    }
+  };
+
+  const renderNavLinks = (navigation) => {
+    return navigation.map((item) => (
+      <div key={item.segment}>
+        <Link
+          to={`/${item.segment}`}
+          className="flex items-center px-3 py-2 text-gray-600 transition-colors duration-300 transform rounded-lg dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-gray-200 hover:text-gray-700"
+        >
+          <span className="mx-2 text-sm font-medium">{item.icon}</span>
+          <span className="mx-2 text-sm font-medium">{item.title}</span>
+        </Link>
+
+        {item.children && (
+          <div className="ml-4">
+            {item.children.map((child) => (
+              <Link
+                key={child.segment}
+                to={`${item.segment}/${child.segment}`}
+                className="flex items-center px-3 py-2 text-gray-600 transition-colors duration-300 transform rounded-lg dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-gray-200 hover:text-gray-700"
+              >
+                <span className="mx-2 text-sm font-medium">{child.icon}</span>
+                <span className="mx-2 text-sm font-medium">{child.title}</span>
+              </Link>
+            ))}
+          </div>
+        )}
+      </div>
+    ));
+  };
 
   return (
-    <AppProvider
-      session={session}
-      authentication={authentication}
-      navigation={navigation} // Navegación basada en el rol
-      branding={{
-        logo: <SchoolIcon sx={{ marginX: 2, marginTop: 1 }} />,
-        title: 'SmeBook',
-      }}
-      theme={customTheme}
-    >
-      <Box sx={{ minHeight: '100vh', background: (theme) => theme.palette.background.default }}>
-        <DashboardLayout hideNavigation={hideNavigation}>
-          <Outlet />
-        </DashboardLayout>
-      </Box>
-    </AppProvider>
-  );
-}
+    <div className="flex">
+      {/* Sidebar */}
+      <aside className="flex flex-col w-64 h-screen px-5 py-8 overflow-y-auto bg-white border-r rtl:border-r-0 rtl:border-l dark:bg-gray-900 dark:border-gray-700">
+        {/* Logo y texto actualizado: "SmeBook" */}
+        <Link to="#" className="flex justify-center items-center mb-6 space-x-2">
+          <img className="w-auto h-7" src={logo} alt="Logo" /> {/* Logo local */}
+          <span className="text-xl font-semibold text-gray-800 dark:text-white">SmeBook</span>
+        </Link>
 
-DashboardLayoutAccount.propTypes = {
-  window: PropTypes.func,
+        <div className="flex flex-col justify-between flex-1 mt-6">
+          <nav className="flex-1 -mx-3 space-y-3">
+            {renderNavLinks(navigation)}
+          </nav>
+
+          <div className="mt-6">
+            <div className="flex items-center justify-between mt-6">
+              <Link to="#" className="flex items-center gap-x-2">
+                <img
+                  className="object-cover rounded-full h-7 w-7"
+                  src={session?.user?.avatar || "https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=634&h=634&q=80"}
+                  alt="avatar"
+                />
+                <div>
+                  <span className="text-sm font-medium text-gray-700 dark:text-gray-200">
+                    {session?.user?.nombre ? `${session.user.nombre} ${session.user.apellido}` : "Cargando..."}
+                  </span>
+                  <br />
+                  <span className="text-xs text-gray-500 dark:text-gray-400">
+                    {session?.role ? ` ${session.role}` : "Cargando rol..."}
+                  </span>
+                </div>
+              </Link>
+
+              {/* Logout Button */}
+              <button
+                onClick={handleLogout}
+                className="text-gray-500 transition-colors duration-200 rotate-180 dark:text-gray-400 rtl:rotate-0 "
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 12H3.75M12 5.25l-7.5 7.5 7.5 7.5" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      {/* Main Content */}
+      <main className="w-full">
+        <Outlet />
+      </main>
+    </div>
+  );
 };
 
 export default DashboardLayoutAccount;
