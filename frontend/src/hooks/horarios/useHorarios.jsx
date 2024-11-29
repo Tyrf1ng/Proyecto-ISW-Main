@@ -11,8 +11,6 @@ export function useHorarios() {
 
     const fetchHorarios = async () => {
         const data = await AllHorarios();
-        console.log(data);
-        
         if (data.error) {
             setError(data.error);
         } else {
@@ -47,5 +45,21 @@ export function useHorarios() {
         }
     };
 
-    return { horarios, fetchHorarios, addHorario, editHorario, removeHorario, error };
+    const isHorarioValid = (hora_inicio, hora_fin, id_horario = null) => {
+        for (let horario of horarios) {
+            if (horario.id_horario !== id_horario) {
+                if (
+                    (hora_inicio >= horario.hora_inicio && hora_inicio < horario.hora_fin) ||
+                    (hora_fin > horario.hora_inicio && hora_fin <= horario.hora_fin) ||
+                    (hora_inicio <= horario.hora_inicio && hora_fin >= horario.hora_fin) ||
+                    (hora_inicio === horario.hora_inicio || hora_fin === horario.hora_fin)
+                ) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    };
+
+    return { horarios, fetchHorarios, addHorario, editHorario, removeHorario, isHorarioValid, error };
 }

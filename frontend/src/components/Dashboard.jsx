@@ -46,6 +46,15 @@ const NAVIGATION_BY_ROLE = {
         { segment: 'ver_notas', title: 'Ver Notas', icon: <ManageSearchIcon /> },
       ],
     },
+    {
+      segment: 'gestion_reservas',
+      title: 'Gestion Reservas Laboratorio',
+      icon: <SchoolIcon />,
+      children: [
+        { segment: 'reservas', title: 'Reservas', icon: <SchoolIcon /> },
+        { segment: 'labs', title: 'Laboratorios', icon: <SchoolIcon /> },
+      ],
+    },
   ],
   alumno: [
     { segment: 'Inicio', title: 'Inicio', icon: <SchoolIcon /> },
@@ -63,6 +72,18 @@ const NAVIGATION_BY_ROLE = {
       icon: <HistoryEduRoundedIcon />,
       children: [
         { segment: 'ver_notas', title: 'Ver Notas', icon: <ManageSearchIcon /> },
+      ],
+    },
+  ],
+  "encargado de laboratorio": [
+    {
+      segment: 'gestion_reservas',
+      title: 'Gestion Reservas Laboratorio',
+      icon: <SchoolIcon />,
+      children: [
+        { segment: 'reservas', title: 'Reservas', icon: <SchoolIcon /> },
+        { segment: 'labs', title: 'Laboratorios', icon: <SchoolIcon /> },
+        { segment: 'horarios', title: 'Horarios', icon: <SchoolIcon /> },
       ],
     },
   ],
