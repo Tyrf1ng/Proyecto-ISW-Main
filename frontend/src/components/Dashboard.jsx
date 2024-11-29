@@ -9,6 +9,7 @@ import ManageSearchIcon from '@mui/icons-material/ManageSearch';
 import AddIcon from '@mui/icons-material/Add';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import CollectionsBookmarkIcon from '@mui/icons-material/CollectionsBookmark';
+import AlarmIcon from '@mui/icons-material/Alarm';
 // Importar logo local
 import logo from '../images/components/logo.svg'; 
 
@@ -56,18 +57,6 @@ const NAVIGATION_BY_ROLE = {
       ],
     },
   ],
-  "encargado de laboratorio": [
-    {
-      segment: 'gestion_reservas',
-      title: 'Gestion Reservas Laboratorio',
-      icon: <SchoolIcon />,
-      children: [
-        { segment: 'reservas', title: 'Reservas', icon: <SchoolIcon /> },
-        { segment: 'labs', title: 'Laboratorios', icon: <SchoolIcon /> },
-        { segment: 'horarios', title: 'Horarios', icon: <SchoolIcon /> },
-      ],
-    },
-  ],
   alumno: [
     { segment: 'Inicio', title: 'Inicio', icon: <SchoolIcon /> },
     {
@@ -95,7 +84,7 @@ const NAVIGATION_BY_ROLE = {
       children: [
         { segment: 'reservas', title: 'Reservas', icon: <SchoolIcon /> },
         { segment: 'labs', title: 'Laboratorios', icon: <SchoolIcon /> },
-        { segment: 'horarios', title: 'Horarios', icon: <SchoolIcon /> },
+        { segment: 'horarios', title: 'Horarios', icon: <AlarmIcon /> },
       ],
     },
   ],
