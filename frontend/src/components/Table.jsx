@@ -34,9 +34,12 @@ const TableComponent = ({ anotaciones, handleOpen, handleDelete }) => {
               {anotaciones.length > 0 ? (
                 anotaciones.map((anotacion) => (
                   <tr key={anotacion.id_anotacion}>
-                    <td className="px-4 py-4 text-sm font-medium whitespace-nowrap">
+                    <td className="px-4 py-4 text-sm font-medium whitespace-normal max-w-xs break-words">
                       <div>
-                        <h2 className="font-medium text-gray-800 dark:text-white">{anotacion.descripcion}</h2>
+                        {/* Descripción con ajuste de texto a varias líneas */}
+                        <h2 className="font-medium text-gray-800 dark:text-white">
+                          {anotacion.descripcion}
+                        </h2>
                       </div>
                     </td>
                     <td className="px-12 py-4 text-sm font-medium whitespace-nowrap">
@@ -50,11 +53,9 @@ const TableComponent = ({ anotaciones, handleOpen, handleDelete }) => {
                         {anotacion.tipo}
                       </div>
                     </td>
-                    {/* RUT del Alumno con estilo según modo oscuro o claro */}
                     <td className="px-4 py-4 text-sm whitespace-nowrap">
                       <div className="text-gray-800 dark:text-white">{anotacion.rut_alumno}</div>
                     </td>
-                    {/* Fecha de creación con estilo según modo oscuro o claro */}
                     <td className="px-4 py-4 text-sm whitespace-nowrap">
                       <div className="text-gray-800 dark:text-white">{new Date(anotacion.createdAt).toLocaleDateString()}</div>
                     </td>

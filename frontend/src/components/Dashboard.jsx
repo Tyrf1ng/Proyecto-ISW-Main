@@ -12,7 +12,7 @@ import CollectionsBookmarkIcon from '@mui/icons-material/CollectionsBookmark';
 // Importar logo local
 import logo from '../images/components/logo.svg'; 
 
-// Configuración de navegación por roles (se mantiene igual)
+// Configuración de navegación por roles
 const NAVIGATION_BY_ROLE = {
   directivo: [
     { segment: 'GestionUsuarios', title: 'Gestión de Usuarios', icon: <SchoolIcon /> },
@@ -128,12 +128,12 @@ const DashboardLayoutAccount = () => {
   };
 
   return (
-    <div className="flex">
+    <div className="flex h-screen">
       {/* Sidebar */}
-      <aside className="flex flex-col w-64 h-screen px-5 py-8 overflow-y-auto bg-white border-r rtl:border-r-0 rtl:border-l dark:bg-gray-900 dark:border-gray-700">
-        {/* Logo y texto actualizado: "SmeBook" */}
+      <aside className="flex flex-col w-64 px-5 py-8 overflow-y-auto bg-white border-r rtl:border-r-0 rtl:border-l dark:bg-gray-900 dark:border-gray-700">
+        {/* Logo */}
         <Link to="#" className="flex justify-center items-center mb-6 space-x-2">
-          <img className="w-auto h-7" src={logo} alt="Logo" /> {/* Logo local */}
+          <img className="w-auto h-7" src={logo} alt="Logo" />
           <span className="text-xl font-semibold text-gray-800 dark:text-white">SmeBook</span>
         </Link>
 
@@ -176,7 +176,8 @@ const DashboardLayoutAccount = () => {
       </aside>
 
       {/* Main Content */}
-      <main className="w-full">
+      <main className="flex-1 overflow-y-auto bg-gray-100 dark:bg-gray-800 p-4">
+        {/* Aquí es donde se renderiza el contenido hijo */}
         <Outlet />
       </main>
     </div>

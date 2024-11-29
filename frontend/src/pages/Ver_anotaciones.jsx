@@ -1,5 +1,4 @@
-import { useState, useContext } from 'react';
-import DeleteIcon from '@mui/icons-material/Delete'; // Icono del basurero
+import { useState, useContext, useEffect } from 'react';
 import { CursoContext } from '../context/CursoContext';
 import useAnotaciones from '@hooks/anotaciones/useAnotaciones';
 import { createAnotacion, deleteAnotacion, updateAnotacion } from '@services/anotaciones.service.js';
@@ -16,13 +15,22 @@ const Ver_anotaciones = () => {
     tipo: 'Positiva',
     rut_alumno: '',
     descripcion: '',
-    id_asignatura: '',
+    id_asignatura: idCurso || '',
     fecha: new Date().toISOString(),
   });
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [anotacionToDelete, setAnotacionToDelete] = useState(null);
 
   const handleFilterChange = (e) => setFilterText(e.target.value);
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setNewAnotacion({ ...newAnotacion, [name]: value });
+  };
+
+  const handleSelectChange = (e) => {
+    setNewAnotacion({ ...newAnotacion, tipo: e.target.value });
+  };
 
   const handleOpenModal = (anotacion = null) => {
     setIsEditMode(!!anotacion);
@@ -31,18 +39,13 @@ const Ver_anotaciones = () => {
       tipo: 'Positiva',
       rut_alumno: '',
       descripcion: '',
-      id_asignatura: '',
+      id_asignatura: idCurso || '',
       fecha: new Date().toISOString(),
     });
     setIsModalOpen(true);
   };
 
   const handleCloseModal = () => setIsModalOpen(false);
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setNewAnotacion({ ...newAnotacion, [name]: value });
-  };
 
   const handleSubmit = async () => {
     try {
@@ -76,13 +79,15 @@ const Ver_anotaciones = () => {
 
   return (
     <div className="p-4 bg-gray-50 dark:bg-gray-800">
-      <input
-        type="text"
-        value={filterText}
-        onChange={handleFilterChange}
-        placeholder="Filtrar anotaciones..."
-        className="w-full p-2 mb-4 border rounded"
-      />
+      <div className="mb-4">
+        <input
+          type="text"
+          value={filterText}
+          onChange={handleFilterChange}
+          placeholder="Filtrar anotaciones..."
+          className="w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300"
+        />
+      </div>
 
       <TableComponent
         anotaciones={anotaciones.filter((a) =>
@@ -92,28 +97,71 @@ const Ver_anotaciones = () => {
         handleDelete={handleDeleteRequest}
       />
 
+      {isModalOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="p-6 rounded-lg shadow-xl w-96 bg-white text-black dark:bg-[#111827] dark:text-white">
+            <h2 className="text-2xl font-bold mb-4">
+              {isEditMode ? 'Editar Anotación' : 'Nueva Anotación'}
+            </h2>
+            <div className="mb-4">
+              <label htmlFor="tipo" className="block text-sm text-gray-500 dark:text-gray-300">Tipo de Anotación</label>
+              <select
+                name="tipo"
+                id="tipo"
+                value={newAnotacion.tipo}
+                onChange={handleSelectChange}
+                className="mt-2 block w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300"
+              >
+                <option value="Positiva">Positiva</option>
+                <option value="Negativa">Negativa</option>
+              </select>
+            </div>
+            <div className="mb-4">
+              <label htmlFor="rut_alumno" className="block text-sm text-gray-500 dark:text-gray-300">
+                RUT del Alumno
+              </label>
+              <input
+                type="text"
+                id="rut_alumno"
+                name="rut_alumno"
+                value={newAnotacion.rut_alumno}
+                onChange={handleInputChange}
+                className="mt-2 block w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300"
+              />
+            </div>
+            <div className="mb-4">
+              <label htmlFor="descripcion" className="block text-sm text-gray-500 dark:text-gray-300">Descripción</label>
+              <textarea
+                name="descripcion"
+                id="descripcion"
+                value={newAnotacion.descripcion}
+                onChange={handleInputChange}
+                placeholder="Ingrese la descripción"
+                rows="4"
+                className="mt-2 block w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300 resize-none"
+              ></textarea>
+            </div>
+            <div className="flex justify-between mt-6">
+              <button onClick={handleSubmit} className="px-6 py-3 bg-blue-600 text-white rounded-lg text-lg">
+                {isEditMode ? 'Actualizar' : 'Guardar'}
+              </button>
+              <button onClick={handleCloseModal} className="px-6 py-3 bg-gray-400 text-white rounded-lg text-lg">
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {confirmDialogOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="p-8 rounded-lg shadow-xl bg-white text-black dark:bg-[#111827] dark:text-white w-96">
-            <div className="flex items-center justify-center mb-6">
-              <h2 className="text-lg font-bold">
-                ¿Estás seguro de que quieres eliminar esta anotación?
-              </h2>
-            </div>
-            <p className="text-base mb-6 mt-6">
-              Esta acción no se puede deshacer. Confirma tu decisión.
-            </p>
+          <div className="p-8 rounded-lg shadow-xl bg-white text-black dark:bg-[#111827] dark:text-white">
+            <h2 className="text-2xl font-bold mb-4">¿Estás seguro de que quieres eliminar esta anotación?</h2>
             <div className="flex justify-around mt-6">
-              <button
-                onClick={handleConfirmDelete}
-                className="px-6 py-3 bg-red-600 text-white rounded-lg"
-              >
+              <button onClick={handleConfirmDelete} className="px-6 py-3 bg-red-600 text-white rounded-lg text-lg">
                 Eliminar
               </button>
-              <button
-                onClick={() => setConfirmDialogOpen(false)}
-                className="px-6 py-3 bg-gray-400 text-white rounded-lg"
-              >
+              <button onClick={() => setConfirmDialogOpen(false)} className="px-6 py-3 bg-gray-400 text-white rounded-lg text-lg">
                 Cancelar
               </button>
             </div>
