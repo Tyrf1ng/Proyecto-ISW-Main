@@ -6,6 +6,11 @@ const TableHorarios = ({ horarios = [], handleOpen, handleDelete }) => {
   // Ordenar los horarios por hora de inicio
   const sortedHorarios = horarios.sort((a, b) => a.hora_inicio.localeCompare(b.hora_inicio));
 
+  // Función para formatear la hora y quitar los segundos
+  const formatTime = (time) => {
+    return time.slice(0, 5); // Asumiendo que el formato es "HH:MM:SS"
+  };
+
   return (
     <div className="overflow-x-auto sm:-mx-6 lg:-mx-8">
       <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
@@ -37,10 +42,10 @@ const TableHorarios = ({ horarios = [], handleOpen, handleDelete }) => {
                       </div>
                     </td>
                     <td className="px-12 py-4 text-sm font-medium whitespace-nowrap">
-                      <div className="text-gray-800 dark:text-white">{horario.hora_inicio}</div>
+                      <div className="text-gray-800 dark:text-white">{formatTime(horario.hora_inicio)}</div>
                     </td>
                     <td className="px-4 py-4 text-sm whitespace-nowrap">
-                      <div className="text-gray-800 dark:text-white">{horario.hora_fin}</div>
+                      <div className="text-gray-800 dark:text-white">{formatTime(horario.hora_fin)}</div>
                     </td>
                     <td className="px-4 py-4 text-sm whitespace-nowrap">
                       <div className="flex space-x-2">
