@@ -56,6 +56,18 @@ const NAVIGATION_BY_ROLE = {
       ],
     },
   ],
+  "encargado de laboratorio": [
+    {
+      segment: 'gestion_reservas',
+      title: 'Gestion Reservas Laboratorio',
+      icon: <SchoolIcon />,
+      children: [
+        { segment: 'reservas', title: 'Reservas', icon: <SchoolIcon /> },
+        { segment: 'labs', title: 'Laboratorios', icon: <SchoolIcon /> },
+        { segment: 'horarios', title: 'Horarios', icon: <SchoolIcon /> },
+      ],
+    },
+  ],
   alumno: [
     { segment: 'Inicio', title: 'Inicio', icon: <SchoolIcon /> },
     {
