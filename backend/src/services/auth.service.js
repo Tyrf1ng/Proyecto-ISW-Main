@@ -1,8 +1,6 @@
 "use strict";
 import Docentes from "../entity/docente.entity.js";
 import Alumno from "../entity/alumno.entity.js";
-import Apoderado from "../entity/apoderado.entity.js";
-import Administrativo from "../entity/administrativo.entity.js";
 import Directivo from "../entity/directivo.entity.js";
 import Encargado_Lab from "../entity/encargado.lab.entity.js";
 import jwt from "jsonwebtoken";
@@ -15,9 +13,7 @@ const ROLES_MAP = {
   1: "Directivo",
   2: "Docente",
   3: "Alumno",
-  4: "Apoderado",
-  5: "Administrativo",
-  6: "Encargado de Laboratorio",
+  4: "Encargado de Laboratorio",
 };
 
 export async function loginService(user) {
@@ -27,9 +23,7 @@ export async function loginService(user) {
     const repositories = [
       { repo: AppDataSource.getRepository(Directivo) },
       { repo: AppDataSource.getRepository(Docentes) },
-      { repo: AppDataSource.getRepository(Apoderado) },
       { repo: AppDataSource.getRepository(Alumno) },
-      { repo: AppDataSource.getRepository(Administrativo) },
       { repo: AppDataSource.getRepository(Encargado_Lab) },
     ];
 

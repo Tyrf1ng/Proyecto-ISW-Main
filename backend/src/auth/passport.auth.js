@@ -2,8 +2,6 @@
 import passport from "passport";
 import Docentes from "../entity/docente.entity.js";
 import Alumno from "../entity/alumno.entity.js";
-import Apoderado from "../entity/apoderado.entity.js";
-import Administrativo from "../entity/administrativo.entity.js";
 import Directivo from "../entity/directivo.entity.js";
 import Encargado_Lab from "../entity/encargado.lab.entity.js";
 import { ExtractJwt, Strategy as JwtStrategy } from "passport-jwt";
@@ -21,9 +19,7 @@ passport.use(
       const repositories = [
         AppDataSource.getRepository(Directivo),
         AppDataSource.getRepository(Docentes),
-        AppDataSource.getRepository(Apoderado),
         AppDataSource.getRepository(Alumno),
-        AppDataSource.getRepository(Administrativo),
         AppDataSource.getRepository(Encargado_Lab),
       ];
 

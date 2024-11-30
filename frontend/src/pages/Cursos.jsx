@@ -1,14 +1,14 @@
 import { useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { getCursosByProfesor } from "../services/cursos.service"; // Importa la función actualizada
-import { CursoContext } from "../context/CursoContext"; // Contexto de cursos
-import { useAuth } from "../context/AuthContext"; // Contexto de autenticación
+import { getCursosByProfesor } from "../services/cursos.service"; 
+import { CursoContext } from "../context/CursoContext"; 
+import { useAuth } from "../context/AuthContext"; 
 
 const Cursos = () => {
   const [cursos, setCursos] = useState([]);
   const [cargando, setCargando] = useState(true);
-  const { setIdCurso } = useContext(CursoContext); // Contexto de cursos
-  const { user } = useAuth(); // Contexto de autenticación
+  const { setIdCurso } = useContext(CursoContext);
+  const { user } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -19,9 +19,8 @@ const Cursos = () => {
         return;
       }
       try {
-        const cursosObtenidos = await getCursosByProfesor(user.rut); // Usa el RUT del profesor
+        const cursosObtenidos = await getCursosByProfesor(user.rut);
         setCursos(cursosObtenidos);
-        console.log("Cursos obtenidos:", cursosObtenidos);
       } catch (error) {
         console.error("Error al cargar los cursos:", error);
       } finally {
@@ -32,8 +31,8 @@ const Cursos = () => {
   }, [user]);
 
   const seleccionarCurso = (id_curso) => {
-    setIdCurso(id_curso); // Establece el ID del curso seleccionado en el contexto
-    navigate("/inicio"); // Redirige a la página principal o Dashboard
+    setIdCurso(id_curso);
+    navigate("/inicio");
   };
 
   if (cargando) {
@@ -45,9 +44,8 @@ const Cursos = () => {
   }
 
   return (
-    <div className="bg-[#1F2937] dark:bg-[#1F2937] min-h-screen p-4">
+    <div className="min-h-screen bg-[#1F2937] dark:bg-[#1F2937] p-4">
       <h1 className="text-4xl text-center font-semibold text-white mb-8">Mis Cursos</h1>
-      
       <div className="flex flex-col items-center gap-6">
         {cursos.map((curso) => (
           <div
@@ -58,7 +56,7 @@ const Cursos = () => {
             <h2 className="text-xl font-semibold text-white">{curso.nombre}</h2>
             <p className="text-md text-gray-400 mt-2">Coordinador: {curso.coordinador || "N/A"}</p>
             <p className="text-sm text-gray-300 mt-2">
-              <span className="font-semibold">Código:</span> {curso.codigo} - 
+              <span className="font-semibold">Código:</span> {curso.codigo} -
               <span className="font-semibold"> Nivel:</span> {curso.nivel}
             </p>
           </div>

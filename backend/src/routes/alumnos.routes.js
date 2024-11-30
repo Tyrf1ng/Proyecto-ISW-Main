@@ -18,12 +18,12 @@ router
   .use(authenticateJwt);
 
 router
-  .get("/", authorize([,"Docente","Director"]), getAlumnos ) 
-  .get("/rut/:rut_alumno",authorize(["Docente","Director"]), getAlumnoByRut) 
-  .get("/curso/:id_curso",authorize(["Docente","Director"]), getAlumnosByCurso) 
-  .get("/buscar",authorize(["Docente","Director"]), getAlumnosByNombre) 
-  .post("/crear",authorize(["Docente","Director"]), createAlumno) 
-  .put("/actualizar/:rut_alumno",authorize(["Docente","Director"]), updateAlumno) 
-  .delete("/borrar/:rut_alumno",authorize(["Docente","Director"]), deleteAlumno); 
+  .get("/", authorize(["Docente", "Directivo"]), getAlumnos) // Cambié "Director" por "Directivo"
+  .get("/rut/:rut_alumno", authorize(["Docente", "Directivo"]), getAlumnoByRut) // Cambié "Director" por "Directivo"
+  .get("/curso/:id_curso", authorize(["Docente", "Directivo"]), getAlumnosByCurso) // Cambié "Director" por "Directivo"
+  .get("/buscar", authorize(["Docente", "Directivo"]), getAlumnosByNombre) // Cambié "Director" por "Directivo"
+  .post("/crear", authorize(["Docente", "Directivo"]), createAlumno) // Cambié "Director" por "Directivo"
+  .put("/actualizar/:rut_alumno", authorize(["Docente", "Directivo"]), updateAlumno) 
+  .delete("/borrar/:rut_alumno", authorize(["Docente", "Directivo"]), deleteAlumno);
 
 export default router;

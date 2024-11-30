@@ -21,6 +21,7 @@
   import VerAsistencias from '@pages/VerAsistencias';
   import RegistrarAsistencias from '@pages/RegistrarAsistencias';
   import Reservas from '@pages/Reservas'; // Importa el nuevo componente Reservas
+  import Profile from './pages/Profile';
 
   const router = createBrowserRouter([
     {
@@ -30,6 +31,7 @@
       children: [
         { path: 'inicio', element: <Inicio /> },
         { path: 'cursos', element: <Cursos /> },
+        { path: 'perfil', element: <Profile /> },
         {
           path: 'asistencias',
           element: <Outlet />,

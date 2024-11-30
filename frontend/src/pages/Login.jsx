@@ -56,7 +56,7 @@ const Login = () => {
       {loginError && (
   <div
     role="alert"
-    className="alert alert-error fixed top-0 left-1/5 transform -translate-x-1/2 z-50 mb-4 mt-4 w-auto p-4 flex items-center bg-[#111827] text-red-500 rounded-lg shadow-lg animate-bounce-slow"
+    className="alert alert-error fixed top-0 left-1/2 transform -translate-x-1/2 z-50 mb-4 mt-4 w-auto p-4 flex items-center bg-[#111827] text-red-500 rounded-lg shadow-lg animate-bounce-slow"
   >
     <svg
       xmlns="http://www.w3.org/2000/svg"
