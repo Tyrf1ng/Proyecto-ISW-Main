@@ -22,6 +22,7 @@
   import RegistrarAsistencias from '@pages/RegistrarAsistencias';
   import Reservas from '@pages/Reservas'; // Importa el nuevo componente Reservas
   import Profile from './pages/Profile';
+import LabsDocente from './pages/LabsDocente';
 
   const router = createBrowserRouter([
     {
@@ -63,6 +64,7 @@
           element: <Outlet />,
           children: [
             { path: 'labs', element: <Labs /> },
+            { path: 'labsdocente', element: <LabsDocente /> },
             { path: 'horarios', element: <Horarios /> },
             { path: 'reservas', element: <Reservas /> },
           ],

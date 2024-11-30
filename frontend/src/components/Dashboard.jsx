@@ -10,6 +10,8 @@ import AddIcon from '@mui/icons-material/Add';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import CollectionsBookmarkIcon from '@mui/icons-material/CollectionsBookmark';
 import AlarmIcon from '@mui/icons-material/Alarm';
+import BiotechIcon from '@mui/icons-material/Biotech';
+import EventIcon from '@mui/icons-material/Event';
 // Importar logo local
 import logo from '../images/components/logo.svg'; 
 
@@ -50,8 +52,8 @@ const NAVIGATION_BY_ROLE = {
       title: 'Gestion Reservas Laboratorio',
       icon: <SchoolIcon />,
       children: [
-        { segment: 'reservas', title: 'Reservas', icon: <SchoolIcon /> },
-        { segment: 'labs', title: 'Laboratorios', icon: <SchoolIcon /> },
+        { segment: 'reservas', title: 'Reservas', icon: <EventIcon /> },
+        { segment: 'labsdocente', title: 'Laboratorios', icon: <BiotechIcon /> },
       ],
     },
   ],
@@ -80,8 +82,8 @@ const NAVIGATION_BY_ROLE = {
       title: 'Gestion Reservas Laboratorio',
       icon: <SchoolIcon />,
       children: [
-        { segment: 'reservas', title: 'Reservas', icon: <SchoolIcon /> },
-        { segment: 'labs', title: 'Laboratorios', icon: <SchoolIcon /> },
+        { segment: 'reservas', title: 'Reservas', icon: <EventIcon /> },
+        { segment: 'labs', title: 'Laboratorios', icon: <BiotechIcon /> },
         { segment: 'horarios', title: 'Horarios', icon: <AlarmIcon /> },
       ],
     },
