@@ -101,9 +101,11 @@ function Add_anotaciones() {
   };
 
   const renderMessage = () => {
+    const messageClasses = "fixed top-5 right-5 w-full max-w-sm overflow-hidden bg-[#111827] rounded-lg shadow-md z-50 animate-bounce-slow";
+
     if (messageType === 'success') {
       return (
-        <div className="fixed top-5 right-5 w-full max-w-sm overflow-hidden bg-[#111827] rounded-lg shadow-md z-50">
+        <div className={messageClasses}>
           <div className="px-4 py-2 -mx-3">
             <div className="mx-3">
               <span className="font-semibold text-emerald-500">Success</span>
@@ -116,7 +118,7 @@ function Add_anotaciones() {
 
     if (messageType === 'error') {
       return (
-        <div className="fixed top-5 right-5 w-full max-w-sm overflow-hidden bg-[#111827] rounded-lg shadow-md z-50">
+        <div className={messageClasses}>
           <div className="px-4 py-2 -mx-3">
             <div className="mx-3">
               <span className="font-semibold text-red-500">Error</span>
@@ -129,7 +131,7 @@ function Add_anotaciones() {
 
     if (messageType === 'warning') {
       return (
-        <div className="fixed top-5 right-5 w-full max-w-sm overflow-hidden bg-[#111827] rounded-lg shadow-md z-50">
+        <div className={messageClasses}>
           <div className="px-4 py-2 -mx-3">
             <div className="mx-3">
               <span className="font-semibold text-yellow-400">Warning</span>
@@ -142,7 +144,6 @@ function Add_anotaciones() {
 
     return null;
   };
-
   return (
     <div className="p-6 max-w-3xl mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-md">
       <h2 className="text-2xl font-semibold text-gray-800 dark:text-white mb-6">Añadir Anotaciones</h2>
