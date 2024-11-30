@@ -460,7 +460,7 @@ async function createEncargados_Lab() {
           nombre: "Cristobal",
           apellido: "Cristox",
           email: "cristox@gmail.cl",
-          id_roles: 5,
+          id_roles: 4,
           password: await encryptPassword("cristox123"),
           telefono: "987654321",
         }),
