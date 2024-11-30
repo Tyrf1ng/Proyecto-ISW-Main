@@ -40,6 +40,15 @@ export async function createHorarioService(data) {
     try {
         const horariosRepository = AppDataSource.getRepository(Horarios);
 
+        // Validar solapamiento de horarios
+        const overlappingHorarios = await horariosRepository.createQueryBuilder("horarios")
+            .where("hora_inicio < :hora_fin AND hora_fin > :hora_inicio", { hora_inicio: data.hora_inicio, hora_fin: data.hora_fin })
+            .getMany();
+
+        if (overlappingHorarios.length > 0) {
+            return [null, "El horario se solapa con otro existente"];
+        }
+
         // Crea un nuevo horario
         const horario = horariosRepository.create(data);
         const savedHorario = await horariosRepository.save(horario);
@@ -55,6 +64,15 @@ export async function createHorarioService(data) {
 export async function updateHorarioService(id_horario, data) {
     try {
         const horariosRepository = AppDataSource.getRepository(Horarios);
+
+        // Validar solapamiento de horarios
+        const overlappingHorarios = await horariosRepository.createQueryBuilder("horarios")
+            .where("id_horario != :id_horario AND hora_inicio < :hora_fin AND hora_fin > :hora_inicio", { id_horario, hora_inicio: data.hora_inicio, hora_fin: data.hora_fin })
+            .getMany();
+
+        if (overlappingHorarios.length > 0) {
+            return [null, "El horario se solapa con otro existente"];
+        }
 
         // Actualiza el horario con los nuevos datos
         const result = await horariosRepository.update(

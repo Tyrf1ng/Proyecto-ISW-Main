@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useHorarios } from '@hooks/horarios/useHorarios';
 import TableHorarios from '../components/TableHorarios';
+import SuccessAlert from '../components/SuccessAlert';
 
 const Horarios = () => {
     const { horarios = [], fetchHorarios, addHorario, editHorario, removeHorario, isHorarioValid, error } = useHorarios();
@@ -115,6 +116,27 @@ const Horarios = () => {
         fetchHorarios();
     }, []);
 
+    useEffect(() => {
+        if (createSuccess) {
+            const timer = setTimeout(() => setCreateSuccess(false), 3000);
+            return () => clearTimeout(timer);
+        }
+    }, [createSuccess]);
+
+    useEffect(() => {
+        if (editSuccess) {
+            const timer = setTimeout(() => setEditSuccess(false), 3000);
+            return () => clearTimeout(timer);
+        }
+    }, [editSuccess]);
+
+    useEffect(() => {
+        if (deleteSuccess) {
+            const timer = setTimeout(() => setDeleteSuccess(false), 3000);
+            return () => clearTimeout(timer);
+        }
+    }, [deleteSuccess]);
+
     return (
         <div className="p-4 bg-gray-50 dark:bg-gray-800 min-h-screen">
             <h1 className="text-4xl text-center text-blue-100 mb-4">Horarios</h1>
@@ -191,6 +213,10 @@ const Horarios = () => {
                     </div>
                 </div>
             )}
+
+            {createSuccess && <SuccessAlert message="Horario creado con éxito" />}
+            {editSuccess && <SuccessAlert message="Horario editado con éxito" />}
+            {deleteSuccess && <SuccessAlert message="Horario eliminado con éxito" />}
         </div>
     );
 };
