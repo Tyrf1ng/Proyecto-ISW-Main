@@ -83,6 +83,9 @@ export async function deleteHorarioService(id_horario) {
         const result = await horariosRepository.delete(id_horario);
         return result.affected ? [true, null] : [null, "Horario no encontrado"];
     } catch (error) {
+        if (error.code === "23503") {
+            return [null, "No se puede eliminar el horario porque está referenciado en reservas"];
+        }
         console.error("Error al eliminar el horario:", error);
         return [null, "Error interno del servidor"];
     }
