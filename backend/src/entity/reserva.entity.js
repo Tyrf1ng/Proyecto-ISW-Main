@@ -14,7 +14,7 @@ const ReservaSchema = new EntitySchema({
             type: "int",
             nullable: false,
         },
-        rut_docente: {
+        rut: {
             type: "varchar",
             nullable: false,
         },
@@ -44,10 +44,10 @@ const ReservaSchema = new EntitySchema({
             target: "Labs", 
             joinColumn: { name: "id_lab" } ,
         },
-        docente: {
+        usuario: {
             type: "many-to-one",
-            target: "Docentes", 
-            joinColumn: { name: "rut_docente" } ,
+            target: "Usuario", 
+            joinColumn: { name: "rut" } ,
         },
         horarios: {
             type: "many-to-one",

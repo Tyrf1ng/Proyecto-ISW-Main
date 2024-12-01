@@ -14,7 +14,7 @@ const AsignaturasSchema = new EntitySchema({
       type: "varchar",
       nullable: false,
     },
-    rut_docente: {
+    rut: {
       type: "varchar",
       nullable: false,
     },
@@ -31,10 +31,10 @@ const AsignaturasSchema = new EntitySchema({
       },
   },
   relations: { 
-    docente: {
+    usuario: {
         type: "one-to-one",
-        target: "Docentes", 
-        joinColumn: { name: "rut_docente" } ,
+        target: "Usuario", 
+        joinColumn: { name: "rut" } ,
     },
   },
 });

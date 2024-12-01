@@ -18,7 +18,7 @@ const NotasSchema = new EntitySchema({
       type: "double precision",
       nullable: false,
     },
-    rut_alumno: {
+    rut: {
       type: "varchar",
       nullable: false,
     },
@@ -39,10 +39,10 @@ const NotasSchema = new EntitySchema({
       },
   },
   relations: { 
-    alumno: {
+    usuario: {
         type: "many-to-one",
-        target: "Alumno", 
-        joinColumn: { name: "rut_alumno" } ,
+        target: "Usuario", 
+        joinColumn: { name: "rut" } ,
     },
     asignatura: {
         type: "many-to-one",
