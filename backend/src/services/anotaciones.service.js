@@ -1,7 +1,7 @@
 "use strict";
 import { In } from "typeorm";
 import Anotaciones from "../entity/anotacion.entity.js";
-import Alumno from "../entity/alumno.entity.js";
+import Usuario from "../entity/usuario.entity.js";
 import AsignaturaCursoSchema from "../entity/asignatura.curso.entity.js";
 import { AppDataSource } from "../config/configDb.js";
 
@@ -84,7 +84,7 @@ export async function getAnotacionesAlumnoService(rut_alumno) {
 
 export async function getAnotacionesCursoService(id_curso) {
     try {
-        const AlumnoRepository = AppDataSource.getRepository(Alumno);
+        const AlumnoRepository = AppDataSource.getRepository(Usuario);
         const AnotacionRepository = AppDataSource.getRepository(Anotaciones);
         const AsignaturaCursoRepository = AppDataSource.getRepository(AsignaturaCursoSchema);
 

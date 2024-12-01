@@ -2,14 +2,14 @@
 import { In } from "typeorm";
 import Notas from "../entity/nota.entity.js";
 import { AppDataSource } from "../config/configDb.js";
-import alumnos from "../entity/alumno.entity.js";
+import usuario from "../entity/usuario.entity.js";
 
 //funcion para traer todas las notas de un curso
 //Funciona no tocar
 export async function getNotasCurso(id_curso) {
     try {
         // Obtener todos los alumnos asociados al curso específico
-        const alumnoRepository = AppDataSource.getRepository(alumnos);
+        const alumnoRepository = AppDataSource.getRepository(usuario);
         const alumno = await alumnoRepository.find({
             where: { id_curso: id_curso },
         });

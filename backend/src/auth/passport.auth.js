@@ -1,9 +1,6 @@
 "use strict";
 import passport from "passport";
-import Docentes from "../entity/docente.entity.js";
-import Alumno from "../entity/alumno.entity.js";
-import Directivo from "../entity/directivo.entity.js";
-import Encargado_Lab from "../entity/encargado.lab.entity.js";
+import Usuario from "../entity/usuario.entity.js";
 import { ExtractJwt, Strategy as JwtStrategy } from "passport-jwt";
 import { ACCESS_TOKEN_SECRET } from "../config/configEnv.js";
 import { AppDataSource } from "../config/configDb.js";
@@ -17,10 +14,7 @@ passport.use(
   new JwtStrategy(options, async (jwt_payload, done) => {
     try {
       const repositories = [
-        AppDataSource.getRepository(Directivo),
-        AppDataSource.getRepository(Docentes),
-        AppDataSource.getRepository(Alumno),
-        AppDataSource.getRepository(Encargado_Lab),
+        AppDataSource.getRepository(Usuario),
       ];
 
       let user = null;

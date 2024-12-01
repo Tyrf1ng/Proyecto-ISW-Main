@@ -8,11 +8,8 @@ import notasRoutes from "./notas.routes.js";
 import labRoutes from "./lab.routes.js";
 import horariosRoutes from "./horarios.routes.js";
 import reservaRoutes from "./reserva.routes.js";
-import alumnosRoutes from "./alumnos.routes.js";
-import docentesRoutes from "./docente.routes.js";
-import encargado_labRoutes from "./encargado_lab.routes.js";
-import directivoRoutes from "./directivo.routes.js";
 import asignaturaRoutes from "./asignatura.routes.js";
+import usuarioRoutes from "./usuario.routes.js";
 
 const router = Router();
 
@@ -26,10 +23,7 @@ router
     .use("/labs", labRoutes)
     .use("/horarios", horariosRoutes)
     .use("/reserva", reservaRoutes)
-    .use("/alumnos", alumnosRoutes)
-    .use("/docentes", docentesRoutes)
-    .use("/encargados_lab", encargado_labRoutes)
-    .use("/directivos", directivoRoutes)
+    .use("/usuarios", usuarioRoutes)
     .use("/asignaturas", asignaturaRoutes);
 
 export default router;

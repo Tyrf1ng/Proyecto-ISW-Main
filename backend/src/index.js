@@ -19,6 +19,7 @@ import {
   createNotas,
   createReserva,
   createRoles,
+  createUsuario
 } from "./config/initialSetup.js";
 import { passportJwtSetup } from "./auth/passport.auth.js";
 
@@ -84,6 +85,7 @@ async function setupAPI() {
     await connectDB();
     await setupServer();
     await createRoles();
+    await createUsuario();
     await createCursos();
     await createAsignaturas();
     await createAsignaturaCurso();

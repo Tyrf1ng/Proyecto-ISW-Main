@@ -1,8 +1,5 @@
 "use strict";
-import Docentes from "../entity/docente.entity.js";
-import Alumno from "../entity/alumno.entity.js";
-import Directivo from "../entity/directivo.entity.js";
-import Encargado_Lab from "../entity/encargado.lab.entity.js";
+import Usuario from "../entity/usuario.entity.js";
 import jwt from "jsonwebtoken";
 import { AppDataSource } from "../config/configDb.js";
 import { comparePassword } from "../helpers/bcrypt.helper.js";
@@ -21,10 +18,7 @@ export async function loginService(user) {
     const { email, password } = user;
 
     const repositories = [
-      { repo: AppDataSource.getRepository(Directivo) },
-      { repo: AppDataSource.getRepository(Docentes) },
-      { repo: AppDataSource.getRepository(Alumno) },
-      { repo: AppDataSource.getRepository(Encargado_Lab) },
+      { repo: AppDataSource.getRepository(Usuario) },
     ];
 
     let userFound = null;

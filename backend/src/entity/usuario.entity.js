@@ -40,7 +40,7 @@ const UsuarioSchema = new EntitySchema({
         length: 255,
         nullable: false,
     },
-    rol: {
+    id_roles: {
       type: "int",
       nullable: false,
     },
@@ -60,5 +60,13 @@ const UsuarioSchema = new EntitySchema({
         nullable: false,
       },
     },
+    relations: {
+      Roles: {
+          type: "many-to-one",
+          target: "Roles",
+          joinColumn: { name: "id_roles" },
+          nullable: false,
+      },
+  },
 });
 export default UsuarioSchema;
