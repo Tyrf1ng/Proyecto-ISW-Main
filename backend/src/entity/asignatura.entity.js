@@ -32,7 +32,7 @@ const AsignaturasSchema = new EntitySchema({
   },
   relations: { 
     usuario: {
-        type: "one-to-one",
+        type: "Many-to-one",
         target: "Usuario", 
         joinColumn: { name: "rut" } ,
     },

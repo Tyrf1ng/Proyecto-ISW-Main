@@ -26,7 +26,7 @@ async function createUsuario() {
           rut: "21.282.977-3",
           nombre: "Skibidi",
           apellido: "Insano",
-          correo: "benjamin@gmail.cl",
+          email: "benjamin@gmail.cl",
           telefono: 123456789,
           password: await encryptPassword("benja123"),
           id_roles: 1,
@@ -119,13 +119,13 @@ async function createAsignaturas() {
       AsignaturasRepository.save(
         AsignaturasRepository.create({
           nombre: "Matematicas",
-          rut_docente: "5.126.663-3",
+          rut: "21.282.977-3",
         }),
       ),
       AsignaturasRepository.save(
         AsignaturasRepository.create({
           nombre: "Lenguaje",
-          rut_docente: "5.126.663-4",
+          rut: "21.282.977-3",
         }),
       ),
     ]);
@@ -169,7 +169,7 @@ async function createAnotaciones() {
       AnotacionesRepository.save(
         AnotacionesRepository.create({
           descripcion: "Distrayendo a compañeros en horario de clases",
-          rut_alumno: "20.960.538-4",
+          rut: "21.282.977-3",
           tipo: "Negativa",
           id_asignatura: 1,
         }),
@@ -193,7 +193,7 @@ async function createAsistencia() {
         AsistenciaRepository.create({
           fecha: "2021-09-01",
           tipo: "Presente",
-          rut_alumno: "20.960.538-4",
+          rut: "21.282.977-3",
           id_asignatura: 1,
         }),
       ),
@@ -201,7 +201,7 @@ async function createAsistencia() {
         AsistenciaRepository.create({
           fecha: "2021-09-01",
           tipo: "Presente",
-          rut_alumno: "4.705.624-1",
+          rut: "21.282.977-3",
           id_asignatura: 2,
         }),
       ),
@@ -224,7 +224,7 @@ async function createNotas() {
         NotasRepository.create({
           tipo: "C1",
           valor: 0.3,
-          rut_alumno: "20.960.538-4",
+          rut: "21.282.977-3",
           id_asignatura: 1,
         }),
       ),
@@ -268,7 +268,7 @@ async function createHorarios() {
         horariosRepository.create({
           hora_inicio: "08:00",
           hora_fin: "09:30",
-          rut_encargado: "21.019.643-9",
+          rut: "21.282.977-3",
         }),
       ),
     ]);
@@ -290,7 +290,7 @@ async function createReserva() {
         reservaRepository.create({
           fecha:"2021-09-01",
           id_horario: 1,
-          rut_docente: "5.126.663-3",
+          rut: "21.282.977-3",
           id_lab: 1
         }),
       ),
