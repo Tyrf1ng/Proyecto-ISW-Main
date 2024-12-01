@@ -8,9 +8,38 @@ import Notas from "../entity/nota.entity.js";
 import Labs from "../entity/lab.entity.js";
 import Horarios from "../entity/horarios.entity.js";
 import Reserva from "../entity/reserva.entity.js";
+import Roles from "../entity/roles.entity.js";
+import Usuario from "../entity/usuario.entity.js";
 import { AppDataSource } from "./configDb.js";
 import { encryptPassword } from "../helpers/bcrypt.helper.js";
 
+async function createUsuario() {
+  try {
+    const usuarioRepository = AppDataSource.getRepository(Usuario);
+
+    const count = await usuarioRepository.count();
+    if (count > 0) return;
+
+    await Promise.all([
+      usuarioRepository.save(
+        usuarioRepository.create({
+          rut: "21.282.977-3",
+          nombre: "Skibidi",
+          apellido: "Insano",
+          correo: "benjamin@gmail.cl",
+          telefono: 123456789,
+          password: await encryptPassword("benja123"),
+          id_roles: 1,
+          comuna: "Hualpen City",
+          direccion: "Calle falsa 123",
+        }),
+      ),]);
+    console.log("* => Usuario creado exitosamente");
+  }
+  catch (error) {
+    console.error("Error al crear usuario:", error);
+  }
+}
 
 async function createRoles() {
   try {
@@ -282,6 +311,7 @@ export { createCursos
   , createLabs
   , createHorarios
   , createReserva
+  , createUsuario
 };
 
   
