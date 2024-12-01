@@ -4,8 +4,13 @@ import { AllHorarios, createHorario, updateHorario, deleteHorario } from '@servi
 export function useHorarios() {
     const [horarios, setHorarios] = useState([]);
     const [error, setError] = useState(null);
+    const [usuario, setUsuario] = useState({ nombre: '', apellido: '', rut: '' });
 
     useEffect(() => {
+        const usuarioGuardado = JSON.parse(sessionStorage.getItem('usuario'));
+        if (usuarioGuardado) {
+            setUsuario(usuarioGuardado);
+        }
         fetchHorarios();
     }, []);
 
@@ -19,7 +24,7 @@ export function useHorarios() {
     };
 
     const addHorario = async (horario) => {
-        const data = await createHorario(horario);
+        const data = await createHorario({ ...horario, rut_encargado: usuario.rut });
         if (data.error) {
             setError(data.error);
         } else {
@@ -28,7 +33,7 @@ export function useHorarios() {
     };
 
     const editHorario = async (horario) => {
-        const data = await updateHorario(horario);
+        const data = await updateHorario({ ...horario, rut_encargado: usuario.rut });
         if (data.error) {
             setError(data.error);
         } else {

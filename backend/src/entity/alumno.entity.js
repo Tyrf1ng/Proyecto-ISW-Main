@@ -61,10 +61,6 @@ const AlumnoSchema = new EntitySchema({
         onUpdate: "CURRENT_TIMESTAMP",
         nullable: false,
       },
-    rut_apoderado: {
-      type: "varchar",
-      nullable: false,
-    },
     id_curso: {
       type: "int",
       nullable: false,
@@ -76,11 +72,6 @@ const AlumnoSchema = new EntitySchema({
       target: "Curso", 
       joinColumn: { name: "id_curso" } ,
     },
-    apoderado:{
-      type: "one-to-many",
-      target: "Apoderado", 
-      joinColumn: { name: "rut_apoderado" },
-    }, 
     roles: {
       type: "many-to-one",
       target: "Roles", 

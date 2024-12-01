@@ -23,7 +23,11 @@ const useLabs = () => {
     setLoading(true);
     try {
       const response = await createLab(lab);
-      setLabs([...labs, response]);
+      if (response.error) {
+        setError(response.error);
+      } else {
+        setLabs([...labs, response]);
+      }
     } catch (error) {
       setError(error);
       console.error("Error al crear el laboratorio: ", error);
@@ -36,7 +40,11 @@ const useLabs = () => {
     setLoading(true);
     try {
       const response = await updateLab(lab);
-      setLabs(labs.map((l) => (l.id_lab === lab.id_lab ? response : l)));
+      if (response.error) {
+        setError(response.error);
+      } else {
+        setLabs(labs.map((l) => (l.id_lab === lab.id_lab ? response : l)));
+      }
     } catch (error) {
       setError(error);
       console.error("Error al actualizar el laboratorio: ", error);

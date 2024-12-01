@@ -54,26 +54,31 @@ const Login = () => {
     >
       {/* Mostrar mensaje de error sobre la card */}
       {loginError && (
-        <div
-          role="alert"
-          className="alert alert-error absolute top-0 left-1/2 transform -translate-x-1/2 mb-4 w-auto p-4 flex items-center bg-[#111827] text-red-500 rounded-lg shadow-lg"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-6 w-6 shrink-0 stroke-current text-red-500"
-            fill="none"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-            />
-          </svg>
-          <span className="text-red-500">{loginError}</span>
-        </div>
-      )}
+  <div
+    role="alert"
+    className="alert alert-error fixed top-0 left-1/2 transform -translate-x-1/2 z-50 mb-4 mt-4 w-auto p-4 flex items-center bg-[#111827] text-red-500 rounded-lg shadow-lg animate-bounce-slow"
+  >
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      className="h-6 w-6 shrink-0 stroke-current text-red-500"
+      fill="none"
+      viewBox="0 0 24 24"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="2"
+        d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+      />
+    </svg>
+    <span className="text-red-500">{loginError}</span>
+  </div>
+)}
+
+
+
+
+
 
       <div className="flex items-center justify-center min-h-screen ">
         <div className="absolute inset-0 bg-[url('/path-to-your-pattern.png')] bg-center bg-cover opacity-50"></div>

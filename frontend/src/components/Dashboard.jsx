@@ -10,6 +10,8 @@ import AddIcon from '@mui/icons-material/Add';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import CollectionsBookmarkIcon from '@mui/icons-material/CollectionsBookmark';
 import AlarmIcon from '@mui/icons-material/Alarm';
+import BiotechIcon from '@mui/icons-material/Biotech';
+import EventIcon from '@mui/icons-material/Event';
 // Importar logo local
 import logo from '../images/components/logo.svg'; 
 
@@ -19,8 +21,6 @@ const NAVIGATION_BY_ROLE = {
     { segment: 'GestionUsuarios', title: 'Gestión de Usuarios', icon: <SchoolIcon /> },
   ],
   docente: [
-    { segment: 'Inicio', title: 'Inicio', icon: <SchoolIcon /> },
-    { segment: 'Cursos', title: 'Cursos', icon: <CollectionsBookmarkIcon /> },
     {
       segment: 'asistencias',
       title: 'Asistencias',
@@ -52,8 +52,8 @@ const NAVIGATION_BY_ROLE = {
       title: 'Gestion Reservas Laboratorio',
       icon: <SchoolIcon />,
       children: [
-        { segment: 'reservas', title: 'Reservas', icon: <SchoolIcon /> },
-        { segment: 'labs', title: 'Laboratorios', icon: <SchoolIcon /> },
+        { segment: 'reservas', title: 'Reservas', icon: <EventIcon /> },
+        { segment: 'labsdocente', title: 'Laboratorios', icon: <BiotechIcon /> },
       ],
     },
   ],
@@ -82,8 +82,8 @@ const NAVIGATION_BY_ROLE = {
       title: 'Gestion Reservas Laboratorio',
       icon: <SchoolIcon />,
       children: [
-        { segment: 'reservas', title: 'Reservas', icon: <SchoolIcon /> },
-        { segment: 'labs', title: 'Laboratorios', icon: <SchoolIcon /> },
+        { segment: 'reservas', title: 'Reservas', icon: <EventIcon /> },
+        { segment: 'labs', title: 'Laboratorios', icon: <BiotechIcon /> },
         { segment: 'horarios', title: 'Horarios', icon: <AlarmIcon /> },
       ],
     },
@@ -149,24 +149,35 @@ const DashboardLayoutAccount = () => {
     ));
   };
 
+  const handleLogoClick = () => {
+    // Redirige al inicio cuando se haga clic en el logo
+    navigate('/inicio');
+  };
+
   return (
     <div className="flex h-screen">
       {/* Sidebar */}
       <aside className="flex flex-col w-64 px-5 py-8 overflow-y-auto bg-white border-r rtl:border-r-0 rtl:border-l dark:bg-gray-900 dark:border-gray-700">
         {/* Logo */}
-        <Link to="#" className="flex justify-center items-center mb-6 space-x-2">
+        <div 
+          className="flex justify-center items-center mb-6 space-x-2 cursor-pointer"
+          onClick={handleLogoClick}
+        >
           <img className="w-auto h-7" src={logo} alt="Logo" />
-          <span className="text-xl font-semibold text-gray-800 dark:text-white">SmeBook</span>
-        </Link>
-
+          <span className="text-xl font-semibold text-gray-800 dark:text-white cursor-pointer">
+            SmeBook
+          </span>
+        </div>
+  
         <div className="flex flex-col justify-between flex-1 mt-6">
           <nav className="flex-1 -mx-3 space-y-3">
             {renderNavLinks(navigation)}
           </nav>
-
+  
           <div className="mt-6">
             <div className="flex items-center justify-between mt-6">
-              <Link to="#" className="flex items-center gap-x-2">
+              {/* Enlace de perfil */}
+              <Link to="/perfil" className="flex items-center gap-x-2">
                 <img
                   className="object-cover rounded-full h-7 w-7"
                   src={session?.user?.avatar || "https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=634&h=634&q=80"}
@@ -182,11 +193,11 @@ const DashboardLayoutAccount = () => {
                   </span>
                 </div>
               </Link>
-
-              {/* Logout Button */}
+  
+              {/* Botón de Logout */}
               <button
                 onClick={handleLogout}
-                className="text-gray-500 transition-colors duration-200 rotate-180 dark:text-gray-400 rtl:rotate-0 "
+                className="text-gray-500 transition-colors duration-200 rotate-180 dark:text-gray-400 rtl:rotate-0"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 12H3.75M12 5.25l-7.5 7.5 7.5 7.5" />
@@ -196,7 +207,7 @@ const DashboardLayoutAccount = () => {
           </div>
         </div>
       </aside>
-
+  
       {/* Main Content */}
       <main className="flex-1 overflow-y-auto bg-gray-100 dark:bg-gray-800 p-4">
         {/* Aquí es donde se renderiza el contenido hijo */}

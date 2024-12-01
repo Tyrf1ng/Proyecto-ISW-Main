@@ -5,7 +5,7 @@ import { CursoProvider } from '../context/CursoContext'; // Asegúrate de import
 function Root() {
   return (
     <AuthProvider>
-      <CursoProvider> {/* Asegúrate de envolver tu aplicación con CursoProvider */}
+      <CursoProvider> 
         <DashboardLayoutAccount />
       </CursoProvider>
     </AuthProvider>

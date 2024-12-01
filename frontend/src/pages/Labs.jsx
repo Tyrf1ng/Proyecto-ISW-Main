@@ -1,10 +1,32 @@
-import React, { useState } from 'react';
-import { Box, Typography, TextField, Button, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Paper, IconButton, Modal, Alert, Snackbar, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
-import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
-import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
-import useLabs from '../hooks/labs/useLabs'; // Asegúrate de que la ruta sea correcta
+import { useEffect, useState } from 'react';
+import useLabs from '../hooks/labs/useLabs';
+import TableLabs from '../components/TableLabs';
+
+// Componente de alerta
+const Alert = ({ message, onClose }) => {
+  return (
+    <div
+      role="alert"
+      className="alert alert-error absolute top-0 left-1/2 transform -translate-x-1/2 mb-4 w-auto p-4 flex items-center bg-[#111827] text-red-500 rounded-lg shadow-lg"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className="h-6 w-6 shrink-0 stroke-current text-red-500"
+        fill="none"
+        viewBox="0 0 24 24"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth="2"
+          d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+        />
+      </svg>
+      <span className="text-red-500">{message}</span>
+      <button onClick={onClose} className="ml-4 text-white">X</button>
+    </div>
+  );
+};
 
 const Labs = () => {
   const { labs = [], fetchLabs, addLab, editLab, removeLab, error } = useLabs();
@@ -24,39 +46,24 @@ const Labs = () => {
   const [validationError, setValidationError] = useState(null);
   const [sortConfig, setSortConfig] = useState({ key: 'nombre', direction: 'asc' });
 
-  const filteredLabs = Array.isArray(labs)
-    ? labs.filter((lab) => lab.nombre && lab.nombre.toLowerCase().includes(filterText.toLowerCase()))
-    : [];
-
-  const sortedLabs = filteredLabs.sort((a, b) => {
-    let aValue = a[sortConfig.key];
-    let bValue = b[sortConfig.key];
-
-    if (sortConfig.key === 'nombre') {
-      aValue = aValue.toString().toLowerCase();
-      bValue = bValue.toString().toLowerCase();
-    } else if (sortConfig.key === 'capacidad') {
-      aValue = parseInt(aValue, 10);
-      bValue = parseInt(bValue, 10);
-    }
-
-    if (aValue < bValue) {
-      return sortConfig.direction === 'asc' ? -1 : 1;
-    }
-    if (aValue > bValue) {
-      return sortConfig.direction === 'asc' ? 1 : -1;
-    }
-    return 0;
-  });
-
   const handleFilterChange = (e) => setFilterText(e.target.value);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  const handleOpen = () => {
+    setValidationError(null);
+    setOpen(true);
+  };
+  const handleClose = () => {
+    setValidationError(null);
+    setOpen(false);
+  };
   const handleEditOpen = (lab) => {
+    setValidationError(null);
     setCurrentLab(lab);
     setEditOpen(true);
   };
-  const handleEditClose = () => setEditOpen(false);
+  const handleEditClose = () => {
+    setValidationError(null);
+    setEditOpen(false);
+  };
   const handleDeleteOpen = (lab) => {
     setCurrentLab(lab);
     setDeleteOpen(true);
@@ -65,51 +72,57 @@ const Labs = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    if (name === 'capacidad' && value !== '' && !/^\d+$/.test(value)) {
-      setValidationError('Capacidad debe ser un número entero');
-    } else {
-      setValidationError(null);
-    }
     setNewLab({ ...newLab, [name]: value });
   };
 
   const handleEditInputChange = (e) => {
     const { name, value } = e.target;
-    if (name === 'capacidad' && value !== '' && !/^\d+$/.test(value)) {
-      setValidationError('Capacidad debe ser un número entero');
-    } else {
-      setValidationError(null);
-    }
     setCurrentLab({ ...currentLab, [name]: value });
   };
 
+  const normalizeName = (name) => {
+    return name.replace(/\s+/g, ' ').trim();
+  };
+
   const handleSubmit = async () => {
-    if (validationError) {
+    const normalizedNombre = normalizeName(newLab.nombre);
+    if (newLab.capacidad <= 0 || newLab.capacidad >= 100) {
+      setValidationError('Capacidad debe ser un número entero mayor a 0 y menor a 100');
+      return;
+    }
+    if (labs.some(lab => normalizeName(lab.nombre).toLowerCase() === normalizedNombre.toLowerCase())) {
+      setValidationError('El nombre del laboratorio ya existe');
       return;
     }
     try {
-      await addLab(newLab);
+      await addLab({ ...newLab, nombre: normalizedNombre });
       handleClose();
       fetchLabs();
       setCreateSuccess(true); // Mostrar mensaje de éxito
     } catch (error) {
       console.error("Error al crear el laboratorio: ", error);
-      setValidationError("Los valores ingresados no son válidos");
+      setValidationError(error.message || "Los valores ingresados no son válidos");
     }
   };
 
   const handleEditSubmit = async () => {
-    if (validationError) {
+    const normalizedNombre = normalizeName(currentLab.nombre);
+    if (currentLab.capacidad <= 0 || currentLab.capacidad >= 100) {
+      setValidationError('Capacidad debe ser un número entero mayor a 0 y menor a 100');
+      return;
+    }
+    if (labs.some(lab => normalizeName(lab.nombre).toLowerCase() === normalizedNombre.toLowerCase() && lab.id_lab !== currentLab.id_lab)) {
+      setValidationError('El nombre del laboratorio ya existe');
       return;
     }
     try {
-      await editLab(currentLab);
+      await editLab({ ...currentLab, nombre: normalizedNombre });
       handleEditClose();
       fetchLabs();
       setEditSuccess(true); // Mostrar mensaje de éxito
     } catch (error) {
       console.error("Error al actualizar el laboratorio: ", error);
-      setValidationError("Los valores ingresados no son válidos");
+      setValidationError(error.message || "Los valores ingresados no son válidos");
     }
   };
 
@@ -120,8 +133,7 @@ const Labs = () => {
       fetchLabs();
       setDeleteSuccess(true); // Mostrar mensaje de éxito
     } catch (error) {
-      setDeleteError("No se puede borrar el laboratorio porque está siendo utilizado en una reserva.");
-      console.error("Error al eliminar el laboratorio: ", error);
+      setDeleteError(error);
     }
   };
 
@@ -133,208 +145,96 @@ const Labs = () => {
     setSortConfig({ key, direction });
   };
 
+  useEffect(() => {
+    fetchLabs();
+  }, []);
+
   return (
-    <Box sx={{ padding: 4 }}>
-      <Typography variant="h4"  gutterBottom align="center">Laboratorios</Typography>
-      {error && <Alert severity="error">{error}</Alert>}
-      <Snackbar
-        open={!!deleteError}
-        autoHideDuration={6000}
-        onClose={() => setDeleteError(null)}
-      >
-        <Alert onClose={() => setDeleteError(null)} severity="error" sx={{ width: '100%' }}>
-          {deleteError}
-        </Alert>
-      </Snackbar>
-      <Snackbar
-        open={editSuccess}
-        autoHideDuration={6000}
-        onClose={() => setEditSuccess(false)}
-      >
-        <Alert onClose={() => setEditSuccess(false)} severity="success" sx={{ width: '100%' }}>
-          Cambios realizados
-        </Alert>
-      </Snackbar>
-      <Snackbar
-        open={deleteSuccess}
-        autoHideDuration={6000}
-        onClose={() => setDeleteSuccess(false)}
-      >
-        <Alert onClose={() => setDeleteSuccess(false)} severity="success" sx={{ width: '100%' }}>
-          Laboratorio eliminado con éxito
-        </Alert>
-      </Snackbar>
-      <Snackbar
-        open={createSuccess}
-        autoHideDuration={6000}
-        onClose={() => setCreateSuccess(false)}
-      >
-        <Alert onClose={() => setCreateSuccess(false)} severity="success" sx={{ width: '100%' }}>
-          Laboratorio creado con éxito
-        </Alert>
-      </Snackbar>
-      <Snackbar
-        open={!!validationError}
-        autoHideDuration={6000}
-        onClose={() => setValidationError(null)}
-      >
-        <Alert onClose={() => setValidationError(null)} severity="error" sx={{ width: '100%' }}>
-          {validationError}
-        </Alert>
-      </Snackbar>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 2 }}>
-        <TextField
-          label="Filtrar por nombre"
-          variant="outlined"
-          value={filterText}
-          onChange={handleFilterChange}
-          sx={{ marginRight: 2 }}
-        />
-        <Button variant="contained" color="primary" onClick={handleOpen}>
-          Crear Laboratorio
-        </Button>
-      </Box>
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>
-                Nombre
-                <IconButton size="small" onClick={() => handleSort('nombre')}>
-                  {sortConfig.key === 'nombre' && sortConfig.direction === 'asc' ? <ArrowUpwardIcon /> : <ArrowDownwardIcon />}
-                </IconButton>
-              </TableCell>
-              <TableCell>
-                Capacidad
-                <IconButton size="small" onClick={() => handleSort('capacidad')}>
-                  {sortConfig.key === 'capacidad' && sortConfig.direction === 'asc' ? <ArrowUpwardIcon /> : <ArrowDownwardIcon />}
-                </IconButton>
-              </TableCell>
-              <TableCell>Acciones</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {sortedLabs.map((lab) => (
-              <TableRow key={lab.id_lab}>
-                <TableCell>{lab.nombre}</TableCell>
-                <TableCell>{lab.capacidad}</TableCell>
-                <TableCell>
-                  <IconButton onClick={() => handleEditOpen(lab)}>
-                    <EditIcon />
-                  </IconButton>
-                  <IconButton onClick={() => handleDeleteOpen(lab)} color="error">
-                    <DeleteIcon />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+    <div className="p-4 bg-gray-50 dark:bg-gray-800 min-h-screen">
+      <h1 className="text-4xl text-center text-blue-100 mb-4">Laboratorios</h1>
+      {error && <div className="text-red-500">{error}</div>}
+      {deleteError && (
+        <Alert message={deleteError} onClose={() => setDeleteError(null)} />
+      )}
+      <div className="flex justify-between items-center mb-4">
+        <button onClick={handleOpen} className="ml-auto px-4 py-2 bg-blue-600 text-white rounded">Crear Laboratorio</button>
+      </div>
 
-      {/* Modal para crear un nuevo laboratorio */}
-      <Modal open={open} onClose={handleClose}>
-        <Box
-          sx={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            width: 400,
-            bgcolor: 'background.paper',
-            boxShadow: 24,
-            p: 4,
-            borderRadius: 2,
-          }}
-        >
-          <Typography variant="h6" gutterBottom>Crear Nuevo Laboratorio</Typography>
-          <TextField
-            label="Nombre"
-            name="nombre"
-            variant="outlined"
-            fullWidth
-            margin="normal"
-            value={newLab.nombre}
-            onChange={handleInputChange}
-          />
-          <TextField
-            label="Capacidad"
-            name="capacidad"
-            type="number" // Solo permite números
-            variant="outlined"
-            fullWidth
-            margin="normal"
-            value={newLab.capacidad}
-            onChange={handleInputChange}
-          />
-          <Button variant="contained" color="primary" onClick={handleSubmit} sx={{ marginTop: 2 }}>
-            Guardar
-          </Button>
-        </Box>
-      </Modal>
+      <TableLabs
+        labs={labs.filter((lab) =>
+          lab.nombre && lab.nombre.toLowerCase().includes(filterText.toLowerCase())
+        )}
+        handleOpen={handleEditOpen}
+        handleDelete={handleDeleteOpen}
+        handleSort={handleSort}
+        sortConfig={sortConfig}
+      />
 
-      {/* Modal para editar un laboratorio */}
-      <Modal open={editOpen} onClose={handleEditClose}>
-        <Box
-          sx={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            width: 400,
-            bgcolor: 'background.paper',
-            boxShadow: 24,
-            p: 4,
-            borderRadius: 2,
-          }}
-        >
-          <Typography variant="h6" gutterBottom>Editar Laboratorio</Typography>
-          <TextField
-            label="Nombre"
-            name="nombre"
-            variant="outlined"
-            fullWidth
-            margin="normal"
-            value={currentLab?.nombre || ''}
-            onChange={handleEditInputChange}
-          />
-          <TextField
-            label="Capacidad"
-            name="capacidad"
-            type="number" // Solo permite números
-            variant="outlined"
-            fullWidth
-            margin="normal"
-            value={currentLab?.capacidad || ''}
-            onChange={handleEditInputChange}
-          />
-          <Button variant="contained" color="primary" onClick={handleEditSubmit} sx={{ marginTop: 2 }}>
-            Guardar
-          </Button>
-        </Box>
-      </Modal>
+      {open && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50" onClick={handleClose}>
+          <div className="bg-white dark:bg-[#111827] dark:text-white p-8 rounded-lg shadow-xl w-96" onClick={(e) => e.stopPropagation()}>
+            <h2 className="text-lg font-bold mb-4">Crear Nuevo Laboratorio</h2>
+            {validationError && <div className="text-red-500 mb-4">{validationError}</div>}
+            <input
+              type="text"
+              name="nombre"
+              value={newLab.nombre}
+              onChange={handleInputChange}
+              className="w-full p-2 mb-4 border rounded dark:bg-gray-700 dark:text-white"
+              placeholder="Nombre"
+            />
+            <input
+              type="number"
+              name="capacidad"
+              value={newLab.capacidad}
+              onChange={handleInputChange}
+              className="w-full p-2 mb-4 border rounded dark:bg-gray-700 dark:text-white"
+              placeholder="Capacidad"
+            />
+            <button onClick={handleSubmit} className="w-full px-4 py-2 bg-blue-600 text-white rounded">Guardar</button>
+          </div>
+        </div>
+      )}
 
-      {/* Dialogo para confirmar eliminación */}
-      <Dialog
-        open={deleteOpen}
-        onClose={handleDeleteClose}
-      >
-        <DialogTitle>Confirmar eliminación</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            ¿Estás seguro de que deseas eliminar el laboratorio {currentLab?.nombre}?
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleDeleteClose} color="primary">
-            Cancelar
-          </Button>
-          <Button onClick={handleDelete} color="primary" autoFocus>
-            Confirmar
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </Box>
+      {editOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50" onClick={handleEditClose}>
+          <div className="bg-white dark:bg-[#111827] dark:text-white p-8 rounded-lg shadow-xl w-96" onClick={(e) => e.stopPropagation()}>
+            <h2 className="text-lg font-bold mb-4">Editar Laboratorio</h2>
+            {validationError && <div className="text-red-500 mb-4">{validationError}</div>}
+            <input
+              type="text"
+              name="nombre"
+              value={currentLab?.nombre || ''}
+              onChange={handleEditInputChange}
+              className="w-full p-2 mb-4 border rounded dark:bg-gray-700 dark:text-white"
+              placeholder="Nombre"
+            />
+            <input
+              type="number"
+              name="capacidad"
+              value={currentLab?.capacidad || ''}
+              onChange={handleEditInputChange}
+              className="w-full p-2 mb-4 border rounded dark:bg-gray-700 dark:text-white"
+              placeholder="Capacidad"
+            />
+            <button onClick={handleEditSubmit} className="w-full px-4 py-2 bg-blue-600 text-white rounded">Guardar</button>
+          </div>
+        </div>
+      )}
+
+      {deleteOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50" onClick={handleDeleteClose}>
+          <div className="bg-white dark:bg-[#111827] dark:text-white p-8 rounded-lg shadow-xl w-96" onClick={(e) => e.stopPropagation()}>
+            <h2 className="text-lg font-bold mb-4">Confirmar eliminación</h2>
+            <p className="mb-4">¿Estás seguro de que deseas eliminar el laboratorio {currentLab?.nombre}?</p>
+            <div className="flex justify-around">
+              <button onClick={handleDelete} className="px-4 py-2 bg-red-600 text-white rounded">Confirmar</button>
+              <button onClick={handleDeleteClose} className="px-4 py-2 bg-gray-400 text-white rounded">Cancelar</button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
 
