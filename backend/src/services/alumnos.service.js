@@ -46,7 +46,7 @@ export async function getAlumnosByCursoService(id_curso) {
       const AlumnoRepository = AppDataSource.getRepository(Alumno);
       const alumnos = await AlumnoRepository.find({ where: { id_curso } });
   
-      console.log("Resultado de la consulta alumnos:", alumnos); // Log de depuración
+
   
       if (!alumnos || alumnos.length === 0) {
         return [[], "No hay alumnos para este curso"];

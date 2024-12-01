@@ -32,7 +32,6 @@ export async function getAlumnoByRut(rut_alumno) {
 export const getAlumnosByCurso = async (idCurso) => {
   try {
     const response = await axios.get(`/alumnos/curso/${idCurso}`);
-    console.log("Datos de la API:", response.data); // Verifica la respuesta completa
     return response.data || []; // Asegúrate de devolver un array aunque esté vacío
   } catch (error) {
     console.error("Error al obtener los alumnos:", error);

@@ -21,7 +21,6 @@ export async function getCurso(id_curso) {
 
 export async function getCursosByProfesor(rut_docente) {
     try {
-        console.log('RUT enviado al backend:', rut_docente);  // Verificar el RUT
         const response = await axios.get(`/cursos/profesor/${rut_docente}`);
         return response.data.data;
     } catch (error) {
