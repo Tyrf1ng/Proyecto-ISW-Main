@@ -525,35 +525,15 @@ async function createHorarios() {
     await Promise.all([
       horariosRepository.save(
         horariosRepository.create({
-          hora_inicio:"08:10:00",
-          hora_fin:"09:30:00"
+          hora_inicio: "08:00",
+          hora_fin: "09:30",
+          rut_encargado: "21.019.643-9",
         }),
       ),
     ]);
     console.log("* => Horarios creados exitosamente");
   } catch (error) {
     console.error("Error al crear horarios:", error);
-  }
-}
-
-async function createConex_Encargado_Horario() {
-  try {
-    const conex_encargado_horarioRepository = AppDataSource.getRepository(Horarios_Encargados);
-
-    const count = await conex_encargado_horarioRepository.count();
-    if (count > 0) return;
-
-    await Promise.all([
-      conex_encargado_horarioRepository.save(
-        conex_encargado_horarioRepository.create({
-          rut_encargado: "21.019.643-9",
-          id_horario: 1
-        }),
-      ),
-    ]);
-    console.log("* => Conexion encargado horarios creados exitosamente");
-  } catch (error) {
-    console.error("Error al crear la conexion de horario con encargado:", error);
   }
 }
 

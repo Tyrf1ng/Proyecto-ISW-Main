@@ -1,15 +1,11 @@
 import { AppDataSource } from "../config/configDb.js"; 
 import Horarios from "../entity/horarios.entity.js"; 
 
-// FUNCIONA NO TOCAR
 export async function getHorariosService() {
     try {
         const horariosRepository = AppDataSource.getRepository(Horarios);
-
         const horarios = await horariosRepository.find();
-
         if (!horarios || horarios.length === 0) return [null, "No hay horarios"];
-
         return [horarios, null];
     } catch (error) {
         console.error("Error al obtener los horarios:", error);
@@ -17,17 +13,13 @@ export async function getHorariosService() {
     }
 }
 
-// FUNCIONA NO TOCAR
 export async function getHorarioService(id) {
     try {
         const horariosRepository = AppDataSource.getRepository(Horarios);
-
         const horarioFound = await horariosRepository.findOne({
             where: { id_horario: id },
         });
-
         if (!horarioFound) return [null, "Horario no encontrado"];
-
         return [horarioFound, null];
     } catch (error) {
         console.error("Error al obtener el horario:", error);
@@ -35,24 +27,17 @@ export async function getHorarioService(id) {
     }
 }
 
-// FUNCIONA NO TOCAR
 export async function createHorarioService(data) {
     try {
         const horariosRepository = AppDataSource.getRepository(Horarios);
-
-        // Validar solapamiento de horarios
         const overlappingHorarios = await horariosRepository.createQueryBuilder("horarios")
             .where("hora_inicio < :hora_fin AND hora_fin > :hora_inicio", { hora_inicio: data.hora_inicio, hora_fin: data.hora_fin })
             .getMany();
-
         if (overlappingHorarios.length > 0) {
             return [null, "El horario se solapa con otro existente"];
         }
-
-        // Crea un nuevo horario
         const horario = horariosRepository.create(data);
         const savedHorario = await horariosRepository.save(horario);
-
         return [savedHorario, null];
     } catch (error) {
         console.error("Error al crear el horario:", error);
@@ -60,33 +45,23 @@ export async function createHorarioService(data) {
     }
 }
 
-// FUNCIONA NO TOCAR
 export async function updateHorarioService(id_horario, data) {
     try {
         const horariosRepository = AppDataSource.getRepository(Horarios);
-
-        // Validar solapamiento de horarios
         const overlappingHorarios = await horariosRepository.createQueryBuilder("horarios")
             .where("id_horario != :id_horario AND hora_inicio < :hora_fin AND hora_fin > :hora_inicio", { id_horario, hora_inicio: data.hora_inicio, hora_fin: data.hora_fin })
             .getMany();
-
         if (overlappingHorarios.length > 0) {
             return [null, "El horario se solapa con otro existente"];
         }
-
-        // Actualiza el horario con los nuevos datos
         const result = await horariosRepository.update(
-            { id_horario: id_horario },  // Condición de búsqueda
-            data                         // Nuevos datos
+            { id_horario: id_horario },
+            data
         );
-
         if (result.affected === 0) {
             return [null, "Horario no encontrado"];
         }
-
-        // Obtén el horario actualizado
         const updatedHorario = await horariosRepository.findOneBy({ id_horario: id_horario });
-
         return [updatedHorario, null];
     } catch (error) {
         console.error("Error al actualizar el horario:", error);
@@ -94,7 +69,6 @@ export async function updateHorarioService(id_horario, data) {
     }
 }
 
-// FUNCIONA NO TOCAR
 export async function deleteHorarioService(id_horario) {
     try {
         const horariosRepository = AppDataSource.getRepository(Horarios);

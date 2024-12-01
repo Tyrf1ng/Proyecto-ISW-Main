@@ -46,13 +46,17 @@ const Encargado_LabSchema = new EntitySchema({
         nullable: false,
       },
   },
-
   relations: {
     roles: {
       type: "many-to-one",
       target: "Roles", 
-      joinColumn: { name: "id_roles" } ,
-  },
+      joinColumn: { name: "id_roles" },
+    },
+    horarios: {
+      type: "one-to-many",
+      target: "Horarios",
+      inverseSide: "encargado",
+    },
   },
 });
 

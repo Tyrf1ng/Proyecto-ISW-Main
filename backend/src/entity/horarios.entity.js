@@ -18,6 +18,10 @@ const HorariosSchema = new EntitySchema({
             type: "time",
             nullable: false,
         },
+        rut_encargado: {
+            type: "varchar",
+            nullable: false,
+        },
         createdAt: {
             type: "timestamp with time zone",
             default: () => "CURRENT_TIMESTAMP",
@@ -27,6 +31,14 @@ const HorariosSchema = new EntitySchema({
             type: "timestamp with time zone",
             default: () => "CURRENT_TIMESTAMP",
             onUpdate: "CURRENT_TIMESTAMP",
+            nullable: false,
+        },
+    },
+    relations: {
+        encargado_lab: {
+            type: "many-to-one",
+            target: "Encargado_Lab",
+            joinColumn: { name: "rut_encargado" },
             nullable: false,
         },
     },
