@@ -575,7 +575,6 @@ export { createCursos,
   , createLabs
   , createConex_Lab_Encargado
   , createHorarios
-  , createConex_Encargado_Horario
   , createReserva
 };
 
