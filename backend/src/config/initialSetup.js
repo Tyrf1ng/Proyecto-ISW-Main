@@ -14,7 +14,6 @@ import Encargado_Lab from "../entity/encargado.lab.entity.js";
 import Labs from "../entity/lab.entity.js";
 import Lab_Encargado from "../entity/lab.encargado.entity.js";
 import Horarios from "../entity/horarios.entity.js";
-import Horarios_Encargados from "../entity/horarios.encargado.entity.js";
 import Reserva from "../entity/reserva.entity.js";
 import { AppDataSource } from "./configDb.js";
 import { encryptPassword } from "../helpers/bcrypt.helper.js";

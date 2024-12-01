@@ -14,7 +14,6 @@ import {
   createAsignaturaCurso,
   createAsignaturas,
   createAsistencia,
-  createConex_Encargado_Horario,
   createConex_Lab_Encargado,
   createCursoDirectivos,
   createCursos,
@@ -105,7 +104,6 @@ async function setupAPI() {
     await createLabs();
     await createConex_Lab_Encargado();
     await createHorarios();
-    await createConex_Encargado_Horario();
     await createReserva();
   } catch (error) {
     console.log("Error en index.js -> setupAPI(), el error es: ", error);
