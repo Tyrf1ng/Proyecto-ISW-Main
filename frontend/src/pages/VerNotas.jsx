@@ -1,222 +1,173 @@
 import { useState, useEffect, useContext } from 'react';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import Paper from '@mui/material/Paper';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import TextField from '@mui/material/TextField';
-import IconButton from '@mui/material/IconButton';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
-import Modal from '@mui/material/Modal';
-import Button from '@mui/material/Button';
+import { CursoContext } from '@context/CursoContext';
 import useNotasCurso from '@hooks/notas/useNotas';
 import { deleteNota, updateNota } from '@services/notas.service';
-import { CursoContext } from '@context/CursoContext';
+import TableComponent from '../components/TableNotas';
 
 const VerNotas = () => {
-  const { idCurso } = useContext(CursoContext); 
-  const { notas, fetchNotas } = useNotasCurso(idCurso); 
+  const { idCurso } = useContext(CursoContext);
+  const { notas, fetchNotas } = useNotasCurso(idCurso);
   const [filterText, setFilterText] = useState('');
-  const [open, setOpen] = useState(false);
-  const [editMode, setEditMode] = useState(false);
-  const [currentNota, setCurrentNota] = useState(null);
-  const [newNota, setNewNota] = useState({
-    tipo: '',
-    valor: '',
-    rut_alumno: '',
-    nombre_alumno: '',
-    apellido_alumno: '',
-    id_asignatura: '',
-  });
-
-  const filteredNotas = notas.filter((nota) =>
-    `${nota.nombre_alumno.toLowerCase()} ${nota.apellido_alumno.toLowerCase()}`.includes(filterText.toLowerCase())
-  );
-
-  const handleFilterChange = (e) => {
-    setFilterText(e.target.value);
-  };
+  const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
+  const [notaToDelete, setNotaToDelete] = useState(null);
+  const [notaToEdit, setNotaToEdit] = useState(null);
 
   useEffect(() => {
     if (idCurso) fetchNotas();
   }, [idCurso, fetchNotas]);
 
-  const handleOpen = (nota = null) => {
-    if (nota) {
-      setEditMode(true);
-      setCurrentNota(nota);
-      setNewNota({
-        tipo: nota.tipo,
-        valor: String(nota.valor), // Convertimos el valor a string
-        rut_alumno: nota.rut_alumno,
-        nombre_alumno: nota.nombre_alumno,
-        apellido_alumno: nota.apellido_alumno,
-        id_asignatura: nota.id_asignatura,
-      });
-    } else {
-      setEditMode(false);
-      setNewNota({
-        tipo: '',
-        valor: '',
-        rut_alumno: '',
-        nombre_alumno: '',
-        apellido_alumno: '',
-        id_asignatura: '',
-      });
-    }
-    setOpen(true);
+  const filteredNotas = notas.filter((nota) =>
+    `${nota.nombre_alumno.toLowerCase()} ${nota.apellido_alumno.toLowerCase()}`.includes(filterText.toLowerCase())
+  );
+
+  const handleFilterChange = (e) => setFilterText(e.target.value);
+
+  const handleDelete = (id) => {
+    setNotaToDelete(id);
+    setConfirmDialogOpen(true);
   };
 
-  const handleClose = () => setOpen(false);
+  const handleConfirmDelete = async () => {
+    try {
+      if (notaToDelete) {
+        await deleteNota(notaToDelete);
+        fetchNotas();
+      }
+    } catch (error) {
+      console.error('Error al eliminar la nota:', error);
+    } finally {
+      setConfirmDialogOpen(false);
+    }
+  };
+  const handleEdit = (nota) => {
+    setNotaToEdit({ id_nota: nota.id_nota, valor: nota.valor, tipo: nota.tipo });
+  };
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
+  const handleUpdate = async (e) => {
+    e.preventDefault();
+    try {
+      const { id_nota, valor, tipo } = notaToEdit;
   
-    if (name === 'valor') {
-      // Verificar que el valor sea un número válido y no mayor a 7.0
-      if (!isNaN(value) && value !== '' && parseFloat(value) <= 7.0) {
-        setNewNota({ ...newNota, [name]: value });
-      } else if (parseFloat(value) > 7.0) {
-        alert('El valor de la nota no puede ser mayor a 7.0');
-      } else {
-        setNewNota({ ...newNota, [name]: '' });
-      }
-    } else {
-      setNewNota({ ...newNota, [name]: value });
-    }
-  };
 
-  const handleSubmit = async () => {
-    try {
-      if (editMode) {
-        const valorNumerico = parseFloat(newNota.valor);
-        if (isNaN(valorNumerico)) {
-          alert('El valor debe ser un número válido');
-          return;
-        }
-        await updateNota(currentNota.id_nota, valorNumerico);  // Enviamos el valor como número
-      } else {
-        console.warn("Funcionalidad de creación no implementada en este componente.");
+      if (valor < 1.0 || valor > 7.0) {
+        alert('El valor de la nota debe estar entre 1.0 y 7.0');
+        return;
       }
-      fetchNotas();  // Refrescar las notas
-      handleClose();
+  
+      if (!id_nota || valor === undefined) {
+        console.error('ID o Valor no definido.');
+        return;
+      }
+  
+      await updateNota(id_nota, valor, tipo); 
+      fetchNotas();
+      setNotaToEdit(null);
     } catch (error) {
-      console.error("Error al guardar la nota: ", error);
-    }
-  };
-
-  const handleDelete = async (id) => {
-    try {
-      await deleteNota(id);
-      fetchNotas();  // Refrescar las notas
-    } catch (error) {
-      console.error("Error al eliminar la nota: ", error);
+      console.error('Error al actualizar la nota:', error);
     }
   };
 
   return (
-    <Box sx={{ padding: 4 }}>
-      <Typography variant="h4" gutterBottom>
-        Notas del Curso {idCurso ? `: ${idCurso}` : ''}
-      </Typography>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 2 }}>
-        <TextField
-          label="Filtrar por Nombre del Alumno"
-          variant="outlined"
-          value={filterText}
-          onChange={handleFilterChange}
-        />
-      </Box>
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Tipo</TableCell>
-              <TableCell>Valor</TableCell>
-              <TableCell>RUT</TableCell>
-              <TableCell>Alumno</TableCell>
-              <TableCell>Asignatura</TableCell>
-              <TableCell>ID Asignatura</TableCell>
-              <TableCell>Acciones</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {filteredNotas.map((nota) => (
-              <TableRow key={nota.id_nota}>
-                <TableCell>{nota.tipo}</TableCell>
-                <TableCell>{nota.valor}</TableCell>
-                <TableCell>{nota.rut_alumno}</TableCell>
-                <TableCell>{nota.nombre_alumno} {nota.apellido_alumno}</TableCell>
-                <TableCell>{nota.nombre_asignatura}</TableCell>
-                <TableCell>{nota.id_asignatura}</TableCell>
-                <TableCell>
-                  <IconButton color="primary" onClick={() => handleOpen(nota)}>
-                    <EditIcon />
-                  </IconButton>
-                  <IconButton color="secondary" onClick={() => handleDelete(nota.id_nota)}>
-                    <DeleteIcon />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+    <div className="p-4 bg-gray-50 dark:bg-gray-800">
+      <input
+        type="text"
+        value={filterText}
+        onChange={handleFilterChange}
+        placeholder="Filtrar por nombre del alumno..."
+        className="w-full p-2 mb-4 border rounded dark:text-gray-300 dark:bg-gray-900"
+      />
 
-      <Modal open={open} onClose={handleClose}>
-        <Box sx={{ ...modalStyle, width: 400 }}>
-          <Typography variant="h6" gutterBottom>
-            {editMode ? "Editar Nota" : "Crear Nueva Nota"}
-          </Typography>
-          <TextField
-            label="Tipo"
-            name="tipo"
-            variant="outlined"
-            fullWidth
-            margin="dense"
-            value={newNota.tipo}
-            onChange={handleInputChange}
+      <TableComponent
+        notas={filteredNotas}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+      />
+
+      {confirmDialogOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="p-8 rounded-lg shadow-xl bg-white text-black dark:bg-[#111827] dark:text-white w-96">
+            <div className="flex items-center justify-center mb-6">
+              <h2 className="text-lg font-bold">¿Estás seguro de que quieres eliminar esta nota?</h2>
+            </div>
+            <p className="text-base mb-6 mt-6">
+              Esta acción no se puede deshacer. Confirma tu decisión.
+            </p>
+            <div className="flex justify-around mt-6">
+              <button
+                onClick={handleConfirmDelete}
+                className="px-6 py-3 bg-red-600 text-white rounded-lg"
+              >
+                Eliminar
+              </button>
+              <button
+                onClick={() => setConfirmDialogOpen(false)}
+                className="px-6 py-3 bg-gray-400 text-white rounded-lg"
+              >
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+{notaToEdit && (
+  <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+    <div className="p-8 rounded-lg shadow-xl bg-white text-black dark:bg-[#111827] dark:text-white w-96">
+      <h2 className="text-lg font-bold mb-4">Editar Nota</h2>
+      <form onSubmit={handleUpdate}>
+        {/* Tipo */}
+        <div className="mb-4">
+          <label
+            htmlFor="tipo"
+            className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+          >
+            Tipo
+          </label>
+          <select
+            id="tipo"
+            value={notaToEdit.tipo} // Asegúrate de que `notaToEdit.tipo` esté siempre actualizado
+            onChange={(e) => setNotaToEdit((prevState) => ({ ...prevState, tipo: e.target.value }))}
+            className="w-full p-2 border rounded dark:text-gray-300 dark:bg-gray-900"
+          >
+            <option value="Prueba">Prueba</option>
+            <option value="Presentacion">Presentación</option>
+            <option value="Test">Test</option>
+            <option value="Tarea">Tarea</option>
+          </select>
+        </div>
+
+        {/* Valor */}
+        <div className="mb-4">
+          <label
+            htmlFor="valor"
+            className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+          >
+            Valor
+          </label>
+          <input
+            type="number"
+            id="valor"
+            value={notaToEdit.valor}
+            onChange={(e) => setNotaToEdit((prevState) => ({ ...prevState, valor: parseFloat(e.target.value) }))}
+            min="1.0" 
+            max="7.0" 
+            step="0.1" 
+            className="w-full p-2 border rounded dark:text-gray-300 dark:bg-gray-900"
           />
-          <TextField
-            label="Valor"
-            name="valor"
-            variant="outlined"
-            fullWidth
-            margin="dense"
-            value={newNota.valor}
-            onChange={handleInputChange}
-          />
-          <TextField
-            label="RUT"
-            name="rut_alumno"
-            variant="outlined"
-            fullWidth
-            margin="dense"
-            value={newNota.rut_alumno}
-            onChange={handleInputChange}
-          />
-          <Button variant="contained" color="primary" onClick={handleSubmit} sx={{ marginTop: 2 }}>
-            {editMode ? "Actualizar" : "Guardar"}
-          </Button>
-        </Box>
-      </Modal>
-    </Box>
+        </div>
+
+        <button
+          type="submit"
+          className="w-full px-6 py-3 bg-blue-600 text-white rounded-lg"
+        >
+          Actualizar
+        </button>
+      </form>
+    </div>
+  </div>
+)}
+    </div>
   );
-};
-
-const modalStyle = {
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  bgcolor: 'background.paper',
-  boxShadow: 24,
-  p: 4,
 };
 
 export default VerNotas;

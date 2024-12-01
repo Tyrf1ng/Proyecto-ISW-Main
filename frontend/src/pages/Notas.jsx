@@ -39,14 +39,16 @@ function Notas() {
     }, [idCurso]);
 
     return (
-        <Box>
-            <Box sx={{ textAlign: 'center', marginTop: 5 }}>
-                <Typography variant="h3">
+        <div className="py-6 px-4 bg-gray-100 dark:bg-[#1F2937] min-h-screen">
+            <div className="text-center mt-12">
+                <h3 className=" text-3xl font-semibold text-gray-800 dark:text-white">
                     {loading ? 'Cargando...' : nombreCurso}
-                </Typography>
-            </Box>
-            <Outlet />
-        </Box>
+                </h3>
+            </div>
+            <div className="mt-6">
+                <Outlet />
+            </div>
+        </div>
     );
 }
 

@@ -53,7 +53,7 @@
           element: <Notas />,
           children: [
             { path: 'add', element: <Add_notas /> },
-            { path: 'Ver', element: <VerNotas /> },
+            { path: 'ver_notas', element: <VerNotas /> },
             { path: 'Ver_Nota_Alumno', element: <Ver_Nota_Alumno /> },
           ],
         },
