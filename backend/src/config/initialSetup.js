@@ -30,10 +30,50 @@ async function createUsuario() {
           telefono: 123456789,
           password: await encryptPassword("benja123"),
           id_roles: 1,
-          comuna: "Hualpen City",
+          comuna: "LA City",
           direccion: "Calle falsa 123",
         }),
-      ),]);
+      ),
+      usuarioRepository.save(
+        usuarioRepository.create({
+          rut: "20.960.538-4",
+          nombre: "Toilet",
+          apellido: "Jonathan",
+          email: "jony@gmail.cl",
+          telefono: 987654321,
+          password: await encryptPassword("jony123"),
+          id_roles: 2,
+          comuna: "Laja City",
+          direccion: "Calle del toilet 69",
+        }),
+      ),
+      usuarioRepository.save(
+        usuarioRepository.create({
+          rut: "21.070.073-0",
+          nombre: "Mochap",
+          apellido: "PL",
+          email: "mochap@gmail.cl",
+          telefono: 987655321,
+          password: await encryptPassword("mochap123"),
+          id_roles: 3,
+          comuna: "Conce City",
+          direccion: "Calle del smegma 69",
+        }),
+      ),
+      usuarioRepository.save(
+        usuarioRepository.create({
+          rut: "21.137.508-6",
+          nombre: "Mixtor",
+          apellido: "320",
+          email: "mixtor@gmail.cl",
+          telefono: 987655321,
+          password: await encryptPassword("mixtor123"),
+          id_roles: 4,
+          comuna: "Hualpen City",
+          direccion: "Calle del sigma 69",
+        }),
+      ),
+    ]);
     console.log("* => Usuario creado exitosamente");
   }
   catch (error) {
@@ -119,13 +159,13 @@ async function createAsignaturas() {
       AsignaturasRepository.save(
         AsignaturasRepository.create({
           nombre: "Matematicas",
-          rut: "21.282.977-3",
+          rut: "20.960.538-4",
         }),
       ),
       AsignaturasRepository.save(
         AsignaturasRepository.create({
-          nombre: "Lenguaje",
-          rut: "21.282.977-3",
+          nombre: "Precocidad Prematura",
+          rut: "20.960.538-4",
         }),
       ),
     ]);
@@ -168,8 +208,16 @@ async function createAnotaciones() {
     await Promise.all([
       AnotacionesRepository.save(
         AnotacionesRepository.create({
-          descripcion: "Distrayendo a compañeros en horario de clases",
-          rut: "21.282.977-3",
+          descripcion: "Alumno asume como presidente del curso con mucha responsabilidad y entrega",
+          rut: "21.070.073-0",
+          tipo: "Positiva",
+          id_asignatura: 1,
+        }),
+      ),
+      AnotacionesRepository.save(
+        AnotacionesRepository.create({
+          descripcion: "Alumno constantemente interrumpe la clase intentando convencer a sus compañeros de unirse al partido comunista",
+          rut: "21.070.073-0",
           tipo: "Negativa",
           id_asignatura: 1,
         }),
@@ -193,7 +241,7 @@ async function createAsistencia() {
         AsistenciaRepository.create({
           fecha: "2021-09-01",
           tipo: "Presente",
-          rut: "21.282.977-3",
+          rut: "21.070.073-0",
           id_asignatura: 1,
         }),
       ),
@@ -201,7 +249,7 @@ async function createAsistencia() {
         AsistenciaRepository.create({
           fecha: "2021-09-01",
           tipo: "Presente",
-          rut: "21.282.977-3",
+          rut: "21.070.073-0",
           id_asignatura: 2,
         }),
       ),
@@ -224,7 +272,7 @@ async function createNotas() {
         NotasRepository.create({
           tipo: "C1",
           valor: 0.3,
-          rut: "21.282.977-3",
+          rut: "21.070.073-0",
           id_asignatura: 1,
         }),
       ),
@@ -268,7 +316,6 @@ async function createHorarios() {
         horariosRepository.create({
           hora_inicio: "08:00",
           hora_fin: "09:30",
-          rut: "21.282.977-3",
         }),
       ),
     ]);
@@ -290,7 +337,7 @@ async function createReserva() {
         reservaRepository.create({
           fecha:"2021-09-01",
           id_horario: 1,
-          rut: "21.282.977-3",
+          rut: "20.960.538-4",
           id_lab: 1
         }),
       ),
