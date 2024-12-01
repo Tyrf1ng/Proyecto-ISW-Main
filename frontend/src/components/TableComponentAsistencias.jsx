@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { IconButton } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -53,7 +53,7 @@ const TableComponentAsistencias = ({ asistencias, handleEdit, handleDelete }) =>
                           ? "bg-green-500 text-white"
                           : asistencia.tipo === "Ausente"
                           ? "bg-red-500 text-white"
-                          : "bg-gray-500 text-white"
+                          : "bg-orange-500 text-white"
                       }`}
                     >
                       {asistencia.tipo}

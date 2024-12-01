@@ -13,6 +13,10 @@ const VerAsistencias = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [asistenciaSeleccionada, setAsistenciaSeleccionada] = useState(null);
 
+  // Estado para el diálogo de confirmación de eliminación
+  const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
+  const [asistenciaToDelete, setAsistenciaToDelete] = useState(null);
+
   useEffect(() => {
     const cargarAsistencias = async () => {
       try {
@@ -30,56 +34,49 @@ const VerAsistencias = () => {
   const handleFilterChange = (e) => setFilterText(e.target.value);
 
   const handleEdit = (asistencia) => {
-    // Verificar que la asistencia tiene el id correctamente
     console.log("Asistencia seleccionada para editar:", asistencia);
-    setAsistenciaSeleccionada(asistencia); // Guardamos la asistencia seleccionada
-    setIsModalOpen(true); // Abrimos el modal
+    setAsistenciaSeleccionada(asistencia);
+    setIsModalOpen(true);
   };
 
-  const handleDelete = async (id_asistencia) => {
+  const handleDeleteRequest = (id_asistencia) => {
+    setAsistenciaToDelete(id_asistencia); // Guardamos el ID de la asistencia a eliminar
+    setConfirmDialogOpen(true); // Abrimos el cuadro de confirmación
+  };
+
+  const handleConfirmDelete = async () => {
     try {
-      // Verifica que el id_asistencia esté presente
-      if (!id_asistencia) {
-        throw new Error("ID de asistencia no válido para eliminar.");
+      if (!asistenciaToDelete) {
+        console.error("ID de asistencia no válido para eliminar.");
+        return;
       }
 
-      // Llamada a la API para eliminar la asistencia
-      await deleteAsistencia(id_asistencia);
-      
+      await deleteAsistencia(asistenciaToDelete); // Llamada a la API para eliminar la asistencia
+
       // Actualiza la lista de asistencias después de la eliminación
-      setAsistencias(asistencias.filter((asistencia) => asistencia.id_asistencia !== id_asistencia));
+      setAsistencias(asistencias.filter((asistencia) => asistencia.id_asistencia !== asistenciaToDelete));
     } catch (error) {
       console.error("Error al eliminar la asistencia:", error);
+    } finally {
+      setConfirmDialogOpen(false); // Cierra el cuadro de confirmación
     }
   };
 
   const handleSave = async () => {
     try {
-      // Verifica que la asistencia seleccionada tenga un id_asistencia
       if (!asistenciaSeleccionada || !asistenciaSeleccionada.id_asistencia) {
         console.error("ID de asistencia no válido", asistenciaSeleccionada);
         throw new Error("ID de asistencia no válido");
       }
 
-      // Mostrar en consola la asistencia seleccionada antes de guardar
-      console.log("Asistencia a actualizar:", asistenciaSeleccionada);
-
-      // Llamada a la función de actualización
       const updatedAsistencia = {
         ...asistenciaSeleccionada,
-        tipo: asistenciaSeleccionada.tipo, // Asegúrate de que el estado del tipo esté correcto
+        tipo: asistenciaSeleccionada.tipo,
       };
 
-      // Asegúrate de que estamos enviando el `id_asistencia` correctamente
-      console.log("Datos enviados para actualizar:", updatedAsistencia);
-
-      // Llamada a la API para actualizar la asistencia
       await updateAsistencia(updatedAsistencia);
       
-      // Cierra el modal después de guardar
       setIsModalOpen(false);
-
-      // Actualiza la lista de asistencias después de la actualización
       setAsistencias(asistencias.map((asistencia) =>
         asistencia.id_asistencia === asistenciaSeleccionada.id_asistencia ? asistenciaSeleccionada : asistencia
       ));
@@ -124,14 +121,14 @@ const VerAsistencias = () => {
       <TableComponentAsistencias
         asistencias={filteredAsistencias}
         handleEdit={handleEdit}
-        handleDelete={handleDelete}
+        handleDelete={handleDeleteRequest}
       />
 
       {/* Modal de Edición */}
       {isModalOpen && asistenciaSeleccionada && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white dark:bg-gray-900 p-8 rounded-lg shadow-xl max-w-sm w-full">
-            <h2 className="text-2xl font-bold mb-4 text-white">Editar Asistencia </h2> {/* Cambié el color aquí */}
+            <h2 className="text-2xl font-bold mb-4 text-white">Editar Asistencia </h2>
             <div className="mb-4">
               <label htmlFor="tipo" className="block text-sm text-gray-500 dark:text-gray-300">
                 Estado de la Asistencia
@@ -153,6 +150,23 @@ const VerAsistencias = () => {
                 Guardar
               </button>
               <button onClick={() => setIsModalOpen(false)} className="px-6 py-3 bg-gray-400 text-white rounded-lg text-lg">
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Cuadro de Confirmación para eliminar */}
+      {confirmDialogOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="p-8 rounded-lg shadow-xl bg-white text-black dark:bg-[#111827] dark:text-white">
+            <h2 className="text-2xl font-bold mb-4">¿Estás seguro de que quieres eliminar esta asistencia?</h2>
+            <div className="flex justify-around mt-6">
+              <button onClick={handleConfirmDelete} className="px-6 py-3 bg-red-600 text-white rounded-lg text-lg">
+                Eliminar
+              </button>
+              <button onClick={() => setConfirmDialogOpen(false)} className="px-6 py-3 bg-gray-400 text-white rounded-lg text-lg">
                 Cancelar
               </button>
             </div>
