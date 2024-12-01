@@ -9,17 +9,11 @@ import express, { json, urlencoded } from "express";
 import { cookieKey, HOST, PORT } from "./config/configEnv.js";
 import { connectDB } from "./config/configDb.js";
 import {
-  createAlumnos,
   createAnotaciones,
   createAsignaturaCurso,
   createAsignaturas,
   createAsistencia,
-  createConex_Lab_Encargado,
-  createCursoDirectivos,
   createCursos,
-  createDirectivos,
-  createDocente,
-  createEncargados_Lab,
   createHorarios,
   createLabs,
   createNotas,
@@ -90,19 +84,13 @@ async function setupAPI() {
     await connectDB();
     await setupServer();
     await createRoles();
-    await createDirectivos();
     await createCursos();
-    await createCursoDirectivos();
-    await createDocente();
     await createAsignaturas();
     await createAsignaturaCurso();
-    await createAlumnos();
     await createAnotaciones();
     await createAsistencia();
     await createNotas();
-    await createEncargados_Lab();
     await createLabs();
-    await createConex_Lab_Encargado();
     await createHorarios();
     await createReserva();
   } catch (error) {

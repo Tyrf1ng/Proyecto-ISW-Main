@@ -1,13 +1,14 @@
 "use strict";
 import { EntitySchema } from "typeorm";
 
-const Encargado_LabSchema = new EntitySchema({
-  name: "Encargado_Lab",
-  tableName: "encargado_lab",
+const UsuarioSchema = new EntitySchema({
+  name: "Usuario",
+  tableName: "usuarios",
   columns: {
-    rut_encargado: {
+    rut: {
       type: "varchar",
       primary: true,
+      nullable: false,
     },
     nombre: {
       type: "varchar",
@@ -16,23 +17,36 @@ const Encargado_LabSchema = new EntitySchema({
     },
     apellido: {
       type: "varchar",
+      length: 255,
       nullable: false,
     },
     email: {
       type: "varchar",
+      length: 255,
       nullable: false,
     },
     password: {
       type: "varchar",
+      length: 255,
+      nullable: false,
+    },
+    direccion: {
+      type: "varchar",
+      length: 255,
+      nullable: false,
+    },
+    comuna: {
+        type: "varchar",
+        length: 255,
+        nullable: false,
+    },
+    rol: {
+      type: "int",
       nullable: false,
     },
     telefono: {
-      type: "int",
-      nullable: false,
-    },
-    id_roles: {
-      type: "int",
-      nullable: false,
+        type: "int",
+        nullable: false,
     },
     createdAt: {
         type: "timestamp with time zone",
@@ -45,19 +59,6 @@ const Encargado_LabSchema = new EntitySchema({
         onUpdate: "CURRENT_TIMESTAMP",
         nullable: false,
       },
-  },
-  relations: {
-    roles: {
-      type: "many-to-one",
-      target: "Roles", 
-      joinColumn: { name: "id_roles" },
     },
-    horarios: {
-      type: "one-to-many",
-      target: "Horarios",
-      inverseSide: "encargado",
-    },
-  },
 });
-
-export default Encargado_LabSchema;
+export default UsuarioSchema;
