@@ -7,7 +7,7 @@ import axios from './root.service.js';
  */
 export async function getUsuario(rut) {
     try {
-        const { data } = await axios.get(`/usuarios/${rut}`);
+        const { data } = await axios.get(`/usuarios/rut/${rut}`);
         return data.data; // Devuelve los datos del usuario obtenidos de la API
     } catch (error) {
         console.error('Error al obtener usuario:', error);
@@ -52,7 +52,7 @@ export async function createUsuario(usuario) {
  */
 export async function updateUsuario(rut, usuario) {
     try {
-        const { data } = await axios.put(`/usuarios/${rut}`, usuario);
+        const { data } = await axios.put(`/usuarios/rut/${rut}`, usuario);
         return data.data; // Devuelve el usuario actualizado
     } catch (error) {
         console.error('Error al actualizar usuario:', error);
