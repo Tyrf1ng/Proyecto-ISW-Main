@@ -28,7 +28,6 @@ const horarioBodyValidation = Joi.object({
         }
         return value;
     }),
-    rut_encargado: Joi.string().required(),
 }).custom((value, helpers) => {
     if (value.hora_inicio >= value.hora_fin) {
         return helpers.message("La hora de inicio debe ser menor que la hora de fin");
@@ -60,15 +59,15 @@ export async function getHorarios(req, res) {
 
 export async function createHorario(req, res) {
     try {
-        const { hora_inicio, hora_fin, rut_encargado } = req.body;
-        if (!hora_inicio || !hora_fin || !rut_encargado) {
+        const { hora_inicio, hora_fin } = req.body;
+        if (!hora_inicio || !hora_fin) {
             return handleErrorClient(res, 400, "Faltan datos obligatorios");
         }
 
-        const { error: bodyError } = horarioBodyValidation.validate({ hora_inicio, hora_fin, rut_encargado });
+        const { error: bodyError } = horarioBodyValidation.validate({ hora_inicio, hora_fin });
         if (bodyError) return handleErrorClient(res, 400, bodyError.message);
 
-        const [horario, errorHorario] = await createHorarioService({ hora_inicio, hora_fin, rut_encargado });
+        const [horario, errorHorario] = await createHorarioService({ hora_inicio, hora_fin });
         if (errorHorario) return handleErrorClient(res, 400, errorHorario);
 
         handleSuccess(res, 201, "Horario creado", horario);

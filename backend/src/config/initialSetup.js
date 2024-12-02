@@ -317,8 +317,20 @@ async function createLabs() {
     await Promise.all([
       laboratoriosRepository.save(
         laboratoriosRepository.create({
-          nombre: "Lab1",
-          capacidad: 30
+          nombre: "Laboratorio de Química",
+          capacidad: 25,
+        }),
+      ),
+      laboratoriosRepository.save(
+        laboratoriosRepository.create({
+          nombre: "Laboratorio de Física",
+          capacidad: 32,
+        }),
+      ),
+      laboratoriosRepository.save(
+        laboratoriosRepository.create({
+          nombre: "Laboratorio de Computación",
+          capacidad: 16,
         }),
       ),
     ]);
@@ -342,6 +354,18 @@ async function createHorarios() {
           hora_fin: "09:30",
         }),
       ),
+      horariosRepository.save(
+        horariosRepository.create({
+          hora_inicio: "09:40",
+          hora_fin: "11:00",
+        }),
+      ),
+      horariosRepository.save(
+        horariosRepository.create({
+          hora_inicio: "11:10",
+          hora_fin: "12:30",
+        }),
+      ),
     ]);
     console.log("* => Horarios creados exitosamente");
   } catch (error) {
@@ -359,10 +383,18 @@ async function createReserva() {
     await Promise.all([
       reservaRepository.save(
         reservaRepository.create({
-          fecha:"2021-09-01",
+          fecha:"2024-12-12",
           id_horario: 1,
           rut: "20.960.538-4",
           id_lab: 1
+        }),
+      ),
+      reservaRepository.save(
+        reservaRepository.create({
+          fecha:"2024-12-12",
+          id_horario: 2,
+          rut: "20.960.538-4",
+          id_lab: 2
         }),
       ),
     ]);
@@ -372,8 +404,7 @@ async function createReserva() {
   }
 }
 
-export { createConectUsuarioCurso
-  , createCursos
+export { createCursos
   , createRoles
   , createAsignaturas
   , createAsignaturaCurso
