@@ -10,6 +10,6 @@ router
     .use(authenticateJwt)
 
 router
-    .get("/profesor/:rut_docente", authorize(["Docente"]), getAsignaturasByProfesorController);
+    .get("/profesor/:rut_docente", authorize(["Docente", "Directivo"]), getAsignaturasByProfesorController);
 
 export default router;
