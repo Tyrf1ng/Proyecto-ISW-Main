@@ -1,11 +1,12 @@
 "use strict";
-import { 
+import {
     createUsuarioService,
     deleteUsuarioService,
+    getAlumnosPorCursoService,
     getUsuarioByRutService,
     getUsuariosByNombreService,
     getUsuariosService,
-    updateUsuarioService
+    updateUsuarioService, // Importamos la nueva función del servicio
 } from "../services/usuario.service.js";
 import { handleErrorClient, handleErrorServer, handleSuccess } from "../handlers/responseHandlers.js";
 
@@ -60,7 +61,8 @@ export async function getUsuariosByNombre(req, res) {
 export async function createUsuario(req, res) {
     try {
         const { rut, nombre, apellido, email, password, direccion, comuna, id_roles, telefono } = req.body;
-        const [usuario, errorUsuario] = await createUsuarioService({ rut, nombre, apellido, email, password, direccion, comuna, id_roles, telefono });
+        const [usuario, errorUsuario] = await createUsuarioService({
+             rut, nombre, apellido, email, password, direccion, comuna, id_roles, telefono });
         if (errorUsuario) return handleErrorClient(res, 404, errorUsuario);
         handleSuccess(res, 201, "Usuario creado", usuario);
     } catch (error) {
@@ -94,6 +96,23 @@ export async function deleteUsuario(req, res) {
         const [usuario, errorUsuario] = await deleteUsuarioService(rut);
         if (errorUsuario) return handleErrorClient(res, 404, errorUsuario);
         handleSuccess(res, 200, "Usuario eliminado", usuario);
+    } catch (error) {
+        handleErrorServer(res, 500, error.message);
+    }
+}
+
+/**
+ * Obtener usuarios con rol 3 por curso
+ */
+export async function getAlumnosPorCurso(req, res) {
+    try {
+        const { idCurso } = req.params; // Se asume que el ID del curso se pasa como parámetro en la URL
+        const [usuarios, errorUsuarios] = await getAlumnosPorCursoService(idCurso);
+
+        if (errorUsuarios) return handleErrorClient(res, 404, errorUsuarios);
+        usuarios.length === 0
+            ? handleSuccess(res, 204)
+            : handleSuccess(res, 200, "Usuarios con rol 3 encontrados en el curso", usuarios);
     } catch (error) {
         handleErrorServer(res, 500, error.message);
     }

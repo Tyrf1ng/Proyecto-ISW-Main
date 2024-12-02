@@ -7,7 +7,7 @@ function Add_anotaciones() {
   const { idCurso } = useContext(CursoContext);
   const [newAnotacion, setNewAnotacion] = useState({
     tipo: 'Positiva',
-    rut_alumno: '',
+    rut: '',
     descripcion: '',
     id_asignatura: idCurso || '',
     fecha: new Date().toISOString(),
@@ -30,7 +30,7 @@ function Add_anotaciones() {
         const alumnosData = await getAlumnosByCurso(idCurso);
         if (Array.isArray(alumnosData)) {
           setAlumnos(alumnosData);
-          setFilteredAlumnos(alumnosData);
+          setFilteredAlumnos(alumnosData.slice(0, 5)); // Mostrar solo los primeros 5 alumnos
         } else {
           console.error("Formato inesperado de datos:", alumnosData);
         }
@@ -45,10 +45,14 @@ function Add_anotaciones() {
   const handleSearchChange = (e) => {
     const query = e.target.value.toLowerCase();
     setSearchTerm(query);
+    
+    // Filtrar alumnos basados en la búsqueda
     const filtered = alumnos.filter((alumno) =>
       `${alumno.nombre} ${alumno.apellido}`.toLowerCase().includes(query)
     );
-    setFilteredAlumnos(filtered);
+
+    // Limitar a los primeros 5 resultados
+    setFilteredAlumnos(filtered.slice(0, 5));
     setIsListVisible(filtered.length > 0);
   };
 
@@ -63,13 +67,13 @@ function Add_anotaciones() {
 
   const handleAlumnoSelect = (alumno) => {
     setSelectedAlumno(alumno);
-    setNewAnotacion({ ...newAnotacion, rut_alumno: alumno.rut_alumno });
+    setNewAnotacion({ ...newAnotacion, rut: alumno.rut });
     setSearchTerm(`${alumno.nombre} ${alumno.apellido}`);
     setIsListVisible(false);
   };
 
   const handleSubmit = async () => {
-    if (!newAnotacion.rut_alumno) {
+    if (!newAnotacion.rut) {
       setMessage('Debe seleccionar un alumno.');
       setMessageType('warning');
       return;
@@ -86,7 +90,7 @@ function Add_anotaciones() {
       setMessageType('success');
       setNewAnotacion({
         tipo: 'Positiva',
-        rut_alumno: '',
+        rut: '',
         descripcion: '',
         id_asignatura: idCurso || '',
         fecha: new Date().toISOString(),
@@ -144,6 +148,7 @@ function Add_anotaciones() {
 
     return null;
   };
+
   return (
     <div className="p-6 max-w-3xl mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-md">
       <h2 className="text-2xl font-semibold text-gray-800 dark:text-white mb-6">Añadir Anotaciones</h2>
@@ -179,7 +184,7 @@ function Add_anotaciones() {
           <ul className="mt-2 bg-white dark:bg-gray-900 shadow-lg rounded-lg">
             {filteredAlumnos.map((alumno) => (
               <li
-                key={alumno.rut_alumno}
+                key={alumno.rut}
                 onClick={() => handleAlumnoSelect(alumno)}
                 className="px-4 py-2 cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-700 text-gray-800 dark:text-white"
               >

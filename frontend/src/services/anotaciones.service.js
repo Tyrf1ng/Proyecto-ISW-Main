@@ -41,10 +41,17 @@ export async function deleteAnotacion(id) {
   }
 }
 
-export async function getAnotacionesAlumno(rutAlumno) {
+export async function getAnotacionesAlumno(rut) {
   try {
-    const { data } = await axios.get(`/anotaciones/alumno/${rutAlumno}`);
-    return data.data; // Ajusta según la estructura de tu respuesta del backend
+    // Obtener las anotaciones del backend
+    const { data } = await axios.get(`/anotaciones/alumno/${rut}`);
+
+    // Filtrar anotaciones para el rol 3
+    const anotacionesFiltradas = data.data.filter((anotacion) => anotacion.rol === 3);
+
+    console.log('getAnotacionesAlumno (filtrado):', anotacionesFiltradas);
+
+    return anotacionesFiltradas;
   } catch (error) {
     console.error('Error al obtener anotaciones del alumno:', error);
     throw error;

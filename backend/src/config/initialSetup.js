@@ -9,9 +9,33 @@ import Labs from "../entity/lab.entity.js";
 import Horarios from "../entity/horarios.entity.js";
 import Reserva from "../entity/reserva.entity.js";
 import Roles from "../entity/roles.entity.js";
+import Conect_Usuario_Curso from "../entity/conect_usuario_curso.entity.js";
 import Usuario from "../entity/usuario.entity.js";
 import { AppDataSource } from "./configDb.js";
 import { encryptPassword } from "../helpers/bcrypt.helper.js";
+
+async function createConectUsuarioCurso() {
+  try {
+    const conectUsuarioCursoRepository = AppDataSource.getRepository(Conect_Usuario_Curso);
+
+    const count = await conectUsuarioCursoRepository.count();
+    if (count > 0) return;
+
+    await Promise.all([
+      conectUsuarioCursoRepository.save(
+        conectUsuarioCursoRepository.create({
+          rut: "21.070.073-0",
+          id_curso: 1,
+        }),
+      ),
+    ]);
+    console.log("* => Conect_Usuario_Curso creadas exitosamente");
+  }
+  catch (error) {
+    console.error("Error al crear conect_usuario_curso:", error);
+  }
+}
+
 
 async function createUsuario() {
   try {
@@ -348,7 +372,8 @@ async function createReserva() {
   }
 }
 
-export { createCursos
+export { createConectUsuarioCurso
+  , createCursos
   , createRoles
   , createAsignaturas
   , createAsignaturaCurso

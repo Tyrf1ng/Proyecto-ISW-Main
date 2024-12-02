@@ -1,5 +1,6 @@
 "use strict";
-import { createAnotacionService,
+import { 
+    createAnotacionService,
     deleteAnotacionService,
     getAnotacionesAlumnoService,
     getAnotacionesAsignaturaService,
@@ -7,15 +8,12 @@ import { createAnotacionService,
     getAnotacionesService, 
     getAnotacionService,
     updateAnotacionService
-     } from "../services/anotaciones.service.js";
+} from "../services/anotaciones.service.js";
 import { handleErrorClient, handleErrorServer, handleSuccess } from "../handlers/responseHandlers.js";
-
-
 
 export async function getAnotacion(req, res) {
     const { id_anotacion } = req.params;
 
-    // Llamada al servicio con el id como parámetro directo
     const [anotacion, error] = await getAnotacionService(id_anotacion);
 
     if (error) {
@@ -32,12 +30,8 @@ export async function getAnotaciones(req, res) {
         anotaciones.length === 0
             ? handleSuccess(res, 204)
             : handleSuccess(res, 200, "Anotaciones encontradas", anotaciones);
-    }catch (error) {
-        handleErrorServer(
-            res,
-            500,
-            error.message,
-        );
+    } catch (error) {
+        handleErrorServer(res, 500, error.message);
     }
 }
 
@@ -50,28 +44,20 @@ export async function getAnotacionesAsignatura(req, res) {
             ? handleSuccess(res, 204)
             : handleSuccess(res, 200, "Anotaciones encontradas", anotaciones);
     } catch (error) {
-        handleErrorServer(
-            res,
-            500,
-            error.message,
-        );
+        handleErrorServer(res, 500, error.message);
     }
 }
 
 export async function getAnotacionesAlumno(req, res) {
     try {
-        const { rut_alumno } = req.params;
-        const [anotaciones, errorAnotaciones] = await getAnotacionesAlumnoService(rut_alumno);
+        const { rut } = req.params; // Actualización: ahora se usa `rut`
+        const [anotaciones, errorAnotaciones] = await getAnotacionesAlumnoService(rut);
         if (errorAnotaciones) return handleErrorClient(res, 404, errorAnotaciones);
         anotaciones.length === 0
             ? handleSuccess(res, 204)
             : handleSuccess(res, 200, "Anotaciones encontradas", anotaciones);
     } catch (error) {
-        handleErrorServer(
-            res,
-            500,
-            error.message,
-        );
+        handleErrorServer(res, 500, error.message);
     }
 }
 
@@ -84,19 +70,19 @@ export async function getAnotacionesCurso(req, res) {
             ? handleSuccess(res, 204)
             : handleSuccess(res, 200, "Anotaciones encontradas", anotaciones);
     } catch (error) {
-        handleErrorServer(
-            res,
-            500,
-            error.message,
-        );
+        handleErrorServer(res, 500, error.message);
     }
 }
 
 export async function createAnotacion(req, res) {
     try {
-        const { descripcion, tipo, id_asignatura, rut_alumno } = req.body;
-        const [anotacion, errorAnotacion] = await createAnotacionService(
-            { descripcion, tipo, id_asignatura, rut_alumno });
+        const { descripcion, tipo, id_asignatura, rut } = req.body; // Actualización: se usa `rut`
+        const [anotacion, errorAnotacion] = await createAnotacionService({
+            descripcion,
+            tipo,
+            id_asignatura,
+            rut,
+        });
         if (errorAnotacion) return handleErrorClient(res, 404, errorAnotacion);
         handleSuccess(res, 201, "Anotacion creada", anotacion);
     } catch (error) {
@@ -104,20 +90,22 @@ export async function createAnotacion(req, res) {
     }
 }
 
-
 export async function updateAnotacion(req, res) {
     try {
-        const { id_anotacion } = req.params; 
-        const { descripcion, tipo, id_asignatura, rut_alumno } = req.body;
+        const { id_anotacion } = req.params;
+        const { descripcion, tipo, id_asignatura, rut } = req.body; // Actualización: se usa `rut`
 
         const datosActualizados = {
             descripcion,
             tipo,
             id_asignatura: id_asignatura ? parseInt(id_asignatura, 10) : null,
-            rut_alumno,
+            rut,
         };
 
-        const [anotacion, errorAnotacion] = await updateAnotacionService(parseInt(id_anotacion, 10), datosActualizados);
+        const [anotacion, errorAnotacion] = await updateAnotacionService(
+            parseInt(id_anotacion, 10),
+            datosActualizados
+        );
         if (errorAnotacion) return handleErrorClient(res, 404, errorAnotacion);
         handleSuccess(res, 200, "Anotacion actualizada", anotacion);
     } catch (error) {
@@ -125,18 +113,13 @@ export async function updateAnotacion(req, res) {
     }
 }
 
-
 export async function deleteAnotacion(req, res) {
     try {
         const { id_anotacion } = req.params;
         const [anotacion, errorAnotacion] = await deleteAnotacionService(id_anotacion);
         if (errorAnotacion) return handleErrorClient(res, 404, errorAnotacion);
         handleSuccess(res, 200, "Anotacion eliminada", anotacion);
-    }catch (error) {
-        handleErrorServer(
-            res,
-            500,
-            error.message,
-        );
+    } catch (error) {
+        handleErrorServer(res, 500, error.message);
     }
 }
