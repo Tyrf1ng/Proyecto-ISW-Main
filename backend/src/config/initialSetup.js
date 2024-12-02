@@ -9,14 +9,14 @@ import Labs from "../entity/lab.entity.js";
 import Horarios from "../entity/horarios.entity.js";
 import Reserva from "../entity/reserva.entity.js";
 import Roles from "../entity/roles.entity.js";
-import Conect_Usuario_Curso from "../entity/conect_usuario_curso.entity.js";
+import Conect_Alumno_Curso from "../entity/conect_alumno_curso.entity.js";
 import Usuario from "../entity/usuario.entity.js";
 import { AppDataSource } from "./configDb.js";
 import { encryptPassword } from "../helpers/bcrypt.helper.js";
 
-async function createConectUsuarioCurso() {
+async function createConectAlumnoCurso() {
   try {
-    const conectUsuarioCursoRepository = AppDataSource.getRepository(Conect_Usuario_Curso);
+    const conectUsuarioCursoRepository = AppDataSource.getRepository(Conect_Alumno_Curso);
 
     const count = await conectUsuarioCursoRepository.count();
     if (count > 0) return;
@@ -405,7 +405,7 @@ async function createReserva() {
 }
 
 export { createCursos
-  , createConectUsuarioCurso
+  , createConectAlumnoCurso
   , createRoles
   , createAsignaturas
   , createAsignaturaCurso

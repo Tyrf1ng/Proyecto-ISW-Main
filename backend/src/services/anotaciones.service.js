@@ -3,7 +3,7 @@ import { In } from "typeorm";
 import Anotaciones from "../entity/anotacion.entity.js";
 import Usuario from "../entity/usuario.entity.js";
 import CursoSchema from "../entity/curso.entity.js";
-import Conect_Usuario_CursoSchema from "../entity/conect_usuario_curso.entity.js";
+import Conect_Alumno_CursoSchema from "../entity/conect_alumno_curso.entity.js";
 import AsignaturaCursoSchema from "../entity/asignatura.curso.entity.js";
 import { AppDataSource } from "../config/configDb.js";
 
@@ -97,7 +97,7 @@ export async function getAnotacionesAlumnoService(rut) {
 export async function getAnotacionesCursoService(id_curso) {
     try {
         const AnotacionRepository = AppDataSource.getRepository(Anotaciones);
-        const UsuarioCursoRepository = AppDataSource.getRepository(Conect_Usuario_CursoSchema);
+        const UsuarioCursoRepository = AppDataSource.getRepository(Conect_Alumno_CursoSchema);
         const AsignaturaCursoRepository = AppDataSource.getRepository(AsignaturaCursoSchema);
 
         // Obtener los usuarios asociados al curso

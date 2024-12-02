@@ -13,7 +13,7 @@ import {
   createAsignaturaCurso,
   createAsignaturas,
   createAsistencia,
-  createConectUsuarioCurso,
+  createConectAlumnoCurso,
   createCursos,
   createHorarios,
   createLabs,
@@ -88,7 +88,7 @@ async function setupAPI() {
     await createRoles();
     await createUsuario();
     await createCursos();
-    await createConectUsuarioCurso();
+    await createConectAlumnoCurso();
     await createAsignaturas();
     await createAsignaturaCurso();
     await createAnotaciones();

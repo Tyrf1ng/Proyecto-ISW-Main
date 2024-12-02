@@ -2,14 +2,14 @@
 import { In } from "typeorm";
 import Notas from "../entity/nota.entity.js";
 import { AppDataSource } from "../config/configDb.js";
-import Conect_Usuario_CursoSchema from "../entity/conect_usuario_curso.entity.js";
+import Conect_Alumno_CursoSchema from "../entity/conect_alumno_curso.entity.js";
 import AsignaturaCursoSchema from "../entity/asignatura.curso.entity.js";
 
 //funcion para traer todas las notas de un curso
 //Funciona no tocar
 export async function getNotasCurso(id_curso) {
     try {
-        const UsuarioCursoRepository = AppDataSource.getRepository(Conect_Usuario_CursoSchema);
+        const UsuarioCursoRepository = AppDataSource.getRepository(Conect_Alumno_CursoSchema);
         const AsignaturaCursoRepository = AppDataSource.getRepository(AsignaturaCursoSchema);
 
         const alumno = await UsuarioCursoRepository.find({

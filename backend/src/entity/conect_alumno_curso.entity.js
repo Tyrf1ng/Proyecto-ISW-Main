@@ -1,9 +1,9 @@
 "use strict";
 import { EntitySchema } from "typeorm";
 
-const Conect_Usuario_CursoSchema = new EntitySchema({
-    name: "Conect_Usuario_Curso",
-    tableName: "conect_usuario_curso",
+const Conect_Alumno_CursoSchema = new EntitySchema({
+    name: "Conect_Alumno_Curso",
+    tableName: "conect_Alumno_curso",
     columns: {
         rut: {
         type: "varchar",
@@ -30,4 +30,4 @@ const Conect_Usuario_CursoSchema = new EntitySchema({
     },
     });
 
-export default Conect_Usuario_CursoSchema;
+export default Conect_Alumno_CursoSchema;
