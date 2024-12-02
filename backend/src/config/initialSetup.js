@@ -405,6 +405,7 @@ async function createReserva() {
 }
 
 export { createCursos
+  , createConectUsuarioCurso
   , createRoles
   , createAsignaturas
   , createAsignaturaCurso

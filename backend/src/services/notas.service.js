@@ -2,30 +2,45 @@
 import { In } from "typeorm";
 import Notas from "../entity/nota.entity.js";
 import { AppDataSource } from "../config/configDb.js";
-import usuario from "../entity/usuario.entity.js";
+import Conect_Usuario_CursoSchema from "../entity/conect_usuario_curso.entity.js";
+import AsignaturaCursoSchema from "../entity/asignatura.curso.entity.js";
 
 //funcion para traer todas las notas de un curso
 //Funciona no tocar
 export async function getNotasCurso(id_curso) {
     try {
-        // Obtener todos los alumnos asociados al curso específico
-        const alumnoRepository = AppDataSource.getRepository(usuario);
-        const alumno = await alumnoRepository.find({
-            where: { id_curso: id_curso },
+        const UsuarioCursoRepository = AppDataSource.getRepository(Conect_Usuario_CursoSchema);
+        const AsignaturaCursoRepository = AppDataSource.getRepository(AsignaturaCursoSchema);
+
+        const alumno = await UsuarioCursoRepository.find({
+            where: { id_curso },
+            relations: ["usuario"], // Incluye la relación necesaria
         });
 
-        if (!alumno || alumno.length === 0) {
+        const rutsAlumnos = alumno.map(entry => entry.rut)
+        if (rutsAlumnos === 0) {
             return [null, "No hay alumnos en este curso"];
         }
 
-        // Extraer los rut de los alumnos para filtrar las notas
-        const rutAlumnos = alumno.map(alumnos => alumnos.rut_alumno);
+        const asignaturasDelCurso = await AsignaturaCursoRepository.find({
+            where: { id_curso },
+        });
+        const idsAsignaturas = asignaturasDelCurso.map(entry => entry.id_asignatura);
+
+        // Verificar si hay asignaturas asociadas al curso
+        if (idsAsignaturas.length === 0) {
+            return [null, "No hay asignaturas asociadas a este curso"];
+        }
 
         // Buscar las notas correspondientes a los alumnos en el curso y sus asignaturas relacionadas
         const notaRepository = AppDataSource.getRepository(Notas);
+
         const notas = await notaRepository.find({
-            where: { rut_alumno: In(rutAlumnos) },
-            relations: ["asignatura", "alumno"], // Incluye las relaciones necesarias
+            where: { rut: In(rutsAlumnos),
+                id_asignatura: In(idsAsignaturas)
+            },
+            relations: ["asignatura", "usuario"],
+           // Incluye las relaciones necesarias
         });
 
         if (!notas || notas.length === 0) {
@@ -37,9 +52,9 @@ export async function getNotasCurso(id_curso) {
             id_nota: nota.id_nota,
             tipo: nota.tipo,
             valor: nota.valor,
-            rut_alumno: nota.alumno.rut_alumno,
-            nombre_alumno: nota.alumno.nombre,
-            apellido_alumno: nota.alumno.apellido,
+            rut: nota.usuario.rut,
+            nombre_alumno: nota.usuario.nombre,
+            apellido_alumno: nota.usuario.apellido,
             nombre_asignatura: nota.asignatura.nombre,
             id_asignatura: nota.asignatura.id_asignatura,
         }));
@@ -95,15 +110,15 @@ export async function getNotasAsignatura(id_asignatura) {
         const notasRepository = AppDataSource.getRepository(Notas);
         const notas = await notasRepository.find({
             where: { id_asignatura: id_asignatura },
-            relations: ["asignatura", "alumno"]
+            relations: ["asignatura", "usuario"]
         });
 
         if (!notas || notas.length === 0) return [null, "No hay notas"];
 
         const notasData = notas.map(nota => ({
             ...nota,
-            nombre_alumno: nota.alumno.nombre,
-            apellido_alumno: nota.alumno.apellido,
+            nombre_alumno: nota.usuario.nombre,
+            apellido_alumno: nota.usuario.apellido,
             nombre_asignatura: nota.asignatura.nombre
         }));
 
@@ -207,15 +222,15 @@ export async function getAllNotas() {
     try {
         const notasRepository = AppDataSource.getRepository(Notas);
         const notas = await notasRepository.find({
-            relations: ["asignatura", "alumno"], 
+            relations: ["asignatura", "usuario"], 
         });
         
         // Formatear el resultado para incluir solo el nombre de la asignatura
         const notasConDatos = notas.map(nota => ({
             ...nota,
             nombre_asignatura: nota.asignatura.nombre, 
-            nombre_alumno: nota.alumno.nombre,
-            apellido_alumno: nota.alumno.apellido,
+            nombre_alumno: nota.usuario.nombre,
+            apellido_alumno: nota.usuario.apellido,
         }));
         
         
