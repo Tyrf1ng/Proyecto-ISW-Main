@@ -13,73 +13,6 @@ import Usuario from "../entity/usuario.entity.js";
 import { AppDataSource } from "./configDb.js";
 import { encryptPassword } from "../helpers/bcrypt.helper.js";
 
-async function createUsuario() {
-  try {
-    const usuarioRepository = AppDataSource.getRepository(Usuario);
-
-    const count = await usuarioRepository.count();
-    if (count > 0) return;
-
-    await Promise.all([
-      usuarioRepository.save(
-        usuarioRepository.create({
-          rut: "21.282.977-3",
-          nombre: "Skibidi",
-          apellido: "Insano",
-          email: "benjamin@gmail.cl",
-          telefono: 123456789,
-          password: await encryptPassword("benja123"),
-          id_roles: 1,
-          comuna: "LA City",
-          direccion: "Calle falsa 123",
-        }),
-      ),
-      usuarioRepository.save(
-        usuarioRepository.create({
-          rut: "20.960.538-4",
-          nombre: "Toilet",
-          apellido: "Jonathan",
-          email: "jonypirinoli@gmail.cl",
-          telefono: 987654321,
-          password: await encryptPassword("jonypirinoli123"),
-          id_roles: 2,
-          comuna: "Laja City",
-          direccion: "Calle del toilet 69",
-        }),
-      ),
-      usuarioRepository.save(
-        usuarioRepository.create({
-          rut: "21.070.073-0",
-          nombre: "Mochap",
-          apellido: "PL",
-          email: "mochap@gmail.cl",
-          telefono: 987655321,
-          password: await encryptPassword("mochap123"),
-          id_roles: 3,
-          comuna: "Conce City",
-          direccion: "Calle del smegma 69",
-        }),
-      ),
-      usuarioRepository.save(
-        usuarioRepository.create({
-          rut: "21.137.508-6",
-          nombre: "Mixtor",
-          apellido: "320",
-          email: "mixtor@gmail.cl",
-          telefono: 987655321,
-          password: await encryptPassword("mixtor123"),
-          id_roles: 4,
-          comuna: "Hualpen City",
-          direccion: "Calle del sigma 69",
-        }),
-      ),
-    ]);
-    console.log("* => Usuario creado exitosamente");
-  }
-  catch (error) {
-    console.error("Error al crear usuario:", error);
-  }
-}
 
 async function createRoles() {
   try {
@@ -293,8 +226,20 @@ async function createLabs() {
     await Promise.all([
       laboratoriosRepository.save(
         laboratoriosRepository.create({
-          nombre: "Lab1",
-          capacidad: 30
+          nombre: "Laboratorio de Química",
+          capacidad: 25,
+        }),
+      ),
+      laboratoriosRepository.save(
+        laboratoriosRepository.create({
+          nombre: "Laboratorio de Física",
+          capacidad: 32,
+        }),
+      ),
+      laboratoriosRepository.save(
+        laboratoriosRepository.create({
+          nombre: "Laboratorio de Computación",
+          capacidad: 16,
         }),
       ),
     ]);
@@ -318,6 +263,18 @@ async function createHorarios() {
           hora_fin: "09:30",
         }),
       ),
+      horariosRepository.save(
+        horariosRepository.create({
+          hora_inicio: "09:40",
+          hora_fin: "11:00",
+        }),
+      ),
+      horariosRepository.save(
+        horariosRepository.create({
+          hora_inicio: "11:10",
+          hora_fin: "12:30",
+        }),
+      ),
     ]);
     console.log("* => Horarios creados exitosamente");
   } catch (error) {
@@ -335,16 +292,105 @@ async function createReserva() {
     await Promise.all([
       reservaRepository.save(
         reservaRepository.create({
-          fecha:"2021-09-01",
+          fecha:"2024-12-12",
           id_horario: 1,
           rut: "20.960.538-4",
           id_lab: 1
+        }),
+      ),
+      reservaRepository.save(
+        reservaRepository.create({
+          fecha:"2024-12-12",
+          id_horario: 2,
+          rut: "20.960.538-4",
+          id_lab: 2
         }),
       ),
     ]);
     console.log("* => Reservas creadas exitosamente");
   } catch (error) {
     console.error("Error al crear la reserva:", error);
+  }
+}
+
+async function createUsuario() {
+  try {
+    const usuarioRepository = AppDataSource.getRepository(Usuario);
+
+    const count = await usuarioRepository.count();
+    if (count > 0) return;
+
+    await Promise.all([
+      usuarioRepository.save(
+        usuarioRepository.create({
+          rut: "21.282.977-3",
+          nombre: "Skibidi",
+          apellido: "Insano",
+          email: "benjamin@gmail.cl",
+          telefono: 123456789,
+          password: await encryptPassword("benja123"),
+          id_roles: 1,
+          comuna: "LA City",
+          direccion: "Calle falsa 123",
+        }),
+      ),
+      usuarioRepository.save(
+        usuarioRepository.create({
+          rut: "20.960.538-4",
+          nombre: "Toilet",
+          apellido: "Jonathan",
+          email: "jonypirinoli@gmail.cl",
+          telefono: 987654321,
+          password: await encryptPassword("jonypirinoli123"),
+          id_roles: 2,
+          comuna: "Laja City",
+          direccion: "Calle del toilet 69",
+        }),
+      ),
+      usuarioRepository.save(
+        usuarioRepository.create({
+          rut: "21.070.073-0",
+          nombre: "Mochap",
+          apellido: "PL",
+          email: "mochap@gmail.cl",
+          telefono: 987655321,
+          password: await encryptPassword("mochap123"),
+          id_roles: 3,
+          comuna: "Conce City",
+          direccion: "Calle del smegma 69",
+        }),
+      ),
+      usuarioRepository.save(
+        usuarioRepository.create({
+          rut: "21.137.508-6",
+          nombre: "Nicoflenn",
+          apellido: "Ibieta",
+          email: "nicoflenn@gmail.cl",
+          telefono: 987655321,
+          password: await encryptPassword("nicoflenn123"),
+          id_roles: 4,
+          comuna: "Hualpen City",
+          direccion: "Calle del sigma 69",
+        }),
+      ),
+      usuarioRepository.save(
+        usuarioRepository.create({
+          rut: "21.019.643-9",
+          nombre: "Cristox",
+          apellido: "Betancurt",
+          email: "cristox@gmail.cl",
+          telefono: 987655327,
+          password: await encryptPassword("cristox123"),
+          id_roles: 4,
+          comuna: "Mulchen City",
+          direccion: "Calle del Papu 69",
+        }),
+      ),
+    ]);
+    console.log("* => Usuario creado exitosamente");
+  }
+  catch (error) {
+    console.error("Error al crear usuario:", error);
   }
 }
 

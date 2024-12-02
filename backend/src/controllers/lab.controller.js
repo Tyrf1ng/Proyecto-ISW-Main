@@ -21,7 +21,6 @@ const labBodyValidation = Joi.object({
     capacidad: Joi.number().integer().min(1).max(99).required(), // Validación de capacidad
 });
 
-// Definición del esquema de validación para la actualización
 const labUpdateValidation = Joi.object({
     id_lab: Joi.number().integer().required(),
     nombre: Joi.string().max(255).required(),
@@ -58,10 +57,8 @@ export async function getLabs(req, res) {
     }
 }
 
-//Funciona NO TOCAR
 export async function createLab(req, res) {
     try {
-        console.log("Solicitud recibida para crear laboratorio:", req.body); // Agrega este log
         const { nombre, capacidad } = req.body;
         if (!nombre || !capacidad) {
             return handleErrorClient(res, 400, "Faltan datos obligatorios");
@@ -80,7 +77,6 @@ export async function createLab(req, res) {
     }
 }
 
-//Funciona NO TOCAR
 export async function updateLab(req, res) {
     try {
         const { id_lab } = req.params;
