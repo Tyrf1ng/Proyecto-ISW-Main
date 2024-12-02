@@ -124,14 +124,15 @@ const DashboardLayoutAccount = () => {
   const renderNavLinks = (navigation) => {
     return navigation.map((item) => (
       <div key={item.segment}>
-        <Link
-          to={`/${item.segment}`}
-          className="flex items-center px-3 py-2 text-gray-600 transition-colors duration-300 transform rounded-lg dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-gray-200 hover:text-gray-700"
+        {/* Si tiene hijos, mostrarlo como un "título" no clickeable */}
+        <div
+          className="flex items-center px-3 py-2 text-gray-600 transition-colors duration-300 transform rounded-lg dark:text-gray-300 cursor-default"
         >
           <span className="mx-2 text-sm font-medium">{item.icon}</span>
           <span className="mx-2 text-sm font-medium">{item.title}</span>
-        </Link>
+        </div>
 
+        {/* Si tiene hijos, renderizar los enlaces de los hijos */}
         {item.children && (
           <div className="ml-4">
             {item.children.map((child) => (
