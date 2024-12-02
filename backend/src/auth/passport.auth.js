@@ -13,17 +13,12 @@ const options = {
 passport.use(
   new JwtStrategy(options, async (jwt_payload, done) => {
     try {
-      const repositories = [
-        AppDataSource.getRepository(Usuario),
-      ];
+      const repository = AppDataSource.getRepository(Usuario);
 
-      let user = null;
-      for (const repository of repositories) {
-        user = await repository.findOne({
-          where: { email: jwt_payload.email },
-        });
-        if (user) break; // Sale del bucle si encuentra al usuario
-      }
+      const user = await repository.findOne({
+        where: { email: jwt_payload.email },
+        relations: ["roles"],
+      });
 
       if (user) {
         return done(null, user);
