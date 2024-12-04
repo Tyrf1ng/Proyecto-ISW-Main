@@ -2,7 +2,9 @@ import { useNavigate } from "react-router-dom";
 import { login } from "@services/auth.service.js";
 import useLogin from "@hooks/auth/useLogin.jsx";
 import patern from "../images/components/patern.svg";
-import icono from "../images/components/icono.svg";
+import icono from "../images/components/icono.svg"; // Logo para estado por defecto
+import eyeo from "../images/components/eyeo.svg"; // Ojo abierto (contraseña visible)
+import eyec from "../images/components/eyec.svg"; // Ojo cerrado (contraseña oculta)
 import { useState } from "react";
 
 const Login = () => {
@@ -16,6 +18,7 @@ const Login = () => {
   } = useLogin();
 
   const [loginError, setLoginError] = useState(null); // Estado para manejar los errores de login
+  const [passwordVisible, setPasswordVisible] = useState(false); // Estado para controlar la visibilidad de la contraseña
 
   const loginSubmit = async (event) => {
     event.preventDefault();
@@ -27,7 +30,7 @@ const Login = () => {
     try {
       const response = await login(data);
       if (response.status === "Success") {
-        navigate("/Cursos");
+        navigate("/cursos");
       } else if (response.status === "Client error") {
         // Aquí se captura un error específico de los datos del login
         setLoginError("Correo o contraseña incorrectos");
@@ -54,33 +57,28 @@ const Login = () => {
     >
       {/* Mostrar mensaje de error sobre la card */}
       {loginError && (
-  <div
-    role="alert"
-    className="alert alert-error fixed top-0 left-1/2 transform -translate-x-1/2 z-50 mb-4 mt-4 w-auto p-4 flex items-center bg-[#111827] text-red-500 rounded-lg shadow-lg animate-bounce-slow"
-  >
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      className="h-6 w-6 shrink-0 stroke-current text-red-500"
-      fill="none"
-      viewBox="0 0 24 24"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth="2"
-        d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-      />
-    </svg>
-    <span className="text-red-500">{loginError}</span>
-  </div>
-)}
+        <div
+          role="alert"
+          className="alert alert-error fixed top-0 left-1/2 transform -translate-x-1/2 z-50 mb-4 mt-4 w-auto p-4 flex items-center bg-[#111827] text-red-500 rounded-lg shadow-lg animate-bounce-slow"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-6 w-6 shrink-0 stroke-current text-red-500"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+          <span className="text-red-500">{loginError}</span>
+        </div>
+      )}
 
-
-
-
-
-
-      <div className="flex items-center justify-center min-h-screen ">
+      <div className="flex items-center justify-center min-h-screen">
         <div className="absolute inset-0 bg-[url('/path-to-your-pattern.png')] bg-center bg-cover opacity-50"></div>
         <div className="relative z-10 w-full max-w-md p-8 bg-white dark:bg-gray-900 rounded-lg shadow-lg">
           <div className="text-center">
@@ -135,26 +133,21 @@ const Login = () => {
               </div>
 
               <div className="relative flex items-center mt-2">
-                <button className="absolute  right-0 focus:outline-none rtl:left-0 rtl:right-auto">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
+                <button
+                  type="button"
+                  className="absolute right-0 focus:outline-none rtl:left-0 rtl:right-auto"
+                  onClick={() => setPasswordVisible(!passwordVisible)} // Alternar la visibilidad
+                >
+                  <img
+                    src={passwordVisible ? eyeo : eyec} // Cambiar entre los iconos de ojo abierto y cerrado
+                    alt="Mostrar/Ocultar contraseña"
                     className="w-6 h-6 mx-4"
-                    stroke="#3B82F6"
-                  >
-                    <path d="M12 15a3 3 0 100-6 3 3 0 000 6z" />
-                    <path
-                      fillRule="evenodd"
-                      d="M1.323 11.447C2.811 6.976 7.028 3.75 12.001 3.75c4.97 0 9.185 3.223 10.675 7.69.12.362.12.752 0 1.113-1.487 4.471-5.705 7.697-10.677 7.697-4.97 0-9.186-3.223-10.675-7.69a1.762 1.762 0 010-1.113zM17.25 12a5.25 5.25 0 11-10.5 0 5.25 5.25 0 0110.5 0z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
+                  />
                 </button>
                 <input
                   id="password"
                   name="password"
-                  type="password"
+                  type={passwordVisible ? "text" : "password"} // Cambiar entre texto y contraseña
                   required
                   placeholder="********"
                   className="block w-full py-2.5 text-gray-700 placeholder-gray-400/70 bg-white border border-gray-200 rounded-lg pl-5 pr-11 rtl:pr-5 rtl:pl-11 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40"
@@ -162,9 +155,7 @@ const Login = () => {
                 />
               </div>
               {errorPassword && (
-                <p className="mt-1 text-xs text-red-500">
-                  Contraseña es obligatoria
-                </p>
+                <p className="mt-1 text-xs text-red-500">Contraseña es obligatoria</p>
               )}
             </div>
 

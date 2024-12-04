@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { logout } from '@services/auth.service.js';
 import '@styles/index.css'; 
 import SchoolIcon from '@mui/icons-material/School';
@@ -90,8 +90,8 @@ const NAVIGATION_BY_ROLE = {
     },
   ],
 };
-
 const DashboardLayoutAccount = () => {
+  const location = useLocation(); // Usamos useLocation para obtener la ruta actual
   const navigate = useNavigate();
   const [session, setSession] = useState(() => {
     const usuarioGuardado = JSON.parse(sessionStorage.getItem('usuario'));
@@ -121,28 +121,43 @@ const DashboardLayoutAccount = () => {
     }
   };
 
+  const handleLogoClick = () => {
+    navigate('/inicio');
+  };
+
+  // Verificamos si estamos en la ruta "/cursos"
+  if (location.pathname === '/cursos') {
+    return <Outlet />;  // Solo renderizamos el contenido de la ruta sin el layout
+  }
+
+  // Función para renderizar los enlaces de navegación
   const renderNavLinks = (navigation) => {
     return navigation.map((item) => (
       <div key={item.segment}>
-        {/* Si tiene hijos, mostrarlo como un "título" no clickeable */}
+        {/* Enlace del padre que no navega, solo se despliega el menú */}
         <div
-          className="flex items-center px-3 py-2 text-gray-600 transition-colors duration-300 transform rounded-lg dark:text-gray-300 cursor-default"
+          className={`block p-2 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded cursor-pointer`}
+          onClick={(e) => e.preventDefault()} // Evita que navegue al hacer clic en el padre
         >
-          <span className="mx-2 text-sm font-medium">{item.icon}</span>
-          <span className="mx-2 text-sm font-medium">{item.title}</span>
+          <div className="flex items-center space-x-2">
+            {item.icon}
+            <span className="text-sm font-medium">{item.title}</span>
+          </div>
         </div>
-
-        {/* Si tiene hijos, renderizar los enlaces de los hijos */}
+  
+        {/* Si tiene submenú (children), renderizamos los subenlaces */}
         {item.children && (
-          <div className="ml-4">
+          <div className="pl-4 space-y-2">
             {item.children.map((child) => (
               <Link
                 key={child.segment}
-                to={`${item.segment}/${child.segment}`}
-                className="flex items-center px-3 py-2 text-gray-600 transition-colors duration-300 transform rounded-lg dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 dark:hover:text-gray-200 hover:text-gray-700"
+                to={`/${item.segment.toLowerCase()}/${child.segment.toLowerCase()}`}
+                className="block p-2 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-600 rounded"
               >
-                <span className="mx-2 text-sm font-medium">{child.icon}</span>
-                <span className="mx-2 text-sm font-medium">{child.title}</span>
+                <div className="flex items-center space-x-2">
+                  {child.icon}
+                  <span className="text-xs font-medium">{child.title}</span>
+                </div>
               </Link>
             ))}
           </div>
@@ -151,16 +166,10 @@ const DashboardLayoutAccount = () => {
     ));
   };
 
-  const handleLogoClick = () => {
-    // Redirige al inicio cuando se haga clic en el logo
-    navigate('/inicio');
-  };
-
   return (
     <div className="flex h-screen">
       {/* Sidebar */}
       <aside className="flex flex-col w-64 px-5 py-8 overflow-y-auto bg-white border-r rtl:border-r-0 rtl:border-l dark:bg-gray-900 dark:border-gray-700">
-        {/* Logo */}
         <div 
           className="flex justify-center items-center mb-6 space-x-2 cursor-pointer"
           onClick={handleLogoClick}
@@ -212,8 +221,7 @@ const DashboardLayoutAccount = () => {
   
       {/* Main Content */}
       <main className="flex-1 overflow-y-auto bg-gray-100 dark:bg-gray-800 p-4">
-        {/* Aquí es donde se renderiza el contenido hijo */}
-        <Outlet />
+        <Outlet />  {/* Aquí se renderiza el contenido de las rutas hijas */}
       </main>
     </div>
   );
