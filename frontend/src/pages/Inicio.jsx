@@ -1,12 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
-import backgroundImage from '../images/components/books.svg'; // Importar imagen local
+import backgroundImage from '../images/components/books.svg'; // Imagen local
+import { getAsignaturasByProfesor } from '../services/asignatura.service'; // Importación del servicio
 
 function Inicio() {
   const navigate = useNavigate();
   const [rolUsuario, setRolUsuario] = useState('');
   const [usuario, setUsuario] = useState({ nombre: '', apellido: '', rut: '' });
+  const [asignatura, setAsignatura] = useState('');
+  const [curso, setCurso] = useState('');
+  const [errorAsignatura, setErrorAsignatura] = useState(''); // Para manejar errores de asignatura
 
   useEffect(() => {
     const usuarioGuardado = JSON.parse(sessionStorage.getItem('usuario'));
@@ -18,6 +22,25 @@ function Inicio() {
         rut: usuarioGuardado.rut, // Extraer el RUT del usuario
       });
       console.log('Datos del usuario:', usuarioGuardado);
+
+      // Obtener las asignaturas del profesor
+      if (usuarioGuardado.rut) {
+        getAsignaturasByProfesor(usuarioGuardado.rut)
+          .then((asignaturas) => {
+            if (asignaturas.length > 0) {
+              // Aquí puedes asumir que el profesor tiene al menos una asignatura
+              const asignaturaSeleccionada = asignaturas[0]; // Si hay varias, selecciona la que corresponda
+              setAsignatura(asignaturaSeleccionada.nombre);  // Asignatura seleccionada
+              setCurso(asignaturaSeleccionada.curso); // Curso relacionado
+            } else {
+              setErrorAsignatura('No se encontraron asignaturas para este profesor.');
+            }
+          })
+          .catch((error) => {
+            console.error('Error al obtener asignaturas:', error);
+            setErrorAsignatura('Hubo un error al cargar las asignaturas.');
+          });
+      }
     }
   }, []);
 
@@ -30,8 +53,8 @@ function Inicio() {
       <div className="overflow-hidden bg-white dark:bg-gray-900 lg:mx-8 lg:flex lg:max-w-6xl lg:w-full lg:shadow-md lg:rounded-xl">
         {/* Imagen de fondo local */}
         <div className="lg:w-1/2">
-          <div 
-            className="h-64 bg-cover lg:h-full" 
+          <div
+            className="h-64 bg-cover lg:h-full"
             style={{ backgroundImage: `url(${backgroundImage})` }}  // Usando la imagen local
           >
             {/* Puedes agregar algún contenido adicional sobre la imagen si es necesario */}
@@ -45,7 +68,11 @@ function Inicio() {
           </h2>
 
           <p className="mt-4 text-gray-500 dark:text-gray-300">
-            Bienvenido a tu página personal. A continuación, se muestran los detalles de tu cuenta.
+            {errorAsignatura ? (
+              <span className="text-red-500">{errorAsignatura}</span>
+            ) : (
+              `Bienvenido a tu página de la asignatura: ${asignatura || 'Cargando asignatura...'}, del curso: ${curso || 'Cargando curso...'}.`
+            )}
           </p>
 
           {/* Datos del usuario */}
