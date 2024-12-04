@@ -76,27 +76,43 @@ export async function getNotaController(req, res) {
 }
 
 export const updateNotaController = async (req, res) => {
-    const { id_nota } = req.params;
-    const { valor } = req.body;  // Asegúrate de que 'valor' sea lo que estás esperando desde el frontend
+    try {
+        const { id_nota } = req.params;
+        const { valor, tipo } = req.body;
+        if (!id_nota) {
+            return res.status(400).json({
+                message: "El id de la nota es requerido",
+            });
+        }
 
-    // Valida si el valor es correcto y asegúrate de que sea un número
-    const parsedValor = parseFloat(valor);
-    if (isNaN(parsedValor)) {
-        return handleErrorClient(res, 400, "El valor debe ser un número válido");
+        if (valor === undefined || valor === null) {
+            return res.status(400).json({
+                message: "El valor de la nota es requerido",
+            });
+        }
+        const parsedValor = parseFloat(valor);
+        if (isNaN(parsedValor)) {
+            return res.status(400).json({
+                message: "El valor debe ser un número válido",
+            });
+        }
+        const [notaActualizada, errorMessage] = await updateNota(id_nota, parsedValor, tipo);
+        if (errorMessage) {
+            return res.status(400).json({
+                message: "No se pudo actualizar la nota",
+                error: errorMessage,
+            });
+        }
+        return res.status(200).json({
+            message: "Nota actualizada correctamente",
+            data: notaActualizada,
+        });
+    } catch (error) {
+        console.error("Error en updateNotaController:", error);
+        return res.status(500).json({
+            message: "Error interno del servidor",
+        });
     }
-
-    // Llama a la función de actualización
-    const [notaActualizada, errorMessage] = await updateNota(id_nota, parsedValor);  // Pasa el valor convertido
-
-    if (errorMessage) {
-        return handleErrorClient(res, 400, "No se pudo actualizar la nota", errorMessage);
-    }
-
-    // Responde con éxito y los datos de la nota actualizada
-    return res.status(200).json({
-        message: "Nota actualizada correctamente",
-        data: notaActualizada
-    });
 };
 export async function createNotaController(req, res) {
     try {

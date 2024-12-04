@@ -2,7 +2,7 @@ import axios from "axios";
 
 export async function getAsignaturasByProfesor(rut) {
     try {
-        // Realizamos la petición a la API para obtener las asignaturas
+ 
         const response = await axios.get(`/asignaturas/profesor/${rut}`);
 
         // Filtrar asignaturas para rol 2

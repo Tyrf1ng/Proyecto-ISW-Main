@@ -11,14 +11,13 @@ function Add_Notas() {
   const [newNota, setNewNota] = useState({
     tipo: "",
     valor: "",
-    rut_alumno: "",
+    rut: "",
     id_asignatura: "",
   });
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("");
   const [alumnos, setAlumnos] = useState([]);
   const [filteredAlumnos, setFilteredAlumnos] = useState([]);
-  const [selectedAlumno, setSelectedAlumno] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [isListVisible, setIsListVisible] = useState(false);
   const [asignaturas, setAsignaturas] = useState([]);
@@ -86,13 +85,13 @@ function Add_Notas() {
 
   const handleAlumnoSelect = (alumno) => {
     setSelectedAlumno(alumno);
-    setNewNota({ ...newNota, rut_alumno: alumno.rut });
+    setNewNota({ ...newNota, rut: alumno.rut });
     setSearchTerm(`${alumno.nombre} ${alumno.apellido}`);
     setIsListVisible(false);
   };
 
   const handleSubmit = async () => {
-    if (!newNota.rut_alumno || !newNota.tipo || !newNota.valor || !newNota.id_asignatura) {
+    if (!newNota.rut || !newNota.tipo || !newNota.valor || !newNota.id_asignatura) {
       setMessage("Debe completar todos los campos.");
       setMessageType("warning");
       return;
@@ -102,7 +101,7 @@ function Add_Notas() {
       await createNota(newNota);
       setMessage("Nota creada exitosamente.");
       setMessageType("success");
-      setNewNota({ tipo: "", valor: "", rut_alumno: "", id_asignatura: "" });
+      setNewNota({ tipo: "", valor: "", rut: "", id_asignatura: "" });
       setSelectedAlumno(null);
       setFilteredAlumnos(alumnos);
     } catch (error) {
@@ -213,6 +212,9 @@ function Add_Notas() {
           name="valor"
           value={newNota.valor}
           onChange={handleInputChange}
+          min="1.0"
+          max="7.0"
+          step="0.1"
           className="mt-2 block w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300"
         />
       </div>
