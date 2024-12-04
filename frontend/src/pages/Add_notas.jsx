@@ -18,6 +18,7 @@ function Add_Notas() {
   const [messageType, setMessageType] = useState("");
   const [alumnos, setAlumnos] = useState([]);
   const [filteredAlumnos, setFilteredAlumnos] = useState([]);
+  const [selectedAlumno, setSelectedAlumno] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [isListVisible, setIsListVisible] = useState(false);
   const [asignaturas, setAsignaturas] = useState([]);
