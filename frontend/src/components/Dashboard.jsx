@@ -16,7 +16,21 @@ import logo from '../images/components/logo.svg';
 // Configuración de navegación por roles
 const NAVIGATION_BY_ROLE = {
   directivo: [
-    { segment: 'GestionUsuarios', title: 'Gestión de Usuarios', icon: <SchoolIcon /> },
+    { segment: 'GestionUsuario', title: 'Gestión de Usuarios', 
+      icon: <SchoolIcon />,
+      children: [
+        { segment: 'add_usuario', title: 'Añadir usuario', icon: <AddIcon /> },
+        { segment: 'ver_usuarios  ', title: 'Ver todos los usuarios', icon: <ManageSearchIcon /> },
+      ],
+
+    },
+    { segment: 'Estadisticas', title: 'Gestión de Usuarios', 
+      icon: <SchoolIcon />,
+      children: [
+        { segment: 'estad_docentes', title: 'Estadisticas docente', icon: <AddIcon /> },
+      ],
+
+    },
   ],
   docente: [
     {
@@ -57,13 +71,20 @@ const NAVIGATION_BY_ROLE = {
     },
   ],
   alumno: [
-    { segment: 'Inicio', title: 'Inicio', icon: <SchoolIcon /> },
     {
       segment: 'asistencias',
       title: 'Asistencias',
       icon: <PeopleAltIcon />,
       children: [
         { segment: 'ver_asistencias', title: 'Ver Asistencias', icon: <ManageSearchIcon /> },
+      ],
+    },
+    {
+      segment: 'anotaciones',
+      title: 'Anotaciones',
+      icon: <HistoryEduRoundedIcon />,
+      children: [
+        { segment: 'ver_anotaciones', title: 'Ver Anotaciones', icon: <ManageSearchIcon /> },
       ],
     },
     {

@@ -6,7 +6,7 @@ import { getCursosByProfesor } from '../services/cursos.service'; // Importació
 
 function Inicio() {
   const navigate = useNavigate();
-  const [usuario, setUsuario] = useState({ nombre: '', apellido: '', rut: '' });
+  const [usuario, setUsuario] = useState({ nombre: '', apellido: '', rut: '', rol: '' });
   const [asignatura, setAsignatura] = useState('');
   const [curso, setCurso] = useState('');
   const [errorAsignatura, setErrorAsignatura] = useState(''); // Para manejar errores de asignatura
@@ -19,11 +19,12 @@ function Inicio() {
         nombre: usuarioGuardado.nombre,
         apellido: usuarioGuardado.apellido,
         rut: usuarioGuardado.rut, 
+        rol: usuarioGuardado.rol || ''  // Asegurarse de que el rol esté disponible
       });
       console.log('Datos del usuario:', usuarioGuardado);
 
       // Obtener las asignaturas del profesor
-      if (usuarioGuardado.rut) {
+      if (usuarioGuardado.rut && usuarioGuardado.rol === 'Profesor') {
         getAsignaturasByProfesor(usuarioGuardado.rut)
           .then((asignaturas) => {
             if (asignaturas.length > 0) {
@@ -78,32 +79,53 @@ function Inicio() {
             Bienvenido, <span className="text-blue-500">{usuario.nombre} {usuario.apellido}</span>
           </h2>
 
+          {/* Texto condicional dependiendo del rol */}
           <p className="text-lg text-gray-500 dark:text-gray-300">
-            {errorAsignatura ? (
-              <span className="text-red-500">{errorAsignatura}</span>
-            ) : (
+            {usuario.rol === 'Alumno' ? (
+              // Texto para alumnos
               <span>
-                Bienvenido a tu página de la asignatura <span className="text-[#3B82F6]">{asignatura || 'Cargando asignatura...'} </span>
+                Bienvenido a tu página personal del liceo <span className="text-[#3B82F6]">XXXXXXXXX</span>.
               </span>
-            )}
-            {errorCurso ? (
-              <span className="text-red-500">{errorCurso}</span>
-            ) : (
+            ) : usuario.rol === 'Profesor' ? (
+              // Texto para profesores
+              <>
+                {errorAsignatura ? (
+                  <span className="text-red-500">{errorAsignatura}</span>
+                ) : (
+                  <span>
+                    Bienvenido a tu página de la asignatura <span className="text-[#3B82F6]">{asignatura || 'Cargando asignatura...'} </span>
+                  </span>
+                )}
+                {errorCurso ? (
+                  <span className="text-red-500">{errorCurso}</span>
+                ) : (
+                  <span>
+                    y el curso seleccionado es  <span className="text-[#3B82F6]">{curso || 'Cargando curso...'}</span>.
+                  </span>
+                )}
+              </>
+            ) : usuario.rol === 'Directivo' ? (
+              // Texto para directivos
               <span>
-                y el curso seleccionado es  <span className="text-[#3B82F6]">{curso || 'Cargando curso...'}</span>.
+                Bienvenido a la página de administración del liceo <span className="text-[#3B82F6]">XXXXXXXXX</span>.
+                Desde aquí puedes gestionar los recursos educativos y coordinar con los profesores y alumnos.
               </span>
+            ) : (
+              <span>Rol no reconocido</span>
             )}
           </p>
 
-          {/* Botón para seleccionar un curso */}
-          <div className="inline-flex w-full mt-6 sm:w-auto">
-            <button
-              onClick={handleSeleccionarCurso}
-              className="inline-flex items-center justify-center w-full px-6 py-2 text-sm text-white duration-300 bg-blue-600 rounded-lg hover:bg-blue-500 focus:ring focus:ring-blue-300 focus:ring-opacity-80"
-            >
-              Volver a seleccionar un curso
-            </button>
-          </div>
+          {/* Botón para seleccionar un curso (solo si el usuario es profesor) */}
+          {usuario.rol === 'Profesor' && (
+            <div className="inline-flex w-full mt-6 sm:w-auto">
+              <button
+                onClick={handleSeleccionarCurso}
+                className="inline-flex items-center justify-center w-full px-6 py-2 text-sm text-white duration-300 bg-blue-600 rounded-lg hover:bg-blue-500 focus:ring focus:ring-blue-300 focus:ring-opacity-80"
+              >
+                Volver a seleccionar un curso
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>
