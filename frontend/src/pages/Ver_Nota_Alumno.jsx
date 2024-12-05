@@ -1,19 +1,14 @@
 import { useState, useEffect } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import Paper from '@mui/material/Paper';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
 import TextField from '@mui/material/TextField';
 import { getNotasPorRUT } from '@services/notas.service';
+import TableComponent from '@components/TableNotas'; // Ajusta la ruta según tu proyecto
 
 const Ver_Nota_Alumno = () => {
   const [notas, setNotas] = useState([]);
   const [rut, setRUT] = useState('');
+  const [role, setRole] = useState(null); // Role del usuario autenticado
   const [filterText, setFilterText] = useState('');
 
   const filteredNotas = notas.filter((nota) =>
@@ -22,17 +17,18 @@ const Ver_Nota_Alumno = () => {
 
   useEffect(() => {
     const usuarioGuardado = JSON.parse(sessionStorage.getItem('usuario'));
-    if (usuarioGuardado && usuarioGuardado.rut) {
-      setRUT(usuarioGuardado.rut);
+    if (usuarioGuardado) {
+      setRUT(usuarioGuardado.rut || '');
+      setRole(usuarioGuardado.role || null); // Obtener el rol automáticamente
       fetchNotas(usuarioGuardado.rut);
     }
   }, []);
 
-  const fetchNotas = async (rutAlumno) => {
+  const fetchNotas = async (rut) => {
     try {
-      const response = await getNotasPorRUT(rutAlumno);
-      if (response && response.status === "Success" && Array.isArray(response.data)) {
-        setNotas(response.data); // Extraer y asignar el array de notas
+      const response = await getNotasPorRUT(rut);
+      if (response && response.status === 'Success' && Array.isArray(response.data)) {
+        setNotas(response.data);
       } else {
         console.error('Respuesta inesperada:', response);
         setNotas([]);
@@ -47,6 +43,7 @@ const Ver_Nota_Alumno = () => {
     setFilterText(e.target.value);
   };
 
+
   return (
     <Box sx={{ padding: 4 }}>
       <Typography variant="h4" gutterBottom>
@@ -55,7 +52,14 @@ const Ver_Nota_Alumno = () => {
       <Typography variant="h6" gutterBottom>
         RUT: {rut}
       </Typography>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 2 }}>
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: 2,
+        }}
+      >
         <TextField
           label="Filtrar por Tipo"
           variant="outlined"
@@ -63,36 +67,10 @@ const Ver_Nota_Alumno = () => {
           onChange={handleFilterChange}
         />
       </Box>
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Tipo</TableCell>
-              <TableCell>Valor</TableCell>
-              <TableCell>RUT</TableCell>
-              <TableCell>Alumno</TableCell>
-              <TableCell>Asignatura</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {filteredNotas.length > 0 ? (
-              filteredNotas.map((nota) => (
-                <TableRow key={nota.id_nota}>
-                  <TableCell>{nota.tipo}</TableCell>
-                  <TableCell>{nota.valor}</TableCell>
-                  <TableCell>{nota.rut_alumno}</TableCell>
-                  <TableCell>{`${nota.nombre_alumno || ''} ${nota.apellido_alumno || ''}`}</TableCell>
-                  <TableCell>{nota.nombre_asignatura || 'Sin nombre'}</TableCell>
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={5}>No hay notas disponibles</TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </TableContainer>
+      <TableComponent
+        notas={filteredNotas}
+        role={role}
+        />
     </Box>
   );
 };
