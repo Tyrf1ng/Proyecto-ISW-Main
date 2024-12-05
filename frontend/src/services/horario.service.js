@@ -22,7 +22,8 @@ export async function createHorario(horario) {
 
 export async function updateHorario(horario) {
     try {
-        const response = await axios.patch(`/horarios/update/${horario.id_horario}`, horario);
+        const { id_horario, createdAt, updatedAt, ...data } = horario; // Excluir id_horario, createdAt y updatedAt del cuerpo de la solicitud
+        const response = await axios.patch(`/horarios/update/${id_horario}`, data);
         return response.data;
     } catch (error) {
         console.error("Error al actualizar el horario: ", error.response ? error.response.data : error.message);
@@ -35,7 +36,7 @@ export async function deleteHorario(id_horario) {
         const response = await axios.delete(`/horarios/delete/${id_horario}`);
         return response.data;
     } catch (error) {
-        console.error("Error al eliminar el horario: ", error.response ? error.response.data : error.message);
+        alert(error.response.data.message);
         return error.response ? error.response.data : { error: error.message };
     }
 }

@@ -4,15 +4,18 @@ import { AllHorarios, createHorario, updateHorario, deleteHorario } from '@servi
 export function useHorarios() {
     const [horarios, setHorarios] = useState([]);
     const [error, setError] = useState(null);
+    const [usuario, setUsuario] = useState({ nombre: '', apellido: '', rut: '' });
 
     useEffect(() => {
+        const usuarioGuardado = JSON.parse(sessionStorage.getItem('usuario'));
+        if (usuarioGuardado) {
+            setUsuario(usuarioGuardado);
+        }
         fetchHorarios();
     }, []);
 
     const fetchHorarios = async () => {
         const data = await AllHorarios();
-        console.log(data);
-        
         if (data.error) {
             setError(data.error);
         } else {
@@ -21,7 +24,7 @@ export function useHorarios() {
     };
 
     const addHorario = async (horario) => {
-        const data = await createHorario(horario);
+        const data = await createHorario({ ...horario, rut_encargado: usuario.rut });
         if (data.error) {
             setError(data.error);
         } else {
@@ -30,7 +33,7 @@ export function useHorarios() {
     };
 
     const editHorario = async (horario) => {
-        const data = await updateHorario(horario);
+        const data = await updateHorario({ ...horario, rut_encargado: usuario.rut });
         if (data.error) {
             setError(data.error);
         } else {
@@ -47,5 +50,21 @@ export function useHorarios() {
         }
     };
 
-    return { horarios, fetchHorarios, addHorario, editHorario, removeHorario, error };
+    const isHorarioValid = (hora_inicio, hora_fin, id_horario = null) => {
+        for (let horario of horarios) {
+            if (horario.id_horario !== id_horario) {
+                if (
+                    (hora_inicio >= horario.hora_inicio && hora_inicio < horario.hora_fin) ||
+                    (hora_fin > horario.hora_inicio && hora_fin <= horario.hora_fin) ||
+                    (hora_inicio <= horario.hora_inicio && hora_fin >= horario.hora_fin) ||
+                    (hora_inicio === horario.hora_inicio || hora_fin === horario.hora_fin)
+                ) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    };
+
+    return { horarios, fetchHorarios, addHorario, editHorario, removeHorario, isHorarioValid, error };
 }

@@ -2,12 +2,12 @@
 import { In } from "typeorm";
 import Asistencia from "../entity/asistencia.entity.js";
 import { AppDataSource } from "../config/configDb.js";
-import Alumno from "../entity/alumno.entity.js"; // Corrigiendo el nombre para que esté en mayúscula
+import Usuario from "../entity/usuario.entity.js"; // Corrigiendo el nombre para que esté en mayúscula
 
 // Función para traer todas las asistencias de un curso, incluyendo nombre y apellido del alumno
 export async function getAsistenciasCurso(id_curso) {
     try {
-        const alumnoRepository = AppDataSource.getRepository(Alumno);
+        const alumnoRepository = AppDataSource.getRepository(Usuario);
         const alumnos = await alumnoRepository.find({
             where: { id_curso: id_curso }
         });

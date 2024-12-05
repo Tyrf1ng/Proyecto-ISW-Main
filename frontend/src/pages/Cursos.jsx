@@ -1,20 +1,24 @@
 import { useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { getCursosByProfesor } from "../services/cursos.service"; // Importa la función actualizada
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import Paper from "@mui/material/Paper";
-import { CursoContext } from "../context/CursoContext"; // Contexto de cursos
-import { useAuth } from "../context/AuthContext"; // Contexto de autenticación
+import { getCursosByProfesor } from "../services/cursos.service"; 
+import { CursoContext } from "../context/CursoContext"; 
+import { useAuth } from "../context/AuthContext"; 
+import { motion } from "framer-motion"; // Importar motion
 
 const Cursos = () => {
   const [cursos, setCursos] = useState([]);
   const [cargando, setCargando] = useState(true);
-  const { setIdCurso } = useContext(CursoContext); // Contexto de cursos
-  const { user } = useAuth(); // Contexto de autenticación
+  const { setIdCurso } = useContext(CursoContext);
+  const { user } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Validar si el usuario tiene rol 2 antes de cargar los cursos
+    if (!user || user.rol !== "Docente") {
+      navigate("/inicio"); // Si no es rol 2 (profesor), redirigimos a /inicio
+      return;
+    }
+
     const cargarCursos = async () => {
       if (!user || !user.rut) {
         console.error("El usuario no tiene un RUT asociado.");
@@ -22,9 +26,8 @@ const Cursos = () => {
         return;
       }
       try {
-        const cursosObtenidos = await getCursosByProfesor(user.rut); // Usa el RUT del profesor
+        const cursosObtenidos = await getCursosByProfesor(user.rut);
         setCursos(cursosObtenidos);
-        console.log("Cursos obtenidos:", cursosObtenidos);
       } catch (error) {
         console.error("Error al cargar los cursos:", error);
       } finally {
@@ -32,71 +35,44 @@ const Cursos = () => {
       }
     };
     cargarCursos();
-  }, [user]);
+  }, [user, navigate]);
 
   const seleccionarCurso = (id_curso) => {
-    setIdCurso(id_curso); // Establece el ID del curso seleccionado en el contexto
-    navigate("/inicio"); // Redirige a la página principal o Dashboard
+    setIdCurso(id_curso);
+    navigate("/inicio");
   };
 
   if (cargando) {
-    return <p>Cargando cursos...</p>;
+    return <p className="text-center text-xl text-gray-600 dark:text-gray-300">Cargando cursos...</p>;
   }
 
   if (cursos.length === 0) {
-    return <p>No hay cursos disponibles para este profesor.</p>;
+    return <p className="text-center text-xl text-gray-600 dark:text-gray-300">No hay cursos disponibles para este profesor.</p>;
   }
 
   return (
-    <Box sx={{ padding: 4, backgroundColor: "#E6EFF8", minHeight: "100vh" }}>
-      <Typography
-        variant="h4"
-        gutterBottom
-        align="center"
-        sx={{ color: "#133B5C" }}
-      >
-        Mis cursos
-      </Typography>
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          gap: 2,
-        }}
-      >
+    <div className="min-h-screen bg-[#1F2937] dark:bg-[#1F2937] p-4">
+      <h1 className="text-4xl text-center font-semibold text-white mb-8">Mis Cursos</h1>
+      <div className="flex flex-col items-center gap-6">
         {cursos.map((curso) => (
-          <Paper
+          <motion.div
             key={curso.id_curso}
+            className="w-11/12 sm:w-11/12 md:w-7/10 bg-[#111827] dark:bg-[#111827] p-6 rounded-lg shadow-lg cursor-pointer"
             onClick={() => seleccionarCurso(curso.id_curso)}
-            sx={{
-              width: "80%",
-              padding: 3,
-              display: "flex",
-              flexDirection: "column",
-              backgroundColor: "#E3F2FD",
-              borderRadius: "8px",
-              color: "#133B5C",
-              cursor: "pointer",
-              "&:hover": { backgroundColor: "#D1E3F5" },
-            }}
+            whileHover={{ scale: 1.05 }} // Aumentar tamaño al pasar el ratón
+            whileTap={{ scale: 0.95 }}  // Reducir tamaño al hacer clic
+            transition={{ type: "spring", stiffness: 400, damping: 20 }} // Transición fluida
           >
-            <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-              {curso.nombre}
-            </Typography>
-            <Typography variant="subtitle1" sx={{ color: "#5C6BC0" }}>
-              Coordinador: {curso.coordinador || "N/A"}
-            </Typography>
-            <Typography
-              variant="body2"
-              sx={{ marginBottom: 2, color: "#757575" }}
-            >
-              Código: {curso.codigo} - Nivel: {curso.nivel}
-            </Typography>
-          </Paper>
+            <h2 className="text-xl font-semibold text-white">{curso.nombre}</h2>
+            <p className="text-md text-gray-400 mt-2">Coordinador: {curso.coordinador || "N/A"}</p>
+            <p className="text-sm text-gray-300 mt-2">
+              <span className="font-semibold">Código:</span> {curso.codigo} -
+              <span className="font-semibold"> Nivel:</span> {curso.nivel}
+            </p>
+          </motion.div>
         ))}
-      </Box>
-    </Box>
+      </div>
+    </div>
   );
 };
 

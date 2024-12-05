@@ -4,6 +4,7 @@ import Cursos from "../entity/curso.entity.js";
 import { AppDataSource } from "../config/configDb.js";
 import AsignaturaCursoSchema from "../entity/asignatura.curso.entity.js";
 import AsignaturasSchema from "../entity/asignatura.entity.js";
+import Usuario from "../entity/usuario.entity.js"; 
 
 //funcion para traer todos los cursos
 export async function getCursos() {
@@ -75,24 +76,44 @@ export async function deleteCurso(id_curso) {
 }
 
 
-export async function getCursosByProfesor(rut_docente) {
+
+export async function getCursosByProfesor(rut) {
     try {
         const AsignaturaRepository = AppDataSource.getRepository(AsignaturasSchema);
         const AsignaturaCursoRepository = AppDataSource.getRepository(AsignaturaCursoSchema);
         const cursoRepository = AppDataSource.getRepository(Cursos);
+        const usuarioRepository = AppDataSource.getRepository(Usuario);
 
-        // Obtener las asignaturas asociadas al docente específico
-        const asignaturasDelDocente = await AsignaturaRepository.find({ where: { rut_docente } });
+        // Buscar el usuario con el rut y validar que tiene id_roles = 2 (profesor)
+        const usuario = await usuarioRepository.findOne({
+            where: { rut: rut, id_roles: 2 } // id_roles debe ser 2 para profesores
+        });
+
+        if (!usuario) {
+            return [null, "No se encuentra un usuario con el rol de profesor para este rut"];
+        }
+
+        // Obtener las asignaturas asociadas al profesor (campo `rut` en Asignaturas)
+        const asignaturasDelDocente = await AsignaturaRepository.find({
+            where: { rut: rut } // Relación directa con el campo `rut` en asignaturas
+        });
 
         const idsAsignaturas = asignaturasDelDocente.map(asignatura => asignatura.id_asignatura);
 
-        if (idsAsignaturas.length === 0) return [null, "No hay asignaturas para este docente"];
+        if (idsAsignaturas.length === 0) {
+            return [null, "No hay asignaturas para este profesor"];
+        }
 
         // Obtener los cursos asociados a esas asignaturas
-        const cursosAsociados = await AsignaturaCursoRepository.find({ where: { id_asignatura: In(idsAsignaturas) } });
+        const cursosAsociados = await AsignaturaCursoRepository.find({
+            where: { id_asignatura: In(idsAsignaturas) }
+        });
+
         const idsCursos = cursosAsociados.map(ac => ac.id_curso);
 
-        if (idsCursos.length === 0) return [null, "No hay cursos asociados a las asignaturas de este docente"];
+        if (idsCursos.length === 0) {
+            return [null, "No hay cursos asociados a las asignaturas de este profesor"];
+        }
 
         // Obtener los cursos filtrados por ids de cursos
         const cursos = await cursoRepository.find({
@@ -101,7 +122,9 @@ export async function getCursosByProfesor(rut_docente) {
             }
         });
 
-        if (!cursos || cursos.length === 0) return [null, "No hay cursos para este docente"];
+        if (!cursos || cursos.length === 0) {
+            return [null, "No hay cursos para este profesor"];
+        }
 
         return [cursos, "Cursos encontrados"];
     } catch (error) {

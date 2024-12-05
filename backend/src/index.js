@@ -9,28 +9,18 @@ import express, { json, urlencoded } from "express";
 import { cookieKey, HOST, PORT } from "./config/configEnv.js";
 import { connectDB } from "./config/configDb.js";
 import {
-  createAdministrativos,
-  createAlumnos,
   createAnotaciones,
-  createApoderado,
   createAsignaturaCurso,
   createAsignaturas,
   createAsistencia,
-  createConex_Adminis_Ficha,
-  createConex_Encargado_Horario,
-  createConex_Lab_Encargado,
-  createCursoDirectivos,
+  createConectUsuarioCurso,
   createCursos,
-  createDirectivos,
-  createDocente,
-  createEncargados_Lab,
-  createFicha_Estudiante,
   createHorarios,
   createLabs,
   createNotas,
-  createObservaciones,
   createReserva,
   createRoles,
+  createUsuario
 } from "./config/initialSetup.js";
 import { passportJwtSetup } from "./auth/passport.auth.js";
 
@@ -96,26 +86,16 @@ async function setupAPI() {
     await connectDB();
     await setupServer();
     await createRoles();
-    await createDirectivos();
+    await createUsuario();
     await createCursos();
-    await createCursoDirectivos();
-    await createDocente();
+    await createConectUsuarioCurso();
     await createAsignaturas();
     await createAsignaturaCurso();
-    await createApoderado();
-    await createAlumnos();
     await createAnotaciones();
     await createAsistencia();
     await createNotas();
-    await createAdministrativos();
-    await createFicha_Estudiante();
-    await createConex_Adminis_Ficha();
-    await createObservaciones();
-    await createEncargados_Lab();
     await createLabs();
-    await createConex_Lab_Encargado();
     await createHorarios();
-    await createConex_Encargado_Horario();
     await createReserva();
   } catch (error) {
     console.log("Error en index.js -> setupAPI(), el error es: ", error);

@@ -1,10 +1,5 @@
 "use strict";
-import Docentes from "../entity/docente.entity.js";
-import Alumno from "../entity/alumno.entity.js";
-import Apoderado from "../entity/apoderado.entity.js";
-import Administrativo from "../entity/administrativo.entity.js";
-import Directivo from "../entity/directivo.entity.js";
-import Encargado_Lab from "../entity/encargado.lab.entity.js";
+import Usuario from "../entity/usuario.entity.js";
 import jwt from "jsonwebtoken";
 import { AppDataSource } from "../config/configDb.js";
 import { comparePassword } from "../helpers/bcrypt.helper.js";
@@ -15,9 +10,7 @@ const ROLES_MAP = {
   1: "Directivo",
   2: "Docente",
   3: "Alumno",
-  4: "Apoderado",
-  5: "Administrativo",
-  6: "Encargado de Laboratorio",
+  4: "Encargado de Laboratorio",
 };
 
 export async function loginService(user) {
@@ -25,12 +18,7 @@ export async function loginService(user) {
     const { email, password } = user;
 
     const repositories = [
-      { repo: AppDataSource.getRepository(Directivo) },
-      { repo: AppDataSource.getRepository(Docentes) },
-      { repo: AppDataSource.getRepository(Apoderado) },
-      { repo: AppDataSource.getRepository(Alumno) },
-      { repo: AppDataSource.getRepository(Administrativo) },
-      { repo: AppDataSource.getRepository(Encargado_Lab) },
+      { repo: AppDataSource.getRepository(Usuario) },
     ];
 
     let userFound = null;
@@ -56,8 +44,7 @@ export async function loginService(user) {
       nombre: userFound.nombre,
       apellido: userFound.apellido,
       email: userFound.email,
-      rut: userFound.rut_alumno || userFound.rut_docente || userFound.rut_apoderado 
-      || userFound.rut_administrativo || userFound.rut_directivo || userFound.rut_encargado,
+      rut: userFound.rut,
       rol: rolNombre, // Asigna el nombre del rol al token
     };
 

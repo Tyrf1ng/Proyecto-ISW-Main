@@ -10,7 +10,7 @@ const AsistenciasSchema = new EntitySchema({
       primary: true,
       generated: true,
     },
-    rut_alumno: {
+    rut: {
       type: "varchar",
       nullable: false,
     },
@@ -35,10 +35,10 @@ const AsistenciasSchema = new EntitySchema({
       },
   },
   relations: { 
-    alumno: {
+    usuario: {
         type: "many-to-one",
-        target: "Alumno", 
-        joinColumn: { name: "rut_alumno" } ,
+        target: "Usuario", 
+        joinColumn: { name: "rut" } ,
     },
     asignatura: {
         type: "many-to-one",

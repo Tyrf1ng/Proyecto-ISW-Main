@@ -10,6 +10,7 @@ export async function getCursos() {
         return error.response.data;
     }
 }
+
 export async function getCurso(id_curso) {
     try {
         const { data } = await axios.get(`/cursos/${id_curso}`);
@@ -17,15 +18,23 @@ export async function getCurso(id_curso) {
     } catch (error) {
         return error.response.data;
     }
-}   
+}
 
-export async function getCursosByProfesor(rut_docente) {
+export async function getCursosByProfesor(rut) {
     try {
-        console.log('RUT enviado al backend:', rut_docente);  // Verificar el RUT
-        const response = await axios.get(`/cursos/profesor/${rut_docente}`);
+        // Validación del usuario y rol directamente en el servicio
+        const usuarioResponse = await axios.get(`/usuarios/rut/${rut}`);
+        const usuario = usuarioResponse.data.data;
+
+        if (!usuario || usuario.id_roles !== 2) {
+            throw new Error('El usuario no tiene el rol de profesor o no existe');
+        }
+
+        // Si es válido, obtenemos los cursos
+        const response = await axios.get(`/cursos/profesor/${rut}`);
         return response.data.data;
     } catch (error) {
         console.error('Error al obtener cursos por profesor:', error);
-        throw error;
+        throw error.response?.data || { message: error.message };
     }
 }

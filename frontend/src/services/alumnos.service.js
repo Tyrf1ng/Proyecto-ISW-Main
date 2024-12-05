@@ -31,14 +31,15 @@ export async function getAlumnoByRut(rut_alumno) {
  */
 export const getAlumnosByCurso = async (idCurso) => {
   try {
-    const response = await axios.get(`/alumnos/curso/${idCurso}`);
-    console.log("Datos de la API:", response.data); // Verifica la respuesta completa
-    return response.data || []; // Asegúrate de devolver un array aunque esté vacío
+    const response = await axios.get(`/usuarios/alumnoscurso/${idCurso}`);
+    // Accede a la propiedad 'data' dentro de la respuesta
+    return response.data.data || []; // Asegúrate de devolver un array aunque esté vacío
   } catch (error) {
-    console.error("Error al obtener los alumnos:", error);
+    console.error("Error al obtener los alumnos por curso:", error);
     throw error; // Lanza el error para manejarlo más arriba
   }
 };
+
 
 /**
  * Buscar alumnos por nombre (opcionalmente por curso)

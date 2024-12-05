@@ -1,28 +1,109 @@
 "use strict";
 import Curso from "../entity/curso.entity.js";
-import Directivo from "../entity/directivo.entity.js";
-import Roles from "../entity/roles.entity.js";
-import Docentes from "../entity/docente.entity.js";
 import Asignaturas from "../entity/asignatura.entity.js";
-import Apoderado from "../entity/apoderado.entity.js";
-import Alumnos from "../entity/alumno.entity.js";
 import Asistencia from "../entity/asistencia.entity.js";
 import Anotaciones from "../entity/anotacion.entity.js";
 import Asignatura_Curso from "../entity/asignatura.curso.entity.js";
-import Administrativos from "../entity/administrativo.entity.js";
-import Ficha_Estudiante from "../entity/ficha.estudiante.entity.js";
 import Notas from "../entity/nota.entity.js";
-import Directivo_Cursos from "../entity/directivo_curso.entity.js";
-import Observacion from "../entity/observaciones.entity.js";
-import Encargado_Lab from "../entity/encargado.lab.entity.js";
 import Labs from "../entity/lab.entity.js";
-import Lab_Encargado from "../entity/lab.encargado.entity.js";
 import Horarios from "../entity/horarios.entity.js";
-import Horarios_Encargados from "../entity/horarios.encargado.entity.js";
 import Reserva from "../entity/reserva.entity.js";
-import Administrativo_Ficha from "../entity/administrativo.ficha.entity.js";
+import Roles from "../entity/roles.entity.js";
+import Conect_Usuario_Curso from "../entity/conect_usuario_curso.entity.js";
+import Usuario from "../entity/usuario.entity.js";
 import { AppDataSource } from "./configDb.js";
 import { encryptPassword } from "../helpers/bcrypt.helper.js";
+
+async function createConectUsuarioCurso() {
+  try {
+    const conectUsuarioCursoRepository = AppDataSource.getRepository(Conect_Usuario_Curso);
+
+    const count = await conectUsuarioCursoRepository.count();
+    if (count > 0) return;
+
+    await Promise.all([
+      conectUsuarioCursoRepository.save(
+        conectUsuarioCursoRepository.create({
+          rut: "21.070.073-0",
+          id_curso: 1,
+        }),
+      ),
+    ]);
+    console.log("* => Conect_Usuario_Curso creadas exitosamente");
+  }
+  catch (error) {
+    console.error("Error al crear conect_usuario_curso:", error);
+  }
+}
+
+
+async function createUsuario() {
+  try {
+    const usuarioRepository = AppDataSource.getRepository(Usuario);
+
+    const count = await usuarioRepository.count();
+    if (count > 0) return;
+
+    await Promise.all([
+      usuarioRepository.save(
+        usuarioRepository.create({
+          rut: "21.282.977-3",
+          nombre: "Skibidi",
+          apellido: "Insano",
+          email: "benjamin@gmail.cl",
+          telefono: 123456789,
+          password: await encryptPassword("benja123"),
+          id_roles: 1,
+          comuna: "LA City",
+          direccion: "Calle falsa 123",
+        }),
+      ),
+      usuarioRepository.save(
+        usuarioRepository.create({
+          rut: "20.960.538-4",
+          nombre: "Toilet",
+          apellido: "Jonathan",
+          email: "jonypirinoli@gmail.cl",
+          telefono: 987654321,
+          password: await encryptPassword("jonypirinoli123"),
+          id_roles: 2,
+          comuna: "Laja City",
+          direccion: "Calle del toilet 69",
+        }),
+      ),
+      usuarioRepository.save(
+        usuarioRepository.create({
+          rut: "21.070.073-0",
+          nombre: "Mochap",
+          apellido: "PL",
+          email: "mochap@gmail.cl",
+          telefono: 987655321,
+          password: await encryptPassword("mochap123"),
+          id_roles: 3,
+          comuna: "Conce City",
+          direccion: "Calle del smegma 69",
+        }),
+      ),
+      usuarioRepository.save(
+        usuarioRepository.create({
+          rut: "21.137.508-6",
+          nombre: "Mixtor",
+          apellido: "320",
+          email: "mixtor@gmail.cl",
+          telefono: 987655321,
+          password: await encryptPassword("mixtor123"),
+          id_roles: 4,
+          comuna: "Hualpen City",
+          direccion: "Calle del sigma 69",
+        }),
+      ),
+    ]);
+    console.log("* => Usuario creado exitosamente");
+  }
+  catch (error) {
+    console.error("Error al crear usuario:", error);
+  }
+}
 
 async function createRoles() {
   try {
@@ -53,18 +134,6 @@ async function createRoles() {
       RolesRepository.save(
         RolesRepository.create({
           id_roles: 4,
-          nombre: "Apoderado",
-        }),
-      ),
-      RolesRepository.save(
-        RolesRepository.create({
-          id_roles: 5,
-          nombre: "Administrativo",
-        }),
-      ),
-      RolesRepository.save(
-        RolesRepository.create({
-          id_roles: 6,
           nombre: "Encargado_Laboratorio",
         }),
       ),
@@ -72,43 +141,6 @@ async function createRoles() {
     console.log("* => Roles creados exitosamente");
   } catch (error) {
     console.error("Error al crear roles:", error);
-  }
-}
-
-async function createDirectivos() {
-  try {
-    const directivosRepository = AppDataSource.getRepository(Directivo);
-
-    const count = await directivosRepository.count();
-    if (count > 0) return;
-
-    await Promise.all([
-      directivosRepository.save(
-        directivosRepository.create({
-          rut_directivo: "21.282.977-3",
-          nombre: "Benjamin",
-          apellido: "Ortiz",
-          email: "benjamin@gmail.cl",
-          password: await encryptPassword("admin123"),
-          telefono: "987654321",
-          id_roles: 1,
-        })
-      ),
-      directivosRepository.save(
-        directivosRepository.create({
-          rut_directivo: "21.070.073-0",
-          nombre: "Joaquin",
-          apellido: "Perez",
-          email: "mochap@gmail.cl",
-          password: await encryptPassword("mochap123"),
-          telefono: "987654321",
-          id_roles: 1,
-        })
-      ),
-    ]);
-    console.log("* => Directivos creados exitosamente");
-  } catch (error) {
-    console.error("Error al crear directivos:", error);
   }
 }
 
@@ -139,73 +171,6 @@ async function createCursos() {
   }
 }
 
-async function createCursoDirectivos() {
-  try {
-    const cursoDirectivoRepository = AppDataSource.getRepository(Directivo_Cursos);
-
-    const count = await cursoDirectivoRepository.count();
-    if (count > 0) return;
-
-    await Promise.all([
-      cursoDirectivoRepository.save(
-        cursoDirectivoRepository.create({
-          id_curso: 1,
-          rut_directivo: "21.282.977-3",
-        }),
-      ),
-      cursoDirectivoRepository.save(
-        cursoDirectivoRepository.create({
-          id_curso: 2,
-          rut_directivo: "21.282.977-3",
-        }),
-      ),
-    ]);
-    console.log("* => Cursos_Directivos creados exitosamente");
-  } catch (error) {
-    console.error("Error al crear cursos:", error);
-  }
-}
-
-async function createDocente() {
-  try {
-    const DocenteRepository = AppDataSource.getRepository(Docentes);
-
-    const count = await DocenteRepository.count();
-    if (count > 0) return;
-
-    await Promise.all([
-      DocenteRepository.save(
-        DocenteRepository.create({
-          rut_docente: "5.126.663-3",
-          nombre: "Sebastian",
-          apellido: "Piñera",
-          email:"Sebaspiña@gmail.cl",
-          password: await encryptPassword("sebastian123"),
-          telefono: "987654321",
-          comuna:"Hualpen",
-          direccion:"Calle falsa 123",
-          id_roles: 2,
-          }),
-        ),
-        DocenteRepository.save(
-          DocenteRepository.create({
-            rut_docente: "5.126.663-4",
-            nombre: "Michelle",
-            apellido: "Bachelet",
-            email:"Michelle@gmail.cl",
-            password: await encryptPassword("michelle123"),
-            telefono: "987654321",
-            comuna:"Concepcion",
-            direccion:"Calle falsa 123",
-            id_roles: 2,
-          }),
-      ),
-    ]);
-    console.log("* => Docentes creados exitosamente");
-  } catch (error) {
-    console.error("Error al crear docentes:", error);
-  }
-}
 
 async function createAsignaturas() {
   try {
@@ -217,14 +182,8 @@ async function createAsignaturas() {
     await Promise.all([
       AsignaturasRepository.save(
         AsignaturasRepository.create({
-          nombre: "Matematicas",
-          rut_docente: "5.126.663-3",
-        }),
-      ),
-      AsignaturasRepository.save(
-        AsignaturasRepository.create({
-          nombre: "Lenguaje",
-          rut_docente: "5.126.663-4",
+          nombre: "Precocidad Prematura",
+          rut: "20.960.538-4",
         }),
       ),
     ]);
@@ -257,170 +216,6 @@ async function createAsignaturaCurso() {
   }
 }
 
-async function createApoderado() {
-  try {
-    const ApoderadoRepository = AppDataSource.getRepository(Apoderado);
-
-    const count = await ApoderadoRepository.count();
-    if (count > 0) return;
-
-    await Promise.all([
-      ApoderadoRepository.save(
-        ApoderadoRepository.create({
-          rut_apoderado: "8.714.763-0",
-          nombre: "Felipe",
-          apellido: "Camiroaga",
-          telefono: "987654321",
-          email:"Angelparaunfinal@gmail.cl",
-          password: await encryptPassword("felipin123"),
-          id_roles: 4,
-        }),
-      ),
-    ]);
-    console.log("* => Apoderados creadas exitosamente");
-  } catch (error) {
-    console.error("Error al crear apoderados:", error);
-  }
-}
-
-
-async function createAlumnos() {
-  try {
-    const AlumnosRepository = AppDataSource.getRepository(Alumnos);
-
-    const count = await AlumnosRepository.count();
-    if (count > 0) return;
-
-    await Promise.all([
-      AlumnosRepository.save(
-        AlumnosRepository.create({
-          rut_alumno: "20.960.538-4",
-          nombre: "Jonathan",
-          apellido: "Olivares",
-          fechaNacimiento: "2000-01-01",
-          comuna: "Laja",
-          direccion: "Calle falsa 321",
-          email: "tyrfing@gmail.cl",
-          password: await encryptPassword("iep123"),
-          id_curso: 1,
-          rut_apoderado: "8.714.763-0",
-          id_roles: 3,
-        })
-      ),
-      AlumnosRepository.save(
-        AlumnosRepository.create({
-          rut_alumno: "4.705.624-1",
-          nombre: "Isabel",
-          apellido: "Allende",
-          fechaNacimiento: "2000-01-01",
-          comuna: "Santiago",
-          direccion: "Calle falsa 321",
-          email: "allende@gmail.cl",
-          password: await encryptPassword("com123"),
-          id_curso: 2,
-          rut_apoderado: "8.714.763-0",
-          id_roles: 3,
-        })
-      ),
-      AlumnosRepository.save(
-        AlumnosRepository.create({
-          rut_alumno: "21.345.678-9",
-          nombre: "Camila",
-          apellido: "Pérez",
-          fechaNacimiento: "2003-04-12",
-          comuna: "Concepción",
-          direccion: "Avenida Los Leones 456",
-          email: "camila.perez@gmail.cl",
-          password: await encryptPassword("cami123"),
-          id_curso: 1,
-          rut_apoderado: "8.714.763-0",
-          id_roles: 3,
-        })
-      ),
-      AlumnosRepository.save(
-        AlumnosRepository.create({
-          rut_alumno: "13.245.678-5",
-          nombre: "Andrés",
-          apellido: "González",
-          fechaNacimiento: "2004-06-23",
-          comuna: "Valparaíso",
-          direccion: "Pasaje El Sol 789",
-          email: "andres.gonzalez@gmail.cl",
-          password: await encryptPassword("andres123"),
-          id_curso: 1,
-          rut_apoderado: "8.714.763-0",
-          id_roles: 3,
-        })
-      ),
-      AlumnosRepository.save(
-        AlumnosRepository.create({
-          rut_alumno: "18.567.432-0",
-          nombre: "Valentina",
-          apellido: "López",
-          fechaNacimiento: "2005-11-30",
-          comuna: "Antofagasta",
-          direccion: "Calle Luna 321",
-          email: "valentina.lopez@gmail.cl",
-          password: await encryptPassword("valen123"),
-          id_curso: 1,
-          rut_apoderado: "8.714.763-0",
-          id_roles: 3,
-        })
-      ),
-      AlumnosRepository.save(
-        AlumnosRepository.create({
-          rut_alumno: "15.987.654-3",
-          nombre: "Carlos",
-          apellido: "Martínez",
-          fechaNacimiento: "2002-03-15",
-          comuna: "Rancagua",
-          direccion: "Avenida Central 567",
-          email: "carlos.martinez@gmail.cl",
-          password: await encryptPassword("carlos123"),
-          id_curso: 1,
-          rut_apoderado: "8.714.763-0",
-          id_roles: 3,
-        })
-      ),
-      AlumnosRepository.save(
-        AlumnosRepository.create({
-          rut_alumno: "17.654.321-8",
-          nombre: "Fernanda",
-          apellido: "Rojas",
-          fechaNacimiento: "2001-09-10",
-          comuna: "Puerto Montt",
-          direccion: "Calle Sur 234",
-          email: "fernanda.rojas@gmail.cl",
-          password: await encryptPassword("fernanda123"),
-          id_curso: 1,
-          rut_apoderado: "8.714.763-0",
-          id_roles: 3,
-        })
-      ),
-      AlumnosRepository.save(
-        AlumnosRepository.create({
-          rut_alumno: "16.543.210-7",
-          nombre: "Diego",
-          apellido: "Hernández",
-          fechaNacimiento: "2000-07-18",
-          comuna: "Iquique",
-          direccion: "Pasaje Norte 111",
-          email: "diego.hernandez@gmail.cl",
-          password: await encryptPassword("diego123"),
-          id_curso: 1,
-          rut_apoderado: "8.714.763-0",
-          id_roles: 3,
-        })
-      ),
-    ]);
-    console.log("* => Alumnos creados exitosamente");
-  } catch (error) {
-    console.error("Error al crear alumnos", error);
-  }
-}
-
-
-
 async function createAnotaciones() {
   try {
     const AnotacionesRepository = AppDataSource.getRepository(Anotaciones);
@@ -431,8 +226,17 @@ async function createAnotaciones() {
     await Promise.all([
       AnotacionesRepository.save(
         AnotacionesRepository.create({
-          descripcion: "Distrayendo a compañeros en horario de clases",
-          rut_alumno: "20.960.538-4",
+          descripcion: "Alumno asume como presidente del curso con mucha responsabilidad y entrega",
+          rut: "21.070.073-0",
+          tipo: "Positiva",
+          id_asignatura: 1,
+        }),
+      ),
+      AnotacionesRepository.save(
+        AnotacionesRepository.create({
+          // eslint-disable-next-line max-len
+          descripcion: "Alumno constantemente interrumpe la clase intentando convencer a sus compañeros de unirse al partido comunista",
+          rut: "21.070.073-0",
           tipo: "Negativa",
           id_asignatura: 1,
         }),
@@ -456,16 +260,8 @@ async function createAsistencia() {
         AsistenciaRepository.create({
           fecha: "2021-09-01",
           tipo: "Presente",
-          rut_alumno: "20.960.538-4",
+          rut: "21.070.073-0",
           id_asignatura: 1,
-        }),
-      ),
-      AsistenciaRepository.save(
-        AsistenciaRepository.create({
-          fecha: "2021-09-01",
-          tipo: "Presente",
-          rut_alumno: "4.705.624-1",
-          id_asignatura: 2,
         }),
       ),
     ]);
@@ -487,7 +283,7 @@ async function createNotas() {
         NotasRepository.create({
           tipo: "C1",
           valor: 0.3,
-          rut_alumno: "20.960.538-4",
+          rut: "21.070.073-0",
           id_asignatura: 1,
         }),
       ),
@@ -495,130 +291,6 @@ async function createNotas() {
     console.log("* => Notas creadas exitosamente");
   } catch (error) {
     console.error("Error al crear notas:", error);
-  }
-}
-
-
-
-async function createAdministrativos() {
-  try {
-    const AdministrativosRepository = AppDataSource.getRepository(Administrativos);
-
-    const count = await AdministrativosRepository.count();
-    if (count > 0) return;
-
-    await Promise.all([
-      AdministrativosRepository.save(
-        AdministrativosRepository.create({
-          rut_administrativo: "7.254.916-3",
-          nombre: "Enrique",
-          apellido: "Paris",
-          email:"paris@gmail.cl",
-          password: await encryptPassword("paris123"),
-          id_roles: 5,
-          telefono: "987654321",
-        }),
-      ),
-    ]);
-    console.log("* => Administrativo creados exitosamente");
-  } catch (error) {
-    console.error("Error al crear administrativos:", error);
-  }
-}
-
-async function createFicha_Estudiante() {
-  try {
-    const Ficha_EstudianteRepository = AppDataSource.getRepository(Ficha_Estudiante);
-
-    const count = await Ficha_EstudianteRepository.count();
-    if (count > 0) return;
-
-    await Promise.all([
-      Ficha_EstudianteRepository.save(
-        Ficha_EstudianteRepository.create({
-          tipo: "Salud",
-          detalles:"Asintomatico a la chamba",
-          rut_alumno: "20.960.538-4",
-
-        }),
-      ),
-    ]);
-    console.log("* => Fichas creadas exitosamente");
-  } catch (error) {
-    console.error("Error al crear fichas:", error);
-  }
-}
-
-async function createConex_Adminis_Ficha() {
-  try {
-    const conex_adminis_fichaRepository = AppDataSource.getRepository(Administrativo_Ficha);
-
-    const count = await conex_adminis_fichaRepository.count();
-    if (count > 0) return;
-
-    await Promise.all([
-      conex_adminis_fichaRepository.save(
-        conex_adminis_fichaRepository.create({
-          rut_administrativo: "7.254.916-3",
-          id_ficha_estudiante: 1
-        }),
-      ),
-    ]);
-    console.log("* => Conex Adminis_Ficha creados exitosamente");
-  }
-  catch (error) {
-    console.error("Error al crear conex_adminis_ficha:", error);
-  }
-}
-
-
-async function createObservaciones() {
-  try {
-    const observacionesRepository = AppDataSource.getRepository(Observacion);
-
-    const count = await observacionesRepository.count();
-    if (count > 0) return;
-
-    await Promise.all([
-      observacionesRepository.save(
-        observacionesRepository.create({
-          descripcion: "Llega atrasado",
-          Tipo: "Atraso",
-          rut_alumno: "20.960.538-4",
-          rut_administrativo: "7.254.916-3",
-        }),
-      ),
-    ]);
-    console.log("* => Observaciones creadas exitosamente");
-  } catch (error) {
-    console.error("Error al crear observaciones:", error);
-  }
-}
-
-
-async function createEncargados_Lab() {
-  try {
-    const encargados_labRepository = AppDataSource.getRepository(Encargado_Lab);
-
-    const count = await encargados_labRepository.count();
-    if (count > 0) return;
-
-    await Promise.all([
-      encargados_labRepository.save(
-        encargados_labRepository.create({
-          rut_encargado: "21.019.643-9",
-          nombre: "Cristobal",
-          apellido: "Cristox",
-          email: "cristox@gmail.cl",
-          id_roles: 6,
-          password: await encryptPassword("cristox123"),
-          telefono: "987654321",
-        }),
-      ),
-    ]);
-    console.log("* => Encargados labs creados exitosamente");
-  } catch (error) {
-    console.error("Error al crear encargados labs:", error);
   }
 }
 
@@ -643,28 +315,6 @@ async function createLabs() {
   }
 }
 
-
-async function createConex_Lab_Encargado() {
-  try {
-    const lab_encargadosRepository = AppDataSource.getRepository(Lab_Encargado);
-
-    const count = await lab_encargadosRepository.count();
-    if (count > 0) return;
-
-    await Promise.all([
-      lab_encargadosRepository.save(
-        lab_encargadosRepository.create({
-          rut_encargado: "21.019.643-9",
-          id_lab: 1
-        }),
-      ),
-    ]);
-    console.log("* => Conex Lab_Encar creados exitosamente");
-  } catch (error) {
-    console.error("Error al crear conex_lab_encar:", error);
-  }
-}
-
 async function createHorarios() {
   try {
     const horariosRepository = AppDataSource.getRepository(Horarios);
@@ -675,35 +325,14 @@ async function createHorarios() {
     await Promise.all([
       horariosRepository.save(
         horariosRepository.create({
-          hora_inicio:"08:10:00",
-          hora_fin:"09:30:00"
+          hora_inicio: "08:00",
+          hora_fin: "09:30",
         }),
       ),
     ]);
     console.log("* => Horarios creados exitosamente");
   } catch (error) {
     console.error("Error al crear horarios:", error);
-  }
-}
-
-async function createConex_Encargado_Horario() {
-  try {
-    const conex_encargado_horarioRepository = AppDataSource.getRepository(Horarios_Encargados);
-
-    const count = await conex_encargado_horarioRepository.count();
-    if (count > 0) return;
-
-    await Promise.all([
-      conex_encargado_horarioRepository.save(
-        conex_encargado_horarioRepository.create({
-          rut_encargado: "21.019.643-9",
-          id_horario: 1
-        }),
-      ),
-    ]);
-    console.log("* => Conexion encargado horarios creados exitosamente");
-  } catch (error) {
-    console.error("Error al crear la conexion de horario con encargado:", error);
   }
 }
 
@@ -719,7 +348,7 @@ async function createReserva() {
         reservaRepository.create({
           fecha:"2021-09-01",
           id_horario: 1,
-          rut_docente: "5.126.663-3",
+          rut: "20.960.538-4",
           id_lab: 1
         }),
       ),
@@ -730,28 +359,18 @@ async function createReserva() {
   }
 }
 
-export { createCursos,
-  createCursoDirectivos
-  ,createDirectivos
+export { createConectUsuarioCurso
+  , createCursos
   , createRoles
-  , createDocente
   , createAsignaturas
   , createAsignaturaCurso
-  , createApoderado
-  , createAlumnos
   , createAnotaciones
   , createAsistencia
   , createNotas
-  , createAdministrativos
-  , createFicha_Estudiante
-  , createConex_Adminis_Ficha
-  , createObservaciones
-  , createEncargados_Lab
   , createLabs
-  , createConex_Lab_Encargado
   , createHorarios
-  , createConex_Encargado_Horario
   , createReserva
+  , createUsuario
 };
 
   

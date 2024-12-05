@@ -4,14 +4,12 @@ const authorize = (authorizedRoles) => {
   return (req, res, next) => {
     const authHeader = req.headers["authorization"];
     const token = authHeader && authHeader.split(" ")[1];
-    console.log(token);
     if (!token) {
       return res.status(401).send({ error: "Access denied. No token provided." });
     }
 
     try {
       const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
-      console.log(decoded);
       req.user = decoded;
 
       if (!authorizedRoles.includes(req.user.rol)) {

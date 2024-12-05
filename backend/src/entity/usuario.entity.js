@@ -1,11 +1,11 @@
 "use strict";
 import { EntitySchema } from "typeorm";
 
-const AdministrativoSchema = new EntitySchema({
-  name: "Administrativo",
-  tableName: "administrativo",
+const UsuarioSchema = new EntitySchema({
+  name: "Usuario",
+  tableName: "usuarios",
   columns: {
-    rut_administrativo: {
+    rut: {
       type: "varchar",
       primary: true,
       nullable: false,
@@ -17,23 +17,36 @@ const AdministrativoSchema = new EntitySchema({
     },
     apellido: {
       type: "varchar",
+      length: 255,
       nullable: false,
     },
     email: {
       type: "varchar",
+      length: 255,
       nullable: false,
     },
     password: {
       type: "varchar",
+      length: 255,
       nullable: false,
     },
-    telefono: {
-      type: "int",
+    direccion: {
+      type: "varchar",
+      length: 255,
       nullable: false,
+    },
+    comuna: {
+        type: "varchar",
+        length: 255,
+        nullable: false,
     },
     id_roles: {
       type: "int",
       nullable: false,
+    },
+    telefono: {
+        type: "int",
+        nullable: false,
     },
     createdAt: {
         type: "timestamp with time zone",
@@ -46,13 +59,14 @@ const AdministrativoSchema = new EntitySchema({
         onUpdate: "CURRENT_TIMESTAMP",
         nullable: false,
       },
+    },
+    relations: {
+      Roles: {
+          type: "many-to-one",
+          target: "Roles",
+          joinColumn: { name: "id_roles" },
+          nullable: false,
+      },
   },
-  relations: {
-    roles: {
-      type: "many-to-one",
-      target: "Roles", 
-      joinColumn: { name: "id_roles" } ,
-  }, },
 });
-
-export default AdministrativoSchema;
+export default UsuarioSchema;

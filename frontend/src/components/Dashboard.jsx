@@ -1,36 +1,38 @@
-import * as React from 'react';
-import PropTypes from 'prop-types';
-import Box from '@mui/material/Box';
-import { createTheme } from '@mui/material/styles';
-import { AppProvider } from '@toolpad/core/react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { logout } from '@services/auth.service.js';
+import '@styles/index.css'; 
 import SchoolIcon from '@mui/icons-material/School';
 import HistoryEduRoundedIcon from '@mui/icons-material/HistoryEduRounded';
-import StickyNote2Icon from '@mui/icons-material/StickyNote2';
+import { Outlet } from 'react-router-dom';
 import ManageSearchIcon from '@mui/icons-material/ManageSearch';
 import AddIcon from '@mui/icons-material/Add';
-import { DashboardLayout } from '@toolpad/core/DashboardLayout';
-import { useNavigate, Outlet } from 'react-router-dom';
-import { logout } from '@services/auth.service.js';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
-import CollectionsBookmarkIcon from '@mui/icons-material/CollectionsBookmark';
+import AlarmIcon from '@mui/icons-material/Alarm';
+import BiotechIcon from '@mui/icons-material/Biotech';
+import EventIcon from '@mui/icons-material/Event';
+import logo from '../images/components/logo.svg'; 
 
 // Configuración de navegación por roles
-
 const NAVIGATION_BY_ROLE = {
   directivo: [
-    { segment: 'GestionUsuarios', title: 'Gestión de Usuarios', icon: <SchoolIcon /> },
+    { segment: 'GestionUsuario', title: 'Gestión de Usuarios', 
+      icon: <SchoolIcon />,
+      children: [
+        { segment: 'add_usuario', title: 'Añadir usuario', icon: <AddIcon /> },
+        { segment: 'ver_usuarios  ', title: 'Ver todos los usuarios', icon: <ManageSearchIcon /> },
+      ],
+
+    },
+    { segment: 'Estadisticas', title: 'Gestión de Usuarios', 
+      icon: <SchoolIcon />,
+      children: [
+        { segment: 'estad_docentes', title: 'Estadisticas docente', icon: <AddIcon /> },
+      ],
+
+    },
   ],
   docente: [
-    {
-      segment: 'Inicio',
-      title: 'Inicio',
-      icon: <SchoolIcon />,
-    },
-    {
-      segment: 'Cursos',
-      title: 'Cursos',
-      icon: <CollectionsBookmarkIcon />,
-    },
     {
       segment: 'asistencias',
       title: 'Asistencias',
@@ -43,10 +45,10 @@ const NAVIGATION_BY_ROLE = {
     {
       segment: 'anotaciones',
       title: 'Anotaciones',
-      icon: <StickyNote2Icon />,
+      icon: <HistoryEduRoundedIcon />,
       children: [
-        { segment: 'add_anotaciones', title: 'Añadir anotaciones', icon: <AddIcon /> },
-        { segment: 'ver_anotaciones', title: 'Ver todas las anotaciones', icon: <ManageSearchIcon /> },
+        { segment: 'add_anotaciones', title: 'Añadir anotaciones', icon: <ManageSearchIcon /> },
+        { segment: 'ver_anotaciones', title: 'Ver todas las Anotaciones', icon: <ManageSearchIcon /> },
       ],
     },
     {
@@ -54,7 +56,8 @@ const NAVIGATION_BY_ROLE = {
       title: 'Notas',
       icon: <HistoryEduRoundedIcon />,
       children: [
-        { segment: 'Ver', title: 'Ver todas las notas', icon: <ManageSearchIcon /> },
+        { segment: 'ver_notas', title: 'Ver Notas', icon: <ManageSearchIcon /> },
+        { segment: "add", title: "Añadir Notas", icon: <AddIcon /> },
       ],
     },
     {
@@ -62,28 +65,26 @@ const NAVIGATION_BY_ROLE = {
       title: 'Gestion Reservas Laboratorio',
       icon: <SchoolIcon />,
       children: [
-        { segment: 'reservas', title: 'Reservas', icon: <SchoolIcon /> },
-        { segment: 'labs', title: 'Laboratorios', icon: <SchoolIcon /> },
-        { segment: 'horarios', title: 'Horarios', icon: <SchoolIcon /> },
+        { segment: 'reservas', title: 'Reservas', icon: <EventIcon /> },
+        { segment: 'labsdocente', title: 'Laboratorios', icon: <BiotechIcon /> },
       ],
     },
   ],
   alumno: [
-    { segment: 'Inicio', title: 'Inicio', icon: <SchoolIcon /> },
     {
       segment: 'asistencias',
       title: 'Asistencias',
       icon: <PeopleAltIcon />,
       children: [
-        { segment: 'alumno', title: 'Ver Asistencias', icon: <ManageSearchIcon /> },
+        { segment: 'ver_asistencias', title: 'Ver Asistencias', icon: <ManageSearchIcon /> },
       ],
     },
     {
       segment: 'anotaciones',
       title: 'Anotaciones',
-      icon: <StickyNote2Icon />,
+      icon: <HistoryEduRoundedIcon />,
       children: [
-        { segment: 'alumno', title: 'Ver Anotaciones del Alumno', icon: <ManageSearchIcon /> },
+        { segment: 'ver_anotaciones', title: 'Ver Anotaciones', icon: <ManageSearchIcon /> },
       ],
     },
     {
@@ -91,7 +92,7 @@ const NAVIGATION_BY_ROLE = {
       title: 'Notas',
       icon: <HistoryEduRoundedIcon />,
       children: [
-        { segment: 'Ver_Nota_Alumno', title: 'Ver Nota por RUT', icon: <ManageSearchIcon /> },
+        { segment: 'ver_notas', title: 'Ver Notas', icon: <ManageSearchIcon /> },
       ],
     },
   ],
@@ -101,76 +102,27 @@ const NAVIGATION_BY_ROLE = {
       title: 'Gestion Reservas Laboratorio',
       icon: <SchoolIcon />,
       children: [
-        { segment: 'reservas', title: 'Reservas', icon: <SchoolIcon /> },
-        { segment: 'labs', title: 'Laboratorios', icon: <SchoolIcon /> },
-        { segment: 'horarios', title: 'Horarios', icon: <SchoolIcon /> },
+        { segment: 'reservas', title: 'Reservas', icon: <EventIcon /> },
+        { segment: 'labs', title: 'Laboratorios', icon: <BiotechIcon /> },
+        { segment: 'horarios', title: 'Horarios', icon: <AlarmIcon /> },
       ],
     },
   ],
 };
-
-
-const customTheme = createTheme({
-  cssVariables: {
-    colorSchemeSelector: 'data-toolpad-color-scheme',
-  },
-  colorSchemes: {
-    light: {
-      palette: {
-        background: { default: '#FFF', paper: '#EEEEF9' },
-        primary: { main: '#1976d2' },
-        secondary: { main: '#9c27b0' },
-      },
-    },
-    dark: {
-      palette: {
-        background: { default: 'radial-gradient(circle,#090B11 , #002952)', paper: '#002952' },
-        primary: { main: '#90caf9' },
-        secondary: { main: '#f48fb1' },
-        text: { primary: '#ffffff', secondary: '#bbbbbb' },
-      },
-    },
-  },
-  breakpoints: {
-    values: { xs: 0, sm: 600, md: 600, lg: 1200, xl: 1536 },
-  },
-});
-
-function DashboardLayoutAccount() {
+const DashboardLayoutAccount = () => {
+  const location = useLocation(); // Usamos useLocation para obtener la ruta actual
   const navigate = useNavigate();
-
-  // Recupera la sesión desde sessionStorage
-  const [session, setSession] = React.useState(() => {
+  const [session, setSession] = useState(() => {
     const usuarioGuardado = JSON.parse(sessionStorage.getItem('usuario'));
     return usuarioGuardado ? { user: usuarioGuardado, role: usuarioGuardado.rol } : null;
   });
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!session || !session.user) {
-      navigate('/auth');
+      navigate('/auth'); // Redirigir si no está logueado
     }
   }, [session, navigate]);
 
-  // Funciones de autenticación
-  const authentication = React.useMemo(() => ({
-    signIn: () => {
-      const user = {
-        email: 'example@domain.com',
-        image: 'https://example.com/image.jpg',
-        role: 'user',
-      };
-      sessionStorage.setItem('usuario', JSON.stringify(user));
-      setSession({ user, role: user.role });
-    },
-    signOut: () => {
-      logout();
-      sessionStorage.removeItem('usuario');
-      setSession(null);
-      navigate('/auth');
-    },
-  }), [navigate]);
-
-  // Configura la navegación según el rol
   const navigation = React.useMemo(() => {
     if (session?.role) {
       return NAVIGATION_BY_ROLE[session.role.toLowerCase()] || [];
@@ -178,30 +130,115 @@ function DashboardLayoutAccount() {
     return [];
   }, [session]);
 
-  const hideNavigation = location.pathname === '/Cursos';
+  const handleLogout = async () => {
+    try {
+      logout();  // Llama a tu función logout desde auth.service.js
+      sessionStorage.removeItem('usuario');
+      navigate('/auth');
+    } catch (error) {
+      console.error('Error al cerrar sesión:', error);
+    }
+  };
+
+  const handleLogoClick = () => {
+    navigate('/inicio');
+  };
+
+  // Verificamos si estamos en la ruta "/cursos"
+  if (location.pathname === '/cursos') {
+    return <Outlet />;  // Solo renderizamos el contenido de la ruta sin el layout
+  }
+
+  // Función para renderizar los enlaces de navegación
+  const renderNavLinks = (navigation) => {
+    return navigation.map((item) => (
+      <div key={item.segment}>
+        {/* Enlace del padre que no navega, solo se despliega el menú */}
+        <div
+          className={`block p-2 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded cursor-pointer`}
+          onClick={(e) => e.preventDefault()} // Evita que navegue al hacer clic en el padre
+        >
+          <div className="flex items-center space-x-2">
+            {item.icon}
+            <span className="text-sm font-medium">{item.title}</span>
+          </div>
+        </div>
+  
+        {/* Si tiene submenú (children), renderizamos los subenlaces */}
+        {item.children && (
+          <div className="pl-4 space-y-2">
+            {item.children.map((child) => (
+              <Link
+                key={child.segment}
+                to={`/${item.segment.toLowerCase()}/${child.segment.toLowerCase()}`}
+                className="block p-2 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-600 rounded"
+              >
+                <div className="flex items-center space-x-2">
+                  {child.icon}
+                  <span className="text-xs font-medium">{child.title}</span>
+                </div>
+              </Link>
+            ))}
+          </div>
+        )}
+      </div>
+    ));
+  };
 
   return (
-    <AppProvider
-      session={session}
-      authentication={authentication}
-      navigation={navigation} // Navegación basada en el rol
-      branding={{
-        logo: <SchoolIcon sx={{ marginX: 2, marginTop: 1 }} />,
-        title: 'SmeBook',
-      }}
-      theme={customTheme}
-    >
-      <Box sx={{ minHeight: '100vh', background: (theme) => theme.palette.background.default }}>
-        <DashboardLayout hideNavigation={hideNavigation}>
-          <Outlet />
-        </DashboardLayout>
-      </Box>
-    </AppProvider>
+    <div className="flex h-screen">
+      {/* Sidebar */}
+      <aside className="flex flex-col w-64 px-5 py-8 overflow-y-auto bg-white border-r rtl:border-r-0 rtl:border-l dark:bg-gray-900 dark:border-gray-700">
+        <div 
+          className="flex justify-center items-center mb-6 space-x-2 cursor-pointer"
+          onClick={handleLogoClick}
+        >
+          <img className="w-auto h-7" src={logo} alt="Logo" />
+          <span className="text-xl font-semibold text-gray-800 dark:text-white cursor-pointer">
+            SmeBook
+          </span>
+        </div>
+  
+        <div className="flex flex-col justify-between flex-1 mt-6">
+          <nav className="flex-1 -mx-3 space-y-3">
+            {renderNavLinks(navigation)}
+          </nav>
+  
+          <div className="mt-6">
+            <div className="flex items-center justify-between px-5 mt-6">
+              {/* Enlace de perfil */}
+              <Link to="/perfil" className="flex items-center gap-x-2">
+                <div>
+                  <span className="text-sm font-medium text-gray-700 dark:text-gray-200">
+                    {session?.user?.nombre ? `${session.user.nombre} ${session.user.apellido}` : "Cargando..."}
+                  </span>
+                  <br />
+                  <span className="text-xs text-gray-500 dark:text-gray-400">
+                    {session?.role ? ` ${session.role}` : "Cargando rol..."}
+                  </span>
+                </div>
+              </Link>
+  
+              {/* Botón de Logout */}
+              <button
+                onClick={handleLogout}
+                className="text-gray-500 transition-colors duration-200 rotate-180 dark:text-gray-400 rtl:rotate-0"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 12H3.75M12 5.25l-7.5 7.5 7.5 7.5" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </aside>
+  
+      {/* Main Content */}
+      <main className="flex-1 overflow-y-auto bg-gray-100 dark:bg-gray-800 p-4">
+        <Outlet />  {/* Aquí se renderiza el contenido de las rutas hijas */}
+      </main>
+    </div>
   );
-}
-
-DashboardLayoutAccount.propTypes = {
-  window: PropTypes.func,
 };
 
 export default DashboardLayoutAccount;

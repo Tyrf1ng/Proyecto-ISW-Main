@@ -29,7 +29,7 @@ const HorariosSchema = new EntitySchema({
             onUpdate: "CURRENT_TIMESTAMP",
             nullable: false,
         },
-    },
+    }
 });
 
 export default HorariosSchema;

@@ -13,17 +13,29 @@ import {
     handleSuccess,
 } from "../handlers/responseHandlers.js";
 
-
-//--------------------------------------------------//
 import Joi from "joi";
-// Definición del esquema de validación
-const horarioBodyValidation = Joi.object({
-    hora_inicio: Joi.string().required(),
-    hora_fin: Joi.string().required(),
-});
-//--------------------------------------------------//
 
-// FUNCIONA NO TOCAR
+const horarioBodyValidation = Joi.object({
+    hora_inicio: Joi.string().required().custom((value, helpers) => {
+        if (value < "08:00" || value > "22:00") {
+            return helpers.message("La hora de inicio debe estar entre las 08:00 y las 22:00");
+        }
+        return value;
+    }),
+    hora_fin: Joi.string().required().custom((value, helpers) => {
+        if (value < "08:00" || value > "22:00") {
+            return helpers.message("La hora de fin debe estar entre las 08:00 y las 22:00");
+        }
+        return value;
+    }),
+    rut_encargado: Joi.string().required(),
+}).custom((value, helpers) => {
+    if (value.hora_inicio >= value.hora_fin) {
+        return helpers.message("La hora de inicio debe ser menor que la hora de fin");
+    }
+    return value;
+});
+
 export async function getHorario(req, res) {
     try {
         const { id_horario } = req.params; 
@@ -35,7 +47,6 @@ export async function getHorario(req, res) {
     }
 }
 
-// FUNCIONA NO TOCAR
 export async function getHorarios(req, res) {
     try {
         const [horarios, errorHorarios] = await getHorariosService();
@@ -47,18 +58,17 @@ export async function getHorarios(req, res) {
     }
 }
 
-// FUNCIONA NO TOCAR
 export async function createHorario(req, res) {
     try {
-        const { hora_inicio, hora_fin } = req.body;
-        if (!hora_inicio || !hora_fin) {
+        const { hora_inicio, hora_fin, rut_encargado } = req.body;
+        if (!hora_inicio || !hora_fin || !rut_encargado) {
             return handleErrorClient(res, 400, "Faltan datos obligatorios");
         }
 
-        const { error: bodyError } = horarioBodyValidation.validate({ hora_inicio, hora_fin });
+        const { error: bodyError } = horarioBodyValidation.validate({ hora_inicio, hora_fin, rut_encargado });
         if (bodyError) return handleErrorClient(res, 400, bodyError.message);
 
-        const [horario, errorHorario] = await createHorarioService({ hora_inicio, hora_fin });
+        const [horario, errorHorario] = await createHorarioService({ hora_inicio, hora_fin, rut_encargado });
         if (errorHorario) return handleErrorClient(res, 400, errorHorario);
 
         handleSuccess(res, 201, "Horario creado", horario);
@@ -67,7 +77,6 @@ export async function createHorario(req, res) {
     }
 }
 
-// FUNCIONA NO TOCAR
 export async function updateHorario(req, res) {
     try {
         const { id_horario } = req.params;
@@ -84,7 +93,6 @@ export async function updateHorario(req, res) {
     }
 }
 
-// FUNCIONA NO TOCAR
 export async function deleteHorario(req, res) {
     try {
         const { id_horario } = req.params;

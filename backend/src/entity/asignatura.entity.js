@@ -14,7 +14,7 @@ const AsignaturasSchema = new EntitySchema({
       type: "varchar",
       nullable: false,
     },
-    rut_docente: {
+    rut: {
       type: "varchar",
       nullable: false,
     },
@@ -31,12 +31,19 @@ const AsignaturasSchema = new EntitySchema({
       },
   },
   relations: { 
-    docente: {
-        type: "one-to-one",
-        target: "Docentes", 
-        joinColumn: { name: "rut_docente" } ,
+    usuario: {
+        type: "One-to-one",
+        target: "Usuario", 
+        joinColumn: { name: "rut" } ,
     },
   },
+  indices: [
+    {
+      name: "IDX_RUT_UNICO",
+      columns: ["rut"],
+      unique: true, // Aquí se asegura que el campo 'rut' sea único en la tabla asignaturas.
+    },
+  ],
 });
 
 export default AsignaturasSchema;

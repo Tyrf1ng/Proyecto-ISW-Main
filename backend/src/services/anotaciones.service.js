@@ -1,10 +1,11 @@
 "use strict";
 import { In } from "typeorm";
 import Anotaciones from "../entity/anotacion.entity.js";
-import Alumno from "../entity/alumno.entity.js";
+import Usuario from "../entity/usuario.entity.js";
+import CursoSchema from "../entity/curso.entity.js";
+import Conect_Usuario_CursoSchema from "../entity/conect_usuario_curso.entity.js";
 import AsignaturaCursoSchema from "../entity/asignatura.curso.entity.js";
 import { AppDataSource } from "../config/configDb.js";
-
 
 
 export async function getAnotacionService(id_anotacion) {
@@ -62,13 +63,23 @@ export async function getAnotacionesAsignaturaService(id_asignatura) {
     }
 }
 
-export async function getAnotacionesAlumnoService(rut_alumno) {
+export async function getAnotacionesAlumnoService(rut) {
     try {
+        const UsuarioRepository = AppDataSource.getRepository(Usuario);
         const AnotacionRepository = AppDataSource.getRepository(Anotaciones);
 
-        // Buscar las anotaciones asociadas al alumno en específico
+        // Verificar si el usuario es un alumno (rol 3)
+        const alumno = await UsuarioRepository.findOne({
+            where: { rut, id_roles: 3 },
+        });
+
+        if (!alumno) {
+            return [null, "El usuario no es un alumno o no existe"];
+        }
+
+        // Buscar las anotaciones asociadas al alumno
         const anotaciones = await AnotacionRepository.find({
-            where: { rut_alumno: rut_alumno }
+            where: { rut },
         });
 
         if (!anotaciones || anotaciones.length === 0) {
@@ -77,71 +88,101 @@ export async function getAnotacionesAlumnoService(rut_alumno) {
 
         return [anotaciones, null];
     } catch (error) {
-        console.error("Error al obtener las anotaciones:", error);
+        console.error("Error al obtener las anotaciones del alumno:", error);
         return [null, "Error interno del servidor"];
     }
 }
 
+
 export async function getAnotacionesCursoService(id_curso) {
     try {
-        const AlumnoRepository = AppDataSource.getRepository(Alumno);
         const AnotacionRepository = AppDataSource.getRepository(Anotaciones);
+        const UsuarioCursoRepository = AppDataSource.getRepository(Conect_Usuario_CursoSchema);
         const AsignaturaCursoRepository = AppDataSource.getRepository(AsignaturaCursoSchema);
 
-        // Obtener las asignaturas asociadas al curso específico
-        const asignaturasDelCurso = await AsignaturaCursoRepository.find({ where: { id_curso } });
-        const idsAsignaturas = asignaturasDelCurso.map(ac => ac.id_asignatura);
+        // Obtener los usuarios asociados al curso
+        const usuariosDelCurso = await UsuarioCursoRepository.find({
+            where: { id_curso },
+            relations: ["usuario"],
+        });
 
-        if (idsAsignaturas.length === 0) return [null, "No hay asignaturas para este curso"];
+        const rutsAlumnos = usuariosDelCurso.map(entry => entry.rut);
 
-        // Obtener los alumnos del curso especificado
-        const alumnos = await AlumnoRepository.find({ where: { id_curso } });
-        const rutsAlumnos = alumnos.map(alumno => alumno.rut_alumno);
+        // Verificar si hay alumnos en el curso
+        if (rutsAlumnos.length === 0) {
+            return [null, "No hay alumnos asociados a este curso"];
+        }
 
-        // Si no hay alumnos en el curso, no habrá anotaciones
-        if (rutsAlumnos.length === 0) return [null, "No hay anotaciones para este curso"];
+        // Obtener las asignaturas asociadas al curso
+        const asignaturasDelCurso = await AsignaturaCursoRepository.find({
+            where: { id_curso },
+        });
 
-        // Buscar anotaciones para los alumnos del curso y para las asignaturas relacionadas
+        const idsAsignaturas = asignaturasDelCurso.map(entry => entry.id_asignatura);
+
+        // Verificar si hay asignaturas asociadas al curso
+        if (idsAsignaturas.length === 0) {
+            return [null, "No hay asignaturas asociadas a este curso"];
+        }
+
+        // Buscar las anotaciones asociadas a los alumnos y las asignaturas del curso
         const anotaciones = await AnotacionRepository.find({
             where: {
-                rut_alumno: In(rutsAlumnos),
+                rut: In(rutsAlumnos),
                 id_asignatura: In(idsAsignaturas),
             },
         });
 
-        if (!anotaciones || anotaciones.length === 0) return [null, "No hay anotaciones para este curso"];
-        
+        // Verificar si hay anotaciones
+        if (!anotaciones || anotaciones.length === 0) {
+            return [null, "No hay anotaciones para este curso"];
+        }
+
         return [anotaciones, null];
     } catch (error) {
-        console.error("Error al obtener las anotaciones:", error);
+        console.error("Error al obtener las anotaciones del curso:", error);
         return [null, "Error interno del servidor"];
     }
 }
 
+
+
 export async function createAnotacionService(data) {
     try {
-        const { descripcion, tipo, id_asignatura, rut_alumno } = data;
+        const { descripcion, tipo, id_asignatura, rut } = data;
+        const UsuarioRepository = AppDataSource.getRepository(Usuario);
+
+        // Verificar si el usuario es un alumno (rol 3)
+        const alumno = await UsuarioRepository.findOne({
+            where: { rut, id_roles: 3 },
+        });
+
+        if (!alumno) {
+            return [null, "El usuario no es un alumno o no existe"];
+        }
+
         const AnotacionRepository = AppDataSource.getRepository(Anotaciones);
         const newAnotacion = AnotacionRepository.create({
-            descripcion: descripcion,
-            tipo: tipo,
-            id_asignatura: id_asignatura,
-            rut_alumno: rut_alumno
+            descripcion,
+            tipo,
+            id_asignatura,
+            rut,
         });
         await AnotacionRepository.save(newAnotacion);
         return [newAnotacion, null];
     } catch (error) {
-        console.error("Error al crear la anotacion:", error);
+        console.error("Error al crear la anotación:", error);
         return [null, "Error interno del servidor"];
     }
 }
+
 
 export async function updateAnotacionService(id_anotacion, datosActualizados) {
     try {
         const AnotacionRepository = AppDataSource.getRepository(Anotaciones);
 
         const AnotacionFound = await AnotacionRepository.findOne({
-            where: { id_anotacion: parseInt(id_anotacion, 10) }
+            where: { id_anotacion: parseInt(id_anotacion, 10) },
         });
 
         if (!AnotacionFound) {
@@ -168,11 +209,15 @@ export async function updateAnotacionService(id_anotacion, datosActualizados) {
 export async function deleteAnotacionService(id_anotacion) {
     try {
         const AnotacionRepository = AppDataSource.getRepository(Anotaciones);
-        const AnotacionFound = await AnotacionRepository.findOne({ where: { id_anotacion: id_anotacion } });
+        const AnotacionFound = await AnotacionRepository.findOne({
+            where: { id_anotacion: parseInt(id_anotacion, 10) },
+        });
+
         if (!AnotacionFound) {
             console.error(`Anotación con ID ${id_anotacion} no encontrada`);
             return [null, "Anotación no encontrada"];
         }
+
         await AnotacionRepository.remove(AnotacionFound);
         return [AnotacionFound, null];
     } catch (error) {
