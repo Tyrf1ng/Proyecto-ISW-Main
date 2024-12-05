@@ -3,12 +3,11 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 
 const TableReservas = ({ reservas = [], handleOpen, handleDelete }) => {
-  // Función para formatear la fecha
+  // FunciÃ³n para formatear la fecha
   const formatDate = (date) => {
     const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
     return new Date(date).toLocaleDateString(undefined, options);
   };
-
 
   return (
     <div className="overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -18,7 +17,7 @@ const TableReservas = ({ reservas = [], handleOpen, handleDelete }) => {
             <thead className="bg-gray-50 dark:bg-gray-800">
               <tr>
                 <th className="py-3.5 px-4 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                  Usuario
+                  Docente
                 </th>
                 <th className="px-12 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400">
                   Fecha
@@ -30,10 +29,10 @@ const TableReservas = ({ reservas = [], handleOpen, handleDelete }) => {
                   Laboratorio
                 </th>
                 <th className="px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                  ID Asignatura
+                  Asignatura
                 </th>
                 <th className="px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                  ID Curso
+                  Curso
                 </th>
                 <th className="relative py-3.5 px-4">
                   <span className="sr-only">Acciones</span>
@@ -57,10 +56,10 @@ const TableReservas = ({ reservas = [], handleOpen, handleDelete }) => {
                       <div className="text-gray-800 dark:text-white">{reserva.laboratorio}</div>
                     </td>
                     <td className="px-4 py-4 text-sm whitespace-nowrap">
-                      <div className="text-gray-800 dark:text-white">{reserva.id_asignatura}</div>
+                      <div className="text-gray-800 dark:text-white">{reserva.nombre_asignatura}</div>
                     </td>
                     <td className="px-4 py-4 text-sm whitespace-nowrap">
-                      <div className="text-gray-800 dark:text-white">{reserva.id_curso}</div>
+                      <div className="text-gray-800 dark:text-white">{reserva.nombre_curso}</div>
                     </td>
                     <td className="px-4 py-4 text-sm whitespace-nowrap">
                       <div className="flex space-x-2">
