@@ -26,6 +26,14 @@ const ReservaSchema = new EntitySchema({
             type: "int",
             nullable: false,
         },
+        id_asignatura: {
+            type: "int",
+            nullable: false,
+        },
+        id_curso: {
+            type: "int",
+            nullable: false,
+        },
         createdAt: {
             type: "timestamp with time zone",
             default: () => "CURRENT_TIMESTAMP",
@@ -53,6 +61,16 @@ const ReservaSchema = new EntitySchema({
             type: "many-to-one",
             target: "Horarios", 
             joinColumn: { name: "id_horario" } ,
+        },
+        asignatura: {
+            type: "many-to-one",
+            target: "Asignaturas",
+            joinColumn: { name: "id_asignatura" },
+        },
+        curso: {
+            type: "many-to-one",
+            target: "Curso",
+            joinColumn: { name: "id_curso" },
         },
     },
 });
