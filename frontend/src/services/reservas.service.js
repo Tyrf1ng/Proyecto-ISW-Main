@@ -22,7 +22,14 @@ export async function getReserva(id_reserva) {
 
 export async function createReserva(reserva) {
     try {
-        const response = await axios.post('/reserva/create', reserva);
+        const response = await axios.post('/reserva/create', {
+            id_lab: reserva.id_lab,
+            rut: reserva.rut,
+            fecha: reserva.fecha,
+            id_horario: reserva.id_horario,
+            id_asignatura: reserva.id_asignatura,
+            id_curso: reserva.id_curso,
+        });
         return response.data;
     } catch (error) {
         console.error("Error al crear la reserva: ", error.response ? error.response.data : error.message);
@@ -32,7 +39,14 @@ export async function createReserva(reserva) {
 
 export async function updateReserva(id_reserva, reserva) {
     try {
-        const response = await axios.patch(`/reserva/update/${id_reserva}`, reserva);
+        const response = await axios.patch(`/reserva/update/${id_reserva}`, {
+            id_lab: reserva.id_lab,
+            rut: reserva.rut,
+            fecha: reserva.fecha,
+            id_horario: reserva.id_horario,
+            id_asignatura: reserva.id_asignatura,
+            id_curso: reserva.id_curso,
+        });
         return response.data;
     } catch (error) {
         console.error("Error al actualizar la reserva: ", error.response ? error.response.data : error.message);
@@ -50,32 +64,13 @@ export async function deleteReserva(id_reserva) {
     }
 }
 
-export async function getReservasByLab(id_lab) {
-    try {
-        const response = await axios.get(`/reserva/lab/${id_lab}`);
-        return response.data;
-    } catch (error) {
-        console.error("Error al obtener las reservas por laboratorio: ", error.response ? error.response.data : error.message);
-        return error.response ? error.response.data : { error: error.message };
-    }
-}
 
-export async function getReservasByDocente(rut_docente) {
+export async function getReservasByUsuario(rut) {
     try {
-        const response = await axios.get(`/reserva/docente/${rut_docente}`);
+        const response = await axios.get(`/reserva/usuario/${rut}`);
         return response.data;
     } catch (error) {
-        console.error("Error al obtener las reservas por docente: ", error.response ? error.response.data : error.message);
-        return error.response ? error.response.data : { error: error.message };
-    }
-}
-
-export async function getReservasByFecha(fecha) {
-    try {
-        const response = await axios.get(`/reserva/fecha/${fecha}`);
-        return response.data;
-    } catch (error) {
-        console.error("Error al obtener las reservas por fecha: ", error.response ? error.response.data : error.message);
+        console.error("Error al obtener las reservas por usuario: ", error.response ? error.response.data : error.message);
         return error.response ? error.response.data : { error: error.message };
     }
 }

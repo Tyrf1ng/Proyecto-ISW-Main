@@ -1,13 +1,12 @@
-import { AppDataSource } from "../config/configDb.js"; // Asegúrate de que la ruta sea correcta
-import Reserva from "../entity/reserva.entity.js"; // Asegúrate de que la ruta sea correcta
+import { AppDataSource } from "../config/configDb.js"; 
+import Reserva from "../entity/reserva.entity.js"; 
 
-//Funciona NO TOCAR
 export async function getReservasService() {
     try {
         const reservaRepository = AppDataSource.getRepository(Reserva);
 
         const reservas = await reservaRepository.find({
-            relations: ["lab", "docente", "horarios"],
+            relations: ["lab", "usuario", "horarios", "asignatura", "curso"],
         });
 
         if (!reservas || reservas.length === 0) return [null, "No hay reservas"];
@@ -15,9 +14,11 @@ export async function getReservasService() {
         const reservasData = reservas.map(reserva => ({
             id_reserva: reserva.id_reserva,
             laboratorio: reserva.lab.nombre,
-            docente: `${reserva.docente.nombre} ${reserva.docente.apellido}`,
+            usuario: `${reserva.usuario.nombre} ${reserva.usuario.apellido}`,
             fecha: reserva.fecha,
             horario: `${reserva.horarios.hora_inicio} - ${reserva.horarios.hora_fin}`,
+            id_asignatura: reserva.asignatura.id_asignatura,
+            id_curso: reserva.curso.id_curso,
         }));
 
         return [reservasData, null];
@@ -27,14 +28,13 @@ export async function getReservasService() {
     }
 }
 
-//Funciona NO TOCAR
 export async function getReservaService(id) {
     try {
         const reservaRepository = AppDataSource.getRepository(Reserva);
 
         const reserva = await reservaRepository.findOne({
             where: { id_reserva: id },
-            relations: ["lab", "docente", "horarios"],
+            relations: ["lab", "usuario", "horarios", "asignatura", "curso"],
         });
 
         if (!reserva) return [null, "Reserva no encontrada"];
@@ -42,9 +42,11 @@ export async function getReservaService(id) {
         const reservaData = {
             id_reserva: reserva.id_reserva,
             laboratorio: reserva.lab.nombre,
-            docente: `${reserva.docente.nombre} ${reserva.docente.apellido}`,
+            usuario: `${reserva.usuario.nombre} ${reserva.usuario.apellido}`,
             fecha: reserva.fecha,
             horario: `${reserva.horarios.hora_inicio} - ${reserva.horarios.hora_fin}`,
+            id_asignatura: reserva.asignatura.id_asignatura,
+            id_curso: reserva.curso.id_curso,
         };
 
         return [reservaData, null];
@@ -54,12 +56,10 @@ export async function getReservaService(id) {
     }
 }
 
-//Funciona NO TOCAR
 export async function createReservaService(data) {
     try {
         const reservaRepository = AppDataSource.getRepository(Reserva);
 
-        // Verifica si ya existe una reserva para el mismo laboratorio, fecha y horario
         const existingReservaLab = await reservaRepository.findOne({
             where: { id_lab: data.id_lab, fecha: data.fecha, id_horario: data.id_horario },
         });
@@ -68,17 +68,19 @@ export async function createReservaService(data) {
             return [null, "El laboratorio ya está reservado en la misma fecha y horario"];
         }
 
-        // Verifica si el docente ya tiene una reserva en la misma fecha y horario
-        const existingReservaDocente = await reservaRepository.findOne({
-            where: { rut_docente: data.rut_docente, fecha: data.fecha, id_horario: data.id_horario },
+        const existingReservaUsuario = await reservaRepository.findOne({
+            where: { rut: data.rut, fecha: data.fecha, id_horario: data.id_horario },
         });
 
-        if (existingReservaDocente) {
-            return [null, "El docente ya tiene una reserva en la misma fecha y horario"];
+        if (existingReservaUsuario) {
+            return [null, "El usuario ya tiene una reserva en la misma fecha y horario"];
         }
 
-        // Crea una nueva reserva
-        const reserva = reservaRepository.create(data);
+        const reserva = reservaRepository.create({
+            ...data,
+            id_asignatura: data.id_asignatura,
+            id_curso: data.id_curso,
+        });
         const savedReserva = await reservaRepository.save(reserva);
 
         return [savedReserva, null];
@@ -88,12 +90,10 @@ export async function createReservaService(data) {
     }
 }
 
-//Funciona NO TOCAR
 export async function updateReservaService(id_reserva, data) {
     try {
         const reservaRepository = AppDataSource.getRepository(Reserva);
 
-        // Verifica si ya existe una reserva para el mismo laboratorio, fecha y horario
         const existingReservaLab = await reservaRepository.findOne({
             where: { id_lab: data.id_lab, fecha: data.fecha, id_horario: data.id_horario },
         });
@@ -102,27 +102,28 @@ export async function updateReservaService(id_reserva, data) {
             return [null, "El laboratorio ya está reservado en la misma fecha y horario"];
         }
 
-        // Verifica si el docente ya tiene una reserva en la misma fecha y horario
-        const existingReservaDocente = await reservaRepository.findOne({
-            where: { rut_docente: data.rut_docente, fecha: data.fecha, id_horario: data.id_horario },
+        const existingReservaUsuario = await reservaRepository.findOne({
+            where: { rut: data.rut, fecha: data.fecha, id_horario: data.id_horario },
         });
 
-        if (existingReservaDocente && existingReservaDocente.id_reserva !== id_reserva) {
-            return [null, "El docente ya tiene una reserva en la misma fecha y horario"];
+        if (existingReservaUsuario && existingReservaUsuario.id_reserva !== id_reserva) {
+            return [null, "El usuario ya tiene una reserva en la misma fecha y horario"];
         }
 
-        // Actualiza la reserva con los nuevos datos
-        const result = await reservaRepository.update(
-            { id_reserva: id_reserva },  // Condición de búsqueda
-            data                         // Nuevos datos
-        );
+        const reserva = await reservaRepository.findOne({ where: { id_reserva } });
 
-        if (result.affected === 0) {
+        if (!reserva) {
             return [null, "Reserva no encontrada"];
         }
 
-        // Obtén la reserva actualizada
-        const updatedReserva = await reservaRepository.findOneBy({ id_reserva: id_reserva });
+        reserva.id_lab = data.id_lab;
+        reserva.rut = data.rut;
+        reserva.fecha = data.fecha;
+        reserva.id_horario = data.id_horario;
+        reserva.id_asignatura = data.id_asignatura;
+        reserva.id_curso = data.id_curso;
+
+        const updatedReserva = await reservaRepository.save(reserva);
 
         return [updatedReserva, null];
     } catch (error) {
@@ -131,7 +132,6 @@ export async function updateReservaService(id_reserva, data) {
     }
 }
 
-//Funciona NO TOCAR
 export async function deleteReservaService(id_reserva) {
     try {
         const reservaRepository = AppDataSource.getRepository(Reserva);
@@ -143,83 +143,29 @@ export async function deleteReservaService(id_reserva) {
     }
 }
 
-// Nueva función para obtener reservas por laboratorio
-export async function getReservasByLabService(id_lab) {
+
+export async function getReservasByUsuarioService(rut) {
     try {
         const reservaRepository = AppDataSource.getRepository(Reserva);
 
         const reservas = await reservaRepository.find({
-            where: { id_lab: id_lab },
-            relations: ["lab", "docente", "horarios"],
+            where: { rut: rut },
+            relations: ["lab", "usuario", "horarios"],
         });
 
-        if (!reservas || reservas.length === 0) return [null, "No hay reservas para este laboratorio"];
+        if (!reservas || reservas.length === 0) return [null, "No hay reservas para este usuario"];
 
         const reservasData = reservas.map(reserva => ({
             id_reserva: reserva.id_reserva,
             laboratorio: reserva.lab.nombre,
-            docente: `${reserva.docente.nombre} ${reserva.docente.apellido}`,
+            usuario: `${reserva.usuario.nombre} ${reserva.usuario.apellido}`,
             fecha: reserva.fecha,
             horario: `${reserva.horarios.hora_inicio} - ${reserva.horarios.hora_fin}`,
         }));
 
         return [reservasData, null];
     } catch (error) {
-        console.error("Error al obtener las reservas por laboratorio:", error);
-        return [null, "Error interno del servidor"];
-    }
-}
-
-// Nueva función para obtener reservas por docente
-export async function getReservasByDocenteService(rut_docente) {
-    try {
-        const reservaRepository = AppDataSource.getRepository(Reserva);
-
-        const reservas = await reservaRepository.find({
-            where: { rut_docente: rut_docente },
-            relations: ["lab", "docente", "horarios"],
-        });
-
-        if (!reservas || reservas.length === 0) return [null, "No hay reservas para este docente"];
-
-        const reservasData = reservas.map(reserva => ({
-            id_reserva: reserva.id_reserva,
-            laboratorio: reserva.lab.nombre,
-            docente: `${reserva.docente.nombre} ${reserva.docente.apellido}`,
-            fecha: reserva.fecha,
-            horario: `${reserva.horarios.hora_inicio} - ${reserva.horarios.hora_fin}`,
-        }));
-
-        return [reservasData, null];
-    } catch (error) {
-        console.error("Error al obtener las reservas por docente:", error);
-        return [null, "Error interno del servidor"];
-    }
-}
-
-// Nueva función para obtener reservas por fecha
-export async function getReservasByFechaService(fecha) {
-    try {
-        const reservaRepository = AppDataSource.getRepository(Reserva);
-
-        const reservas = await reservaRepository.find({
-            where: { fecha: fecha },
-            relations: ["lab", "docente", "horarios"],
-        });
-
-        if (!reservas || reservas.length === 0) return [null, "No hay reservas para esta fecha"];
-
-        const reservasData = reservas.map(reserva => ({
-            id_reserva: reserva.id_reserva,
-            laboratorio: reserva.lab.nombre,
-            docente: `${reserva.docente.nombre} ${reserva.docente.apellido}`,
-            fecha: reserva.fecha,
-            horario: `${reserva.horarios.hora_inicio} - ${reserva.horarios.hora_fin}`,
-        }));
-
-        return [reservasData, null];
-    } catch (error) {
-        console.error("Error al obtener las reservas por fecha:", error);
+        console.error("Error al obtener las reservas por usuario:", error);
         return [null, "Error interno del servidor"];
     }
 }

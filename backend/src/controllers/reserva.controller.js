@@ -2,9 +2,7 @@
 import { 
     createReservaService,
     deleteReservaService, 
-    getReservasByDocenteService,
-    getReservasByFechaService,
-    getReservasByLabService,
+    getReservasByUsuarioService,
     getReservaService, 
     getReservasService,
     updateReservaService,
@@ -18,15 +16,15 @@ import {
 
 import Joi from "joi";
 
-// Definición del esquema de validación
 const reservaBodyValidation = Joi.object({
     id_lab: Joi.number().integer().required(),
-    rut_docente: Joi.string().required(), // Cambiado a string
+    rut: Joi.string().required(),
     fecha: Joi.date().required(),
     id_horario: Joi.number().integer().required(),
+    id_asignatura: Joi.number().integer().required(),
+    id_curso: Joi.number().integer().required(),
 });
 
-//Funciona NO TOCAR
 export async function getReserva(req, res) {
     try {
         const { id_reserva } = req.params; 
@@ -38,7 +36,6 @@ export async function getReserva(req, res) {
     }
 }
 
-//Funciona NO TOCAR
 export async function getReservas(req, res) {
     try {
         const [reservas, errorReservas] = await getReservasService();
@@ -50,18 +47,17 @@ export async function getReservas(req, res) {
     }
 }
 
-//Funciona NO TOCAR
 export async function createReserva(req, res) {
     try {
-        const { id_lab, rut_docente, fecha, id_horario } = req.body;
-        if (!id_lab || !rut_docente || !fecha || !id_horario) {
+        const { id_lab, rut, fecha, id_horario, id_asignatura, id_curso } = req.body;
+        if (!id_lab || !rut || !fecha || !id_horario || !id_asignatura || !id_curso) {
             return handleErrorClient(res, 400, "Faltan datos obligatorios");
         }
 
-        const { error: bodyError } = reservaBodyValidation.validate({ id_lab, rut_docente, fecha, id_horario });
+        const { error: bodyError } = reservaBodyValidation.validate({ id_lab, rut, fecha, id_horario, id_asignatura, id_curso });
         if (bodyError) return handleErrorClient(res, 400, bodyError.message);
 
-        const [reserva, errorReserva] = await createReservaService({ id_lab, rut_docente, fecha, id_horario });
+        const [reserva, errorReserva] = await createReservaService({ id_lab, rut, fecha, id_horario, id_asignatura, id_curso });
         if (errorReserva) return handleErrorClient(res, 400, errorReserva);
 
         handleSuccess(res, 201, "Reserva creada", reserva);
@@ -70,7 +66,6 @@ export async function createReserva(req, res) {
     }
 }
 
-//Funciona NO TOCAR
 export async function updateReserva(req, res) {
     try {
         const { id_reserva } = req.params;
@@ -87,7 +82,6 @@ export async function updateReserva(req, res) {
     }
 }
 
-//Funciona NO TOCAR
 export async function deleteReserva(req, res) {
     try {
         const { id_reserva } = req.params;
@@ -99,35 +93,10 @@ export async function deleteReserva(req, res) {
     }
 }
 
-// Nueva función para obtener reservas por laboratorio
-export async function getReservasByLab(req, res) {
+export async function getReservasByUsuario(req, res) {
     try {
-        const { id_lab } = req.params;
-        const [reservas, errorReservas] = await getReservasByLabService(id_lab);
-        if (errorReservas) return handleErrorClient(res, 404, errorReservas);
-        handleSuccess(res, 200, "Reservas encontradas", reservas);
-    } catch (error) {
-        handleErrorServer(res, 500, error.message);
-    }
-}
-
-// Nueva función para obtener reservas por docente
-export async function getReservasByDocente(req, res) {
-    try {
-        const { rut_docente } = req.params;
-        const [reservas, errorReservas] = await getReservasByDocenteService(rut_docente);
-        if (errorReservas) return handleErrorClient(res, 404, errorReservas);
-        handleSuccess(res, 200, "Reservas encontradas", reservas);
-    } catch (error) {
-        handleErrorServer(res, 500, error.message);
-    }
-}
-
-// Nueva función para obtener reservas por fecha
-export async function getReservasByFecha(req, res) {
-    try {
-        const { fecha } = req.params;
-        const [reservas, errorReservas] = await getReservasByFechaService(fecha);
+        const { rut } = req.params;
+        const [reservas, errorReservas] = await getReservasByUsuarioService(rut);
         if (errorReservas) return handleErrorClient(res, 404, errorReservas);
         handleSuccess(res, 200, "Reservas encontradas", reservas);
     } catch (error) {
