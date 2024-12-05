@@ -96,6 +96,12 @@ async function createAsignaturas() {
           rut: "20.960.538-4",
         }),
       ),
+      AsignaturasRepository.save(
+        AsignaturasRepository.create({
+          nombre: "Historia de Coronel",
+          rut: "21.151.773-5",
+        }),
+      ),
     ]);
     
     console.log("* => Asignaturas creadas exitosamente");
@@ -117,6 +123,24 @@ async function createAsignaturaCurso() {
         AsignaturaCursoRepository.create({
           id_curso: 1,
           id_asignatura: 1,
+        }),
+      ),
+      AsignaturaCursoRepository.save(
+        AsignaturaCursoRepository.create({
+          id_curso: 2,
+          id_asignatura: 1,
+        }),
+      ),
+      AsignaturaCursoRepository.save(
+        AsignaturaCursoRepository.create({
+          id_curso: 1,
+          id_asignatura: 2,
+        }),
+      ),
+      AsignaturaCursoRepository.save(
+        AsignaturaCursoRepository.create({
+          id_curso: 2,
+          id_asignatura: 2,
         }),
       ),
     ]);
@@ -294,16 +318,16 @@ async function createReserva() {
           rut: "20.960.538-4",
           id_lab: 2,
           id_asignatura: 1,
-          id_curso: 1,
+          id_curso: 2,
         }),
       ),
       reservaRepository.save(
         reservaRepository.create({
           fecha:"2024-12-22",
           id_horario: 3,
-          rut: "20.960.538-4",
+          rut: "21.151.773-5",
           id_lab: 3,
-          id_asignatura: 1,
+          id_asignatura: 2,
           id_curso: 1,
         }),
       ),
@@ -382,6 +406,19 @@ async function createUsuario() {
           id_roles: 3,
           comuna: "Conce City",
           direccion: "Calle del smegma 69",
+        }),
+      ),
+      usuarioRepository.save(
+        usuarioRepository.create({
+          rut: "21.151.773-5",
+          nombre: "Kuka",
+          apellido: "Loyola",
+          email: "alvaro@gmail.cl",
+          telefono: 987655321,
+          password: await encryptPassword("alvaro123"),
+          id_roles: 3,
+          comuna: "Coronel City",
+          direccion: "Calle coronel lota 69",
         }),
       ),
       usuarioRepository.save(
