@@ -28,7 +28,7 @@ export const asistenciaQueryValidation = Joi.object({
 
     tipo: Joi.string()
         .required()
-        .valid(["Presente", "Ausente", "Justificado"])
+        .valid("Presente", "Ausente", "Justificado")
         .insensitive()
         .messages({
             "any.only": "El tipo de asistencia debe ser 'Presente', 'Ausente' o 'Justificado'.",

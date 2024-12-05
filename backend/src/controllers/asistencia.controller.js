@@ -1,5 +1,5 @@
 "use strict";
-import { asistenciasQueryValidation } from "../validations/asistencia.validation.js"
+import { asistenciaQueryValidation } from "../validations/asistencia.validation.js"
 
 import {
     createAsistencia,
