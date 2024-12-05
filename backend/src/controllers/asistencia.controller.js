@@ -1,4 +1,6 @@
 "use strict";
+import { asistenciasQueryValidation } from "../validations/asistencia.validation.js"
+
 import {
     createAsistencia,
     deleteAsistencia,
@@ -13,6 +15,7 @@ import {
     handleErrorServer,
     handleSuccess,
 } from "../handlers/responseHandlers.js";
+
 
 export async function getAsistenciasCursoController(req, res) {
     try {
@@ -51,8 +54,8 @@ export async function getAsistenciasAsignaturaController(req, res) {
         const { id_asignatura } = req.params;
         const [asistencias, errorAsistencias] = await getAsistenciasAsignatura(id_asignatura);
         if (errorAsistencias) return handleErrorClient(res, 404, errorAsistencias);
-        asistencias.length === 0 
-            ? handleSuccess(res, 204) 
+        asistencias.length === 0
+            ? handleSuccess(res, 204)
             : handleSuccess(res, 200, "Asistencias encontradas", asistencias);
     } catch (error) {
         handleErrorServer(res, 500, error.message);
@@ -73,11 +76,17 @@ export async function getAsistenciaController(req, res) {
     }
 }
 
+
 export const updateAsistenciaController = async (req, res) => {
     try {
         const { id_asistencia } = req.params;
-        const { tipo } = req.body;  // Asegúrate de que el campo se llama "tipo"
-        
+        const { tipo } = req.body;
+        const { error: validationError } = asistenciaQueryValidation.validate(req.body);
+
+        if (validationError) {
+            return handleErrorClient(res, 400, "Datos de entrada no válidos", validationError.details[0].message);
+        }
+
         if (!tipo) {
             return handleErrorClient(res, 400, "Faltan datos obligatorios");
         }
@@ -95,18 +104,16 @@ export const updateAsistenciaController = async (req, res) => {
 
 export async function createAsistenciaController(req, res) {
     try {
-        const { id_asignatura, rut, tipo } = req.body;
-        if (!id_asignatura || !rut || !tipo) {
-            return handleErrorClient(res, 400, "Faltan datos obligatorios");
+        const { error: validationError, value } = asistenciaQueryValidation.validate(req.body);
+        if (validationError) {
+            return handleErrorClient(res, 400, validationError.details[0].message);
         }
+        const { id_asignatura, rut, tipo } = value;
 
-        const [asistenciaCreada, errorAsistencia] = await createAsistencia({
-            id_asignatura,
-            rut,
-            tipo,
-        });
-
-        if (errorAsistencia) return handleErrorClient(res, 400, errorAsistencia);
+        const [asistenciaCreada, errorAsistencia] = await createAsistencia({ id_asignatura, rut, tipo });
+        if (errorAsistencia) {
+            return handleErrorClient(res, 400, errorAsistencia);
+        }
 
         handleSuccess(res, 201, "Asistencia creada", asistenciaCreada);
     } catch (error) {
