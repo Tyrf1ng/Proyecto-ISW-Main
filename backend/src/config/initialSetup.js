@@ -92,12 +92,6 @@ async function createAsignaturas() {
     await Promise.all([
       AsignaturasRepository.save(
         AsignaturasRepository.create({
-          nombre: "Matematicas",
-          rut: "20.960.538-4",
-        }),
-      ),
-      AsignaturasRepository.save(
-        AsignaturasRepository.create({
           nombre: "Precocidad Prematura",
           rut: "20.960.538-4",
         }),
@@ -150,6 +144,7 @@ async function createAnotaciones() {
       ),
       AnotacionesRepository.save(
         AnotacionesRepository.create({
+          // eslint-disable-next-line max-len
           descripcion: "Alumno constantemente interrumpe la clase intentando convencer a sus compañeros de unirse al partido comunista",
           rut: "21.070.073-0",
           tipo: "Negativa",
@@ -177,14 +172,6 @@ async function createAsistencia() {
           tipo: "Presente",
           rut: "21.070.073-0",
           id_asignatura: 1,
-        }),
-      ),
-      AsistenciaRepository.save(
-        AsistenciaRepository.create({
-          fecha: "2021-09-01",
-          tipo: "Presente",
-          rut: "21.070.073-0",
-          id_asignatura: 2,
         }),
       ),
     ]);
