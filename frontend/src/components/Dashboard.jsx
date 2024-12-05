@@ -92,7 +92,7 @@ const NAVIGATION_BY_ROLE = {
       title: 'Notas',
       icon: <HistoryEduRoundedIcon />,
       children: [
-        { segment: 'ver_notas', title: 'Ver Notas', icon: <ManageSearchIcon /> },
+        { segment: 'Ver_Nota_Alumno', title: 'Ver Notas', icon: <ManageSearchIcon /> },
       ],
     },
   ],

@@ -18,6 +18,7 @@ const TableComponent = ({ notas, onEdit, onDelete, role }) => {
                 <th className="p-4 text-left text-sm font-normal text-gray-500 dark:text-gray-400">Asignatura</th>
                 {role === 2 && (
                   <th className="p-4 text-left text-sm font-normal text-gray-500 dark:text-gray-400">Acciones</th>
+                  
                 )}
               </tr>
             </thead>

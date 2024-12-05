@@ -11,6 +11,8 @@ const VerNotas = () => {
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [notaToDelete, setNotaToDelete] = useState(null);
   const [notaToEdit, setNotaToEdit] = useState(null);
+  const [message, setMessage] = useState("");
+  const [messageType, setMessageType] = useState("");
 
   useEffect(() => {
     if (idCurso) fetchNotas();
@@ -49,7 +51,8 @@ const VerNotas = () => {
       const { id_nota, valor, tipo, originalTipo } = notaToEdit;
   
       if (valor < 1.0 || valor > 7.0) {
-        alert('El valor de la nota debe estar entre 1.0 y 7.0');
+        setMessage('El valor de la nota debe estar entre 1.0 y 7.0');
+        setMessageType('warning');
         return;
       }
   
@@ -70,7 +73,8 @@ const VerNotas = () => {
       console.error('Error al actualizar la nota:', error);
     }
   };
-  
+
+
 
   return (
     <div className="p-4 bg-gray-50 dark:bg-gray-800">

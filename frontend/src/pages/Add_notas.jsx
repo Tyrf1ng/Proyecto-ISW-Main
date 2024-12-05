@@ -97,6 +97,11 @@ function Add_Notas() {
       setMessageType("warning");
       return;
     }
+    if (!newNota.valor || newNota.valor < 1 || newNota.valor > 7) {
+      setMessage("El valor de la nota debe estar entre 1.0 y 7.0.");
+      setMessageType("error");
+      return;
+    }
 
     try {
       await createNota(newNota);
@@ -207,7 +212,9 @@ function Add_Notas() {
 
       {/* Valor de la Nota */}
       <div className="mb-4">
-        <label htmlFor="valor" className="block text-sm text-gray-500 dark:text-gray-300">Valor</label>
+        <label htmlFor="valor" className="block text-sm text-gray-500 dark:text-gray-300"
+        >Valor
+        </label>
         <input
           type="number"
           name="valor"

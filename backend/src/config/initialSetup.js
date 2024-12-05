@@ -416,7 +416,7 @@ async function createUsuario() {
           email: "alvaro@gmail.cl",
           telefono: 987655321,
           password: await encryptPassword("alvaro123"),
-          id_roles: 3,
+          id_roles: 2,
           comuna: "Coronel City",
           direccion: "Calle coronel lota 69",
         }),

@@ -12,7 +12,7 @@ const Ver_Nota_Alumno = () => {
   const [filterText, setFilterText] = useState('');
 
   const filteredNotas = notas.filter((nota) =>
-    nota.tipo.toLowerCase().includes(filterText.toLowerCase())
+    nota.nombre_asignatura.toLowerCase().includes(filterText.toLowerCase())
   );
 
   useEffect(() => {
@@ -46,26 +46,23 @@ const Ver_Nota_Alumno = () => {
 
   return (
     <Box sx={{ padding: 4 }}>
-      <Typography variant="h4" gutterBottom>
-        Notas del Alumno
-      </Typography>
-      <Typography variant="h6" gutterBottom>
-        RUT: {rut}
-      </Typography>
       <Box
         sx={{
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          marginBottom: 2,
+          marginBottom: 0,
         }}
       >
-        <TextField
-          label="Filtrar por Tipo"
-          variant="outlined"
-          value={filterText}
-          onChange={handleFilterChange}
+        <div className="p-4 bg-gray-50 dark:bg-gray-800">
+          <input 
+        type="text" 
+        value={filterText}
+        onChange={handleFilterChange}
+        placeholder="Filtrar por asignatura"
+          className="w-96 p-2 border rounded dark:text-gray-300 dark:bg-gray-900"
         />
+          </div>
       </Box>
       <TableComponent
         notas={filteredNotas}
