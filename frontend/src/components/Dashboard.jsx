@@ -8,11 +8,9 @@ import { Outlet } from 'react-router-dom';
 import ManageSearchIcon from '@mui/icons-material/ManageSearch';
 import AddIcon from '@mui/icons-material/Add';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
-import CollectionsBookmarkIcon from '@mui/icons-material/CollectionsBookmark';
 import AlarmIcon from '@mui/icons-material/Alarm';
 import BiotechIcon from '@mui/icons-material/Biotech';
 import EventIcon from '@mui/icons-material/Event';
-// Importar logo local
 import logo from '../images/components/logo.svg'; 
 
 // Configuración de navegación por roles
@@ -186,14 +184,9 @@ const DashboardLayoutAccount = () => {
           </nav>
   
           <div className="mt-6">
-            <div className="flex items-center justify-between mt-6">
+            <div className="flex items-center justify-between px-5 mt-6">
               {/* Enlace de perfil */}
               <Link to="/perfil" className="flex items-center gap-x-2">
-                <img
-                  className="object-cover rounded-full h-7 w-7"
-                  src={session?.user?.avatar || "https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=634&h=634&q=80"}
-                  alt="avatar"
-                />
                 <div>
                   <span className="text-sm font-medium text-gray-700 dark:text-gray-200">
                     {session?.user?.nombre ? `${session.user.nombre} ${session.user.apellido}` : "Cargando..."}

@@ -12,6 +12,12 @@ const Cursos = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Validar si el usuario tiene rol 2 antes de cargar los cursos
+    if (!user || user.rol !== "Docente") {
+      navigate("/inicio"); // Si no es rol 2 (profesor), redirigimos a /inicio
+      return;
+    }
+
     const cargarCursos = async () => {
       if (!user || !user.rut) {
         console.error("El usuario no tiene un RUT asociado.");
@@ -28,7 +34,7 @@ const Cursos = () => {
       }
     };
     cargarCursos();
-  }, [user]);
+  }, [user, navigate]);
 
   const seleccionarCurso = (id_curso) => {
     setIdCurso(id_curso);
