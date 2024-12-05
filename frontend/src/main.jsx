@@ -5,7 +5,7 @@
   import Cursos from '@pages/Cursos';
   import Login from '@pages/Login';
   import Error404 from '@pages/Error404';
-  import ProtectedRoute from '@components/ProtectedRoute';
+  import Add_usuario from '@pages/Add_usuario';
   import Anotaciones from '@pages/Anotaciones';
   import Labs from '@pages/Labs'; // Importa el nuevo componente Labs
   import Horarios from '@pages/Horarios'; // Importa el nuevo componente Horarios
@@ -60,6 +60,13 @@ import LabsDocente from './pages/LabsDocente';
             { path: 'Ver_Nota_Alumno', element: <Ver_Nota_Alumno /> },
           ],
         },
+        { path: 'gestionusuario',
+          element: <Outlet />,
+          children: [
+            {path : 'add_usuario', element: <Add_usuario />}]
+        },
+
+
         { path: 'gestion_reservas',
           element: <Outlet />,
           children: [
