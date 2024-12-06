@@ -13,12 +13,11 @@ import {
     handleSuccess,
 } from "../handlers/responseHandlers.js";
 
-import { labBodyValidation, labUpdateValidation } from "../validations/lab.validation.js";
+import { labBodyValidation} from "../validations/lab.validation.js";
 
 const normalizeName = (name) => {
     return name.replace(/\s+/g, ' ').trim();
 };
-
 
 export async function getLab(req, res) {
     try {
@@ -30,7 +29,6 @@ export async function getLab(req, res) {
         handleErrorServer(res, 500, error.message);
     }
 }
-
 
 export async function getLabs(req, res) {
     try {
@@ -68,7 +66,7 @@ export async function updateLab(req, res) {
         const { id_lab } = req.params;
         const { body } = req;
         const normalizedNombre = normalizeName(body.nombre);
-        const { error: bodyError } = await labUpdateValidation.validateAsync({ id_lab, ...body, nombre: normalizedNombre });
+        const { error: bodyError } = await labBodyValidation.validateAsync({ id_lab, ...body, nombre: normalizedNombre });
         if (bodyError) return handleErrorClient(res, 400, bodyError.message);
 
         const [lab, errorLab] = await updateLabService(id_lab, { ...body, nombre: normalizedNombre });
@@ -79,7 +77,6 @@ export async function updateLab(req, res) {
         handleErrorServer(res, 500, error.message);
     }
 }
-
 
 export async function deleteLab(req, res) {
     try {

@@ -1,11 +1,10 @@
 import { useEffect, useState } from 'react';
-import { Box, Typography, TextField, Button, Modal, Alert, Snackbar, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Select, MenuItem, InputLabel, FormControl } from '@mui/material';
 import useReservas from '../hooks/reservas/useReservas';
 import useLabs from '../hooks/labs/useLabs'; 
 import { useHorarios } from '../hooks/horarios/useHorarios'; 
 import TableReservas from '../components/TableReservas'; 
-import { getCursos } from '@services/cursos.service.js'; 
-import { getAsignaturasByProfesor } from '@services/asignatura.service.js'; 
+import { getCurso } from '@services/cursos.service.js'; 
+import { getNombreAsignaturaById } from '@services/asignatura.service.js'; 
 
 const Reservas = () => {
   const { reservas, fetchReservas, addReserva, editReserva, removeReserva, error } = useReservas();
@@ -29,33 +28,42 @@ const Reservas = () => {
   const [deleteSuccess, setDeleteSuccess] = useState(false);
   const [createSuccess, setCreateSuccess] = useState(false);
   const [validationError, setValidationError] = useState(null);
-  const [cursos, setCursos] = useState([]); 
-  const [asignaturas, setAsignaturas] = useState([]); 
+  const [reservasConNombre, setReservasConNombre] = useState([]);
 
   useEffect(() => {
     fetchReservas();
     fetchLabs(); 
     fetchHorarios(); 
-    fetchCursos(); 
-    fetchAsignaturas(); 
   }, []);
 
-  const fetchCursos = async () => {
+  useEffect(() => {
+    if (reservas.length > 0) {
+      mapReservasConNombre();
+    }
+  }, [reservas]);
+
+  const fetchNombreAsignatura = async (id_asignatura) => {
     try {
-      const cursosData = await getCursos();
-      setCursos(cursosData);
+      const nombreAsignatura = await getNombreAsignaturaById(id_asignatura);
+      return nombreAsignatura;
     } catch (error) {
-      console.error("Error al obtener los cursos: ", error);
+      console.error("Error al obtener el nombre de la asignatura: ", error);
+      return id_asignatura; 
     }
   };
 
-  const fetchAsignaturas = async () => {
-    try {
-      const asignaturasData = await getAsignaturasByProfesor(newReserva.rut); 
-      setAsignaturas(asignaturasData);
-    } catch (error) {
-      console.error("Error al obtener las asignaturas: ", error);
-    }
+  const mapReservasConNombre = async () => {
+    const reservasMapeadas = await Promise.all(reservas.map(async reserva => {
+      const nombreCurso = await getCurso(reserva.id_curso);
+      const nombreAsignatura = await fetchNombreAsignatura(reserva.id_asignatura);
+      const reservaConNombre = { 
+        ...reserva, 
+        nombre_curso: nombreCurso ? nombreCurso.nombre : reserva.id_curso,
+        nombre_asignatura: nombreAsignatura
+      };
+      return reservaConNombre;
+    }));
+    setReservasConNombre(reservasMapeadas);
   };
 
   const handleFilterChange = (e) => setFilterText(e.target.value);
@@ -126,17 +134,6 @@ const Reservas = () => {
     }
   };
 
-
-  const reservasConNombreCursoYAsignatura = reservas.map(reserva => {
-    const curso = cursos.find(c => c.id_curso === reserva.id_curso);
-    const asignatura = asignaturas.find(a => a.id_asignatura === reserva.id_asignatura);
-    return { 
-      ...reserva, 
-      nombre_curso: curso ? curso.nombre : reserva.id_curso,
-      nombre_asignatura: asignatura ? asignatura.nombre : reserva.id_asignatura
-    };
-  });
-
   return (
     <div className="p-4 bg-gray-50 dark:bg-gray-800 min-h-screen">
         <h1 className="text-4xl text-center text-blue-100 mb-4">Reservas</h1>
@@ -145,7 +142,7 @@ const Reservas = () => {
         </div>
 
         <TableReservas
-            reservas={reservasConNombreCursoYAsignatura}
+            reservas={reservasConNombre}
             handleOpen={handleEditOpen}
             handleDelete={handleDeleteOpen}
         />
@@ -186,7 +183,7 @@ const Reservas = () => {
                     />
                     <input
                         name="id_asignatura"
-                        value={currentReserva?.id_asignatura || ''}
+                        value={currentReserva?.nombre_asignatura || ''}
                         onChange={handleEditInputChange}
                         placeholder="ID Asignatura"
                         className="w-full p-2 mb-4 border rounded dark:bg-gray-700 dark:text-white"

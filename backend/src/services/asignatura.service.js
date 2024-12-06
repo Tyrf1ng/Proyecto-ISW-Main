@@ -7,7 +7,6 @@ export async function getAsignaturasByProfesor(rut) {
         const asignaturaRepository = AppDataSource.getRepository(Asignaturas);
         const usuarioRepository = AppDataSource.getRepository(Usuario);
 
-        // Buscar el usuario con el rut y verificar que su id_roles sea 2 (profesor)
         const usuario = await usuarioRepository.findOne({
             where: { rut: rut, id_roles: 2 }
         });
@@ -16,9 +15,8 @@ export async function getAsignaturasByProfesor(rut) {
             return [null, "No se encuentra un usuario con el rol de profesor para este rut"];
         }
 
-        // Obtener las asignaturas asociadas al usuario (rut)
         const asignaturas = await asignaturaRepository.find({
-            where: { rut: rut } // Relación con el campo `rut` en asignaturas
+            where: { rut: rut } 
         });
 
         if (!asignaturas || asignaturas.length === 0) {
@@ -29,6 +27,25 @@ export async function getAsignaturasByProfesor(rut) {
         return [asignaturasData, null];
     } catch (error) {
         console.error("Error al obtener las asignaturas:", error);
+        return [null, "Error interno del servidor"];
+    }
+}
+
+export async function getNombreAsignaturaById(id_asignatura) {
+    try {
+        const asignaturaRepository = AppDataSource.getRepository(Asignaturas);
+
+        const asignatura = await asignaturaRepository.findOne({
+            where: { id_asignatura: id_asignatura }
+        });
+
+        if (!asignatura) {
+            return [null, "No se encuentra una asignatura con este ID"];
+        }
+
+        return [asignatura.nombre, null];
+    } catch (error) {
+        console.error("Error al obtener el nombre de la asignatura:", error);
         return [null, "Error interno del servidor"];
     }
 }
