@@ -79,28 +79,34 @@ export async function getAsistenciaController(req, res) {
 
 export const updateAsistenciaController = async (req, res) => {
     try {
-        const { id_asistencia } = req.params;
-        const { tipo } = req.body;
-        const { error: validationError } = asistenciaQueryValidation.validate(req.body);
-
-        if (validationError) {
-            return handleErrorClient(res, 400, "Datos de entrada no válidos", validationError.details[0].message);
-        }
-
-        if (!tipo) {
-            return handleErrorClient(res, 400, "Faltan datos obligatorios");
-        }
-
-        const [asistenciaActualizada, error] = await updateAsistencia(id_asistencia, tipo);
-        if (error) {
-            return handleErrorClient(res, 404, error);
-        }
-
-        handleSuccess(res, 200, "Asistencia actualizada", asistenciaActualizada);
+      const { createdAt, usuario, ...bodyWithoutTimestamps } = req.body;
+      const { id_asistencia } = req.params;
+      const { error: validationError } = asistenciaQueryValidation.validate({
+        ...bodyWithoutTimestamps, // Excluir `createdAt` y `usuario`
+        id_asistencia,
+      });
+      if (validationError) {
+        return handleErrorClient(res, 400, "Datos de entrada no válidos", validationError.details[0].message);
+      }
+      const { tipo, observacion, updatedAt } = req.body;
+      if (!tipo) {
+        return handleErrorClient(res, 400, "Faltan datos obligatorios");
+      }
+      const [asistenciaActualizada, error] = await updateAsistencia(id_asistencia, {
+        tipo,
+        observacion,
+        updatedAt,
+      });
+      if (error) {
+        return handleErrorClient(res, 404, error);
+      }
+      handleSuccess(res, 200, "Asistencia actualizada", asistenciaActualizada);
     } catch (error) {
-        handleErrorServer(res, 500, error.message);
+      handleErrorServer(res, 500, error.message);
     }
-};
+  };
+  
+  
 
 export async function createAsistenciaController(req, res) {
     try {
