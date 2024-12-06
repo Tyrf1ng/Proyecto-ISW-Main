@@ -1,4 +1,4 @@
-import { getAsignaturasByProfesor, getAsignaturasByAlumno } from "../services/asignatura.service.js";
+import {  getAsignaturasByAlumno, getAsignaturasByProfesor } from "../services/asignatura.service.js";
 import { handleErrorClient, handleErrorServer, handleSuccess } from "../handlers/responseHandlers.js";
 
 export async function getAsignaturasByProfesorController(req, res) {
