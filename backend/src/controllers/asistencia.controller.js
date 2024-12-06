@@ -32,9 +32,9 @@ export async function getAsistenciasCursoController(req, res) {
 
 export async function getAsistenciasAlumnoController(req, res) {
     try {
-        const { rut_alumno } = req.params;
+        const { rut } = req.params;
 
-        const [asistencias, errorAsistencias] = await getAsistenciasAlumno(rut_alumno);
+        const [asistencias, errorAsistencias] = await getAsistenciasAlumno(rut);
 
         if (errorAsistencias) return handleErrorClient(res, 404, errorAsistencias);
 
@@ -74,32 +74,35 @@ export async function getAsistenciaController(req, res) {
 }
 
 export const updateAsistenciaController = async (req, res) => {
-  const { id_asistencia } = req.params;
-  const { tipo } = req.body;  // Asegúrate de que el campo se llama "tipo"
-  
-  if (!tipo) {
-      return res.status(400).json({ message: "Faltan datos obligatorios" });
-  }
+    try {
+        const { id_asistencia } = req.params;
+        const { tipo } = req.body;  // Asegúrate de que el campo se llama "tipo"
+        
+        if (!tipo) {
+            return handleErrorClient(res, 400, "Faltan datos obligatorios");
+        }
 
-  const [asistenciaActualizada, error] = await updateAsistencia(id_asistencia, tipo);
-  if (error) {
-      console.error("Error al actualizar la asistencia:", error);
-      return res.status(500).json({ message: "Error interno del servidor" });
-  }
+        const [asistenciaActualizada, error] = await updateAsistencia(id_asistencia, tipo);
+        if (error) {
+            return handleErrorClient(res, 404, error);
+        }
 
-  return res.json(asistenciaActualizada);
+        handleSuccess(res, 200, "Asistencia actualizada", asistenciaActualizada);
+    } catch (error) {
+        handleErrorServer(res, 500, error.message);
+    }
 };
 
 export async function createAsistenciaController(req, res) {
     try {
-        const { id_asignatura, rut_alumno, tipo } = req.body;
-        if (!id_asignatura || !rut_alumno || !tipo) {
+        const { id_asignatura, rut, tipo } = req.body;
+        if (!id_asignatura || !rut || !tipo) {
             return handleErrorClient(res, 400, "Faltan datos obligatorios");
         }
 
         const [asistenciaCreada, errorAsistencia] = await createAsistencia({
             id_asignatura,
-            rut_alumno,
+            rut,
             tipo,
         });
 

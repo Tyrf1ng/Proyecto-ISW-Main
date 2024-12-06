@@ -43,7 +43,7 @@ const TableComponent = ({ notas, onEdit, onDelete }) => {
   
                       {/* RUT del Alumno */}
                       <td className="p-4 text-sm whitespace-nowrap">
-                        <div className="text-gray-800 dark:text-white">{nota.rut_alumno}</div>
+                        <div className="text-gray-800 dark:text-white">{nota.rut}</div>
                       </td>
   
                       {/* Alumno */}

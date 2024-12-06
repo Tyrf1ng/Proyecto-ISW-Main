@@ -40,15 +40,14 @@ const VerNotas = () => {
     }
   };
   const handleEdit = (nota) => {
-    setNotaToEdit({ id_nota: nota.id_nota, valor: nota.valor, tipo: nota.tipo });
+    setNotaToEdit({ id_nota: nota.id_nota, valor: nota.valor, tipo: nota.tipo, originalTipo: nota.tipo });
   };
 
   const handleUpdate = async (e) => {
     e.preventDefault();
     try {
-      const { id_nota, valor, tipo } = notaToEdit;
+      const { id_nota, valor, tipo, originalTipo } = notaToEdit;
   
-
       if (valor < 1.0 || valor > 7.0) {
         alert('El valor de la nota debe estar entre 1.0 y 7.0');
         return;
@@ -58,14 +57,20 @@ const VerNotas = () => {
         console.error('ID o Valor no definido.');
         return;
       }
+ 
+      if (tipo !== originalTipo) {
+        console.log(`El tipo cambió de "${originalTipo}" a "${tipo}"`);
+      }
   
-      await updateNota(id_nota, valor, tipo); 
-      fetchNotas();
+    
+      await updateNota(id_nota, valor, tipo);
+      fetchNotas(); 
       setNotaToEdit(null);
     } catch (error) {
       console.error('Error al actualizar la nota:', error);
     }
   };
+  
 
   return (
     <div className="p-4 bg-gray-50 dark:bg-gray-800">
@@ -110,11 +115,12 @@ const VerNotas = () => {
         </div>
       )}
 
-{notaToEdit && (
+{notaToEdit !==null && (
   <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
     <div className="p-8 rounded-lg shadow-xl bg-white text-black dark:bg-[#111827] dark:text-white w-96">
       <h2 className="text-lg font-bold mb-4">Editar Nota</h2>
       <form onSubmit={handleUpdate}>
+
         {/* Tipo */}
         <div className="mb-4">
           <label
@@ -125,7 +131,7 @@ const VerNotas = () => {
           </label>
           <select
             id="tipo"
-            value={notaToEdit.tipo} // Asegúrate de que `notaToEdit.tipo` esté siempre actualizado
+            value={notaToEdit?.tipo ||''} 
             onChange={(e) => setNotaToEdit((prevState) => ({ ...prevState, tipo: e.target.value }))}
             className="w-full p-2 border rounded dark:text-gray-300 dark:bg-gray-900"
           >
@@ -161,6 +167,12 @@ const VerNotas = () => {
           className="w-full px-6 py-3 bg-blue-600 text-white rounded-lg"
         >
           Actualizar
+        </button>
+        <button
+          onClick={() => setNotaToEdit(null)}
+          className="w-full px-6 py-3  bg-red-500 text-white rounded-lg mt-4"
+        >
+          Cancelar
         </button>
       </form>
     </div>

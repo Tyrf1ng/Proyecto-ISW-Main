@@ -94,7 +94,7 @@ const VerAsistencias = () => {
   };
 
   const filteredAsistencias = asistencias.filter((asistencia) =>
-    `${asistencia.alumno.nombre} ${asistencia.alumno.apellido}`
+    `${asistencia.usuario.nombre} ${asistencia.usuario.apellido}`
       .toLowerCase()
       .includes(filterText.toLowerCase())
   );

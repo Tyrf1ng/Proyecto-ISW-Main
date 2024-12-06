@@ -30,12 +30,6 @@ export async function getHorarioService(id) {
 export async function createHorarioService(data) {
     try {
         const horariosRepository = AppDataSource.getRepository(Horarios);
-        const overlappingHorarios = await horariosRepository.createQueryBuilder("horarios")
-            .where("hora_inicio < :hora_fin AND hora_fin > :hora_inicio", { hora_inicio: data.hora_inicio, hora_fin: data.hora_fin })
-            .getMany();
-        if (overlappingHorarios.length > 0) {
-            return [null, "El horario se solapa con otro existente"];
-        }
         const horario = horariosRepository.create(data);
         const savedHorario = await horariosRepository.save(horario);
         return [savedHorario, null];
@@ -48,12 +42,6 @@ export async function createHorarioService(data) {
 export async function updateHorarioService(id_horario, data) {
     try {
         const horariosRepository = AppDataSource.getRepository(Horarios);
-        const overlappingHorarios = await horariosRepository.createQueryBuilder("horarios")
-            .where("id_horario != :id_horario AND hora_inicio < :hora_fin AND hora_fin > :hora_inicio", { id_horario, hora_inicio: data.hora_inicio, hora_fin: data.hora_fin })
-            .getMany();
-        if (overlappingHorarios.length > 0) {
-            return [null, "El horario se solapa con otro existente"];
-        }
         const result = await horariosRepository.update(
             { id_horario: id_horario },
             data
@@ -80,5 +68,21 @@ export async function deleteHorarioService(id_horario) {
         }
         console.error("Error al eliminar el horario:", error);
         return [null, "Error interno del servidor"];
+    }
+}
+
+export async function isHorarioValid(hora_inicio, hora_fin, id_horario = null) {
+    try {
+        const horariosRepository = AppDataSource.getRepository(Horarios);
+        const query = horariosRepository.createQueryBuilder("horarios")
+            .where("hora_inicio < :hora_fin AND hora_fin > :hora_inicio", { hora_inicio, hora_fin });
+        if (id_horario) {
+            query.andWhere("id_horario != :id_horario", { id_horario });
+        }
+        const overlappingHorarios = await query.getMany();
+        return overlappingHorarios.length === 0;
+    } catch (error) {
+        console.error("Error al validar el horario:", error);
+        return false;
     }
 }
