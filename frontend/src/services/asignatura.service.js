@@ -18,3 +18,17 @@ export async function getAsignaturasByProfesor(rut) {
     throw error;  // Lanzamos el error para que el frontend pueda manejarlo
   }
 }
+export async function getAsignaturasByAlumno(rut) {
+try {
+  const { data } = await axios.get(`/asignaturas/alumno/${rut}`);
+  if (data && data.data) {
+    return data.data;
+  } else {
+    console.error("Respuesta inesperada al obtener asignaturas.");
+    throw new Error("No se encontraron asignaturas.");
+  }
+} catch (error) {
+  console.error("Error al obtener asignaturas por alumno: ", error);
+  throw error;
+}
+}

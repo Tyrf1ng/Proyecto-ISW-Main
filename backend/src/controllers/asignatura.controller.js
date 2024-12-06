@@ -1,4 +1,4 @@
-import { getAsignaturasByProfesor } from "../services/asignatura.service.js";
+import { getAsignaturasByProfesor, getAsignaturasByAlumno } from "../services/asignatura.service.js";
 import { handleErrorClient, handleErrorServer, handleSuccess } from "../handlers/responseHandlers.js";
 
 export async function getAsignaturasByProfesorController(req, res) {
@@ -22,4 +22,19 @@ export async function getAsignaturasByProfesorController(req, res) {
         // Manejamos errores no controlados
         handleErrorServer(res, 500, error.message);
     }
+}
+export async function getAsignaturasByAlumnoController(req, res) {
+try {
+    const { rut } = req.params; 
+    const [asignaturas, errorAsignaturas] = await getAsignaturasByAlumno(rut);
+    if (errorAsignaturas) return handleErrorClient(res, 404, errorAsignaturas);
+    if (asignaturas.length === 0) {
+        return handleSuccess(res, 204, "No hay asignaturas para este alumno");
+    }
+    handleSuccess(res, 200, "Asignaturas encontradas", asignaturas);
+    
+} catch (error) {
+    handleErrorServer(res, 500, error.message);
+    
+}
 }

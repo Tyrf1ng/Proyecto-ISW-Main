@@ -2,33 +2,56 @@ import Asignaturas from "../entity/asignatura.entity.js";
 import { AppDataSource } from "../config/configDb.js";
 import Usuario from "../entity/usuario.entity.js";
 
+
 export async function getAsignaturasByProfesor(rut) {
     try {
         const asignaturaRepository = AppDataSource.getRepository(Asignaturas);
         const usuarioRepository = AppDataSource.getRepository(Usuario);
 
-        // Buscar el usuario con el rut y verificar que su id_roles sea 2 (profesor)
-        const usuario = await usuarioRepository.findOne({
-            where: { rut: rut, id_roles: 2 }
+
+        // Validar si el usuario existe y tiene el rol de profesor (id_roles = 2)
+        const usuario = await usuarioRepository.find({
+            where: { rut: rut, id_roles: 2 },
         });
 
         if (!usuario) {
             return [null, "No se encuentra un usuario con el rol de profesor para este rut"];
         }
 
-        // Obtener las asignaturas asociadas al usuario (rut)
-        const asignaturas = await asignaturaRepository.find({
-            where: { rut: rut } // Relación con el campo `rut` en asignaturas
+        const asignaturasDelDocente = await asignaturaRepository.find({
+            where: { rut: rut }, 
         });
-
-        if (!asignaturas || asignaturas.length === 0) {
-            return [null, "No hay asignaturas para este profesor"];
-        }
-
-        const asignaturasData = asignaturas.map(({ ...asignatura }) => asignatura);
-        return [asignaturasData, null];
+     
+   
+        return [asignaturasDelDocente, null];
     } catch (error) {
         console.error("Error al obtener las asignaturas:", error);
         return [null, "Error interno del servidor"];
     }
 }
+
+export async function getAsignaturasByAlumno(rut) {
+    try {
+        const asignaturaRepository = AppDataSource.getRepository(Asignaturas);
+        const usuarioRepository = AppDataSource.getRepository(Usuario);
+
+        // Validar si el usuario existe y tiene el rol de alumno (id_roles = 3)
+        const usuario = await usuarioRepository.find({
+            where: { rut: rut, id_roles: 3 },
+        });
+
+        if (!usuario) {
+            return [null, "No se encuentra un usuario con el rol de alumno para este rut"];
+        }
+
+        const asignaturasDelAlumno = await asignaturaRepository.find({
+            where: { rut: rut },
+        });
+
+        return [asignaturasDelAlumno, null];
+    } catch (error) {
+        console.error("Error al obtener las asignaturas:", error);
+        return [null, "Error interno del servidor"];
+    }
+
+} 
