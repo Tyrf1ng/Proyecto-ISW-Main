@@ -18,6 +18,7 @@
   import Add_anotaciones from '@pages/Add_anotaciones';
   import Ver_anotaciones from '@pages/Ver_anotaciones';
   import '@styles/styles.css';
+  import Asignaturas from '@pages/Asignaturas';
   import VerAsistencias from '@pages/VerAsistencias';
   import RegistrarAsistencias from '@pages/RegistrarAsistencias';
   import Reservas from '@pages/Reservas'; // Importa el nuevo componente Reservas
@@ -31,7 +32,8 @@ import LabsDocente from './pages/LabsDocente';
       errorElement: <Error404 />,
       children: [
         { path: 'inicio', element: <Inicio /> },
-        { path: 'cursos', element: <Cursos /> },
+        { path: 'cursos', element: <Cursos />         },
+        {path: 'asignaturas', element: <Asignaturas />},
         { path: 'perfil', element: <Profile /> },
         {
           path: 'asistencias',

@@ -1,12 +1,15 @@
 import DashboardLayoutAccount from '@components/Dashboard';
 import { AuthProvider } from '@context/AuthContext';
-import { CursoProvider } from '../context/CursoContext'; // Asegúrate de importar el CursoProvider
+import { CursoProvider } from '../context/CursoContext'; 
+import { AsignaturaProvider } from '../context/AsignaturaContext'; 
 
 function Root() {
   return (
     <AuthProvider>
-      <CursoProvider> 
-        <DashboardLayoutAccount />
+      <CursoProvider>
+        <AsignaturaProvider> 
+          <DashboardLayoutAccount />
+        </AsignaturaProvider>
       </CursoProvider>
     </AuthProvider>
   );

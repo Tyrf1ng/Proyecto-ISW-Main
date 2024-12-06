@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import backgroundImage from '../images/components/books.svg'; // Imagen local
 import { getAsignaturasByProfesor } from '../services/asignatura.service'; // Importación del servicio de asignaturas
 import { getCursosByProfesor } from '../services/cursos.service'; // Importación del servicio de cursos
+import { getAsignaturasByAlumno } from '../services/asignatura.service'; // Importación del servicio para asignaturas de alumno
 
 function Inicio() {
   const navigate = useNavigate();
@@ -52,9 +53,27 @@ function Inicio() {
             console.error('Error al obtener cursos:', error);
             setErrorCurso('Hubo un error al cargar los cursos.');
           });
+      } else if (usuarioGuardado.rol === 'Alumno') {
+        // Obtener las asignaturas del alumno
+        getAsignaturasByAlumno(usuarioGuardado.rut)
+          .then((asignaturas) => {
+            if (asignaturas.length > 0) {
+              setAsignatura(asignaturas[0].nombre); // Selecciona la primera asignatura si hay varias
+            } else {
+              setErrorAsignatura('No se encontraron asignaturas para este alumno.');
+            }
+          })
+          .catch((error) => {
+            console.error('Error al obtener asignaturas por alumno:', error);
+            setErrorAsignatura('Hubo un error al cargar las asignaturas.');
+          });
       }
     }
   }, []);
+
+  const handleSeleccionarAsignatura = () => {
+    navigate('/asignaturas'); // Redirige a la página de selección de asignaturas
+  };
 
   const handleSeleccionarCurso = () => {
     navigate('/cursos'); // Redirige a la página de selección de cursos
@@ -85,6 +104,13 @@ function Inicio() {
               // Texto para alumnos
               <span>
                 Bienvenido a tu página personal del liceo <span className="text-[#3B82F6]">XXXXXXXXX</span>.
+                {errorAsignatura ? (
+                  <span className="text-red-500">{errorAsignatura}</span>
+                ) : (
+                  <span>
+                    Tu asignatura seleccionada es <span className="text-[#3B82F6]">{asignatura || 'Cargando asignatura...'}</span>
+                  </span>
+                )}
               </span>
             ) : usuario.rol === 'Profesor' ? (
               // Texto para profesores
@@ -107,7 +133,7 @@ function Inicio() {
             ) : usuario.rol === 'Directivo' ? (
               // Texto para directivos
               <span>
-                Bienvenido a la página de administración del liceo <span className="text-[#3B82F6]">XXXXXXXXX</span>.
+                Bienvenido a la página de administración del liceo <span className="text-[#3B82F6]">XXXXXXXXX</span>.<br />
                 Desde aquí puedes gestionar los recursos educativos y coordinar con los profesores y alumnos.
               </span>
             ) : (
@@ -115,7 +141,18 @@ function Inicio() {
             )}
           </p>
 
-          {/* Botón para seleccionar un curso (solo si el usuario es profesor) */}
+          {/* Botones para seleccionar asignatura o curso */}
+          {usuario.rol === 'Alumno' && (
+            <div className="inline-flex w-full mt-6 sm:w-auto">
+              <button
+                onClick={handleSeleccionarAsignatura}
+                className="inline-flex items-center justify-center w-full px-6 py-2 text-sm text-white duration-300 bg-blue-600 rounded-lg hover:bg-blue-500 focus:ring focus:ring-blue-300 focus:ring-opacity-80"
+              >
+                Seleccionar asignatura
+              </button>
+            </div>
+          )}
+
           {usuario.rol === 'Profesor' && (
             <div className="inline-flex w-full mt-6 sm:w-auto">
               <button
