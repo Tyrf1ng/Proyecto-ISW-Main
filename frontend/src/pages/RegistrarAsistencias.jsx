@@ -73,6 +73,8 @@ function RegistrarAsistencias() {
         observacion: estado === "Justificado" ? observacion : null,
       };
 
+      console.log("Datos enviados al backend:", data);
+
       await createAsistencia(data);
       setMensaje("¡Asistencia registrada exitosamente!");
       setMessageType("success");
@@ -85,13 +87,15 @@ function RegistrarAsistencias() {
       setMessageType("error");
     }
   };
- 
+
   // Detectar clic fuera del input y lista para cerrarlas
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
-        inputRef.current && !inputRef.current.contains(event.target) && // Clic fuera del input
-        listRef.current && !listRef.current.contains(event.target) // Clic fuera de la lista
+        inputRef.current &&
+        !inputRef.current.contains(event.target) && // Clic fuera del input
+        listRef.current &&
+        !listRef.current.contains(event.target) // Clic fuera de la lista
       ) {
         setIsListVisible(false); // Cerrar la lista
       }
@@ -106,7 +110,8 @@ function RegistrarAsistencias() {
 
   // Renderizar los mensajes de éxito, error o advertencia
   const renderMessage = () => {
-    const messageClasses = "fixed top-5 right-5 w-full max-w-sm overflow-hidden bg-[#111827] rounded-lg shadow-md z-50";
+    const messageClasses =
+      "fixed top-5 right-5 w-full max-w-sm overflow-hidden bg-[#111827] rounded-lg shadow-md z-50";
 
     if (messageType === "success") {
       return (
@@ -152,10 +157,17 @@ function RegistrarAsistencias() {
 
   return (
     <div className="p-6 max-w-3xl mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-md relative">
-      <h2 className="text-2xl font-semibold text-gray-800 dark:text-white mb-6">Registrar Asistencia</h2>
+      <h2 className="text-2xl font-semibold text-gray-800 dark:text-white mb-6">
+        Registrar Asistencia
+      </h2>
 
       <div className="mb-4">
-        <label htmlFor="alumno" className="block text-sm text-gray-500 dark:text-gray-300">Buscar Alumno</label>
+        <label
+          htmlFor="alumno"
+          className="block text-sm text-gray-500 dark:text-gray-300"
+        >
+          Buscar Alumno
+        </label>
         <input
           ref={inputRef} // Asociar la referencia al input
           type="text"
@@ -169,7 +181,10 @@ function RegistrarAsistencias() {
       </div>
 
       {isListVisible && filteredAlumnos.length > 0 && (
-        <div ref={listRef} className="absolute mt-1 w-full max-h-64 overflow-y-auto bg-white dark:bg-gray-900 shadow-xl rounded-lg z-10">
+        <div
+          ref={listRef}
+          className="absolute mt-1 w-full max-h-64 overflow-y-auto bg-white dark:bg-gray-900 shadow-xl rounded-lg z-10"
+        >
           <ul className="mt-2">
             {filteredAlumnos.map((usuario) => (
               <li
@@ -185,14 +200,21 @@ function RegistrarAsistencias() {
       )}
 
       <div className="mb-4">
-        <label htmlFor="estado" className="block text-sm text-gray-500 dark:text-gray-300">Estado</label>
+        <label
+          htmlFor="estado"
+          className="block text-sm text-gray-500 dark:text-gray-300"
+        >
+          Estado
+        </label>
         <select
           id="estado"
           value={estado}
           onChange={(e) => setEstado(e.target.value)}
           className="mt-2 block w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300"
         >
-          <option value="" disabled>Selecciona Estado</option>
+          <option value="" disabled>
+            Selecciona Estado
+          </option>
           <option value="Presente">Presente</option>
           <option value="Ausente">Ausente</option>
           <option value="Justificado">Justificado</option>
@@ -201,7 +223,12 @@ function RegistrarAsistencias() {
 
       {estado === "Justificado" && (
         <div className="mb-4">
-          <label htmlFor="observacion" className="block text-sm text-gray-500 dark:text-gray-300">Observación</label>
+          <label
+            htmlFor="observacion"
+            className="block text-sm text-gray-500 dark:text-gray-300"
+          >
+            Observación
+          </label>
           <textarea
             id="observacion"
             value={observacion}

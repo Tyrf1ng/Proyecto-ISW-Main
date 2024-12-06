@@ -34,6 +34,14 @@ export const asistenciaQueryValidation = Joi.object({
             "any.only": "El tipo de asistencia debe ser 'Presente', 'Ausente' o 'Justificado'.",
             "string.empty": "El tipo de asistencia no debe estar vacío.",
             "string.base": "El tipo de asistencia debe ser un string."
-        })
+        }),
+        observacion: Joi.string().allow(null).when("tipo", {
+            is: "Justificado",
+            then: Joi.required().messages({
+              "any.required": "La observación es obligatoria cuando el tipo es Justificado"
+            }),
+            otherwise: Joi.optional()
+          })
+          
 
 })
