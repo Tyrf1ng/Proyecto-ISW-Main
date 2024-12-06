@@ -35,7 +35,6 @@ const TableComponent = ({ anotaciones, handleOpen, handleDelete }) => {
                   <tr key={anotacion.id_anotacion}>
                     <td className="px-4 py-4 text-sm font-medium whitespace-normal max-w-xs break-words">
                       <div>
-                        {/* Descripción con ajuste de texto a varias líneas */}
                         <h2 className="font-medium text-gray-800 dark:text-white">
                           {anotacion.descripcion}
                         </h2>
@@ -63,7 +62,6 @@ const TableComponent = ({ anotaciones, handleOpen, handleDelete }) => {
                         <IconButton color="primary" onClick={() => handleOpen(anotacion)}>
                           <EditIcon />
                         </IconButton>
-                        {/* Icono Delete con color rojo */}
                         <IconButton color="primary" onClick={() => handleDelete(anotacion.id_anotacion)}>
                           <DeleteIcon className="text-red-500" />
                         </IconButton>
