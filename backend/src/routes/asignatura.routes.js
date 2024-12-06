@@ -9,6 +9,6 @@ const router = Router();
 
 router
     .use(authenticateJwt)
-    .get("/profesor/:rut", authorize(["Docente", "Directivo"]), getAsignaturasByProfesorController);
-
+    .get("/profesor/:rut", authorize(["Docente", "Directivo"]), getAsignaturasByProfesorController)
+    .get("/alumno/:rut", authorize(["Alumno"]), getAsignaturasByAlumnoController);
     export default router;
