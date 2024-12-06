@@ -103,12 +103,14 @@ function Inicio() {
             {usuario.rol === 'Alumno' ? (
               // Texto para alumnos
               <span>
-                Bienvenido a tu página personal del liceo <span className="text-[#3B82F6]">XXXXXXXXX</span>.
+                Bienvenido a tu página personal del liceo 
+                 <span className="text-[#3B82F6]"> XXXXXXXXX <br />
+                 </span>
                 {errorAsignatura ? (
                   <span className="text-red-500">{errorAsignatura}</span>
                 ) : (
                   <span>
-                    Tu asignatura seleccionada es <span className="text-[#3B82F6]">{asignatura || 'Cargando asignatura...'}</span>
+                     Tu asignatura seleccionada es <span className="text-[#3B82F6]">{asignatura || 'Cargando asignatura...'}</span>
                   </span>
                 )}
               </span>
