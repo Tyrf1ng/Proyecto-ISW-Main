@@ -22,7 +22,7 @@ function Inicio() {
         rut: usuarioGuardado.rut, 
         rol: usuarioGuardado.rol || ''  // Asegurarse de que el rol esté disponible
       });
-      console.log('Datos del usuario:', usuarioGuardado);
+  
 
       // Obtener las asignaturas del profesor
       if (usuarioGuardado.rut && usuarioGuardado.rol === 'Profesor') {
@@ -110,7 +110,7 @@ function Inicio() {
                   <span className="text-red-500">{errorAsignatura}</span>
                 ) : (
                   <span>
-                     Tu asignatura seleccionada es <span className="text-[#3B82F6]">{asignatura || 'Cargando asignatura...'}</span>
+                     Tu asignatura seleccionada es <span className="text-[#3B82F6]">{asignatura|| 'Cargando asignatura...'}</span>
                   </span>
                 )}
               </span>

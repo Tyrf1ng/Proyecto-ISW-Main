@@ -1,7 +1,5 @@
 import { useState, useEffect } from 'react';
 import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import TextField from '@mui/material/TextField';
 import { getNotasPorRUT } from '@services/notas.service';
 import TableComponent from '@components/TableNotas'; // Ajusta la ruta según tu proyecto
 

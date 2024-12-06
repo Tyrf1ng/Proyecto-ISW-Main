@@ -144,9 +144,9 @@ const DashboardLayoutAccount = () => {
     navigate('/inicio');
   };
 
-  // Verificamos si estamos en la ruta "/cursos"
-  if (location.pathname === '/cursos') {
-    return <Outlet />;  // Solo renderizamos el contenido de la ruta sin el layout
+
+  if (location.pathname === '/cursos' || location.pathname === '/asignaturas') {
+    return <Outlet />; 
   }
 
   // Función para renderizar los enlaces de navegación
