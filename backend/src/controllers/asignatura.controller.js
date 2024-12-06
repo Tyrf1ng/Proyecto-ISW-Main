@@ -1,6 +1,9 @@
 import { getAsignaturasByProfesor } from "../services/asignatura.service.js";
 import { handleErrorClient, handleErrorServer, handleSuccess } from "../handlers/responseHandlers.js";
 
+/**
+ * Obtener asignaturas por RUT de un profesor
+ */
 export async function getAsignaturasByProfesorController(req, res) {
     try {
         const { rut } = req.params; // Asegúrate de que el parámetro en la ruta sea `rut`

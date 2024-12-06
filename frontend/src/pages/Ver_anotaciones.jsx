@@ -1,11 +1,12 @@
-import { useState, useContext, useEffect } from 'react';
+import { useState, useContext} from 'react';
 import { CursoContext } from '../context/CursoContext';
 import useAnotaciones from '@hooks/anotaciones/useAnotaciones';
 import { createAnotacion, deleteAnotacion, updateAnotacion } from '@services/anotaciones.service.js';
 import TableComponent from '../components/Table';
 
 const Ver_anotaciones = () => {
-  const { idCurso } = useContext(CursoContext);
+  const { curso } = useContext(CursoContext);
+  console.log('Curso seleccionado:', curso);
   const { anotaciones, fetchAnotaciones } = useAnotaciones();
   const [filterText, setFilterText] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -15,7 +16,7 @@ const Ver_anotaciones = () => {
     tipo: 'Positiva',
     rut_alumno: '',
     descripcion: '',
-    id_asignatura: idCurso || '',
+    id_asignatura: curso.idCurso || '',
     fecha: new Date().toISOString(),
   });
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
@@ -39,7 +40,7 @@ const Ver_anotaciones = () => {
       tipo: 'Positiva',
       rut_alumno: '',
       descripcion: '',
-      id_asignatura: idCurso || '',
+      id_asignatura: curso.idCurso || '',
       fecha: new Date().toISOString(),
     });
     setIsModalOpen(true);
