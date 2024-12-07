@@ -51,14 +51,14 @@ const VerAsistencias = () => {
         return;
       }
 
-      await deleteAsistencia(asistenciaToDelete); // Llamada a la API para eliminar la asistencia
+      await deleteAsistencia(asistenciaToDelete); 
 
       // Actualiza la lista de asistencias después de la eliminación
       setAsistencias(asistencias.filter((asistencia) => asistencia.id_asistencia !== asistenciaToDelete));
     } catch (error) {
       console.error("Error al eliminar la asistencia:", error);
     } finally {
-      setConfirmDialogOpen(false); // Cierra el cuadro de confirmación
+      setConfirmDialogOpen(false); 
     }
   };
 
@@ -72,6 +72,7 @@ const VerAsistencias = () => {
       const updatedAsistencia = {
         ...asistenciaSeleccionada,
         tipo: asistenciaSeleccionada.tipo,
+        observacion: asistenciaSeleccionada.observacion // Añadir observación
       };
 
       await updateAsistencia(updatedAsistencia);
@@ -144,6 +145,20 @@ const VerAsistencias = () => {
                 <option value="Ausente">Ausente</option>
                 <option value="Justificado">Justificado</option>
               </select>
+            </div>
+            <div className="mb-4">
+              <label htmlFor="observacion" className="block text-sm text-gray-500 dark:text-gray-300">
+                Observación
+              </label>
+              <textarea 
+                id="observacion"
+                name="observacion"
+                value={asistenciaSeleccionada.observacion || ""}
+                onChange={handleModalChange}
+                rows={4}
+                className="mt-2 block w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300 resize-none"
+                ></textarea>
+
             </div>
             <div className="flex justify-between">
               <button onClick={handleSave} className="px-6 py-3 bg-blue-600 text-white rounded-lg text-lg">

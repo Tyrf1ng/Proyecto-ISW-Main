@@ -107,9 +107,9 @@ export async function createAsistenciaController(req, res) {
         if (validationError) {
             return handleErrorClient(res, 400, validationError.details[0].message);
         }
-        const { id_asignatura, rut, tipo } = value;
+        const { id_asignatura, rut, tipo, observacion } = value;
 
-        const [asistenciaCreada, errorAsistencia] = await createAsistencia({ id_asignatura, rut, tipo });
+        const [asistenciaCreada, errorAsistencia] = await createAsistencia({ id_asignatura, rut, tipo, observacion });
         if (errorAsistencia) {
             return handleErrorClient(res, 400, errorAsistencia);
         }

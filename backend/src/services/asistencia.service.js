@@ -38,6 +38,7 @@ export async function getAsistenciasCurso(id_curso) {
             rut: asistencia.rut,
             id_asignatura: asistencia.id_asignatura,
             tipo: asistencia.tipo,
+            observacion: asistencia.tipo === "Justificado" ? asistencia.observacion : null,
             createdAt: asistencia.createdAt,
             updatedAt: asistencia.updatedAt,
             usuario: asistencia.usuario ? {
