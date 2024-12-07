@@ -76,28 +76,23 @@ export async function getAsistenciaController(req, res) {
     }
 }
 
-
 export const updateAsistenciaController = async (req, res) => {
     try {
       const { id_asistencia } = req.params;
-      const { tipo } = req.body;
-
-      // Validar que el campo 'tipo' tiene un valor válido
-      const { error: validationError } = asistenciaQueryValidation.validate({ tipo });
+      const { tipo, observacion } = req.body;
+      const { error: validationError } = asistenciaQueryValidation.validate({ tipo, observacion });
       if (validationError) {
         return handleErrorClient(res, 400, "Datos de entrada no válidos", validationError.details[0].message);
       }
-
-      const [asistenciaActualizada, error] = await updateAsistencia(id_asistencia, tipo);
+      const [asistenciaActualizada, error] = await updateAsistencia(id_asistencia, tipo, observacion);
       if (error) {
         return handleErrorClient(res, 404, error);
       }
-
       handleSuccess(res, 200, "Asistencia actualizada", asistenciaActualizada);
     } catch (error) {
       handleErrorServer(res, 500, error.message);
     }
-};
+  };
   
   
 

@@ -106,18 +106,22 @@ export async function getAsistencia(id_asistencia) {
     }
 }
 
-export async function updateAsistencia(id_asistencia, nuevoTipo) {
+export async function updateAsistencia(id_asistencia, nuevoTipo, observacion) {
     try {
+        if (nuevoTipo === "Justificado" && !observacion) {
+            return [null, "La observación es obligatoria cuando el tipo es Justificado"];
+        }
+
         const result = await asistenciaRepository.update(
             { id_asistencia: id_asistencia },  
-            { tipo: nuevoTipo }   
+            { tipo: nuevoTipo, observacion: observacion || null }   
         );
 
         if (result.affected === 0) {
             return [null, "No se encontró la asistencia"];
         }
 
-        return [{ id_asistencia, tipo: nuevoTipo }, null]; 
+        return [{ id_asistencia, tipo: nuevoTipo, observacion: observacion || null }, null]; 
     } catch (error) {
         console.error("Error al actualizar la asistencia:", error);
         return [null, "Error interno del servidor"];

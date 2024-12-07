@@ -68,15 +68,12 @@ const VerAsistencias = () => {
         console.error("ID de asistencia no válido", asistenciaSeleccionada);
         throw new Error("ID de asistencia no válido");
       }
-
       const updatedAsistencia = {
         ...asistenciaSeleccionada,
         tipo: asistenciaSeleccionada.tipo,
-        observacion: asistenciaSeleccionada.observacion // Añadir observación
+        observacion: asistenciaSeleccionada.tipo === "Justificado" ? asistenciaSeleccionada.observacion : null
       };
-
       await updateAsistencia(updatedAsistencia);
-      
       setIsModalOpen(false);
       setAsistencias(asistencias.map((asistencia) =>
         asistencia.id_asistencia === asistenciaSeleccionada.id_asistencia ? asistenciaSeleccionada : asistencia
@@ -146,20 +143,22 @@ const VerAsistencias = () => {
                 <option value="Justificado">Justificado</option>
               </select>
             </div>
-            <div className="mb-4">
-              <label htmlFor="observacion" className="block text-sm text-gray-500 dark:text-gray-300">
-                Observación
-              </label>
-              <textarea 
-                id="observacion"
-                name="observacion"
-                value={asistenciaSeleccionada.observacion || ""}
-                onChange={handleModalChange}
-                rows={4}
-                className="mt-2 block w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300 resize-none"
-                ></textarea>
-
-            </div>
+            {/* Mostrar el campo de observación solo si el tipo es "Justificado" */}
+            {asistenciaSeleccionada.tipo === "Justificado" && (
+              <div className="mb-4">
+                <label htmlFor="observacion" className="block text-sm text-gray-500 dark:text-gray-300">
+                  Observación
+                </label>
+                <textarea 
+                  id="observacion"
+                  name="observacion"
+                  value={asistenciaSeleccionada.observacion || ""}
+                  onChange={handleModalChange}
+                  rows={4}
+                  className="mt-2 block w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300 resize-none"
+                  ></textarea>
+              </div>
+            )}
             <div className="flex justify-between">
               <button onClick={handleSave} className="px-6 py-3 bg-blue-600 text-white rounded-lg text-lg">
                 Guardar
