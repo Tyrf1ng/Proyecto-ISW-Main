@@ -5,7 +5,7 @@ export const asistenciaQueryValidation = Joi.object({
     id_asignatura: Joi.number()
         .integer()
         .positive()
-        .required()
+        .optional()
         .messages({
             "number.base": "El id de la asignatura debe ser un número.",
             "number.integer": "El id de la asignatura debe ser un número entero.",
@@ -15,7 +15,6 @@ export const asistenciaQueryValidation = Joi.object({
     id_asistencia: Joi.number()
         .integer()
         .positive()
-        .required()
         .messages({
             "number.base": "El id de la asistencia debe ser un número.",
             "number.integer": "El id de la asistencia debe ser un número entero.",
@@ -24,7 +23,7 @@ export const asistenciaQueryValidation = Joi.object({
         }),
 
     rut: Joi.string()
-        .required()
+        .optional()
         .min(9)
         .max(12)
         .pattern(/^(?:(?:[1-9]\d{0}|[1-2]\d{1})(\.\d{3}){2}|[1-9]\d{6}|[1-2]\d{7}|29\.999\.999|29999999)-[\dkK0-9]$/)
@@ -37,7 +36,7 @@ export const asistenciaQueryValidation = Joi.object({
         }),
 
     tipo: Joi.string()
-        .required()
+        .optional()
         .valid("Presente", "Ausente", "Justificado")
         .insensitive()
         .messages({
