@@ -20,7 +20,7 @@ const NAVIGATION_BY_ROLE = {
       icon: <SchoolIcon />,
       children: [
         { segment: 'add_usuario', title: 'Añadir usuario', icon: <AddIcon /> },
-        { segment: 'ver_usuarios  ', title: 'Ver todos los usuarios', icon: <ManageSearchIcon /> },
+        { segment: 'ver_usuarios', title: 'Ver todos los usuarios', icon: <ManageSearchIcon /> },
       ],
 
     },
@@ -84,7 +84,7 @@ const NAVIGATION_BY_ROLE = {
       title: 'Anotaciones',
       icon: <HistoryEduRoundedIcon />,
       children: [
-        { segment: 'ver_anotaciones', title: 'Ver Anotaciones', icon: <ManageSearchIcon /> },
+        { segment: 'alumno', title: 'Ver Anotaciones', icon: <ManageSearchIcon /> },
       ],
     },
     {

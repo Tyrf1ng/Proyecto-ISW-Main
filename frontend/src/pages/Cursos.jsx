@@ -3,19 +3,19 @@ import { useNavigate } from "react-router-dom";
 import { getCursosByProfesor } from "../services/cursos.service"; 
 import { CursoContext } from "../context/CursoContext"; 
 import { useAuth } from "../context/AuthContext"; 
-import { motion } from "framer-motion"; // Importar motion
+import { motion } from "framer-motion"; 
 
 const Cursos = () => {
   const [cursos, setCursos] = useState([]);
   const [cargando, setCargando] = useState(true);
-  const { setIdCurso } = useContext(CursoContext);
+  const { setCurso } = useContext(CursoContext); 
   const { user } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Validar si el usuario tiene rol 2 antes de cargar los cursos
+  
     if (!user || user.rol !== "Docente") {
-      navigate("/inicio"); // Si no es rol 2 (profesor), redirigimos a /inicio
+      navigate("/inicio"); 
       return;
     }
 
@@ -37,8 +37,8 @@ const Cursos = () => {
     cargarCursos();
   }, [user, navigate]);
 
-  const seleccionarCurso = (id_curso) => {
-    setIdCurso(id_curso);
+  const seleccionarCurso = (id_curso, nombre) => {
+    setCurso({ idCurso: id_curso, nombre: nombre }); 
     navigate("/inicio");
   };
 
@@ -58,7 +58,7 @@ const Cursos = () => {
           <motion.div
             key={curso.id_curso}
             className="w-11/12 sm:w-11/12 md:w-7/10 bg-[#111827] dark:bg-[#111827] p-6 rounded-lg shadow-lg cursor-pointer"
-            onClick={() => seleccionarCurso(curso.id_curso)}
+            onClick={() => seleccionarCurso(curso.id_curso, curso.nombre)} // Pasa id_curso y nombre
             whileHover={{ scale: 1.05 }} // Aumentar tamaño al pasar el ratón
             whileTap={{ scale: 0.95 }}  // Reducir tamaño al hacer clic
             transition={{ type: "spring", stiffness: 400, damping: 20 }} // Transición fluida

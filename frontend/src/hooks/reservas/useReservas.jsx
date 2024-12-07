@@ -4,9 +4,7 @@ import {
     createReserva, 
     updateReserva, 
     deleteReserva, 
-    getReservasByLab, 
-    getReservasByDocente, 
-    getReservasByFecha 
+    getReservasByUsuario, 
 } from '@services/reservas.service.js';
 
 const useReservas = () => {
@@ -86,52 +84,19 @@ const useReservas = () => {
     }
   };
 
-  const fetchReservasByLab = async (id_lab) => {
-    setLoading(true);
-    try {
-      const data = await getReservasByLab(id_lab);
-      if (data.error) {
-        setError(data.error);
-      } else {
-        setReservas(data.data);
-      }
-    } catch (error) {
-      setError(error.message);
-      console.error("Error al obtener las reservas por laboratorio: ", error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
-  const fetchReservasByDocente = async (rut_docente) => {
+  const fetchReservasByUsuario = async (rut) => {
     setLoading(true);
     try {
-      const data = await getReservasByDocente(rut_docente);
+      const data = await getReservasByUsuario(rut);
       if (data.error) {
         setError(data.error);
       } else {
-        setReservas(data.data);
+        setReservas(data);
       }
     } catch (error) {
       setError(error.message);
-      console.error("Error al obtener las reservas por docente: ", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchReservasByFecha = async (fecha) => {
-    setLoading(true);
-    try {
-      const data = await getReservasByFecha(fecha);
-      if (data.error) {
-        setError(data.error);
-      } else {
-        setReservas(data.data);
-      }
-    } catch (error) {
-      setError(error.message);
-      console.error("Error al obtener las reservas por fecha: ", error);
+      console.error("Error al obtener las reservas por usuario: ", error);
     } finally {
       setLoading(false);
     }
@@ -143,9 +108,7 @@ const useReservas = () => {
     addReserva, 
     editReserva, 
     removeReserva, 
-    fetchReservasByLab, 
-    fetchReservasByDocente, 
-    fetchReservasByFecha, 
+    fetchReservasByUsuario, 
     loading, 
     error 
   };

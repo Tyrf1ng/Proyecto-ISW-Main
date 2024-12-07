@@ -15,6 +15,7 @@
   import Ver_Anotaciones_Para_Alumno from '@pages/Ver_Anotaciones_Para_Alumno'; // Importa el nuevo componente
   import Notas from '@pages/Notas';
   import Add_notas from '@pages/Add_notas';
+  import Ver_usuarios from '@pages/Ver_usuarios';
   import Add_anotaciones from '@pages/Add_anotaciones';
   import Ver_anotaciones from '@pages/Ver_anotaciones';
   import '@styles/styles.css';
@@ -63,7 +64,9 @@ import LabsDocente from './pages/LabsDocente';
         { path: 'gestionusuario',
           element: <Outlet />,
           children: [
-            {path : 'add_usuario', element: <Add_usuario />}]
+            {path : 'add_usuario', element: <Add_usuario />},
+            {path : 'ver_usuarios', element: <Ver_usuarios />}
+          ]
         },
 
 

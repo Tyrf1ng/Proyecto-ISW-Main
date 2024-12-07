@@ -42,17 +42,17 @@ function RegistrarAsistencias() {
   const handleSearchChange = (e) => {
     const query = e.target.value.toLowerCase();
     setSearchTerm(query);
-    const filtered = alumnos.filter((alumno) =>
-      `${alumno.nombre} ${alumno.apellido}`.toLowerCase().includes(query)
+    const filtered = alumnos.filter((usuario) =>
+      `${usuario.nombre} ${usuario.apellido}`.toLowerCase().includes(query)
     );
     setFilteredAlumnos(filtered);
     setIsListVisible(filtered.length > 0); // Mostrar la lista si hay resultados
   };
 
   // Manejar la selección de un alumno
-  const handleAlumnoSelect = (alumno) => {
-    setSelectedAlumno(alumno);
-    setSearchTerm(`${alumno.nombre} ${alumno.apellido}`);
+  const handleAlumnoSelect = (usuario) => {
+    setSelectedAlumno(usuario);
+    setSearchTerm(`${usuario.nombre} ${usuario.apellido}`);
     setIsListVisible(false); // Cerrar la lista después de seleccionar el alumno
   };
 
@@ -68,7 +68,7 @@ function RegistrarAsistencias() {
     try {
       const data = {
         id_asignatura: idCurso,
-        rut_alumno: selectedAlumno.rut_alumno,
+        rut: selectedAlumno.rut,
         tipo: estado,
         observacion: estado === "Justificado" ? observacion : null,
       };
@@ -85,7 +85,7 @@ function RegistrarAsistencias() {
       setMessageType("error");
     }
   };
-
+ 
   // Detectar clic fuera del input y lista para cerrarlas
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -171,13 +171,13 @@ function RegistrarAsistencias() {
       {isListVisible && filteredAlumnos.length > 0 && (
         <div ref={listRef} className="absolute mt-1 w-full max-h-64 overflow-y-auto bg-white dark:bg-gray-900 shadow-xl rounded-lg z-10">
           <ul className="mt-2">
-            {filteredAlumnos.map((alumno) => (
+            {filteredAlumnos.map((usuario) => (
               <li
-                key={alumno.rut_alumno}
-                onClick={() => handleAlumnoSelect(alumno)}
+                key={usuario.rut_alumno}
+                onClick={() => handleAlumnoSelect(usuario)}
                 className="px-4 py-2 cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-700 text-gray-800 dark:text-white"
               >
-                {alumno.nombre} {alumno.apellido}
+                {usuario.nombre} {usuario.apellido}
               </li>
             ))}
           </ul>

@@ -1,26 +1,26 @@
-import React, { useState, useEffect } from 'react';
-import { Box, Typography, TextField, Button, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Paper, IconButton, Modal, Alert, Snackbar, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Select, MenuItem, InputLabel, FormControl } from '@mui/material';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
-import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
-import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+import { useEffect, useState } from 'react';
 import useReservas from '../hooks/reservas/useReservas';
-import useLabs from '../hooks/labs/useLabs'; // Importa el hook useLabs
-import { useHorarios } from '../hooks/horarios/useHorarios'; // Importa el hook useHorarios
+import useLabs from '../hooks/labs/useLabs'; 
+import { useHorarios } from '../hooks/horarios/useHorarios'; 
+import TableReservas from '../components/TableReservas'; 
+import { getCurso } from '@services/cursos.service.js'; 
+import { getNombreAsignaturaById } from '@services/asignatura.service.js'; 
 
 const Reservas = () => {
-  const { reservas = [], fetchReservas, addReserva, editReserva, removeReserva, error } = useReservas();
-  const { labs: laboratorios, fetchLabs } = useLabs(); // Usa el hook useLabs
-  const { horarios, fetchHorarios } = useHorarios(); // Usa el hook useHorarios
+  const { reservas, fetchReservas, addReserva, editReserva, removeReserva, error } = useReservas();
+  const { labs: laboratorios, fetchLabs } = useLabs();
+  const { horarios, fetchHorarios } = useHorarios(); 
   const [filterText, setFilterText] = useState('');
   const [open, setOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [newReserva, setNewReserva] = useState({
     id_lab: '',
-    rut_docente: '',
+    rut: '',
     fecha: '',
     id_horario: '',
+    id_asignatura: '',
+    id_curso: ''
   });
   const [currentReserva, setCurrentReserva] = useState(null);
   const [deleteError, setDeleteError] = useState(null);
@@ -28,46 +28,62 @@ const Reservas = () => {
   const [deleteSuccess, setDeleteSuccess] = useState(false);
   const [createSuccess, setCreateSuccess] = useState(false);
   const [validationError, setValidationError] = useState(null);
-  const [sortConfig, setSortConfig] = useState({ key: 'fecha', direction: 'asc' });
+  const [reservasConNombre, setReservasConNombre] = useState([]);
 
   useEffect(() => {
     fetchReservas();
-    fetchLabs(); // Obtén los laboratorios cuando el componente se monte
-    fetchHorarios(); // Obtén los horarios cuando el componente se monte
+    fetchLabs(); 
+    fetchHorarios(); 
   }, []);
 
-  const filteredReservas = Array.isArray(reservas)
-    ? reservas.filter((reserva) => reserva.fecha && reserva.fecha.toLowerCase().includes(filterText.toLowerCase()))
-    : [];
-
-  const sortedReservas = filteredReservas.sort((a, b) => {
-    let aValue = a[sortConfig.key];
-    let bValue = b[sortConfig.key];
-
-    if (sortConfig.key === 'fecha') {
-      aValue = new Date(aValue);
-      bValue = new Date(bValue);
+  useEffect(() => {
+    if (reservas.length > 0) {
+      mapReservasConNombre();
     }
+  }, [reservas]);
 
-    if (aValue < bValue) {
-      return sortConfig.direction === 'asc' ? -1 : 1;
+  const fetchNombreAsignatura = async (id_asignatura) => {
+    try {
+      const nombreAsignatura = await getNombreAsignaturaById(id_asignatura);
+      return nombreAsignatura;
+    } catch (error) {
+      console.error("Error al obtener el nombre de la asignatura: ", error);
+      return id_asignatura; 
     }
-    if (aValue > bValue) {
-      return sortConfig.direction === 'asc' ? 1 : -1;
-    }
-    return 0;
-  });
+  };
+
+  const mapReservasConNombre = async () => {
+    const reservasMapeadas = await Promise.all(reservas.map(async reserva => {
+      const nombreCurso = await getCurso(reserva.id_curso);
+      const nombreAsignatura = await fetchNombreAsignatura(reserva.id_asignatura);
+      const reservaConNombre = { 
+        ...reserva, 
+        nombre_curso: nombreCurso ? nombreCurso.nombre : reserva.id_curso,
+        nombre_asignatura: nombreAsignatura
+      };
+      return reservaConNombre;
+    }));
+    setReservasConNombre(reservasMapeadas);
+  };
 
   const handleFilterChange = (e) => setFilterText(e.target.value);
+
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+
   const handleEditOpen = (reserva) => {
     setCurrentReserva(reserva);
     setEditOpen(true);
   };
   const handleEditClose = () => setEditOpen(false);
+
   const handleDeleteOpen = (reserva) => {
-    setCurrentReserva(reserva);
+    setCurrentReserva({
+        ...reserva,
+        nombre_profesor: reserva.usuario,
+        fecha: reserva.fecha,
+        horario: reserva.horario
+    });
     setDeleteOpen(true);
   };
   const handleDeleteClose = () => setDeleteOpen(false);
@@ -87,7 +103,7 @@ const Reservas = () => {
       await addReserva(newReserva);
       handleClose();
       fetchReservas();
-      setCreateSuccess(true); // Mostrar mensaje de éxito
+      setCreateSuccess(true); 
     } catch (error) {
       console.error("Error al crear la reserva: ", error);
       setValidationError("Los valores ingresados no son válidos");
@@ -99,7 +115,7 @@ const Reservas = () => {
       await editReserva(currentReserva.id_reserva, currentReserva);
       handleEditClose();
       fetchReservas();
-      setEditSuccess(true); // Mostrar mensaje de éxito
+      setEditSuccess(true); 
     } catch (error) {
       console.error("Error al actualizar la reserva: ", error);
       setValidationError("Los valores ingresados no son válidos");
@@ -111,292 +127,96 @@ const Reservas = () => {
       await removeReserva(currentReserva.id_reserva);
       handleDeleteClose();
       fetchReservas();
-      setDeleteSuccess(true); // Mostrar mensaje de éxito
+      setDeleteSuccess(true); 
     } catch (error) {
       setDeleteError("No se puede borrar la reserva.");
       console.error("Error al eliminar la reserva: ", error);
     }
   };
 
-  const handleSort = (key) => {
-    let direction = 'asc';
-    if (sortConfig.key === key && sortConfig.direction === 'asc') {
-      direction = 'desc';
-    }
-    setSortConfig({ key, direction });
-  };
-
   return (
-    <Box sx={{ padding: 4 }}>
-      <Typography variant="h4"   gutterBottom align="center">Reservas</Typography>
-      {error && <Alert severity="error">{error}</Alert>}
-      <Snackbar
-        open={!!deleteError}
-        autoHideDuration={6000}
-        onClose={() => setDeleteError(null)}
-      >
-        <Alert onClose={() => setDeleteError(null)} severity="error" sx={{ width: '100%' }}>
-          {deleteError}
-        </Alert>
-      </Snackbar>
-      <Snackbar
-        open={editSuccess}
-        autoHideDuration={6000}
-        onClose={() => setEditSuccess(false)}
-      >
-        <Alert onClose={() => setEditSuccess(false)} severity="success" sx={{ width: '100%' }}>
-          Cambios realizados
-        </Alert>
-      </Snackbar>
-      <Snackbar
-        open={deleteSuccess}
-        autoHideDuration={6000}
-        onClose={() => setDeleteSuccess(false)}
-      >
-        <Alert onClose={() => setDeleteSuccess(false)} severity="success" sx={{ width: '100%' }}>
-          Reserva eliminada con éxito
-        </Alert>
-      </Snackbar>
-      <Snackbar
-        open={createSuccess}
-        autoHideDuration={6000}
-        onClose={() => setCreateSuccess(false)}
-      >
-        <Alert onClose={() => setCreateSuccess(false)} severity="success" sx={{ width: '100%' }}>
-          Reserva creada con éxito
-        </Alert>
-      </Snackbar>
-      <Snackbar
-        open={!!validationError}
-        autoHideDuration={6000}
-        onClose={() => setValidationError(null)}
-      >
-        <Alert onClose={() => setValidationError(null)} severity="error" sx={{ width: '100%' }}>
-          {validationError}
-        </Alert>
-      </Snackbar>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 2 }}>
-        <TextField
-          label="Filtrar por fecha"
-          variant="outlined"
-          value={filterText}
-          onChange={handleFilterChange}
-          sx={{ marginRight: 2 }}
+    <div className="p-4 bg-gray-50 dark:bg-gray-800 min-h-screen">
+        <h1 className="text-4xl text-center text-blue-100 mb-4">Reservas</h1>
+        {error && <div className="text-red-500">{error}</div>}
+        <div className="flex justify-between items-center mb-4">
+        </div>
+
+        <TableReservas
+            reservas={reservasConNombre}
+            handleOpen={handleEditOpen}
+            handleDelete={handleDeleteOpen}
         />
-        <Button variant="contained" color="primary" onClick={handleOpen}>
-          Crear Reserva
-        </Button>
-      </Box>
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Laboratorio</TableCell>
-              <TableCell>Docente</TableCell>
-              <TableCell>
-                Fecha
-                <IconButton size="small" onClick={() => handleSort('fecha')}>
-                  {sortConfig.key === 'fecha' && sortConfig.direction === 'asc' ? <ArrowUpwardIcon /> : <ArrowDownwardIcon />}
-                </IconButton>
-              </TableCell>
-              <TableCell>Horario</TableCell>
-              <TableCell>Acciones</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {sortedReservas.map((reserva) => (
-              <TableRow key={reserva.id_reserva}>
-                <TableCell>{reserva.laboratorio}</TableCell>
-                <TableCell>{reserva.docente}</TableCell>
-                <TableCell>{reserva.fecha}</TableCell>
-                <TableCell>{reserva.horario}</TableCell>
-                <TableCell>
-                  <IconButton onClick={() => handleEditOpen(reserva)}>
-                    <EditIcon />
-                  </IconButton>
-                  <IconButton onClick={() => handleDeleteOpen(reserva)} color="error">
-                    <DeleteIcon />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
 
-      {/* Modal para crear una nueva reserva */}
-      <Modal open={open} onClose={handleClose}>
-        <Box
-          sx={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            width: 400,
-            bgcolor: 'background.paper',
-            boxShadow: 24,
-            p: 4,
-            borderRadius: 2,
-          }}
-        >
-          <Typography variant="h6" gutterBottom>Crear Nueva Reserva</Typography>
-          <FormControl fullWidth margin="normal" sx={{ marginTop: 2 }}>
-            <InputLabel>Laboratorio</InputLabel>
-            <Select
-              name="id_lab"
-              value={newReserva.id_lab}
-              onChange={handleInputChange}
-              label="Laboratorio"
-            >
-              {laboratorios.map((lab) => (
-                <MenuItem key={lab.id_lab} value={lab.id_lab}>
-                  {lab.nombre}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          <TextField
-            label="RUT Docente"
-            name="rut_docente"
-            variant="outlined"
-            fullWidth
-            margin="normal"
-            value={newReserva.rut_docente}
-            onChange={handleInputChange}
-            sx={{ marginTop: 2 }}
-          />
-          <TextField
-            label="Fecha"
-            name="fecha"
-            type="date"
-            variant="outlined"
-            fullWidth
-            margin="normal"
-            value={newReserva.fecha}
-            onChange={handleInputChange}
-            InputLabelProps={{
-              shrink: true,
-            }}
-            sx={{ marginTop: 2 }}
-          />
-          <FormControl fullWidth margin="normal" sx={{ marginTop: 2 }}>
-            <InputLabel>Horario</InputLabel>
-            <Select
-              name="id_horario"
-              value={newReserva.id_horario}
-              onChange={handleInputChange}
-              label="Horario"
-            >
-              {horarios.map((horario) => (
-                <MenuItem key={horario.id_horario} value={horario.id_horario}>
-                  {horario.hora_inicio} - {horario.hora_fin}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          <Button variant="contained" color="primary" onClick={handleSubmit} sx={{ marginTop: 2 }}>
-            Guardar
-          </Button>
-        </Box>
-      </Modal>
+        {editOpen && (
+            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50" onClick={handleEditClose}>
+                <div className="bg-white dark:bg-[#111827] dark:text-white p-8 rounded-lg shadow-xl w-96" onClick={(e) => e.stopPropagation()}>
+                    <h2 className="text-lg font-bold mb-4">Editar Reserva</h2>
+                    {validationError && <div className="text-red-500 mb-4">{validationError}</div>}
+                    <input
+                        name="rut"
+                        value={currentReserva?.usuario || ''}
+                        onChange={handleEditInputChange}
+                        placeholder="RUT"
+                        className="w-full p-2 mb-4 border rounded dark:bg-gray-700 dark:text-white"
+                    />
+                    <input
+                        name="fecha"
+                        type="date"
+                        value={currentReserva?.fecha || ''}
+                        onChange={handleEditInputChange}
+                        placeholder="Fecha"
+                        className="w-full p-2 mb-4 border rounded dark:bg-gray-700 dark:text-white"
+                    />
+                    <input
+                        name="id_horario"
+                        value={currentReserva?.horario || ''}
+                        onChange={handleEditInputChange}
+                        placeholder="ID Horario"
+                        className="w-full p-2 mb-4 border rounded dark:bg-gray-700 dark:text-white"
+                    />
+                    <input
+                        name="id_lab"
+                        value={currentReserva?.laboratorio || ''}
+                        onChange={handleEditInputChange}
+                        placeholder="ID Laboratorio"
+                        className="w-full p-2 mb-4 border rounded dark:bg-gray-700 dark:text-white"
+                    />
+                    <input
+                        name="id_asignatura"
+                        value={currentReserva?.nombre_asignatura || ''}
+                        onChange={handleEditInputChange}
+                        placeholder="ID Asignatura"
+                        className="w-full p-2 mb-4 border rounded dark:bg-gray-700 dark:text-white"
+                    />
+                    <input
+                        name="id_curso"
+                        value={currentReserva?.nombre_curso || ''}
+                        onChange={handleEditInputChange}
+                        placeholder="ID Curso"
+                        className="w-full p-2 mb-4 border rounded dark:bg-gray-700 dark:text-white"
+                    />
+                    <button onClick={handleEditSubmit} className="w-full px-4 py-2 bg-blue-600 text-white rounded">Guardar</button>
+                </div>
+            </div>
+        )}
 
-      {/* Modal para editar una reserva */}
-      <Modal open={editOpen} onClose={handleEditClose}>
-        <Box
-          sx={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            width: 400,
-            bgcolor: 'background.paper',
-            boxShadow: 24,
-            p: 4,
-            borderRadius: 2,
-          }}
-        >
-          <Typography variant="h6" gutterBottom>Editar Reserva</Typography>
-          <FormControl fullWidth margin="normal" sx={{ marginTop: 2 }}>
-            <InputLabel>Laboratorio</InputLabel>
-            <Select
-              name="id_lab"
-              value={currentReserva?.id_lab || ''}
-              onChange={handleEditInputChange}
-              label="Laboratorio"
-            >
-              {laboratorios.map((lab) => (
-                <MenuItem key={lab.id_lab} value={lab.id_lab}>
-                  {lab.nombre}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          <TextField
-            label="RUT Docente"
-            name="rut_docente"
-            variant="outlined"
-            fullWidth
-            margin="normal"
-            value={currentReserva?.rut_docente || ''}
-            onChange={handleEditInputChange}
-            sx={{ marginTop: 2 }}
-          />
-          <TextField
-            label="Fecha"
-            name="fecha"
-            type="date"
-            variant="outlined"
-            fullWidth
-            margin="normal"
-            value={currentReserva?.fecha || ''}
-            onChange={handleEditInputChange}
-            InputLabelProps={{
-              shrink: true,
-            }}
-            sx={{ marginTop: 2 }}
-          />
-          <FormControl fullWidth margin="normal" sx={{ marginTop: 2 }}>
-            <InputLabel>Horario</InputLabel>
-            <Select
-              name="id_horario"
-              value={currentReserva?.id_horario || ''}
-              onChange={handleEditInputChange}
-              label="Horario"
-            >
-              {horarios.map((horario) => (
-                <MenuItem key={horario.id_horario} value={horario.id_horario}>
-                  {horario.hora_inicio} - {horario.hora_fin}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          <Button variant="contained" color="primary" onClick={handleEditSubmit} sx={{ marginTop: 2 }}>
-            Guardar
-          </Button>
-        </Box>
-      </Modal>
+        {deleteOpen && (
+            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50" onClick={handleDeleteClose}>
+                <div className="bg-white dark:bg-[#111827] dark:text-white p-8 rounded-lg shadow-xl w-96" onClick={(e) => e.stopPropagation()}>
+                    <h2 className="text-lg font-bold mb-4">Confirmar eliminación</h2>
+                    <p className="mb-4">
+                      ¿Estás seguro de que deseas eliminar la reserva del profesor "{currentReserva?.usuario}" con
+                      fecha "{currentReserva?.fecha}" en el horario "{currentReserva?.horario}"?
+                    </p>
+                    <div className="flex justify-around">
+                        <button onClick={handleDelete} className="px-4 py-2 bg-red-600 text-white rounded">Confirmar</button>
+                        <button onClick={handleDeleteClose} className="px-4 py-2 bg-gray-400 text-white rounded">Cancelar</button>
+                    </div>
+                </div>
+            </div>
+        )}
 
-      {/* Dialogo para confirmar eliminación */}
-      <Dialog
-        open={deleteOpen}
-        onClose={handleDeleteClose}
-      >
-        <DialogTitle>Confirmar eliminación</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            ¿Estás seguro de que deseas eliminar la reserva del {currentReserva?.fecha}?
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleDeleteClose} color="primary">
-            Cancelar
-          </Button>
-          <Button onClick={handleDelete} color="primary" autoFocus>
-            Confirmar
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </Box>
+    </div>
   );
 };
 

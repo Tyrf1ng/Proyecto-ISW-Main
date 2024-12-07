@@ -1,43 +1,21 @@
-import { useEffect, useState } from 'react';
-import { createUsuario, getUsuarios, updateUsuario, deleteUsuario } from '../services/user.service';
+import {  useState } from 'react';
+import { createUsuario,  updateUsuario, deleteUsuario } from '../services/usuarios.service';
 
 function Add_Usuarios() {
   const [usuarios, setUsuarios] = useState([]);
   const [newUsuario, setNewUsuario] = useState({
     nombre: '',
     apellido: '',
-    correo: '',
-    rol: '',
+    email: '',
+    password: '',
+    telefono: '',
+    asignatura: '', 
+    rut: '', 
+    id_roles: '',
   });
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState('');
   const [selectedUsuario, setSelectedUsuario] = useState(null);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filteredUsuarios, setFilteredUsuarios] = useState([]);
-
-  // Cargar usuarios al iniciar el componente
-  useEffect(() => {
-    const cargarUsuarios = async () => {
-      try {
-        const usuariosData = await getUsuarios();
-        setUsuarios(usuariosData);
-        setFilteredUsuarios(usuariosData);
-      } catch (error) {
-        console.error('Error al cargar los usuarios:', error);
-      }
-    };
-    cargarUsuarios();
-  }, []);
-
-  // Manejar búsqueda de usuarios
-  const handleSearchChange = (e) => {
-    const query = e.target.value.toLowerCase();
-    setSearchTerm(query);
-    const filtered = usuarios.filter((usuario) =>
-      `${usuario.nombre} ${usuario.apellido}`.toLowerCase().includes(query)
-    );
-    setFilteredUsuarios(filtered);
-  };
 
   // Manejar cambios en el formulario de usuario
   const handleInputChange = (e) => {
@@ -45,15 +23,11 @@ function Add_Usuarios() {
     setNewUsuario({ ...newUsuario, [name]: value });
   };
 
-  // Manejar la selección de un usuario
-  const handleSelectUsuario = (usuario) => {
-    setSelectedUsuario(usuario);
-    setNewUsuario({ ...usuario });
-  };
-
   // Crear un nuevo usuario
   const handleCreate = async () => {
-    if (!newUsuario.nombre || !newUsuario.apellido || !newUsuario.correo || !newUsuario.rol) {
+    if (!newUsuario.nombre || !newUsuario.apellido || !newUsuario.email || !newUsuario.telefono || !newUsuario.password || !newUsuario.id_roles || 
+        (newUsuario.id_roles === 'Alumno' && !newUsuario.rut) ||
+        (newUsuario.id_roles === 'Profesor' && !newUsuario.asignatura)) {
       setMessage('Debe completar todos los campos.');
       setMessageType('warning');
       return;
@@ -64,7 +38,16 @@ function Add_Usuarios() {
       setMessage('Usuario creado exitosamente.');
       setMessageType('success');
       setUsuarios([...usuarios, createdUsuario]);
-      setNewUsuario({ nombre: '', apellido: '', correo: '', rol: '' });
+      setNewUsuario({
+        nombre: '',
+        apellido: '',
+        email: '',
+        password: '',
+        telefono: '',
+        asignatura: '',
+        rut: '',
+        id_roles: '',
+      });
     } catch (error) {
       setMessage('Hubo un error al crear el usuario.');
       setMessageType('error');
@@ -73,7 +56,9 @@ function Add_Usuarios() {
 
   // Actualizar un usuario
   const handleUpdate = async () => {
-    if (!newUsuario.nombre || !newUsuario.apellido || !newUsuario.correo || !newUsuario.rol) {
+    if (!newUsuario.nombre || !newUsuario.apellido || !newUsuario.email || !newUsuario.id_roles || 
+        (newUsuario.id_roles === 'Alumno' && !newUsuario.rut) ||
+        (newUsuario.id_roles === 'Profesor' && !newUsuario.asignatura)) {
       setMessage('Debe completar todos los campos.');
       setMessageType('warning');
       return;
@@ -89,7 +74,16 @@ function Add_Usuarios() {
         )
       );
       setSelectedUsuario(null);
-      setNewUsuario({ nombre: '', apellido: '', correo: '', rol: '' });
+      setNewUsuario({
+        nombre: '',
+        apellido: '',
+        email: '',
+        password: '',
+        telefono: '',
+        asignatura: '',
+        rut: '',
+        id_roles: '',
+      });
     } catch (error) {
       setMessage('Hubo un error al actualizar el usuario.');
       setMessageType('error');
@@ -106,6 +100,23 @@ function Add_Usuarios() {
     } catch (error) {
       setMessage('Hubo un error al eliminar el usuario.');
       setMessageType('error');
+    }
+  };
+
+  // Función para determinar el título dinámico
+  const getPageTitle = () => {
+    if (!newUsuario.id_roles) {
+      return 'Añadir usuario';
+    }
+    switch (newUsuario.id_roles) {
+      case 'Alumno':
+        return 'Añadir estudiante';
+      case 'Profesor':
+        return 'Añadir profesor';
+      case 'Directivo':
+        return 'Añadir directivo';
+      default:
+        return 'Añadir usuario';
     }
   };
 
@@ -137,20 +148,24 @@ function Add_Usuarios() {
 
   return (
     <div className='p-6 max-w-3xl mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-md'>
-      <h2 className='text-2xl font-semibold text-gray-800 dark:text-white mb-6'>Gestión de Usuarios</h2>
+      <h2 className='text-2xl font-semibold text-center text-gray-800 dark:text-white mb-6'>{getPageTitle()}</h2>
 
-      {/* Búsqueda de usuario */}
-      <div className='mb-4'>
-        <label htmlFor='search' className='block text-sm text-gray-500 dark:text-gray-300'>
-          Buscar Usuario
+            {/* Selección del id_roles */}
+            <div className='mb-4'>
+        <label htmlFor='id_roles' className='block text-sm text-gray-500 dark:text-gray-300'>
+          id_roles
         </label>
-        <input
-          type='text'
-          value={searchTerm}
-          onChange={handleSearchChange}
-          placeholder='Buscar por nombre'
+        <select
+          name='id_roles'
+          value={newUsuario.id_roles}
+          onChange={handleInputChange}
           className='mt-2 block w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300'
-        />
+        >
+          <option value=''>Seleccionar el rol</option>
+          <option value='3'>Alumno</option>
+          <option value='2'>Profesor</option>
+          <option value='1'>Directivo</option>
+        </select>
       </div>
 
       {/* Crear/Actualizar Usuario */}
@@ -161,6 +176,7 @@ function Add_Usuarios() {
         <input
           type='text'
           name='nombre'
+          placeholder='Juan Antonio'
           value={newUsuario.nombre}
           onChange={handleInputChange}
           className='mt-2 block w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300'
@@ -174,6 +190,7 @@ function Add_Usuarios() {
         <input
           type='text'
           name='apellido'
+          placeholder='Pérez Pérez'
           value={newUsuario.apellido}
           onChange={handleInputChange}
           className='mt-2 block w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300'
@@ -181,34 +198,79 @@ function Add_Usuarios() {
       </div>
 
       <div className='mb-4'>
-        <label htmlFor='correo' className='block text-sm text-gray-500 dark:text-gray-300'>
-          Correo
+        <label htmlFor='email' className='block text-sm text-gray-500 dark:text-gray-300'>
+          email
         </label>
         <input
           type='email'
-          name='correo'
-          value={newUsuario.correo}
+          name='email'
+          placeholder='email@prueba.cl'
+          value={newUsuario.email}
           onChange={handleInputChange}
           className='mt-2 block w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300'
         />
       </div>
 
       <div className='mb-4'>
-        <label htmlFor='rol' className='block text-sm text-gray-500 dark:text-gray-300'>
-          Rol
+        <label htmlFor='password' className='block text-sm text-gray-500 dark:text-gray-300'>
+          Contraseña
         </label>
-        <select
-          name='rol'
-          value={newUsuario.rol}
+        <input
+          type='password'
+          name='password'
+          placeholder='********'
+          value={newUsuario.password}
           onChange={handleInputChange}
           className='mt-2 block w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300'
-        >
-          <option value=''>Seleccionar rol</option>
-          <option value='Alumno'>Alumno</option>
-          <option value='Profesor'>Profesor</option>
-          <option value='Directivo'>Directivo</option>
-        </select>
+        />
       </div>
+
+      <div className='mb-4'>
+        <label htmlFor='telefono' className='block text-sm text-gray-500 dark:text-gray-300'>
+          Teléfono
+        </label>
+        <input
+          type='text'
+          name='telefono'
+          placeholder='987654321'
+          value={newUsuario.telefono}
+          onChange={handleInputChange}
+          className='mt-2 block w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300'
+        />
+      </div>
+
+
+
+        <div className='mb-4'>
+          <label htmlFor='rut' className='block text-sm text-gray-500 dark:text-gray-300'>
+            RUT
+          </label>
+          <input
+            type='text'
+            name='rut'
+            placeholder='12345678-9'
+            value={newUsuario.rut}
+            onChange={handleInputChange}
+            className='mt-2 block w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300'
+          />
+        </div>
+
+      {/* Mostrar campo asignatura solo si es Profesor */}
+      {newUsuario.id_roles === 'Profesor' && (
+        <div className='mb-4'>
+          <label htmlFor='asignatura' className='block text-sm text-gray-500 dark:text-gray-300'>
+            Asignatura
+          </label>
+          <input
+            type='text'
+            name='asignatura'
+            placeholder='Matemáticas'
+            value={newUsuario.asignatura}
+            onChange={handleInputChange}
+            className='mt-2 block w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300'
+          />
+        </div>
+      )}
 
       {/* Botones de creación y actualización */}
       <div className='flex space-x-4'>
@@ -226,22 +288,6 @@ function Add_Usuarios() {
             Eliminar Usuario
           </button>
         )}
-      </div>
-
-      {/* Lista de usuarios */}
-      <div className='mt-6'>
-        <h3 className='text-lg font-semibold text-gray-800 dark:text-white'>Usuarios</h3>
-        <ul className='mt-4'>
-          {filteredUsuarios.map((usuario) => (
-            <li
-              key={usuario.id}
-              className='px-4 py-2 cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-700 text-gray-800 dark:text-white'
-              onClick={() => handleSelectUsuario(usuario)}
-            >
-              {usuario.nombre} {usuario.apellido}
-            </li>
-          ))}
-        </ul>
       </div>
 
       {renderMessage()}

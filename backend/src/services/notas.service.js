@@ -2,44 +2,59 @@
 import { In } from "typeorm";
 import Notas from "../entity/nota.entity.js";
 import { AppDataSource } from "../config/configDb.js";
-import usuario from "../entity/usuario.entity.js";
+import Conect_Usuario_CursoSchema from "../entity/conect_usuario_curso.entity.js";
+import AsignaturaCursoSchema from "../entity/asignatura.curso.entity.js";
 
 //funcion para traer todas las notas de un curso
 //Funciona no tocar
 export async function getNotasCurso(id_curso) {
     try {
-        // Obtener todos los alumnos asociados al curso específico
-        const alumnoRepository = AppDataSource.getRepository(usuario);
-        const alumno = await alumnoRepository.find({
-            where: { id_curso: id_curso },
+        const UsuarioCursoRepository = AppDataSource.getRepository(Conect_Usuario_CursoSchema);
+        const AsignaturaCursoRepository = AppDataSource.getRepository(AsignaturaCursoSchema);
+
+        const alumno = await UsuarioCursoRepository.find({
+            where: { id_curso },
+            relations: ["usuario"], 
         });
 
-        if (!alumno || alumno.length === 0) {
+        const rutsAlumnos = alumno.map(entry => entry.rut)
+        if (rutsAlumnos === 0) {
             return [null, "No hay alumnos en este curso"];
         }
 
-        // Extraer los rut de los alumnos para filtrar las notas
-        const rutAlumnos = alumno.map(alumnos => alumnos.rut_alumno);
+        const asignaturasDelCurso = await AsignaturaCursoRepository.find({
+            where: { id_curso },
+        });
+        const idsAsignaturas = asignaturasDelCurso.map(entry => entry.id_asignatura);
 
-        // Buscar las notas correspondientes a los alumnos en el curso y sus asignaturas relacionadas
+
+        if (idsAsignaturas.length === 0) {
+            return [null, "No hay asignaturas asociadas a este curso"];
+        }
+
+      
         const notaRepository = AppDataSource.getRepository(Notas);
+
         const notas = await notaRepository.find({
-            where: { rut_alumno: In(rutAlumnos) },
-            relations: ["asignatura", "alumno"], // Incluye las relaciones necesarias
+            where: { rut: In(rutsAlumnos),
+                id_asignatura: In(idsAsignaturas)
+            },
+            relations: ["asignatura", "usuario"],
+
         });
 
         if (!notas || notas.length === 0) {
             return [null, "No hay notas para este curso"];
         }
 
-        // Mapear los datos para devolver los detalles de alumno y asignatura junto con la nota
+
         const notasData = notas.map(nota => ({
             id_nota: nota.id_nota,
             tipo: nota.tipo,
             valor: nota.valor,
-            rut_alumno: nota.alumno.rut_alumno,
-            nombre_alumno: nota.alumno.nombre,
-            apellido_alumno: nota.alumno.apellido,
+            rut: nota.usuario.rut,
+            nombre_alumno: nota.usuario.nombre,
+            apellido_alumno: nota.usuario.apellido,
             nombre_asignatura: nota.asignatura.nombre,
             id_asignatura: nota.asignatura.id_asignatura,
         }));
@@ -53,27 +68,26 @@ export async function getNotasCurso(id_curso) {
 }
 
 
-//funcion para traer todas las notas de un alumno
 //FUNCIONA NO TOCAR
 //función para traer todas las notas de un alumno
-export async function getNotasAlumno(rut_alumno) {
+export async function getNotasAlumno(rut) {
     try {
         const notasRepository = AppDataSource.getRepository(Notas);
         const notas = await notasRepository.find({
-            where: { rut_alumno: rut_alumno },
-            relations: ["asignatura", "alumno"], // Incluye las relaciones necesarias
+            where: { rut: rut },
+            relations: ["asignatura", "usuario"], 
         });
 
         if (!notas || notas.length === 0) return [null, "No hay notas"];
 
-        // Mapear los datos para devolver información adicional del alumno y asignatura
+        
         const notasConDatos = notas.map(nota => ({
             id_nota: nota.id_nota,
             tipo: nota.tipo,
             valor: nota.valor,
-            rut_alumno: nota.alumno.rut_alumno,
-            nombre_alumno: nota.alumno.nombre,
-            apellido_alumno: nota.alumno.apellido,
+            rut_alumno: nota.usuario.rut,
+            nombre_alumno: nota.usuario.nombre,
+            apellido_alumno: nota.usuario.apellido,
             nombre_asignatura: nota.asignatura.nombre,
             id_asignatura: nota.asignatura.id_asignatura,
         }));
@@ -95,16 +109,16 @@ export async function getNotasAsignatura(id_asignatura) {
         const notasRepository = AppDataSource.getRepository(Notas);
         const notas = await notasRepository.find({
             where: { id_asignatura: id_asignatura },
-            relations: ["asignatura", "alumno"]
+            relations: ["asignatura", "usuario"],
         });
 
         if (!notas || notas.length === 0) return [null, "No hay notas"];
 
         const notasData = notas.map(nota => ({
             ...nota,
-            nombre_alumno: nota.alumno.nombre,
-            apellido_alumno: nota.alumno.apellido,
-            nombre_asignatura: nota.asignatura.nombre
+            nombre_alumno: nota.usuario.nombre,
+            apellido_alumno: nota.usuario.apellido,
+            nombre_asignatura: nota.usuario.nombre
         }));
 
         return [notasData, null];
@@ -133,41 +147,43 @@ export async function getNota(id_nota) {
 
 //funcion para actualizar una nota
 //FUNCIONA NO TOCAR
-export async function updateNota(id_nota, nuevoValor) {
+export async function updateNota(id_nota, nuevoValor, nuevoTipo) {
     try {
-        // Asegúrate de que 'nuevoValor' sea un número
+        // Validar el valor
         const parsedValor = parseFloat(nuevoValor);
         if (isNaN(parsedValor)) {
             return [null, "El valor debe ser un número válido"];
         }
 
-        // Verifica si el 'id_nota' es válido
         if (!id_nota) {
             return [null, "El id de la nota es requerido"];
         }
 
-        // Repositorio de TypeORM para interactuar con la tabla Notas
         const notasRepository = AppDataSource.getRepository(Notas);
 
-        // Verifica si la nota con 'id_nota' existe antes de intentar actualizarla
+        // Verificar si la nota existe
         const notaExistente = await notasRepository.findOneBy({ id_nota });
         if (!notaExistente) {
             return [null, "No se encontró la nota"];
         }
 
-        // Actualiza la nota en la base de datos
+        
+        const camposActualizar = { valor: parsedValor };
+        if (nuevoTipo) {
+            camposActualizar.tipo = nuevoTipo;
+        }
+
         const result = await notasRepository.update(
             { id_nota: id_nota },
-            { valor: parsedValor }
+            camposActualizar
         );
 
-        // Verifica si la actualización realmente afectó filas
         if (result.affected === 0) {
             return [null, "No se pudo actualizar la nota"];
         }
 
-        // Devuelve la nota actualizada si todo salió bien
-        return [{ id_nota, valor: parsedValor }, null];
+        // Retornar los valores actualizados
+        return [{ id_nota, valor: parsedValor, tipo: nuevoTipo || notaExistente.tipo }, null];
     } catch (error) {
         console.error("Error al actualizar la nota:", error);
         return [null, "Error interno del servidor"];
@@ -207,15 +223,14 @@ export async function getAllNotas() {
     try {
         const notasRepository = AppDataSource.getRepository(Notas);
         const notas = await notasRepository.find({
-            relations: ["asignatura", "alumno"], 
+            relations: ["asignatura", "usuario"], 
         });
         
-        // Formatear el resultado para incluir solo el nombre de la asignatura
         const notasConDatos = notas.map(nota => ({
             ...nota,
             nombre_asignatura: nota.asignatura.nombre, 
-            nombre_alumno: nota.alumno.nombre,
-            apellido_alumno: nota.alumno.apellido,
+            nombre_alumno: nota.usuario.nombre,
+            apellido_alumno: nota.usuario.apellido,
         }));
         
         

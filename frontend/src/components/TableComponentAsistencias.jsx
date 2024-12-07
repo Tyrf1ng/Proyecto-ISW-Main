@@ -38,12 +38,12 @@ const TableComponentAsistencias = ({ asistencias, handleEdit, handleDelete }) =>
                   </td>
                   <td className="px-4 py-4 text-sm whitespace-nowrap">
                     <div className="text-gray-800 dark:text-white">
-                      {asistencia.alumno.nombre} {asistencia.alumno.apellido}
+                      {asistencia.usuario.nombre} {asistencia.usuario.apellido}
                     </div>
                   </td>
                   <td className="px-4 py-4 text-sm whitespace-nowrap">
                     <div className="text-gray-800 dark:text-white">
-                      {asistencia.rut_alumno}
+                      {asistencia.rut}
                     </div>
                   </td>
                   <td className="px-4 py-4 text-sm whitespace-nowrap">
