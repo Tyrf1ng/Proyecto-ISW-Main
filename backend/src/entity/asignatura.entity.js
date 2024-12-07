@@ -15,33 +15,36 @@ const AsignaturasSchema = new EntitySchema({
       nullable: false,
     },
     rut: {
-      type: "varchar",
+      type: "varchar",  // Debe ser del mismo tipo que el campo 'rut' en Usuario
       nullable: false,
     },
     createdAt: {
-        type: "timestamp with time zone",
-        default: () => "CURRENT_TIMESTAMP",
-        nullable: false,
-      },
-      updatedAt: {
-        type: "timestamp with time zone",
-        default: () => "CURRENT_TIMESTAMP",
-        onUpdate: "CURRENT_TIMESTAMP",
-        nullable: false,
-      },
+      type: "timestamp with time zone",
+      default: () => "CURRENT_TIMESTAMP",
+      nullable: false,
+    },
+    updatedAt: {
+      type: "timestamp with time zone",
+      default: () => "CURRENT_TIMESTAMP",
+      onUpdate: "CURRENT_TIMESTAMP",
+      nullable: false,
+    },
   },
-  relations: { 
+  relations: {
     usuario: {
-        type: "One-to-one",
-        target: "Usuario", 
-        joinColumn: { name: "rut" } ,
+      type: "Many-to-One",
+      target: "Usuario", 
+      joinColumn: { 
+        name: "rut",  // La columna que actúa como clave foránea
+        referencedColumnName: "rut"  // Asegúrate de que se refiere a la columna 'rut' en la tabla Usuario
+      },
     },
   },
   indices: [
     {
       name: "IDX_RUT_UNICO",
       columns: ["rut"],
-      unique: true, // Aquí se asegura que el campo 'rut' sea único en la tabla asignaturas.
+      unique: true, // Asegura que el 'rut' sea único en la tabla asignaturas
     },
   ],
 });

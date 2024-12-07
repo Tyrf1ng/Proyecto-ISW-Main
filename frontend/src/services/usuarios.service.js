@@ -34,9 +34,9 @@ export async function updateUsuario(id, data) {
 }
 
 // Eliminar un usuario
-export async function deleteUsuario(id) {
+export async function deleteUsuario(rut) {
   try {
-    const response = await axios.delete(`/usuarios/borrar/${id}`);
+    const response = await axios.delete(`/usuarios/borrar/${rut}`);
     return response.data; // Deberías recibir un mensaje de éxito o estado como respuesta
   } catch (error) {
     console.error('Error al eliminar usuario:', error);
