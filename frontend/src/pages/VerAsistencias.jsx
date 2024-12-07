@@ -68,15 +68,27 @@ const VerAsistencias = () => {
         console.error("ID de asistencia no válido", asistenciaSeleccionada);
         throw new Error("ID de asistencia no válido");
       }
+  
       const updatedAsistencia = {
         ...asistenciaSeleccionada,
         tipo: asistenciaSeleccionada.tipo,
         observacion: asistenciaSeleccionada.tipo === "Justificado" ? asistenciaSeleccionada.observacion : null
       };
-      await updateAsistencia(updatedAsistencia);
+  
+      const response = await updateAsistencia(updatedAsistencia);
+  
       setIsModalOpen(false);
+  
+      // Verifica que la respuesta tenga la estructura correcta
+      const newAsistencia = {
+        ...updatedAsistencia,
+        ...response, // Sobrescribe las propiedades con la respuesta del backend
+        usuario: updatedAsistencia.usuario // Mantiene la referencia al usuario
+      };
+  
+      // Actualizar el estado de asistencias inmediatamente
       setAsistencias(asistencias.map((asistencia) =>
-        asistencia.id_asistencia === asistenciaSeleccionada.id_asistencia ? asistenciaSeleccionada : asistencia
+        asistencia.id_asistencia === updatedAsistencia.id_asistencia ? newAsistencia : asistencia
       ));
     } catch (error) {
       console.error("Error al actualizar la asistencia:", error);

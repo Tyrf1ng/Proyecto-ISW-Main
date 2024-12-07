@@ -80,19 +80,25 @@ export const updateAsistenciaController = async (req, res) => {
     try {
       const { id_asistencia } = req.params;
       const { tipo, observacion } = req.body;
-      const { error: validationError } = asistenciaQueryValidation.validate({ tipo, observacion });
+
+      // Set observacion to null if tipo is "Presente" or "Ausente"
+      const updatedObservacion = (tipo === "Presente" || tipo === "Ausente") ? null : observacion;
+
+      const { error: validationError } = asistenciaQueryValidation.validate({ tipo, observacion: updatedObservacion });
       if (validationError) {
         return handleErrorClient(res, 400, "Datos de entrada no válidos", validationError.details[0].message);
       }
-      const [asistenciaActualizada, error] = await updateAsistencia(id_asistencia, tipo, observacion);
+
+      const [asistenciaActualizada, error] = await updateAsistencia(id_asistencia, tipo, updatedObservacion);
       if (error) {
         return handleErrorClient(res, 404, error);
       }
+
       handleSuccess(res, 200, "Asistencia actualizada", asistenciaActualizada);
     } catch (error) {
       handleErrorServer(res, 500, error.message);
     }
-  };
+};
   
   
 
