@@ -105,7 +105,7 @@ export async function getAsignaturasByProfesor(rut) {
     }
 }
 
-// Función para obtener el nombre de una asignatura por ID
+
 export async function getNombreAsignaturaById(id_asignatura) {
     try {
         const asignaturaRepository = AppDataSource.getRepository(Asignaturas);
