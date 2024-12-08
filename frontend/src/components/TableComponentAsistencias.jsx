@@ -14,7 +14,7 @@ const TableComponentAsistencias = ({ asistencias, handleEdit, handleDelete }) =>
                   Fecha
                 </th>
                 <th className="px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                  Nombre del Alumno
+                  Nombre
                 </th>
                 <th className="px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400">
                   RUT
