@@ -42,7 +42,7 @@ export async function deleteUsuario(rut) {
 
 export async function getUsuarioByRut(rut) {
   try {
-    const { data } = await axios.get(`/usuarios/${rut}`);
+    const { data } = await axios.get(`/usuarios/rut/${rut}`);
     return data.data;
   } catch (error) {
     console.error('Error al obtener usuario por RUT:', error);
