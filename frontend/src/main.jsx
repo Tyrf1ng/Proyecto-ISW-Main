@@ -1,18 +1,17 @@
 import ReactDOM from 'react-dom/client';
 import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom";
-import Root from '@pages/Root'; // El layout principal
+import Root from '@pages/Root';
 import Inicio from '@pages/Inicio';
 import Cursos from '@pages/Cursos';
 import Login from '@pages/Login';
 import Error404 from '@pages/Error404';
-import ProtectedRoute from '@components/ProtectedRoute'; // Mantener este import si es necesario
 import Anotaciones from '@pages/Anotaciones';
-import Labs from '@pages/Labs'; // Importa el nuevo componente Labs
-import Horarios from '@pages/Horarios'; // Importa el nuevo componente Horarios
+import Labs from '@pages/Labs';
+import Horarios from '@pages/Horarios';
 import VerNotas from '@pages/VerNotas';
 import Ver_Nota_Alumno from '@pages/Ver_Nota_Alumno';
-import Ver_Asistencias_Para_Alumno from '@pages/Ver_Asistencias_Para_Alumno'; // Importa el nuevo componente
-import Ver_Anotaciones_Para_Alumno from '@pages/Ver_Anotaciones_Para_Alumno'; // Importa el nuevo componente
+import Ver_Asistencias_Para_Alumno from '@pages/Ver_Asistencias_Para_Alumno';
+import Ver_Anotaciones_Para_Alumno from '@pages/Ver_Anotaciones_Para_Alumno';
 import Notas from '@pages/Notas';
 import Add_notas from '@pages/Add_notas';
 import Add_anotaciones from '@pages/Add_anotaciones';
@@ -20,10 +19,10 @@ import Ver_anotaciones from '@pages/Ver_anotaciones';
 import '@styles/styles.css';
 import VerAsistencias from '@pages/VerAsistencias';
 import RegistrarAsistencias from '@pages/RegistrarAsistencias';
-import Reservas from '@pages/Reservas'; // Importa el nuevo componente Reservas
+import Reservas from '@pages/Reservas';
 import Profile from './pages/Profile';
 import LabsDocente from './pages/LabsDocente';
-import RegisterAsistencia from './pages/RegisterAsistencias'; // Nueva ruta de RegisterAsistencia
+import RegisterAsistencia from './pages/RegisterAsistencias';
 
 const router = createBrowserRouter([
   {
@@ -38,19 +37,19 @@ const router = createBrowserRouter([
         path: 'asistencias',
         element: <Outlet />,
         children: [
-          { path: 'RegisterAsistencias', element: <RegisterAsistencia /> }, // Ruta agregada
+          { path: 'RegisterAsistencias', element: <RegisterAsistencia /> },
           { path: 'add_asistencias', element: <RegistrarAsistencias /> },
           { path: 'ver_asistencias', element: <VerAsistencias /> },
-          { path: 'alumno', element: <Ver_Asistencias_Para_Alumno /> }, // Ruta para asistencias por alumno
+          { path: 'alumno', element: <Ver_Asistencias_Para_Alumno /> },
         ]
       },
       {
         path: 'anotaciones',
-        element: <Anotaciones />, // Componente principal de anotaciones
+        element: <Anotaciones />,
         children: [
           { path: 'add_anotaciones', element: <Add_anotaciones /> },
           { path: 'ver_anotaciones', element: <Ver_anotaciones /> },
-          { path: 'alumno', element: <Ver_Anotaciones_Para_Alumno /> }, // Ruta para anotaciones por alumno
+          { path: 'alumno', element: <Ver_Anotaciones_Para_Alumno /> },
         ],
       },
       {

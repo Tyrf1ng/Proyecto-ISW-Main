@@ -2,13 +2,15 @@ import { startCase } from 'lodash';
 import { format as formatRut } from 'rut.js';
 import { format as formatTempo } from "@formkit/tempo";
 
-export function formatUserData(user) {
+export function formatUserData(usuario) {
     return {
-        ...user,
-        nombreCompleto: startCase(user.nombreCompleto),
-        rol: startCase(user.rol),
-        rut: formatRut(user.rut),
-        createdAt: formatTempo(user.createdAt, "DD-MM-YYYY")
+        ...usuario,
+        nombreCompleto: startCase(usuario.nombreCompleto),
+        id_roles: startCase(usuario.id_roles),
+        rut: formatRut(usuario.rut),
+        createdAt: formatTempo(usuario.createdAt, "DD-MM-YYYY"),
+        updatedAt: formatTempo(usuario.updatedAtd, "DD-MM-YYYY")
+
     };
 }
 

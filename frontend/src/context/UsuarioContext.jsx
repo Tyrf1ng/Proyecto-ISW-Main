@@ -1,11 +1,10 @@
 import { createContext, useState } from 'react';
 
-const UsuarioContext = createContext();  // Crear el contexto
+const UsuarioContext = createContext();
 
 export const UsuarioProvider = ({ children }) => {
   const [usuario, setUsuario] = useState(null);
 
-  // Cargar usuario desde sessionStorage al iniciar
   const cargarUsuario = () => {
     const usuarioGuardado = JSON.parse(sessionStorage.getItem('usuario'));
     setUsuario(usuarioGuardado);
@@ -18,4 +17,4 @@ export const UsuarioProvider = ({ children }) => {
   );
 };
 
-export { UsuarioContext };  // Asegúrate de exportar el contexto también
+export { UsuarioContext };

@@ -7,7 +7,6 @@ import Conect_Usuario_CursoSchema from "../entity/conect_usuario_curso.entity.js
 import AsignaturaCursoSchema from "../entity/asignatura.curso.entity.js";
 import { AppDataSource } from "../config/configDb.js";
 
-
 export async function getAnotacionService(id_anotacion) {
     try {
         const id = parseInt(id_anotacion, 10);
@@ -17,7 +16,6 @@ export async function getAnotacionService(id_anotacion) {
         }
 
         const AnotacionRepository = AppDataSource.getRepository(Anotaciones);
-
         const AnotacionFound = await AnotacionRepository.findOne({
             where: { id_anotacion: id }
         });
@@ -34,9 +32,6 @@ export async function getAnotacionService(id_anotacion) {
     }
 }
 
-
-
-    
 export async function getAnotacionesService() {
     try {
         const AnotacionRepository = AppDataSource.getRepository(Anotaciones);
@@ -53,7 +48,7 @@ export async function getAnotacionesService() {
 export async function getAnotacionesAsignaturaService(id_asignatura) {
     try {
         const AnotacionRepository = AppDataSource.getRepository(Anotaciones);
-        const anotaciones = await AnotacionRepository.find( { id_asignatura: id_asignatura } );
+        const anotaciones = await AnotacionRepository.find({ id_asignatura: id_asignatura });
         if (!anotaciones || anotaciones.length === 0) return [null, "No hay anotaciones"];
         
         return [anotaciones, null];
@@ -68,7 +63,6 @@ export async function getAnotacionesAlumnoService(rut) {
         const UsuarioRepository = AppDataSource.getRepository(Usuario);
         const AnotacionRepository = AppDataSource.getRepository(Anotaciones);
 
-        // Verificar si el usuario es un alumno (rol 3)
         const alumno = await UsuarioRepository.findOne({
             where: { rut, id_roles: 3 },
         });
@@ -77,7 +71,6 @@ export async function getAnotacionesAlumnoService(rut) {
             return [null, "El usuario no es un alumno o no existe"];
         }
 
-        // Buscar las anotaciones asociadas al alumno
         const anotaciones = await AnotacionRepository.find({
             where: { rut },
         });
@@ -93,14 +86,12 @@ export async function getAnotacionesAlumnoService(rut) {
     }
 }
 
-
 export async function getAnotacionesCursoService(id_curso) {
     try {
         const AnotacionRepository = AppDataSource.getRepository(Anotaciones);
         const UsuarioCursoRepository = AppDataSource.getRepository(Conect_Usuario_CursoSchema);
         const AsignaturaCursoRepository = AppDataSource.getRepository(AsignaturaCursoSchema);
 
-        // Obtener los usuarios asociados al curso
         const usuariosDelCurso = await UsuarioCursoRepository.find({
             where: { id_curso },
             relations: ["usuario"],
@@ -108,24 +99,20 @@ export async function getAnotacionesCursoService(id_curso) {
 
         const rutsAlumnos = usuariosDelCurso.map(entry => entry.rut);
 
-        // Verificar si hay alumnos en el curso
         if (rutsAlumnos.length === 0) {
             return [null, "No hay alumnos asociados a este curso"];
         }
 
-        // Obtener las asignaturas asociadas al curso
         const asignaturasDelCurso = await AsignaturaCursoRepository.find({
             where: { id_curso },
         });
 
         const idsAsignaturas = asignaturasDelCurso.map(entry => entry.id_asignatura);
 
-        // Verificar si hay asignaturas asociadas al curso
         if (idsAsignaturas.length === 0) {
             return [null, "No hay asignaturas asociadas a este curso"];
         }
 
-        // Buscar las anotaciones asociadas a los alumnos y las asignaturas del curso
         const anotaciones = await AnotacionRepository.find({
             where: {
                 rut: In(rutsAlumnos),
@@ -133,7 +120,6 @@ export async function getAnotacionesCursoService(id_curso) {
             },
         });
 
-        // Verificar si hay anotaciones
         if (!anotaciones || anotaciones.length === 0) {
             return [null, "No hay anotaciones para este curso"];
         }
@@ -145,14 +131,11 @@ export async function getAnotacionesCursoService(id_curso) {
     }
 }
 
-
-
 export async function createAnotacionService(data) {
     try {
         const { descripcion, tipo, id_asignatura, rut } = data;
         const UsuarioRepository = AppDataSource.getRepository(Usuario);
 
-        // Verificar si el usuario es un alumno (rol 3)
         const alumno = await UsuarioRepository.findOne({
             where: { rut, id_roles: 3 },
         });
@@ -175,7 +158,6 @@ export async function createAnotacionService(data) {
         return [null, "Error interno del servidor"];
     }
 }
-
 
 export async function updateAnotacionService(id_anotacion, datosActualizados) {
     try {
@@ -204,8 +186,6 @@ export async function updateAnotacionService(id_anotacion, datosActualizados) {
     }
 }
 
-
-
 export async function deleteAnotacionService(id_anotacion) {
     try {
         const AnotacionRepository = AppDataSource.getRepository(Anotaciones);
@@ -225,8 +205,3 @@ export async function deleteAnotacionService(id_anotacion) {
         return [null, "Error interno del servidor"];
     }
 }
-
- 
-
-
-
