@@ -1,21 +1,20 @@
 import { useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { getCursosByProfesor } from "../services/cursos.service"; 
-import { CursoContext } from "../context/CursoContext"; 
-import { useAuth } from "../context/AuthContext"; 
-import { motion } from "framer-motion"; 
+import { getCursosByProfesor } from "../services/cursos.service";
+import { CursoContext } from "../context/CursoContext";
+import { useAuth } from "../context/AuthContext";
+import { motion } from "framer-motion";
 
 const Cursos = () => {
   const [cursos, setCursos] = useState([]);
   const [cargando, setCargando] = useState(true);
-  const { setCurso } = useContext(CursoContext); 
+  const { setCurso } = useContext(CursoContext);
   const { user } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-  
     if (!user || user.rol !== "Docente") {
-      navigate("/inicio"); 
+      navigate("/inicio");
       return;
     }
 
@@ -38,36 +37,48 @@ const Cursos = () => {
   }, [user, navigate]);
 
   const seleccionarCurso = (id_curso, nombre) => {
-    setCurso({ idCurso: id_curso, nombre: nombre }); 
+    setCurso({ idCurso: id_curso, nombre: nombre });
     navigate("/inicio");
   };
 
   if (cargando) {
-    return <p className="text-center text-xl text-gray-600 dark:text-gray-300">Cargando cursos...</p>;
+    return (
+      <p className="text-center text-xl text-gray-600 dark:text-gray-300">
+        Cargando cursos...
+      </p>
+    );
   }
 
   if (cursos.length === 0) {
-    return <p className="text-center text-xl text-gray-600 dark:text-gray-300">No hay cursos disponibles para este profesor.</p>;
+    return (
+      <p className="text-center text-xl text-gray-600 dark:text-gray-300">
+        No hay cursos disponibles para este profesor.
+      </p>
+    );
   }
 
   return (
     <div className="min-h-screen bg-[#1F2937] dark:bg-[#1F2937] p-4">
-      <h1 className="text-4xl text-center font-semibold text-white mb-8">Mis Cursos</h1>
+      <h1 className="text-4xl text-center font-semibold text-white mb-8">
+        Mis Cursos
+      </h1>
       <div className="flex flex-col items-center gap-6">
         {cursos.map((curso) => (
           <motion.div
             key={curso.id_curso}
             className="w-11/12 sm:w-11/12 md:w-7/10 bg-[#111827] dark:bg-[#111827] p-6 rounded-lg shadow-lg cursor-pointer"
-            onClick={() => seleccionarCurso(curso.id_curso, curso.nombre)} // Pasa id_curso y nombre
-            whileHover={{ scale: 1.05 }} // Aumentar tamaño al pasar el ratón
-            whileTap={{ scale: 0.95 }}  // Reducir tamaño al hacer clic
-            transition={{ type: "spring", stiffness: 400, damping: 20 }} // Transición fluida
+            onClick={() => seleccionarCurso(curso.id_curso, curso.nombre)}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            transition={{ type: "spring", stiffness: 400, damping: 20 }}
           >
             <h2 className="text-xl font-semibold text-white">{curso.nombre}</h2>
-            <p className="text-md text-gray-400 mt-2">Coordinador: {curso.coordinador || "N/A"}</p>
+            <p className="text-md text-gray-400 mt-2">
+              Coordinador: {curso.coordinador || "N/A"}
+            </p>
             <p className="text-sm text-gray-300 mt-2">
-              <span className="font-semibold">Código:</span> {curso.codigo} -
-              <span className="font-semibold"> Nivel:</span> {curso.nivel}
+              <span className="font-semibold">Código:</span> {curso.codigo} -{" "}
+              <span className="font-semibold">Nivel:</span> {curso.nivel}
             </p>
           </motion.div>
         ))}

@@ -1,13 +1,13 @@
 import { useState, useContext, useEffect } from 'react';
 import { CursoContext } from '../context/CursoContext';
-import { UsuarioContext } from '../context/UsuarioContext';  // Importar el contexto de usuario
+import { UsuarioContext } from '../context/UsuarioContext';
 import useAnotaciones from '@hooks/anotaciones/useAnotaciones';
 import { createAnotacion, deleteAnotacion, updateAnotacion } from '@services/anotaciones.service.js';
 import TableAnotacionComponent from '../components/Table';
 
 const Ver_anotaciones = () => {
   const { curso } = useContext(CursoContext);
-  const { usuario, cargarUsuario } = useContext(UsuarioContext);  // Acceder al contexto de usuario
+  const { usuario, cargarUsuario } = useContext(UsuarioContext);
   const { anotaciones, fetchAnotaciones } = useAnotaciones();
   const [filterText, setFilterText] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -23,17 +23,14 @@ const Ver_anotaciones = () => {
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [anotacionToDelete, setAnotacionToDelete] = useState(null);
 
-  // Cargar usuario cuando el componente se monta, solo una vez
   useEffect(() => {
-    // Llamar a cargarUsuario solo si el usuario aún no está cargado
     if (!usuario) {
       cargarUsuario();
     }
-  }, [usuario, cargarUsuario]);  // Solo ejecutar cuando el usuario no esté disponible
+  }, [usuario, cargarUsuario]);
 
-  // Verificar si el usuario está disponible antes de proceder
   if (!usuario) {
-    return <div>Cargando usuario...</div>;  // O una pantalla de carga mientras se obtiene el usuario
+    return <div>Cargando usuario...</div>;
   }
 
   const handleFilterChange = (e) => setFilterText(e.target.value);
@@ -110,7 +107,7 @@ const Ver_anotaciones = () => {
         )}
         handleOpen={handleOpenModal}
         handleDelete={handleDeleteRequest}
-        role={usuario?.rol} 
+        role={usuario?.rol}
       />
 
       {isModalOpen && (

@@ -18,22 +18,19 @@ const TableAnotacionComponent = ({ anotaciones, handleOpen, handleDelete, role }
                 <th className="px-12 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400">
                   Tipo
                 </th>
-                
                 <th className="px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                  Fecha de Creación
+                  Fecha
                 </th>
                 {role === 'Docente' && (
                   <>
-                  <th className="px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                    RUT del Alumno
-                  </th>
-                  <th className="relative py-3.5 px-4">
-                    <span className="sr-only">Acciones</span>
-                  </th>
+                    <th className="px-12 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                      Rut
+                    </th>
+                    <th className="px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                      Acciones
+                    </th>
                   </>
-                
                 )}
-                
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200 dark:divide-gray-700 dark:bg-gray-900">
@@ -58,33 +55,35 @@ const TableAnotacionComponent = ({ anotaciones, handleOpen, handleDelete, role }
                         {anotacion.tipo}
                       </div>
                     </td>
-                    {role === 'Docente' && (
-                    <>
                     <td className="px-4 py-4 text-sm whitespace-nowrap">
-                    <div className="text-gray-800 dark:text-white">{anotacion.rut}</div>
-                  </td>  
-                    <td className="px-4 py-4 text-sm whitespace-nowrap">
-                    <div className="flex space-x-2">
-                      <IconButton color="primary" onClick={() => handleOpen(anotacion)}>
-                        <EditIcon />
-                      </IconButton>
-                      <IconButton color="primary" onClick={() => handleDelete(anotacion.id_anotacion)}>
-                        <DeleteIcon className="text-red-500" />
-                      </IconButton>
-                    </div>
-                  </td> 
-                  </>
-                  )}
-                    
-                    <td className="px-4 py-4 text-sm whitespace-nowrap">
-                      <div className="text-gray-800 dark:text-white">{new Date(anotacion.createdAt).toLocaleDateString()}</div>
+                      <div className="text-gray-800 dark:text-white">
+                        {new Date(anotacion.createdAt).toLocaleDateString()}
+                      </div>
                     </td>
-                    
+                    {role === 'Docente' && (
+                      <>
+                        <td className="px-4 py-4 text-sm whitespace-nowrap">
+                          <div className="text-gray-800 dark:text-white">{anotacion.rut}</div>
+                        </td>
+                        <td className="px-4 py-4 text-sm whitespace-nowrap">
+                          <div className="flex space-x-2">
+                            <IconButton color="primary" onClick={() => handleOpen(anotacion)}>
+                              <EditIcon />
+                            </IconButton>
+                            <IconButton color="primary" onClick={() => handleDelete(anotacion.id_anotacion)}>
+                              <DeleteIcon className="text-red-500" />
+                            </IconButton>
+                          </div>
+                        </td>
+                      </>
+                    )}
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan="5" className="text-center py-4 text-gray-500">No hay anotaciones para este curso</td>
+                  <td colSpan="5" className="text-center py-4 text-gray-500">
+                    No hay anotaciones para este curso
+                  </td>
                 </tr>
               )}
             </tbody>

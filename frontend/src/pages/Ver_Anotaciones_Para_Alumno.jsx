@@ -1,49 +1,57 @@
-import { useState, useEffect } from 'react';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import CircularProgress from '@mui/material/CircularProgress';
-import { getAnotacionesAlumno } from '@services/anotaciones.service'; // Servicio para obtener anotaciones por RUT
-import TableAnotacionComponent from '../components/Table'; // Importa el componente Table
+import { useState, useContext, useEffect } from 'react';
+import { UsuarioContext } from '../context/UsuarioContext';
+import { getAnotacionesAlumno } from '@services/anotaciones.service.js';
+import TableAnotacionComponent from '../components/Table';
 
 const Ver_Anotaciones_Para_Alumno = () => {
+  const { usuario, cargarUsuario } = useContext(UsuarioContext);
   const [anotaciones, setAnotaciones] = useState([]);
-  const [cargando, setCargando] = useState(true);
-  const [rut, setRut] = useState('');
-  const [role, setRole] = useState(''); // Estado para el rol
+  const [filterText, setFilterText] = useState('');
 
   useEffect(() => {
-    const usuarioGuardado = JSON.parse(sessionStorage.getItem('usuario'));
-    if (usuarioGuardado) {
-      setRut(usuarioGuardado.rut);
-      setRole(usuarioGuardado.role); // Suponiendo que el rol también está en sessionStorage
-      cargarAnotaciones(usuarioGuardado.rut);
-    }
-  }, []);
+    if (!usuario) {
+      cargarUsuario();
+    } else {
+      const fetchAnotaciones = async () => {
+        try {
+          if (usuario?.rut) {
+            const anotacionesAlumno = await getAnotacionesAlumno(usuario.rut);
+            setAnotaciones(anotacionesAlumno);
+          }
+        } catch (error) {
+          console.error('Error al obtener las anotaciones del alumno:', error);
+        }
+      };
 
-  const cargarAnotaciones = async (rut) => {
-    try {
-      const datosAnotaciones = await getAnotacionesAlumno(rut);
-      setAnotaciones(datosAnotaciones || []); // Asegúrate de asignar un array vacío si no hay datos
-    } catch (error) {
-      console.error('Error al cargar las anotaciones:', error);
-    } finally {
-      setCargando(false);
+      fetchAnotaciones();
     }
-  };
+  }, [usuario, cargarUsuario]);
 
-  if (cargando) {
-    return <CircularProgress />;
+  if (!usuario) {
+    return <div>Cargando usuario...</div>;
   }
 
+  const handleFilterChange = (e) => setFilterText(e.target.value);
+
   return (
-    <Box sx={{ padding: 4 }}>
-      {/* Aquí solo pasas las anotaciones, el rol y el rut */}
+    <div className="p-4 bg-gray-50 dark:bg-gray-800">
+      <div className="mb-4">
+        <input
+          type="text"
+          value={filterText}
+          onChange={handleFilterChange}
+          placeholder="Filtrar anotaciones..."
+          className="w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300"
+        />
+      </div>
+
       <TableAnotacionComponent
-        anotaciones={anotaciones} // Pasa todas las anotaciones sin filtrar
-        role={role} // Pasa el rol al componente de tabla
-        rut={rut} // Pasa el RUT al componente de tabla
+        anotaciones={anotaciones.filter((a) =>
+          a.descripcion.toLowerCase().includes(filterText.toLowerCase())
+        )}
+        role={usuario?.rol}
       />
-    </Box>
+    </div>
   );
 };
 
