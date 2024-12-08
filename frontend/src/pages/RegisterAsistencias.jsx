@@ -5,7 +5,9 @@ import { CursoContext } from "../context/CursoContext";
 import TableRegisterAsistencias from "../components/TableRegisterAsistencias";
 
 const RegisterAsistencia = () => {
-  const { idCurso } = useContext(CursoContext);
+  const { curso } = useContext(CursoContext);
+  const { idCurso } = curso; 
+
   const [alumnos, setAlumnos] = useState([]);
   const [mensaje, setMensaje] = useState("");
   const [messageType, setMessageType] = useState("");
