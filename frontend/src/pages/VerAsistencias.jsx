@@ -2,11 +2,13 @@ import { useState, useEffect, useContext } from "react";
 import { CursoContext } from "../context/CursoContext";
 import { getAsistenciasCurso, deleteAsistencia, updateAsistencia } from "../services/Asistencias.service";
 import TableComponentAsistencias from "../components/TableComponentAsistencias";
+import { format as formatTempo } from "@formkit/tempo"; // Import format function
 
 const VerAsistencias = () => {
   const { idCurso } = useContext(CursoContext);
   const [asistencias, setAsistencias] = useState([]);
   const [filterText, setFilterText] = useState("");
+  const [filterDate, setFilterDate] = useState(""); // State for date filter
   const [cargando, setCargando] = useState(true);
 
   // Estado para el modal de edición
@@ -33,15 +35,16 @@ const VerAsistencias = () => {
 
   const handleFilterChange = (e) => setFilterText(e.target.value);
 
+  const handleFilterDateChange = (e) => setFilterDate(e.target.value); // Date filter change handler
+
   const handleEdit = (asistencia) => {
-    console.log("Asistencia seleccionada para editar:", asistencia);
     setAsistenciaSeleccionada(asistencia);
     setIsModalOpen(true);
   };
 
   const handleDeleteRequest = (id_asistencia) => {
-    setAsistenciaToDelete(id_asistencia); // Guardamos el ID de la asistencia a eliminar
-    setConfirmDialogOpen(true); // Abrimos el cuadro de confirmación
+    setAsistenciaToDelete(id_asistencia);
+    setConfirmDialogOpen(true);
   };
 
   const handleConfirmDelete = async () => {
@@ -53,7 +56,6 @@ const VerAsistencias = () => {
 
       await deleteAsistencia(asistenciaToDelete); 
 
-      // Actualiza la lista de asistencias después de la eliminación
       setAsistencias(asistencias.filter((asistencia) => asistencia.id_asistencia !== asistenciaToDelete));
     } catch (error) {
       console.error("Error al eliminar la asistencia:", error);
@@ -79,14 +81,12 @@ const VerAsistencias = () => {
   
       setIsModalOpen(false);
   
-      // Verifica que la respuesta tenga la estructura correcta
       const newAsistencia = {
         ...updatedAsistencia,
         ...response, // Sobrescribe las propiedades con la respuesta del backend
         usuario: updatedAsistencia.usuario // Mantiene la referencia al usuario
       };
   
-      // Actualizar el estado de asistencias inmediatamente
       setAsistencias(asistencias.map((asistencia) =>
         asistencia.id_asistencia === updatedAsistencia.id_asistencia ? newAsistencia : asistencia
       ));
@@ -103,11 +103,20 @@ const VerAsistencias = () => {
     });
   };
 
-  const filteredAsistencias = asistencias.filter((asistencia) =>
-    `${asistencia.usuario.nombre} ${asistencia.usuario.apellido}`
+  const normalizeText = (text) => text.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+  const filteredAsistencias = asistencias.filter((asistencia) => {
+    const matchesText = normalizeText(`${asistencia.usuario.nombre} ${asistencia.usuario.apellido}`)
       .toLowerCase()
-      .includes(filterText.toLowerCase())
-  );
+      .includes(normalizeText(filterText).toLowerCase());
+
+    // Format both dates to the same format for comparison
+    const formattedCreatedAt = formatTempo(asistencia.createdAt, "YYYY-MM-DD");
+    const formattedFilterDate = filterDate ? formatTempo(filterDate, "YYYY-MM-DD") : "";
+
+    const matchesDate = filterDate ? formattedCreatedAt === formattedFilterDate : true;
+    return matchesText && matchesDate;
+  });
 
   if (cargando) {
     return (
@@ -119,13 +128,19 @@ const VerAsistencias = () => {
 
   return (
     <div className="p-4 bg-gray-50 dark:bg-gray-800">
-      <div className="mb-4">
+      <div className="mb-4 flex space-x-4">
         <input
           type="text"
           value={filterText}
           onChange={handleFilterChange}
           placeholder="Filtrar por nombre..."
           className="w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300"
+        />
+        <input
+          type="date"
+          value={filterDate}
+          onChange={handleFilterDateChange}
+          className="rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300"
         />
       </div>
       <TableComponentAsistencias

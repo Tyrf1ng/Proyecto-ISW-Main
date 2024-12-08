@@ -35,7 +35,7 @@ const TableComponentAsistencias = ({ asistencias, handleEdit, handleDelete }) =>
                 <tr key={asistencia.id_asistencia}>
                   <td className="px-4 py-4 text-sm whitespace-nowrap">
                     <div className="text-gray-800 dark:text-white">
-                      {new Date(asistencia.createdAt).toLocaleString()}
+                      {new Date(asistencia.createdAt).toLocaleDateString()}
                     </div>
                   </td>
                   <td className="px-4 py-4 text-sm whitespace-nowrap">
