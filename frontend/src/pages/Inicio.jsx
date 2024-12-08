@@ -1,37 +1,37 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Typography from '@mui/material/Typography';
 import backgroundImage from '../images/components/books.svg'; // Imagen local
-import { getAsignaturasByProfesor } from '../services/asignatura.service'; // Importación del servicio
+import { CursoContext } from '../context/CursoContext'; // Importación del contexto de curso
+import { getAsignaturasByProfesor } from '../services/asignatura.service'; // Importación del servicio de asignaturas
 
 function Inicio() {
   const navigate = useNavigate();
-  const [rolUsuario, setRolUsuario] = useState('');
-  const [usuario, setUsuario] = useState({ nombre: '', apellido: '', rut: '' });
-  const [asignatura, setAsignatura] = useState('');
-  const [curso, setCurso] = useState('');
-  const [errorAsignatura, setErrorAsignatura] = useState(''); // Para manejar errores de asignatura
+  const { curso } = useContext(CursoContext); 
+  const [usuario, setUsuario] = useState({ nombre: '', apellido: '', rut: '', rol: '' });
+  const [asignatura, setAsignatura] = useState('Cargando asignatura...'); // Valor inicial
+  const [errorAsignatura, setErrorAsignatura] = useState(''); 
+  const [errorCurso, setErrorCurso] = useState(''); 
 
   useEffect(() => {
     const usuarioGuardado = JSON.parse(sessionStorage.getItem('usuario'));
+    console.log('Usuario cargado desde sessionStorage:', usuarioGuardado);  // Verificar los datos cargados
+
     if (usuarioGuardado) {
-      setRolUsuario(usuarioGuardado.rol);
       setUsuario({
         nombre: usuarioGuardado.nombre,
         apellido: usuarioGuardado.apellido,
-        rut: usuarioGuardado.rut, // Extraer el RUT del usuario
+        rut: usuarioGuardado.rut, 
+        rol: usuarioGuardado.rol || ''  
       });
-      console.log('Datos del usuario:', usuarioGuardado);
 
-      // Obtener las asignaturas del profesor
-      if (usuarioGuardado.rut) {
+      // Obtener las asignaturas del profesor solo si el usuario es un profesor
+      if (usuarioGuardado.rut && usuarioGuardado.rol === 'Docente') {
         getAsignaturasByProfesor(usuarioGuardado.rut)
           .then((asignaturas) => {
+            console.log('Asignaturas obtenidas:', asignaturas);  // Verificar las asignaturas obtenidas
             if (asignaturas.length > 0) {
-              // Aquí puedes asumir que el profesor tiene al menos una asignatura
-              const asignaturaSeleccionada = asignaturas[0]; // Si hay varias, selecciona la que corresponda
-              setAsignatura(asignaturaSeleccionada.nombre);  // Asignatura seleccionada
-              setCurso(asignaturaSeleccionada.curso); // Curso relacionado
+              const asignaturaSeleccionada = asignaturas[0]; // Tomamos la primera asignatura
+              setAsignatura(asignaturaSeleccionada.nombre);  // Actualizamos el estado
             } else {
               setErrorAsignatura('No se encontraron asignaturas para este profesor.');
             }
@@ -49,7 +49,7 @@ function Inicio() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-800">
+    <div className="flex items-center justify-center px-20 min-h-screen bg-gray-100 dark:bg-gray-800">
       <div className="overflow-hidden bg-white dark:bg-gray-900 lg:mx-8 lg:flex lg:max-w-6xl lg:w-full lg:shadow-md lg:rounded-xl">
         {/* Imagen de fondo local */}
         <div className="lg:w-1/2">
@@ -62,38 +62,58 @@ function Inicio() {
         </div>
 
         {/* Información del usuario */}
-        <div className="max-w-xl px-6 py-12 lg:max-w-5xl lg:w-1/2">
+        <div className="max-w-xl px-6 py-10 my-20 lg:max-w-5xl lg:w-1/2 flex flex-col justify-center space-y-6"> {/* Ajuste aquí */}
           <h2 className="text-2xl font-semibold text-gray-800 dark:text-white md:text-3xl">
             Bienvenido, <span className="text-blue-500">{usuario.nombre} {usuario.apellido}</span>
           </h2>
 
-          <p className="mt-4 text-gray-500 dark:text-gray-300">
-            {errorAsignatura ? (
-              <span className="text-red-500">{errorAsignatura}</span>
+          {/* Texto condicional dependiendo del rol */}
+          <p className="text-lg text-gray-500 dark:text-gray-300">
+            {usuario.rol === 'Alumno' ? (
+              // Texto para alumnos
+              <span>
+                Bienvenido a tu página personal del liceo <span className="text-[#3B82F6]">XXXXXXXXX</span>.
+              </span>
+            ) : usuario.rol === 'Docente' ? (
+              // Texto para profesores
+              <>
+                {errorAsignatura ? (
+                  <span className="text-red-500">{errorAsignatura}</span>
+                ) : (
+                  <span>
+                    Bienvenido a tu página de la asignatura <span className="text-[#3B82F6]">{asignatura} </span>
+                  </span>
+                )}
+                {errorCurso || !curso.idCurso ? (
+                  <span className="text-red-500">{errorCurso || 'No has seleccionado un curso.'}</span>
+                ) : (
+                  <span>
+                    y el curso seleccionado es  <span className="text-[#3B82F6]">{curso.nombre || 'Cargando curso...'}</span>.
+                  </span>
+                )}
+              </>
+            ) : usuario.rol === 'Directivo' ? (
+              // Texto para directivos
+              <span>
+                Bienvenido a la página de administración del liceo <span className="text-[#3B82F6]">XXXXXXXXX</span>.
+                Desde aquí puedes gestionar los recursos educativos y coordinar con los profesores y alumnos.
+              </span>
             ) : (
-              `Bienvenido a tu página de la asignatura: ${asignatura || 'Cargando asignatura...'}, del curso: ${curso || 'Cargando curso...'}.`
+              <span>Rol no reconocido</span>
             )}
           </p>
 
-          {/* Datos del usuario */}
-          <div className="mt-4 dark:text-white">
-            <Typography variant="h6">
-              {rolUsuario ? `Rol: ${rolUsuario}` : 'Cargando rol...'}
-            </Typography>
-            <Typography variant="h6">
-              {usuario.rut ? `RUT: ${usuario.rut}` : 'Cargando RUT...'}
-            </Typography>
-          </div>
-
-          {/* Botón para seleccionar un curso */}
-          <div className="inline-flex w-full mt-6 sm:w-auto">
-            <button
-              onClick={handleSeleccionarCurso}
-              className="inline-flex items-center justify-center w-full px-6 py-2 text-sm text-white duration-300 bg-blue-600 rounded-lg hover:bg-blue-500 focus:ring focus:ring-blue-300 focus:ring-opacity-80"
-            >
-              Volver a seleccionar un curso
-            </button>
-          </div>
+          {/* Botón para seleccionar un curso (solo si el usuario es profesor) */}
+          {usuario.rol === 'Docente' && (
+            <div className="inline-flex w-full mt-6 sm:w-auto">
+              <button
+                onClick={handleSeleccionarCurso}
+                className="inline-flex items-center justify-center w-full px-6 py-2 text-sm text-white duration-300 bg-blue-600 rounded-lg hover:bg-blue-500 focus:ring focus:ring-blue-300 focus:ring-opacity-80"
+              >
+                Volver a seleccionar un curso
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>

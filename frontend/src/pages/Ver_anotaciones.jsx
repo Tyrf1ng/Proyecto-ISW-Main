@@ -1,11 +1,13 @@
 import { useState, useContext, useEffect } from 'react';
 import { CursoContext } from '../context/CursoContext';
+import { UsuarioContext } from '../context/UsuarioContext';  // Importar el contexto de usuario
 import useAnotaciones from '@hooks/anotaciones/useAnotaciones';
 import { createAnotacion, deleteAnotacion, updateAnotacion } from '@services/anotaciones.service.js';
-import TableComponent from '../components/Table';
+import TableAnotacionComponent from '../components/Table';
 
 const Ver_anotaciones = () => {
-  const { idCurso } = useContext(CursoContext);
+  const { curso } = useContext(CursoContext);
+  const { usuario, cargarUsuario } = useContext(UsuarioContext);  // Acceder al contexto de usuario
   const { anotaciones, fetchAnotaciones } = useAnotaciones();
   const [filterText, setFilterText] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -15,11 +17,24 @@ const Ver_anotaciones = () => {
     tipo: 'Positiva',
     rut_alumno: '',
     descripcion: '',
-    id_asignatura: idCurso || '',
+    id_asignatura: curso.idCurso || '',
     fecha: new Date().toISOString(),
   });
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [anotacionToDelete, setAnotacionToDelete] = useState(null);
+
+  // Cargar usuario cuando el componente se monta, solo una vez
+  useEffect(() => {
+    // Llamar a cargarUsuario solo si el usuario aún no está cargado
+    if (!usuario) {
+      cargarUsuario();
+    }
+  }, [usuario, cargarUsuario]);  // Solo ejecutar cuando el usuario no esté disponible
+
+  // Verificar si el usuario está disponible antes de proceder
+  if (!usuario) {
+    return <div>Cargando usuario...</div>;  // O una pantalla de carga mientras se obtiene el usuario
+  }
 
   const handleFilterChange = (e) => setFilterText(e.target.value);
 
@@ -39,7 +54,7 @@ const Ver_anotaciones = () => {
       tipo: 'Positiva',
       rut_alumno: '',
       descripcion: '',
-      id_asignatura: idCurso || '',
+      id_asignatura: curso.idCurso || '',
       fecha: new Date().toISOString(),
     });
     setIsModalOpen(true);
@@ -89,12 +104,13 @@ const Ver_anotaciones = () => {
         />
       </div>
 
-      <TableComponent
+      <TableAnotacionComponent
         anotaciones={anotaciones.filter((a) =>
           a.descripcion.toLowerCase().includes(filterText.toLowerCase())
         )}
         handleOpen={handleOpenModal}
         handleDelete={handleDeleteRequest}
+        role={usuario?.rol} 
       />
 
       {isModalOpen && (
@@ -156,8 +172,8 @@ const Ver_anotaciones = () => {
       {confirmDialogOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="p-8 rounded-lg shadow-xl bg-white text-black dark:bg-[#111827] dark:text-white">
-            <h2 className="text-2xl font-bold mb-4">¿Estás seguro de que quieres eliminar esta anotación?</h2>
-            <div className="flex justify-around mt-6">
+            <h2 className="text-2xl font-bold mb-4">¿Estás seguro de que deseas eliminar esta anotación?</h2>
+            <div className="flex justify-between">
               <button onClick={handleConfirmDelete} className="px-6 py-3 bg-red-600 text-white rounded-lg text-lg">
                 Eliminar
               </button>

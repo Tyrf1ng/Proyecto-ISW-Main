@@ -3,13 +3,14 @@ import { CursoContext } from '../context/CursoContext';
 import { getAlumnosByCurso } from '../services/alumnos.service';
 import { createAnotacion } from '@services/anotaciones.service.js';
 
+
 function Add_anotaciones() {
-  const { idCurso } = useContext(CursoContext);
-  const [newAnotacion, setNewAnotacion] = useState({
+    const { curso } = useContext(CursoContext);
+    const [newAnotacion, setNewAnotacion] = useState({
     tipo: 'Positiva',
     rut: '',
     descripcion: '',
-    id_asignatura: idCurso || '',
+    id_asignatura: curso.idCurso || '',  // Usar curso.id en lugar de idCurso
     fecha: new Date().toISOString(),
   });
   const [message, setMessage] = useState('');
@@ -20,14 +21,15 @@ function Add_anotaciones() {
   const [searchTerm, setSearchTerm] = useState('');
   const [isListVisible, setIsListVisible] = useState(false);
 
+  // Cargar alumnos cuando se monta el componente o cambia curso.idCurso
   useEffect(() => {
     const cargarAlumnos = async () => {
-      if (!idCurso) {
-        console.error("ID del curso no válido:", idCurso);
+      if (!curso.idCurso) {  // Comprobar si el curso tiene un idCurso válido
+        console.error("ID del curso no válido:", curso.idCurso);
         return;
       }
       try {
-        const alumnosData = await getAlumnosByCurso(idCurso);
+        const alumnosData = await getAlumnosByCurso(curso.idCurso);  // Obtener alumnos según curso.idCurso
         if (Array.isArray(alumnosData)) {
           setAlumnos(alumnosData);
           setFilteredAlumnos(alumnosData.slice(0, 5)); // Mostrar solo los primeros 5 alumnos
@@ -40,7 +42,7 @@ function Add_anotaciones() {
     };
 
     cargarAlumnos();
-  }, [idCurso]);
+  }, [curso.idCurso]);  // Dependencia de curso.idCurso para recargar los alumnos cuando cambie
 
   const handleSearchChange = (e) => {
     const query = e.target.value.toLowerCase();
@@ -85,6 +87,7 @@ function Add_anotaciones() {
     }
 
     try {
+      // Crear la anotación con la información actual
       await createAnotacion(newAnotacion);
       setMessage('Anotación creada exitosamente');
       setMessageType('success');
@@ -92,7 +95,7 @@ function Add_anotaciones() {
         tipo: 'Positiva',
         rut: '',
         descripcion: '',
-        id_asignatura: idCurso || '',
+        id_asignatura: curso.idCurso || '', // Volver a establecer el curso.idCurso para futuras anotaciones
         fecha: new Date().toISOString(),
       });
       setSelectedAlumno(null);

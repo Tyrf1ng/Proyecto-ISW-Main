@@ -277,8 +277,8 @@ async function createHorarios() {
       ),
       horariosRepository.save(
         horariosRepository.create({
-          hora_inicio: "09:30",
-          hora_fin: "09:40",
+          hora_inicio: "09:40",
+          hora_fin: "11:00",
         }),
       ),
       horariosRepository.save(
@@ -416,7 +416,7 @@ async function createUsuario() {
           email: "alvaro@gmail.cl",
           telefono: 987655321,
           password: await encryptPassword("alvaro123"),
-          id_roles: 3,
+          id_roles: 2,
           comuna: "Coronel City",
           direccion: "Calle coronel lota 69",
         }),

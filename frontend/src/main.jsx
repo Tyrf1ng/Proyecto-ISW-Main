@@ -5,7 +5,7 @@ import Inicio from '@pages/Inicio';
 import Cursos from '@pages/Cursos';
 import Login from '@pages/Login';
 import Error404 from '@pages/Error404';
-import ProtectedRoute from '@components/ProtectedRoute';
+import ProtectedRoute from '@components/ProtectedRoute'; // Mantener este import si es necesario
 import Anotaciones from '@pages/Anotaciones';
 import Labs from '@pages/Labs'; // Importa el nuevo componente Labs
 import Horarios from '@pages/Horarios'; // Importa el nuevo componente Horarios
@@ -23,7 +23,7 @@ import RegistrarAsistencias from '@pages/RegistrarAsistencias';
 import Reservas from '@pages/Reservas'; // Importa el nuevo componente Reservas
 import Profile from './pages/Profile';
 import LabsDocente from './pages/LabsDocente';
-import RegisterAsistencia from '../src/pages/RegisterAsistencias';
+import RegisterAsistencia from './pages/RegisterAsistencias'; // Nueva ruta de RegisterAsistencia
 
 const router = createBrowserRouter([
   {
@@ -38,7 +38,7 @@ const router = createBrowserRouter([
         path: 'asistencias',
         element: <Outlet />,
         children: [
-          { path: 'RegisterAsistencias', element: <RegisterAsistencia /> },
+          { path: 'RegisterAsistencias', element: <RegisterAsistencia /> }, // Ruta agregada
           { path: 'add_asistencias', element: <RegistrarAsistencias /> },
           { path: 'ver_asistencias', element: <VerAsistencias /> },
           { path: 'alumno', element: <Ver_Asistencias_Para_Alumno /> }, // Ruta para asistencias por alumno

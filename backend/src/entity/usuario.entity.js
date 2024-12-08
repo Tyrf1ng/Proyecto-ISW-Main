@@ -33,12 +33,12 @@ const UsuarioSchema = new EntitySchema({
     direccion: {
       type: "varchar",
       length: 255,
-      nullable: false,
+      nullable: true,
     },
     comuna: {
         type: "varchar",
         length: 255,
-        nullable: false,
+        nullable: true,
     },
     id_roles: {
       type: "int",
