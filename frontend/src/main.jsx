@@ -41,6 +41,7 @@ const router = createBrowserRouter([
           { path: 'add_asistencias', element: <RegistrarAsistencias /> },
           { path: 'ver_asistencias', element: <VerAsistencias /> },
           { path: 'alumno', element: <Ver_Asistencias_Para_Alumno /> },
+          { path: 'alumno', element: <Ver_Asistencias_Para_Alumno /> },
         ]
       },
       {
