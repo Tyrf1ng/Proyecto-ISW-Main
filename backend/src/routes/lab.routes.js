@@ -12,9 +12,9 @@ import {
   const router = Router();
 
 router
-    .get("/",authorize(["Administrador","Directivo","Encargado de Laboratorio","Docente"]), getLabs)         
-    .get("/:id_lab",authorize(["Administrador","Directivo","Encargado de Laboratorio","Docente"]), getLab)
-    .patch("/update/:id_lab",authorize(["Administrador","Directivo","Encargado de Laboratorio"]), updateLab)
-    .delete("/delete/:id_lab",authorize(["Administrador","Directivo","Encargado de Laboratorio"]), deleteLab) 
-    .post("/create",authorize(["Administrador","Directivo","Encargado de Laboratorio"]), createLab);
+    .get("/",authorize(["Directivo","Encargado de Laboratorio","Docente"]), getLabs)         
+    .get("/:id_lab",authorize(["Directivo","Encargado de Laboratorio","Docente"]), getLab)
+    .patch("/update/:id_lab",authorize(["Directivo","Encargado de Laboratorio"]), updateLab)
+    .delete("/delete/:id_lab",authorize(["Directivo","Encargado de Laboratorio"]), deleteLab) 
+    .post("/create",authorize(["Directivo","Encargado de Laboratorio"]), createLab);
 export default router;

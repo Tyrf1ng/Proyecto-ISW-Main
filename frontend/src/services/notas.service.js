@@ -54,9 +54,9 @@ export const updateNota = async (id, valor, tipo) => {
 };
 
 
-export const getNotasPorRUT = async (rutsAlumnos) => {
+export const getNotasPorRUT = async (rut) => {
     try {
-        const response = await axios.get(`/notas/alumno/${rutsAlumnos}`);
+        const response = await axios.get(`/notas/alumno/${rut}`);
         return response.data; // Devuelve las notas del alumno
     } catch (error) {
         console.error('Error al obtener las notas por RUT:', error);

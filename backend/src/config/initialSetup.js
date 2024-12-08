@@ -215,8 +215,8 @@ async function createNotas() {
     await Promise.all([
       NotasRepository.save(
         NotasRepository.create({
-          tipo: "C1",
-          valor: 0.3,
+          tipo: "Prueba",
+          valor: 2.3,
           rut: "21.070.073-0",
           id_asignatura: 1,
         }),

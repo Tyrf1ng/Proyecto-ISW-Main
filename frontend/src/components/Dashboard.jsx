@@ -38,6 +38,7 @@ const NAVIGATION_BY_ROLE = {
       title: 'Asistencias',
       icon: <PeopleAltIcon />,
       children: [
+        { segment: 'RegisterAsistencias', title: 'Registrar Asistencias', icon: <AddIcon /> },
         { segment: 'add_asistencias', title: 'Añadir asistencias', icon: <AddIcon /> },
         { segment: 'ver_asistencias', title: 'Ver todas las asistencias', icon: <ManageSearchIcon /> },
       ],
