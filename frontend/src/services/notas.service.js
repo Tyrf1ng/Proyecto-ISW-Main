@@ -63,3 +63,13 @@ export const getNotasPorRUT = async (rut) => {
         return error.response.data;
     }
 };
+
+export const getNotasPorAsignatura = async (rut,id_asignatura) => {
+    try {
+        const response = await axios.get(`/notas/asignatura/${id_asignatura}/alumno/${rut}`);
+        return response.data; // Devuelve las notas del alumno
+    } catch (error) {
+        console.error('Error al obtener las notas por asignatura:', error);
+        return error.response.data;
+    }
+}

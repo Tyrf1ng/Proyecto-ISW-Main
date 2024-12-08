@@ -50,30 +50,28 @@ const VerNotas = () => {
     try {
       const { id_nota, valor, tipo, originalTipo } = notaToEdit;
   
+      if (!id_nota || typeof valor !== 'number') {
+        console.error('ID o Valor inválido:', { id_nota, valor });
+        return;
+      }
+  
       if (valor < 1.0 || valor > 7.0) {
         setMessage('El valor de la nota debe estar entre 1.0 y 7.0');
         setMessageType('warning');
         return;
       }
   
-      if (!id_nota || valor === undefined) {
-        console.error('ID o Valor no definido.');
-        return;
-      }
- 
       if (tipo !== originalTipo) {
         console.log(`El tipo cambió de "${originalTipo}" a "${tipo}"`);
       }
-  
-    
       await updateNota(id_nota, valor, tipo);
-      fetchNotas(); 
-      setNotaToEdit(null);
+      setMessage('Nota actualizada correctamente');
+      fetchNotas();
+      setNotaToEdit(null); 
     } catch (error) {
       console.error('Error al actualizar la nota:', error);
     }
   };
-
 
 
   return (
@@ -158,7 +156,7 @@ const VerNotas = () => {
           <input
             type="number"
             id="valor"
-            value={notaToEdit.valor}
+            value={notaToEdit?.valor||''}
             onChange={(e) => setNotaToEdit((prevState) => ({ ...prevState, valor: parseFloat(e.target.value) }))}
             min="1.0" 
             max="7.0" 

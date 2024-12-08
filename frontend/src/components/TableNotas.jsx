@@ -23,67 +23,65 @@ const TableComponent = ({ notas, onEdit, onDelete, role }) => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200 dark:divide-gray-700 dark:bg-gray-900">
-              {notas.length > 0 ? (
-                notas.map((nota) => (
-                  <tr key={nota.id_nota}>
-                    {/* Columna Tipo */}
-                    <td className="p-4 text-sm font-medium whitespace-nowrap">
-                      <div className="inline px-3 py-1 text-sm font-normal rounded-full text-white bg-gray-500">
-                        {nota.tipo}
-                      </div>
-                    </td>
-
-                    {/* Columna Valor de la nota con color basado en su valor */}
-                    <td className="p-4 text-sm font-medium whitespace-nowrap">
-                      <div
-                        className={`inline px-3 py-1 text-sm font-normal rounded-full ${
-                          nota.valor < 4.0 ? 'text-white bg-red-500' : 'text-white bg-emerald-500'
-                        }`}
-                      >
-                        {nota.valor}
-                      </div>
-                    </td>
-
-                    {/* RUT del Alumno */}
-                    <td className="p-4 text-sm whitespace-nowrap">
-                      <div className="text-gray-800 dark:text-white">{nota.rut}</div>
-                    </td>
-
-                    {/* Alumno */}
-                    <td className="p-4 text-sm whitespace-nowrap">
-                      <div className="text-gray-800 dark:text-white">{`${nota.nombre_alumno} ${nota.apellido_alumno}`}</div>
-                    </td>
-
-                    {/* Asignatura */}
-                    <td className="p-4 text-sm whitespace-nowrap">
-                      <div className="text-gray-800 dark:text-white">{nota.nombre_asignatura}</div>
-                    </td>
-
-                    {/* Acciones (Editar y Eliminar) - Solo para role === 2 */}
-                    {role === 2 && (
-                      <td className="p-4 text-sm whitespace-nowrap">
-                        <div className="flex space-x-2">
-                          {/* Icono Editar */}
-                          <IconButton color="primary" onClick={() => onEdit(nota)}>
-                            <EditIcon />
-                          </IconButton>
-                          {/* Icono Delete con color rojo */}
-                          <IconButton color="primary" onClick={() => onDelete(nota.id_nota)}>
-                            <DeleteIcon className="text-red-500" />
-                          </IconButton>
+                  {notas && notas.length > 0 ? (
+                    notas.map((nota) => (
+                    <tr key={nota.id_nota}>
+                      {/* Columna Tipo */}
+                      <td className="p-4 text-sm font-medium whitespace-nowrap">
+                        <div className="inline px-3 py-1 text-sm font-normal rounded-full text-white bg-gray-500">
+                          {nota.tipo}
                         </div>
                       </td>
-                    )}
+
+                      {/* Columna Valor */}
+                      <td className="p-4 text-sm font-medium whitespace-nowrap">
+                        <div
+                          className={`inline px-3 py-1 text-sm font-normal rounded-full ${
+                            nota.valor < 4.0 ? 'text-white bg-red-500' : 'text-white bg-emerald-500'
+                          }`}
+                        >
+                          {nota.valor}
+                        </div>
+                      </td>
+
+                      {/* RUT del Alumno */}
+                      <td className="p-4 text-sm whitespace-nowrap">
+                        <div className="text-gray-800 dark:text-white">{nota.rut}</div>
+                      </td>
+
+                      {/* Alumno */}
+                      <td className="p-4 text-sm whitespace-nowrap">
+                        <div className="text-gray-800 dark:text-white">{`${nota.nombre_alumno} ${nota.apellido_alumno}`}</div>
+                      </td>
+
+                      {/* Asignatura */}
+                      <td className="p-4 text-sm whitespace-nowrap">
+                        <div className="text-gray-800 dark:text-white">{nota.nombre_asignatura}</div>
+                      </td>
+
+                      {/* Acciones (solo para role === 2) */}
+                      {role === 2 && (
+                        <td className="p-4 text-sm whitespace-nowrap">
+                          <div className="flex space-x-2">
+                            <IconButton color="primary" onClick={() => onEdit(nota)}>
+                              <EditIcon />
+                            </IconButton>
+                            <IconButton color="primary" onClick={() => onDelete(nota.id_nota)}>
+                              <DeleteIcon className="text-red-500" />
+                            </IconButton>
+                          </div>
+                        </td>
+                      )}
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={role === 2 ? 6 : 5} className="text-center py-4 text-gray-500">
+                      No hay notas registradas
+                    </td>
                   </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={role === 2 ? 6 : 5} className="text-center py-4 text-gray-500">
-                    No hay notas para este curso
-                  </td>
-                </tr>
-              )}
-            </tbody>
+                )}
+              </tbody>
           </table>
         </div>
       </div>
