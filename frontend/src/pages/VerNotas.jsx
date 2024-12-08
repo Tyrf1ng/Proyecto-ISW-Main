@@ -86,6 +86,7 @@ const VerNotas = () => {
         notas={filteredNotas}
         onEdit={handleEdit}
         onDelete={handleDelete}
+        role={2}
       />
 
       {confirmDialogOpen && (

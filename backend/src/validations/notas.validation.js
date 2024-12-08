@@ -33,7 +33,7 @@ tipo: Joi.string()
 "string.min": "El tipo de nota debe tener al menos 3 caracteres.",
 "string.max": "El tipo de nota debe tener como máximo 100 caracteres."
 }),
-rut_alumno: Joi.string()
+rut: Joi.string()
 .required()
 .min(9)
 .max(12)

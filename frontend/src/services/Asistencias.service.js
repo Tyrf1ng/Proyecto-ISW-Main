@@ -43,7 +43,7 @@ export async function updateAsistencia(asistencia) {
       throw new Error("ID de asistencia es requerido");
     }
     const response = await axios.patch(`/asistencias/actualizar/${asistencia.id_asistencia}`, asistencia);
-    return response.data;
+    return response.data; // Retornar la data de la respuesta
   } catch (error) {
     console.error("Error al actualizar la asistencia:", error);
     throw error;

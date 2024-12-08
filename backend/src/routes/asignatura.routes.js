@@ -8,5 +8,4 @@ const router = Router();
 router
     .use(authenticateJwt)
     .get("/profesor/:rut", authorize(["Docente", "Directivo"]), getAsignaturasByProfesorController)
-
 export default router;

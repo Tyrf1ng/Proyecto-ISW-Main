@@ -116,7 +116,7 @@ export const updateNotaController = async (req, res) => {
 };
 export async function createNotaController(req, res) {
     try {
-        const { id_asignatura, rut_alumno, valor, tipo } = req.body;
+        const { id_asignatura, rut, valor, tipo } = req.body;
         const { error } = notasQueryValidation.validate(req.body);
         if (error) {
             return handleErrorClient(res, 400, "Faltan datos obligatorios", error.message);
@@ -124,7 +124,7 @@ export async function createNotaController(req, res) {
 
         const [notaCreada] = await createNota({
             id_asignatura,
-            rut_alumno,
+            rut,
             tipo,
             valor,
         });
