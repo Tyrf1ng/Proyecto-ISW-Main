@@ -38,10 +38,9 @@ const router = createBrowserRouter([
         path: 'asistencias',
         element: <Outlet />,
         children: [
-          { path: 'RegisterAsistencias', element: <RegisterAsistencia /> }, // Ruta agregada
-          { path: 'add_asistencias', element: <RegistrarAsistencias /> },
+          { path: 'RegisterAsistencias', element: <RegisterAsistencia /> },
           { path: 'ver_asistencias', element: <VerAsistencias /> },
-          { path: 'alumno', element: <Ver_Asistencias_Para_Alumno /> }, // Ruta para asistencias por alumno
+          { path: 'alumno', element: <Ver_Asistencias_Para_Alumno /> },
         ]
       },
       {
