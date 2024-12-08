@@ -2,7 +2,6 @@ import { motion } from "framer-motion"; // Importar motion
 import { useNavigate } from "react-router-dom";
 import { login } from "@services/auth.service.js";
 import useLogin from "@hooks/auth/useLogin.jsx";
-import patern from "../../public/patern.svg";
 import icono from "../images/components/icono.svg";
 import eyeo from "../images/components/eyeo.svg";
 import eyec from "../images/components/eyec.svg";
@@ -45,7 +44,7 @@ const Login = () => {
     <div
       style={{
         backgroundColor: "#111827",
-        backgroundImage: `url(${patern})`,
+        backgroundImage: `url(/patern.svg)`,
         backgroundRepeat: "repeat",
         backgroundSize: "auto",
         height: "100vh",

@@ -30,7 +30,6 @@ async function setupServer() {
 
     app.disable("x-powered-by");
 
-    // Configuración de CORS para permitir solicitudes desde localhost:3000 y 146.83.198.35:1287
     const corsOptions = {
       credentials: true, // Habilitar el uso de cookies (si las usas)
       origin: (origin, callback) => {
