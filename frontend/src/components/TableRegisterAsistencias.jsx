@@ -1,28 +1,47 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const TableRegisterAsistencias = ({ students, handleRegister }) => {
-  const [attendance, setAttendance] = useState(
-    students.map((student) => ({
-      rut: student.rut,
-      nombre: `${student.nombre} ${student.apellido}`,
-      presente: false,
-      ausente: false,
-      justificado: false
-    }))
-  );
+  const [attendance, setAttendance] = useState([]);
+
+  useEffect(() => {
+    setAttendance(
+      students.map((student) => ({
+        rut: student.rut,
+        nombre: `${student.nombre} ${student.apellido}`,
+        presente: false,
+        ausente: false,
+        justificado: false,
+        observacion: ''
+      }))
+    );
+  }, [students]);
 
   const handleCheckboxChange = (rut, type) => {
-    setAttendance(attendance.map((record) => {
-      if (record.rut === rut) {
-        return {
-          ...record,
-          presente: type === 'presente',
-          ausente: type === 'ausente',
-          justificado: type === 'justificado'
-        };
-      }
-      return record;
-    }));
+    setAttendance((prevAttendance) =>
+      prevAttendance.map((record) => {
+        if (record.rut === rut) {
+          return {
+            ...record,
+            presente: type === 'presente',
+            ausente: type === 'ausente',
+            justificado: type === 'justificado',
+            observacion: type === 'justificado' ? record.observacion : ''
+          };
+        }
+        return record;
+      })
+    );
+  };
+
+  const handleObservationChange = (rut, value) => {
+    setAttendance((prevAttendance) =>
+      prevAttendance.map((record) => {
+        if (record.rut === rut) {
+          return { ...record, observacion: value };
+        }
+        return record;
+      })
+    );
   };
 
   const handleSave = () => {
@@ -86,6 +105,17 @@ const TableRegisterAsistencias = ({ students, handleRegister }) => {
                       checked={student.justificado}
                       onChange={() => handleCheckboxChange(student.rut, 'justificado')}
                     />
+                    {student.justificado && (
+                      <div className="mt-2">
+                        <textarea
+                          className="w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300"
+                          rows="2"
+                          placeholder="Escribe una observación..."
+                          value={student.observacion}
+                          onChange={(e) => handleObservationChange(student.rut, e.target.value)}
+                        />
+                      </div>
+                    )}
                   </td>
                 </tr>
               ))}

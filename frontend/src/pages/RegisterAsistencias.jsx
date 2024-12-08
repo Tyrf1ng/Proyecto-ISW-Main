@@ -37,7 +37,7 @@ const RegisterAsistencia = () => {
             id_asignatura: idCurso,
             rut: record.rut,
             tipo: record.presente ? "Presente" : record.ausente ? "Ausente" : "Justificado",
-            observacion: record.justificado ? "Justificado" : null,
+            observacion: record.justificado ? record.observacion : null,
           };
 
           await createAsistencia(data);
