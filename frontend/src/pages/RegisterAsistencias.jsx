@@ -34,6 +34,20 @@ const RegisterAsistencia = () => {
 
   const handleRegister = async (attendance) => {
     try {
+      const selected = new Date(selectedDate);
+      const currentYear = new Date().getFullYear();
+      if (selected.getFullYear() !== currentYear) {
+        setMensaje("La fecha seleccionada no es del año actual.");
+        setMessageType("error");
+        return;
+      }
+      const dayOfWeek = selected.getDay();
+      if (dayOfWeek === 0 || dayOfWeek === 6) {
+        setMensaje("No se puede registrar asistencia en fines de semana.");
+        setMessageType("error");
+        return;
+      }
+
       for (let record of attendance) {
         if (record.presente || record.ausente || record.justificado) {
           const data = {

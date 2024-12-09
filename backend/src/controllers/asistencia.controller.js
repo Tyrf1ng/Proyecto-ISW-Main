@@ -108,7 +108,19 @@ export async function createAsistenciaController(req, res) {
         if (validationError) {
             return handleErrorClient(res, 400, validationError.details[0].message);
         }
+
         const { id_asignatura, rut, tipo, observacion, createdAt } = value;
+        const selectedDate = new Date(createdAt);
+        const currentYear = new Date().getFullYear();
+
+        if (selectedDate.getFullYear() !== currentYear) {
+            return handleErrorClient(res, 400, "La fecha seleccionada no es del año actual.");
+        }
+
+        const dayOfWeek = selectedDate.getDay();
+        if (dayOfWeek === 0 || dayOfWeek === 6) {
+            return handleErrorClient(res, 400, "No se puede registrar asistencia en fines de semana.");
+        }
 
         const [asistenciaCreada, errorAsistencia] = await createAsistencia({ id_asignatura, rut, tipo, observacion, createdAt });
         if (errorAsistencia) {
