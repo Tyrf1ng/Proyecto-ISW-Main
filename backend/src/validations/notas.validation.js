@@ -2,6 +2,14 @@
 import Joi from "joi";
 
 export const notasQueryValidation = Joi.object({
+id_asignatura: Joi.number()
+.required()
+.messages({
+"number.empty": "El id de la asignatura no puede estar vacío." }),
+rut: Joi.string()
+.required()
+.messages({
+"string.empty": "El rut del alumno no puede estar vacío." }),
 valor: Joi.number()
 .min(1.0)
 .required()

@@ -6,7 +6,7 @@ import { getAsignaturasByProfesor } from "@services/asignatura.service";
 import { useAuth } from "../context/AuthContext";
 
 function Add_Notas() {
-  const { idCurso } = useContext(CursoContext);
+  const { curso } = useContext(CursoContext);
   const { user } = useAuth();
   const [newNota, setNewNota] = useState({
     tipo: "",
@@ -50,32 +50,38 @@ function Add_Notas() {
     cargarAsignaturas();
   }, [user]);
 
-  // Cargar alumnos del curso
+
+  // Cargar alumnos cuando se monta el componente o cambia curso.idCurso
   useEffect(() => {
     const cargarAlumnos = async () => {
-      if (!idCurso) {
-        console.error("ID del curso no válido:", idCurso);
+      if (!curso.idCurso) {  // Comprobar si el curso tiene un idCurso válido
+        console.error("ID del curso no válido:", curso.idCurso);
         return;
       }
       try {
-        const alumnosData = await getAlumnosByCurso(idCurso);
-        setAlumnos(alumnosData);
-        setFilteredAlumnos(alumnosData);
+        const alumnosData = await getAlumnosByCurso(curso.idCurso);  // Obtener alumnos según curso.idCurso
+        if (Array.isArray(alumnosData)) {
+          setAlumnos(alumnosData);
+          setFilteredAlumnos(alumnosData.slice(0, 5)); // Mostrar solo los primeros 5 alumnos
+        } else {
+          console.error("Formato inesperado de datos:", alumnosData);
+        }
       } catch (error) {
         console.error("Error al cargar alumnos:", error);
       }
     };
 
     cargarAlumnos();
-  }, [idCurso]);
+  }, [curso.idCurso]); 
 
   const handleSearchChange = (e) => {
     const query = e.target.value.toLowerCase();
     setSearchTerm(query);
+
     const filtered = alumnos.filter((alumno) =>
       `${alumno.nombre} ${alumno.apellido}`.toLowerCase().includes(query)
     );
-    setFilteredAlumnos(filtered);
+    setFilteredAlumnos(filtered.slice(0, 5));
     setIsListVisible(filtered.length > 0);
   };
 
@@ -107,7 +113,10 @@ function Add_Notas() {
       await createNota(newNota);
       setMessage("Nota creada exitosamente.");
       setMessageType("success");
-      setNewNota({ tipo: "", valor: "", rut: "", id_asignatura: "" });
+      setNewNota({ tipo: "", 
+        valor: "", 
+        rut: "", 
+        id_asignatura: "" });
       setSelectedAlumno(null);
       setFilteredAlumnos(alumnos);
     } catch (error) {
@@ -118,26 +127,50 @@ function Add_Notas() {
   };
 
   const renderMessage = () => {
-    if (!message) return null;
+    const messageClasses = "fixed top-5 right-5 w-full max-w-sm overflow-hidden bg-[#111827] rounded-lg shadow-md z-50 animate-bounce-slow";
 
-    const messageClasses =
-      "fixed top-5 right-5 w-full max-w-sm overflow-hidden bg-[#111827] rounded-lg shadow-md z-50 animate-bounce-slow";
-
-    return (
-      <div className={messageClasses}>
-        <div className="px-4 py-2 -mx-3">
-          <div className="mx-3">
-            <span
-              className={`font-semibold ${messageType === "success" ? "text-emerald-500" : messageType === "error" ? "text-red-500" : "text-yellow-400"}`}
-            >
-              {messageType.charAt(0).toUpperCase() + messageType.slice(1)}
-            </span>
-            <p className="text-sm text-gray-100">{message}</p>
+    if (messageType === 'success') {
+      return (
+        <div className={messageClasses}>
+          <div className="px-4 py-2 -mx-3">
+            <div className="mx-3">
+              <span className="font-semibold text-emerald-500">Success</span>
+              <p className="text-sm text-gray-100">{message}</p>
+            </div>
           </div>
         </div>
-      </div>
-    );
+      );
+    }
+
+    if (messageType === 'error') {
+      return (
+        <div className={messageClasses}>
+          <div className="px-4 py-2 -mx-3">
+            <div className="mx-3">
+              <span className="font-semibold text-red-500">Error</span>
+              <p className="text-sm text-gray-100">{message}</p>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    if (messageType === 'warning') {
+      return (
+        <div className={messageClasses}>
+          <div className="px-4 py-2 -mx-3">
+            <div className="mx-3">
+              <span className="font-semibold text-yellow-400">Warning</span>
+              <p className="text-sm text-gray-100">{message}</p>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    return null;
   };
+
 
   // Mostrar el mensaje de carga si es necesario
   if (cargando) return <p>Cargando...</p>;

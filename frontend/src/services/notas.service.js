@@ -1,17 +1,8 @@
 import axios from "./root.service.js";
 
-export const AllNotas = async () => {
+export const NotasCurso = async (idCurso) => {
     try {
-        const response = await axios.get('/notas/');
-        return response.data;
-    } catch (error) {
-        return error.response.data;
-    }
-}
-
-export const NotasCurso = async (id_curso) => {
-    try {
-      const response = await axios.get(`/notas/curso/${id_curso}`);
+      const response = await axios.get(`/notas/curso/${idCurso}`);
       return response.data; 
     } catch (error) {
       console.error('Error al obtener las notas del Curso', error);
