@@ -8,13 +8,31 @@ import {
     getAsistenciasAlumno,
     getAsistenciasAsignatura,
     getAsistenciasCurso,
-    updateAsistencia
+    updateAsistencia,
+    getAsistenciasAlumnoFecha
 } from "../services/asistencia.service.js";
 import {
     handleErrorClient,
     handleErrorServer,
     handleSuccess,
 } from "../handlers/responseHandlers.js";
+
+
+export async function getAsistenciasAlumnoFechaController(req, res) {
+    try {
+        const { rut, fecha } = req.params;
+
+        const [asistencias, errorAsistencias] = await getAsistenciasAlumnoFecha(rut, fecha);
+
+        if (errorAsistencias) return handleErrorClient(res, 404, errorAsistencias);
+
+        asistencias.length === 0
+            ? handleSuccess(res, 204)
+            : handleSuccess(res, 200, "Asistencias encontradas", asistencias);
+    } catch (error) {
+        handleErrorServer(res, 500, error.message);
+    }
+}
 
 
 export async function getAsistenciasCursoController(req, res) {

@@ -116,7 +116,6 @@ const VerAsistencias = () => {
       .toLowerCase()
       .includes(normalizeText(filterText).toLowerCase());
   
-    // Adjust for timezone when formatting dates
     const formattedCreatedAt = formatTempo(new Date(asistencia.createdAt).toISOString(), "DD-MM-YYYY");
     const formattedFilterDate = filterDate ? formatTempo(new Date(filterDate).toISOString(), "DD-MM-YYYY") : "";
 

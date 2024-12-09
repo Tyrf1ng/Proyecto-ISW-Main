@@ -1,5 +1,5 @@
 "use strict";
-import { In } from "typeorm";
+import { In, MoreThanOrEqual, LessThan } from "typeorm";
 import Asistencia from "../entity/asistencia.entity.js";
 import { AppDataSource } from "../config/configDb.js";
 import Usuario from "../entity/usuario.entity.js";
@@ -23,7 +23,7 @@ export async function getAsistenciasCurso(id_curso) {
         }
 
         const rutAlumnos = conexiones.map(conexion => conexion.usuario.rut);
-        
+
         const asistencias = await asistenciaRepository.find({
             where: { rut: In(rutAlumnos) },
             relations: ["usuario"]
@@ -56,7 +56,7 @@ export async function getAsistenciasCurso(id_curso) {
         }));
 
         return [asistenciasData, null];
-        
+
     } catch (error) {
         console.error("Error al obtener las asistencias:", error);
         return [null, "Error interno del servidor"];
@@ -69,15 +69,16 @@ export async function getAsistenciasAlumno(rut) {
         if (!alumno) return [null, "El usuario no es un alumno o no existe"];
 
         const asistencias = await asistenciaRepository.find({ where: { rut } });
-        
-        if (!asistencias || asistencias.length === 0) return [null, "No hay asistencias"];
-        return [asistencias, null];  
 
-    } catch (error) {
-        console.error("Error al obtener las asistencias:", error);
-        return [null, "Error interno del servidor"];
+        if (!asistencias || asistencias.length === 0) return [null, "No hay asistencias"];
+            return [asistencias, null];
+    
+        } catch (error) {
+            console.error("Error al obtener las asistencias:", error);
+            return [null, "Error interno del servidor"];
+        }
     }
-}
+
 
 export async function getAsistenciasAsignatura(id_asignatura) {
     try {
@@ -106,6 +107,32 @@ export async function getAsistencia(id_asistencia) {
     }
 }
 
+export async function getAsistenciasAlumnoFecha(rut, fecha) {
+    try {
+        const alumno = await usuarioRepository.findOne({ where: { rut, id_roles: 3 } });
+        if (!alumno) return [null, "El usuario no es un alumno o no existe"];
+
+        const startDate = new Date(fecha);
+        const endDate = new Date(startDate);
+        endDate.setDate(startDate.getDate() + 1);
+
+        const asistencias = await asistenciaRepository.find({
+            where: {
+                rut,
+                createdAt: MoreThanOrEqual(startDate),
+                createdAt: LessThan(endDate)
+            }
+        });
+
+        if (!asistencias || asistencias.length === 0) return [null, "No hay asistencias para esta fecha"];
+        return [asistencias, null];
+
+    } catch (error) {
+        console.error("Error al obtener las asistencias:", error);
+        return [null, "Error interno del servidor"];
+    }
+}
+
 export async function updateAsistencia(id_asistencia, nuevoTipo, observacion) {
     try {
         if (nuevoTipo === "Justificado" && !observacion) {
@@ -113,15 +140,15 @@ export async function updateAsistencia(id_asistencia, nuevoTipo, observacion) {
         }
 
         const result = await asistenciaRepository.update(
-            { id_asistencia: id_asistencia },  
-            { tipo: nuevoTipo, observacion: observacion || null }   
+            { id_asistencia: id_asistencia },
+            { tipo: nuevoTipo, observacion: observacion || null }
         );
 
         if (result.affected === 0) {
             return [null, "No se encontró la asistencia"];
         }
 
-        return [{ id_asistencia, tipo: nuevoTipo, observacion: observacion || null }, null]; 
+        return [{ id_asistencia, tipo: nuevoTipo, observacion: observacion || null }, null];
     } catch (error) {
         console.error("Error al actualizar la asistencia:", error);
         return [null, "Error interno del servidor"];
