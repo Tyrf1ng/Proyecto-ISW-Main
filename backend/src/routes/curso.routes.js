@@ -19,9 +19,9 @@ router
 router
     .get("/:id_curso", getCursoController)
     .get("/", getCursosController)
-    .get("/profesor/:rut_docente",authorize(["Docente","Directivo","Administrador"]), getCursosByProfesorController)
-    .post("/crear/",authorize(["Administrador","Directivo","Administrador"]), createCursoController)
-    .patch("/actualizar/:id_curso",authorize(["Directivo","Administrador"]), updateCursoController)
-    .delete("/borrar/:id_curso",authorize(["Directivo","Administrador"]), deleteCursoController);
+    .get("/profesor/:rut_docente",authorize(["Docente","Directivo", "Encargado de Laboratorio"]), getCursosByProfesorController)
+    .post("/crear/",authorize(["Administrador","Directivo"]), createCursoController)
+    .patch("/actualizar/:id_curso",authorize(["Directivo"]), updateCursoController)
+    .delete("/borrar/:id_curso",authorize(["Directivo"]), deleteCursoController);
 
 export default router;
