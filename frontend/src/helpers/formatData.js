@@ -8,7 +8,7 @@ export function formatUserData(user) {
         nombreCompleto: startCase(user.nombreCompleto),
         rol: startCase(user.rol),
         rut: formatRut(user.rut),
-        createdAt: formatTempo(user.createdAt, "DD-MM-YYYY")
+        createdAt: formatTempo(new Date(user.createdAt).toISOString(), "DD-MM-YYYY")
     };
 }
 
