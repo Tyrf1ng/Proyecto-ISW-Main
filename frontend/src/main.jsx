@@ -42,10 +42,9 @@ const router = createBrowserRouter([
         element: <Outlet />,
         children: [
           { path: 'RegisterAsistencias', element: <RegisterAsistencia /> },
-          { path: 'add_asistencias', element: <RegistrarAsistencias /> },
           { path: 'ver_asistencias', element: <VerAsistencias /> },
           { path: 'alumno', element: <Ver_Asistencias_Para_Alumno /> },
-        ],
+        ]
       },
       {
         path: 'anotaciones',

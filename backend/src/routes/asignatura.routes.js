@@ -13,5 +13,5 @@ router
     .get("/profesor/:rut", authorize(["Docente", "Directivo"]), getAsignaturasByProfesorController)
     .get("/alumno/:rut", authorize(["Alumno"]), getAsignaturasByAlumnoController)
     .get("/nombre/:id_asignatura", 
-        authorize(["Docente", "Directivo", "Encargado de Laboratorio"]), getNombreAsignaturaByIdController);
+        authorize(["Docente", "Directivo", "Encargado de Laboratorio"]), getNombreAsignaturaByIdController)
 export default router;

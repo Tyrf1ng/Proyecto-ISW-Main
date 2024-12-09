@@ -5,7 +5,8 @@ import TableComponentAsistencias from "../components/TableComponentAsistencias";
 import { format as formatTempo } from "@formkit/tempo"; // Import format function
 
 const VerAsistencias = () => {
-  const { idCurso } = useContext(CursoContext);
+  const { curso } = useContext(CursoContext);
+  const { idCurso } = curso;
   const [asistencias, setAsistencias] = useState([]);
   const [filterText, setFilterText] = useState("");
   const [filterDate, setFilterDate] = useState(""); // State for date filter
@@ -21,6 +22,11 @@ const VerAsistencias = () => {
 
   useEffect(() => {
     const cargarAsistencias = async () => {
+      if (!idCurso) {
+        console.error("ID del curso no válido:", idCurso);
+        setCargando(false);
+        return;
+      }
       try {
         const datosAsistencias = await getAsistenciasCurso(idCurso);
         setAsistencias(datosAsistencias || []);

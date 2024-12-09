@@ -64,7 +64,6 @@ export async function deleteReserva(id_reserva) {
     }
 }
 
-
 export async function getReservasByUsuario(rut) {
     try {
         const response = await axios.get(`/reserva/usuario/${rut}`);
