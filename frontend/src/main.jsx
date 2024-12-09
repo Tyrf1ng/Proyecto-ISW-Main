@@ -25,7 +25,8 @@ import Profile from './pages/Profile';
 import Add_usuario from '@pages/Add_usuario';
 import Asignaturas from '@pages/Asignaturas';
 import LabsDocente from './pages/LabsDocente';
-import RegisterAsistencia from './pages/RegisterAsistencias'; // Nueva ruta de RegisterAsistencia
+import RegisterAsistencia from './pages/RegisterAsistencias';
+import Add_Reserva from '@pages/Add_reservas'; // Asegúrate de que la ruta sea correcta
 
 const router = createBrowserRouter([
   {
@@ -71,7 +72,8 @@ const router = createBrowserRouter([
           { path: 'labs', element: <Labs /> },
           { path: 'labsdocente', element: <LabsDocente /> },
           { path: 'horarios', element: <Horarios /> },
-          { path: 'reservas', element: <Reservas /> },
+          { path: 'ver_reservas', element: <Reservas /> }, // Cambié el nombre del componente
+          { path: 'add_reserva', element: <Add_Reserva /> }, // Nueva ruta
         ],
       },
       {
