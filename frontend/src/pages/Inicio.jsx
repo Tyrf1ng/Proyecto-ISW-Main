@@ -1,70 +1,43 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import backgroundImage from '../images/components/books.svg'; // Imagen local
+import { CursoContext } from '../context/CursoContext'; // Importación del contexto de curso
 import { getAsignaturasByProfesor } from '../services/asignatura.service'; // Importación del servicio de asignaturas
-import { getCursosByProfesor } from '../services/cursos.service'; // Importación del servicio de cursos
-import { getAsignaturasByAlumno } from '../services/asignatura.service'; // Importación del servicio para asignaturas de alumno
 
 function Inicio() {
   const navigate = useNavigate();
+  const { curso } = useContext(CursoContext); 
   const [usuario, setUsuario] = useState({ nombre: '', apellido: '', rut: '', rol: '' });
-  const [asignatura, setAsignatura] = useState('');
-  const [curso, setCurso] = useState('');
-  const [errorAsignatura, setErrorAsignatura] = useState(''); // Para manejar errores de asignatura
-  const [errorCurso, setErrorCurso] = useState(''); // Para manejar errores del curso
+  const [asignatura, setAsignatura] = useState('Cargando asignatura...'); // Valor inicial
+  const [errorAsignatura, setErrorAsignatura] = useState(''); 
+  const [errorCurso, setErrorCurso] = useState(''); 
 
   useEffect(() => {
     const usuarioGuardado = JSON.parse(sessionStorage.getItem('usuario'));
+    console.log('Usuario cargado desde sessionStorage:', usuarioGuardado);  // Verificar los datos cargados
+
     if (usuarioGuardado) {
       setUsuario({
         nombre: usuarioGuardado.nombre,
         apellido: usuarioGuardado.apellido,
         rut: usuarioGuardado.rut, 
-        rol: usuarioGuardado.rol || ''  // Asegurarse de que el rol esté disponible
+        rol: usuarioGuardado.rol || ''  
       });
-  
 
-      // Obtener las asignaturas del profesor
-      if (usuarioGuardado.rut && usuarioGuardado.rol === 'Profesor') {
+      // Obtener las asignaturas del profesor solo si el usuario es un profesor
+      if (usuarioGuardado.rut && usuarioGuardado.rol === 'Docente') {
         getAsignaturasByProfesor(usuarioGuardado.rut)
           .then((asignaturas) => {
+            console.log('Asignaturas obtenidas:', asignaturas);  // Verificar las asignaturas obtenidas
             if (asignaturas.length > 0) {
-              const asignaturaSeleccionada = asignaturas[0]; // Selecciona la primera asignatura si hay varias
-              setAsignatura(asignaturaSeleccionada.nombre);
+              const asignaturaSeleccionada = asignaturas[0]; // Tomamos la primera asignatura
+              setAsignatura(asignaturaSeleccionada.nombre);  // Actualizamos el estado
             } else {
               setErrorAsignatura('No se encontraron asignaturas para este profesor.');
             }
           })
           .catch((error) => {
             console.error('Error al obtener asignaturas:', error);
-            setErrorAsignatura('Hubo un error al cargar las asignaturas.');
-          });
-
-        // Obtener los cursos del profesor
-        getCursosByProfesor(usuarioGuardado.rut)
-          .then((cursos) => {
-            if (cursos.length > 0) {
-              setCurso(cursos[0].nombre);  // Asignamos el nombre del primer curso
-            } else {
-              setErrorCurso('No se encontraron cursos para este profesor.');
-            }
-          })
-          .catch((error) => {
-            console.error('Error al obtener cursos:', error);
-            setErrorCurso('Hubo un error al cargar los cursos.');
-          });
-      } else if (usuarioGuardado.rol === 'Alumno') {
-        // Obtener las asignaturas del alumno
-        getAsignaturasByAlumno(usuarioGuardado.rut)
-          .then((asignaturas) => {
-            if (asignaturas.length > 0) {
-              setAsignatura(asignaturas[0].nombre); // Selecciona la primera asignatura si hay varias
-            } else {
-              setErrorAsignatura('No se encontraron asignaturas para este alumno.');
-            }
-          })
-          .catch((error) => {
-            console.error('Error al obtener asignaturas por alumno:', error);
             setErrorAsignatura('Hubo un error al cargar las asignaturas.');
           });
       }
@@ -114,21 +87,21 @@ function Inicio() {
                   </span>
                 )}
               </span>
-            ) : usuario.rol === 'Profesor' ? (
+            ) : usuario.rol === 'Docente' ? (
               // Texto para profesores
               <>
                 {errorAsignatura ? (
                   <span className="text-red-500">{errorAsignatura}</span>
                 ) : (
                   <span>
-                    Bienvenido a tu página de la asignatura <span className="text-[#3B82F6]">{asignatura || 'Cargando asignatura...'} </span>
+                    Bienvenido a tu página de la asignatura <span className="text-[#3B82F6]">{asignatura} </span>
                   </span>
                 )}
-                {errorCurso ? (
-                  <span className="text-red-500">{errorCurso}</span>
+                {errorCurso || !curso.idCurso ? (
+                  <span className="text-red-500">{errorCurso || 'No has seleccionado un curso.'}</span>
                 ) : (
                   <span>
-                    y el curso seleccionado es  <span className="text-[#3B82F6]">{curso || 'Cargando curso...'}</span>.
+                    y el curso seleccionado es  <span className="text-[#3B82F6]">{curso.nombre || 'Cargando curso...'}</span>.
                   </span>
                 )}
               </>
@@ -154,8 +127,7 @@ function Inicio() {
               </button>
             </div>
           )}
-
-          {usuario.rol === 'Profesor' && (
+          {usuario.rol === 'Docente' && (
             <div className="inline-flex w-full mt-6 sm:w-auto">
               <button
                 onClick={handleSeleccionarCurso}

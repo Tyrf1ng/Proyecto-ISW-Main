@@ -22,6 +22,10 @@ const AsistenciasSchema = new EntitySchema({
       type: "varchar",
       nullable: false,
     },
+    observacion: { 
+      type: "text",
+      nullable: true,
+    },
     createdAt: {
         type: "timestamp with time zone",
         default: () => "CURRENT_TIMESTAMP",

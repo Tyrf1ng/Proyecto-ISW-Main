@@ -30,12 +30,27 @@ async function setupServer() {
 
     app.disable("x-powered-by");
 
-    app.use(
-      cors({
-        credentials: true,
-        origin: true,
-      })
-    );
+    const corsOptions = {
+      credentials: true, // Habilitar el uso de cookies (si las usas)
+      origin: (origin, callback) => {
+        // Aquí solo permitimos las solicitudes desde los orígenes específicos
+        const allowedOrigins = [
+          'http://localhost:5173',
+          'http://146.83.198.35:1288'
+        ];
+
+        if (allowedOrigins.includes(origin) || !origin) {
+          callback(null, true); // Permite solicitudes desde los orígenes listados
+        } else {
+          callback(new Error('No permitido por CORS')); // Bloquea los demás orígenes
+        }
+      },
+      methods: ['GET', 'POST', 'PUT', 'DELETE'], // Métodos HTTP permitidos
+      allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'], // Cabeceras permitidas
+    };
+
+    // Aplicamos la configuración de CORS a nuestra aplicación
+    app.use(cors(corsOptions));
 
     app.use(
       urlencoded({
@@ -60,7 +75,7 @@ async function setupServer() {
         resave: false,
         saveUninitialized: false,
         cookie: {
-          secure: false,
+          secure: false, // Si estás usando HTTPS, cambia esto a true
           httpOnly: true,
           sameSite: "strict",
         },
@@ -73,6 +88,7 @@ async function setupServer() {
     passportJwtSetup();
 
     app.use("/api", indexRoutes); // Rutas principales
+
     app.listen(PORT, () => {
       console.log(`=> Servidor corriendo en ${HOST}:${PORT}/api`);
     });

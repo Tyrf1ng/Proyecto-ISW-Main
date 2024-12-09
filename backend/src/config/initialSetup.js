@@ -277,8 +277,8 @@ async function createHorarios() {
       ),
       horariosRepository.save(
         horariosRepository.create({
-          hora_inicio: "09:30",
-          hora_fin: "09:40",
+          hora_inicio: "09:40",
+          hora_fin: "11:00",
         }),
       ),
       horariosRepository.save(

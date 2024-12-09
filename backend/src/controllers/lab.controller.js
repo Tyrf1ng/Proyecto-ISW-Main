@@ -13,27 +13,12 @@ import {
     handleSuccess,
 } from "../handlers/responseHandlers.js";
 
-import Joi from "joi";
-
-// Definición del esquema de validación
-const labBodyValidation = Joi.object({
-    nombre: Joi.string().max(255).required(),
-    capacidad: Joi.number().integer().min(1).max(99).required(), // Validación de capacidad
-});
-
-const labUpdateValidation = Joi.object({
-    id_lab: Joi.number().integer().required(),
-    nombre: Joi.string().max(255).required(),
-    capacidad: Joi.number().integer().min(1).max(99).required(), // Validación de capacidad
-    createdAt: Joi.date().optional(),
-    updatedAt: Joi.date().optional(),
-});
+import { labBodyValidation} from "../validations/lab.validation.js";
 
 const normalizeName = (name) => {
     return name.replace(/\s+/g, ' ').trim();
 };
 
-//Funciona NO TOCAR
 export async function getLab(req, res) {
     try {
         const { id_lab } = req.params; 
@@ -45,7 +30,6 @@ export async function getLab(req, res) {
     }
 }
 
-//Funciona NO TOCAR
 export async function getLabs(req, res) {
     try {
         const [labs, errorLabs] = await getLabsService();
@@ -65,7 +49,7 @@ export async function createLab(req, res) {
         }
 
         const normalizedNombre = normalizeName(nombre);
-        const { error: bodyError } = labBodyValidation.validate({ nombre: normalizedNombre, capacidad });
+        const { error: bodyError } = await labBodyValidation.validateAsync({ nombre: normalizedNombre, capacidad });
         if (bodyError) return handleErrorClient(res, 400, bodyError.message);
 
         const [lab, errorLab] = await createLabService({ nombre: normalizedNombre, capacidad });
@@ -82,7 +66,7 @@ export async function updateLab(req, res) {
         const { id_lab } = req.params;
         const { body } = req;
         const normalizedNombre = normalizeName(body.nombre);
-        const { error: bodyError } = labUpdateValidation.validate({ id_lab, ...body, nombre: normalizedNombre });
+        const { error: bodyError } = await labBodyValidation.validateAsync({ id_lab, ...body, nombre: normalizedNombre });
         if (bodyError) return handleErrorClient(res, 400, bodyError.message);
 
         const [lab, errorLab] = await updateLabService(id_lab, { ...body, nombre: normalizedNombre });
@@ -94,7 +78,6 @@ export async function updateLab(req, res) {
     }
 }
 
-//Funciona NO TOCAR
 export async function deleteLab(req, res) {
     try {
         const { id_lab } = req.params;

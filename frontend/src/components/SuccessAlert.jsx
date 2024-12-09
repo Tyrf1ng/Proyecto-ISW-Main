@@ -10,15 +10,15 @@ const SuccessAlert = ({ message }) => {
         const fadeInTimer = setTimeout(() => {
             setFadeIn(false);
             setBounce(true);
-        }, 500); // Duración de la animación de desvanecimiento
+        }, 500); 
 
         const bounceTimer = setTimeout(() => {
             setBounce(false);
             setFadeOut(true);
             setTimeout(() => {
                 setVisible(false);
-            }, 500); // Duración de la animación de desvanecimiento
-        }, 2500); // 3 segundos para 3 rebotes (1s por rebote) + 0.5s de fade-in
+            }, 500); 
+        }, 2500); 
 
         return () => {
             clearTimeout(fadeInTimer);

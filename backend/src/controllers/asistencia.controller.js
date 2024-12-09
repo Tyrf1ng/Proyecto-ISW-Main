@@ -76,35 +76,29 @@ export async function getAsistenciaController(req, res) {
     }
 }
 
-
 export const updateAsistenciaController = async (req, res) => {
     try {
-      const { createdAt, usuario, ...bodyWithoutTimestamps } = req.body;
       const { id_asistencia } = req.params;
-      const { error: validationError } = asistenciaQueryValidation.validate({
-        ...bodyWithoutTimestamps, // Excluir `createdAt` y `usuario`
-        id_asistencia,
-      });
+      const { tipo, observacion } = req.body;
+
+      // Set observacion to null if tipo is "Presente" or "Ausente"
+      const updatedObservacion = (tipo === "Presente" || tipo === "Ausente") ? null : observacion;
+
+      const { error: validationError } = asistenciaQueryValidation.validate({ tipo, observacion: updatedObservacion });
       if (validationError) {
         return handleErrorClient(res, 400, "Datos de entrada no válidos", validationError.details[0].message);
       }
-      const { tipo, observacion, updatedAt } = req.body;
-      if (!tipo) {
-        return handleErrorClient(res, 400, "Faltan datos obligatorios");
-      }
-      const [asistenciaActualizada, error] = await updateAsistencia(id_asistencia, {
-        tipo,
-        observacion,
-        updatedAt,
-      });
+
+      const [asistenciaActualizada, error] = await updateAsistencia(id_asistencia, tipo, updatedObservacion);
       if (error) {
         return handleErrorClient(res, 404, error);
       }
+
       handleSuccess(res, 200, "Asistencia actualizada", asistenciaActualizada);
     } catch (error) {
       handleErrorServer(res, 500, error.message);
     }
-  };
+};
   
   
 
@@ -114,9 +108,9 @@ export async function createAsistenciaController(req, res) {
         if (validationError) {
             return handleErrorClient(res, 400, validationError.details[0].message);
         }
-        const { id_asignatura, rut, tipo } = value;
+        const { id_asignatura, rut, tipo, observacion } = value;
 
-        const [asistenciaCreada, errorAsistencia] = await createAsistencia({ id_asignatura, rut, tipo });
+        const [asistenciaCreada, errorAsistencia] = await createAsistencia({ id_asignatura, rut, tipo, observacion });
         if (errorAsistencia) {
             return handleErrorClient(res, 400, errorAsistencia);
         }

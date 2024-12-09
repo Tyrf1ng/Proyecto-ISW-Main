@@ -1,4 +1,3 @@
-
 import { IconButton } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -15,13 +14,16 @@ const TableComponentAsistencias = ({ asistencias, handleEdit, handleDelete }) =>
                   Fecha
                 </th>
                 <th className="px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                  Nombre del Alumno
+                  Nombre
                 </th>
                 <th className="px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400">
                   RUT
                 </th>
                 <th className="px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400">
                   Estado
+                </th>
+                <th className="px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                  Observación
                 </th>
                 <th className="relative py-3.5 px-4">
                   <span className="sr-only">Acciones</span>
@@ -33,7 +35,7 @@ const TableComponentAsistencias = ({ asistencias, handleEdit, handleDelete }) =>
                 <tr key={asistencia.id_asistencia}>
                   <td className="px-4 py-4 text-sm whitespace-nowrap">
                     <div className="text-gray-800 dark:text-white">
-                      {new Date(asistencia.createdAt).toLocaleString()}
+                      {new Date(asistencia.createdAt).toLocaleDateString()}
                     </div>
                   </td>
                   <td className="px-4 py-4 text-sm whitespace-nowrap">
@@ -57,6 +59,11 @@ const TableComponentAsistencias = ({ asistencias, handleEdit, handleDelete }) =>
                       }`}
                     >
                       {asistencia.tipo}
+                    </div>
+                  </td>
+                  <td className="px-4 py-4 text-sm whitespace-nowrap">
+                    <div className="text-gray-800 dark:text-white">
+                      {asistencia.observacion || ""}
                     </div>
                   </td>
                   <td className="px-4 py-4 text-sm whitespace-nowrap">
