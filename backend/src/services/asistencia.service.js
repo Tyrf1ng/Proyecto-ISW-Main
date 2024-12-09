@@ -112,21 +112,25 @@ export async function getAsistenciasAlumnoFecha(rut, fecha) {
         const alumno = await usuarioRepository.findOne({ where: { rut, id_roles: 3 } });
         if (!alumno) return [null, "El usuario no es un alumno o no existe"];
 
-        const startDate = new Date(fecha);
-        const endDate = new Date(startDate);
-        endDate.setDate(startDate.getDate() + 1);
+        const fechaInicio = new Date(fecha);
+        fechaInicio.setHours(0, 0, 0, 0); 
+        const fechaFin = new Date(fecha);
+        fechaFin.setHours(23, 59, 59, 999); 
 
-        const asistencias = await asistenciaRepository.find({
-            where: {
-                rut,
-                createdAt: MoreThanOrEqual(startDate),
-                createdAt: LessThan(endDate)
-            }
-        });
+        // Crear consulta con rango de fechas
+        const asistencias = await asistenciaRepository.createQueryBuilder("asistencia")
+            .leftJoinAndSelect("asistencia.usuario", "usuario")
+            .where("asistencia.rut = :rut", { rut })
+            .andWhere("asistencia.createdAt BETWEEN :fechaInicio AND :fechaFin", { fechaInicio, fechaFin })
+            .getMany();
 
-        if (!asistencias || asistencias.length === 0) return [null, "No hay asistencias para esta fecha"];
+        // Verificar si hay asistencias
+        if (!asistencias || asistencias.length === 0) {
+            return [null, "No hay asistencias para esta fecha"];
+        }
+
+        // Retornar asistencias encontradas
         return [asistencias, null];
-
     } catch (error) {
         console.error("Error al obtener las asistencias:", error);
         return [null, "Error interno del servidor"];
