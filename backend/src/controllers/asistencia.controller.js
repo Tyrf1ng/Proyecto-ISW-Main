@@ -78,29 +78,27 @@ export async function getAsistenciaController(req, res) {
 
 export const updateAsistenciaController = async (req, res) => {
     try {
-      const { id_asistencia } = req.params;
-      const { tipo, observacion } = req.body;
+        const { id_asistencia } = req.params;
+        const { tipo, observacion } = req.body;
 
-      // Set observacion to null if tipo is "Presente" or "Ausente"
-      const updatedObservacion = (tipo === "Presente" || tipo === "Ausente") ? null : observacion;
+        // Set observacion to null if tipo is "Presente" or "Ausente"
+        const updatedObservacion = (tipo === "Presente" || tipo === "Ausente") ? null : observacion;
 
-      const { error: validationError } = asistenciaQueryValidation.validate({ tipo, observacion: updatedObservacion });
-      if (validationError) {
-        return handleErrorClient(res, 400, "Datos de entrada no válidos", validationError.details[0].message);
-      }
+        const { error: validationError } = asistenciaQueryValidation.validate({ tipo, observacion: updatedObservacion });
+        if (validationError) {
+            return handleErrorClient(res, 400, "Datos de entrada no válidos", validationError.details[0].message);
+        }
 
-      const [asistenciaActualizada, error] = await updateAsistencia(id_asistencia, tipo, updatedObservacion);
-      if (error) {
-        return handleErrorClient(res, 404, error);
-      }
+        const [asistenciaActualizada, error] = await updateAsistencia(id_asistencia, tipo, updatedObservacion);
+        if (error) {
+            return handleErrorClient(res, 404, error);
+        }
 
-      handleSuccess(res, 200, "Asistencia actualizada", asistenciaActualizada);
+        handleSuccess(res, 200, "Asistencia actualizada", asistenciaActualizada);
     } catch (error) {
-      handleErrorServer(res, 500, error.message);
+        handleErrorServer(res, 500, error.message);
     }
 };
-  
-  
 
 export async function createAsistenciaController(req, res) {
     try {
@@ -117,9 +115,9 @@ export async function createAsistenciaController(req, res) {
             return handleErrorClient(res, 400, "La fecha seleccionada no es del año actual.");
         }
 
-        const dayOfWeek = selectedDate.getDay();
+        const dayOfWeek = selectedDate.getUTCDay();
         if (dayOfWeek === 0 || dayOfWeek === 6) {
-            return handleErrorClient(res, 400, "No se puede registrar asistencia en fines de semana.");
+            return handleErrorClient(res, 400, "No se puede registrar asistencia en fines de semana (sábado o domingo).");
         }
 
         const [asistenciaCreada, errorAsistencia] = await createAsistencia({ id_asignatura, rut, tipo, observacion, createdAt });
