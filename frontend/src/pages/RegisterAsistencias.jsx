@@ -50,19 +50,24 @@ const RegisterAsistencia = () => {
         setMessageType("error");
         return;
       }
+      
+      const selectedStudents = attendance.filter(record => record.presente || record.ausente || record.justificado);
+      if (selectedStudents.length === 0) {
+        setMensaje("Debe seleccionar al menos a 1 estudiante.");
+        setMessageType("error");
+        return;
+      }
   
-      for (let record of attendance) {
-        if (record.presente || record.ausente || record.justificado) {
-          const data = {
-            id_asignatura: idCurso,
-            rut: record.rut,
-            tipo: record.presente ? "Presente" : record.ausente ? "Ausente" : "Justificado",
-            observacion: record.justificado ? record.observacion : null,
-            createdAt: selectedDate ? new Date(selectedDate).toISOString() : new Date().toISOString()
-          };
-  
-          await createAsistencia(data);
-        }
+      for (let record of selectedStudents) {
+        const data = {
+          id_asignatura: idCurso,
+          rut: record.rut,
+          tipo: record.presente ? "Presente" : record.ausente ? "Ausente" : "Justificado",
+          observacion: record.justificado ? record.observacion : null,
+          createdAt: selectedDate ? new Date(selectedDate).toISOString() : new Date().toISOString()
+        };
+
+        await createAsistencia(data);
       }
       setMensaje("¡Asistencias registradas exitosamente!");
       setMessageType("success");
