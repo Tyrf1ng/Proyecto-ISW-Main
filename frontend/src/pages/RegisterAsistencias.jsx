@@ -11,6 +11,7 @@ const RegisterAsistencia = () => {
   const [alumnos, setAlumnos] = useState([]);
   const [mensaje, setMensaje] = useState("");
   const [messageType, setMessageType] = useState("");
+  const [selectedDate, setSelectedDate] = useState("");
 
   useEffect(() => {
     const cargarAlumnos = async () => {
@@ -40,6 +41,7 @@ const RegisterAsistencia = () => {
             rut: record.rut,
             tipo: record.presente ? "Presente" : record.ausente ? "Ausente" : "Justificado",
             observacion: record.justificado ? record.observacion : null,
+            createdAt: selectedDate ? new Date(selectedDate).toISOString() : new Date().toISOString()
           };
 
           await createAsistencia(data);
@@ -89,6 +91,18 @@ const RegisterAsistencia = () => {
   return (
     <div className="p-6 max-w-3xl mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-md relative">
       <h2 className="text-2xl font-semibold text-gray-800 dark:text-white mb-6">Registrar Asistencia</h2>
+      <div className="mb-4">
+        <label className="block text-gray-700 dark:text-gray-300 mb-2" htmlFor="fecha">
+          Fecha de Asistencia
+        </label>
+        <input
+          type="date"
+          id="fecha"
+          value={selectedDate}
+          onChange={(e) => setSelectedDate(e.target.value)}
+          className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300"
+        />
+      </div>
       <TableRegisterAsistencias students={alumnos} handleRegister={handleRegister} />
       {renderMessage()}
     </div>

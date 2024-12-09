@@ -181,7 +181,6 @@ async function createAnotaciones() {
     console.error("Error al crear anotaciones:", error);
   }
 }
-
 async function createAsistencia() {
   try {
     const AsistenciaRepository = AppDataSource.getRepository(Asistencia);
@@ -196,6 +195,7 @@ async function createAsistencia() {
           tipo: "Presente",
           rut: "21.070.073-0",
           id_asignatura: 1,
+          createdAt: new Date(),
         }),
       ),
     ]);

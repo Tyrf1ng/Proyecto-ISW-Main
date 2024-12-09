@@ -132,7 +132,10 @@ export async function createAsistencia(data) {
     try {
         console.log("Datos recibidos para crear asistencia:", data);
 
-        const asistencia = asistenciaRepository.create(data);
+        const asistencia = asistenciaRepository.create({
+            ...data,
+            createdAt: data.createdAt ? new Date(data.createdAt) : new Date()
+        });
         const savedAsistencia = await asistenciaRepository.save(asistencia);
         return [savedAsistencia, null];
     } catch (error) {

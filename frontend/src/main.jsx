@@ -19,7 +19,6 @@ import Add_anotaciones from '@pages/Add_anotaciones';
 import Ver_anotaciones from '@pages/Ver_anotaciones';
 import '@styles/styles.css';
 import VerAsistencias from '@pages/VerAsistencias';
-import RegistrarAsistencias from '@pages/RegistrarAsistencias';
 import Reservas from '@pages/Reservas'; // Importa el nuevo componente Reservas
 import Profile from './pages/Profile';
 import LabsDocente from './pages/LabsDocente';
