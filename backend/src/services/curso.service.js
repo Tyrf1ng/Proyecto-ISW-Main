@@ -86,16 +86,16 @@ export async function getCursosByProfesor(rut) {
 
         // Buscar el usuario con el rut y validar que tiene id_roles = 2 (profesor)
         const usuario = await usuarioRepository.findOne({
-            where: { rut: rut, id_roles: 2 } // id_roles debe ser 2 para profesores
+            where: { rut: rut, id_roles: 2 } 
         });
 
         if (!usuario) {
             return [null, "No se encuentra un usuario con el rol de profesor para este rut"];
         }
 
-        // Obtener las asignaturas asociadas al profesor (campo `rut` en Asignaturas)
+      
         const asignaturasDelDocente = await AsignaturaRepository.find({
-            where: { rut: rut } // Relación directa con el campo `rut` en asignaturas
+            where: { rut: rut } 
         });
 
         const idsAsignaturas = asignaturasDelDocente.map(asignatura => asignatura.id_asignatura);

@@ -1,32 +1,36 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { NotasCurso } from '@services/notas.service.js';
+import { CursoContext } from '@context/CursoContext';
 
-const useNotasCurso = (id_curso) => {
+const useNotasCurso = () => {
+  const { curso } = useContext(CursoContext);
   const [notas, setNotas] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
 
-  const fetchNotas = useCallback(async () => {
+  const fetchNotas = async () => {
     try {
-      setLoading(true);
-      const response = await NotasCurso(id_curso);
-      setNotas(Array.isArray(response.data) ? response.data : []);
-      setError(null); // Limpia cualquier error anterior
-    } catch (err) {
-      setError(err.response?.data?.message || 'Error al obtener las notas');
-      console.error(err);
+      if (!curso.idCurso) {
+        return;
+      }
+      const response = await NotasCurso(curso.idCurso);
+      if (response.status === 'Success' && Array.isArray(response.data)) {
+        setNotas(response.data);
+      } else {
+        setNotas([]); 
+      }
+    } catch (error) {
+      console.error("Error en obtener las notas: ", error);
+      setNotas([]); 
     } finally {
       setLoading(false);
     }
-  }, [id_curso]);
-
+  };
   useEffect(() => {
-    if (id_curso) {
+    if (curso.idCurso) {
       fetchNotas();
     }
-  }, [id_curso, fetchNotas]);
-
-  return { notas, loading, error, fetchNotas };
+  }, [curso.idCurso]);
+  return { notas, loading, fetchNotas };
 };
 
 export default useNotasCurso;

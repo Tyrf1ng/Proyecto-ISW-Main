@@ -1,24 +1,30 @@
 import { useState, useEffect, useContext } from 'react';
-import { CursoContext } from '@context/CursoContext';
 import useNotasCurso from '@hooks/notas/useNotas';
 import { deleteNota, updateNota } from '@services/notas.service';
 import TableComponent from '../components/TableNotas';
+import { UsuarioContext } from '@context/UsuarioContext';
 
 const VerNotas = () => {
-  const { idCurso } = useContext(CursoContext);
-  const { notas, fetchNotas } = useNotasCurso(idCurso);
+  const { usuario, cargarUsuario } = useContext(UsuarioContext);
+  const { notas, fetchNotas } = useNotasCurso([]);
   const [filterText, setFilterText] = useState('');
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [notaToDelete, setNotaToDelete] = useState(null);
   const [notaToEdit, setNotaToEdit] = useState(null);
+  const [setMessage] = useState("");
+  const [setMessageType] = useState("");
 
   useEffect(() => {
-    if (idCurso) fetchNotas();
-  }, [idCurso, fetchNotas]);
+    // Llamar a cargarUsuario solo si el usuario aún no está cargado
+    if (!usuario) {
+      cargarUsuario();
+    }
+  }, [usuario, cargarUsuario]);  // Solo ejecutar cuando el usuario no esté disponible
 
-  const filteredNotas = notas.filter((nota) =>
-    `${nota.nombre_alumno.toLowerCase()} ${nota.apellido_alumno.toLowerCase()}`.includes(filterText.toLowerCase())
-  );
+  // Verificar si el usuario está disponible antes de proceder
+  if (!usuario) {
+    return <div>Cargando usuario...</div>;  // O una pantalla de carga mientras se obtiene el usuario
+  }
 
   const handleFilterChange = (e) => setFilterText(e.target.value);
 
@@ -48,29 +54,29 @@ const VerNotas = () => {
     try {
       const { id_nota, valor, tipo, originalTipo } = notaToEdit;
   
-      if (valor < 1.0 || valor > 7.0) {
-        alert('El valor de la nota debe estar entre 1.0 y 7.0');
+      if (!id_nota || typeof valor !== 'number') {
+        console.error('ID o Valor inválido:', { id_nota, valor });
         return;
       }
   
-      if (!id_nota || valor === undefined) {
-        console.error('ID o Valor no definido.');
+      if (valor < 1.0 || valor > 7.0) {
+        setMessage('El valor de la nota debe estar entre 1.0 y 7.0');
+        setMessageType('warning');
         return;
       }
- 
+  
       if (tipo !== originalTipo) {
         console.log(`El tipo cambió de "${originalTipo}" a "${tipo}"`);
       }
-  
-    
       await updateNota(id_nota, valor, tipo);
-      fetchNotas(); 
-      setNotaToEdit(null);
+      setMessage('Nota actualizada correctamente');
+      fetchNotas();
+      setNotaToEdit(null); 
     } catch (error) {
       console.error('Error al actualizar la nota:', error);
     }
   };
-  
+
 
   return (
     <div className="p-4 bg-gray-50 dark:bg-gray-800">
@@ -78,15 +84,19 @@ const VerNotas = () => {
         type="text"
         value={filterText}
         onChange={handleFilterChange}
-        placeholder="Filtrar por nombre del alumno..."
+        placeholder="Filtrar por nombre o apellido del alumno..."
         className="w-full p-2 mb-4 border rounded dark:text-gray-300 dark:bg-gray-900"
       />
 
       <TableComponent
-        notas={filteredNotas}
+        
+        notas={(Array.isArray(notas) ? notas : []).filter((nota) =>
+          `${nota.nombre_alumno.toLowerCase()} ${nota.apellido_alumno.toLowerCase()}`.includes(filterText.toLowerCase())
+        )}
         onEdit={handleEdit}
         onDelete={handleDelete}
-        role={2}
+        role={usuario?.rol
+        }
       />
 
       {confirmDialogOpen && (
@@ -154,7 +164,7 @@ const VerNotas = () => {
           <input
             type="number"
             id="valor"
-            value={notaToEdit.valor}
+            value={notaToEdit?.valor||''}
             onChange={(e) => setNotaToEdit((prevState) => ({ ...prevState, valor: parseFloat(e.target.value) }))}
             min="1.0" 
             max="7.0" 

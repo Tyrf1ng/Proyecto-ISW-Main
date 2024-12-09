@@ -92,7 +92,7 @@ const NAVIGATION_BY_ROLE = {
       title: 'Notas',
       icon: <HistoryEduRoundedIcon />,
       children: [
-        { segment: 'ver_notas', title: 'Ver Notas', icon: <ManageSearchIcon /> },
+        { segment: 'Ver_Nota_Alumno', title: 'Ver Notas', icon: <ManageSearchIcon /> },
       ],
     },
   ],
@@ -144,9 +144,9 @@ const DashboardLayoutAccount = () => {
     navigate('/inicio');
   };
 
-  // Verificamos si estamos en la ruta "/cursos"
-  if (location.pathname === '/cursos') {
-    return <Outlet />;  // Solo renderizamos el contenido de la ruta sin el layout
+
+  if (location.pathname === '/cursos' || location.pathname === '/asignaturas') {
+    return <Outlet />; 
   }
 
   // Función para renderizar los enlaces de navegación
