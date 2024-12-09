@@ -35,19 +35,22 @@ const RegisterAsistencia = () => {
   const handleRegister = async (attendance) => {
     try {
       const selected = new Date(selectedDate);
-      const currentYear = new Date().getFullYear();
-      if (selected.getFullYear() !== currentYear) {
+      const utcDate = new Date(selected.toISOString().substring(0, 10)); // Convertir a UTC
+      console.log("Selected Date (UTC):", utcDate); // Debugging line
+      const currentYear = new Date().getUTCFullYear();
+      if (utcDate.getUTCFullYear() !== currentYear) {
         setMensaje("La fecha seleccionada no es del año actual.");
         setMessageType("error");
         return;
       }
-      const dayOfWeek = selected.getDay();
+      const dayOfWeek = utcDate.getUTCDay();
+      console.log("Day of Week (UTC):", dayOfWeek); // Debugging line
       if (dayOfWeek === 0 || dayOfWeek === 6) {
         setMensaje("No se puede registrar asistencia en fines de semana.");
         setMessageType("error");
         return;
       }
-
+  
       for (let record of attendance) {
         if (record.presente || record.ausente || record.justificado) {
           const data = {
@@ -57,7 +60,7 @@ const RegisterAsistencia = () => {
             observacion: record.justificado ? record.observacion : null,
             createdAt: selectedDate ? new Date(selectedDate).toISOString() : new Date().toISOString()
           };
-
+  
           await createAsistencia(data);
         }
       }
