@@ -7,7 +7,10 @@ const normalizeName = (name) => {
 };
 
 export const labBodyValidation = Joi.object({
-    nombre: Joi.string().max(255).required().custom(async (value, helpers) => {
+    nombre: Joi.string()
+    .max(255)
+    .required()
+    .custom(async (value, helpers) => {
         const normalizedNombre = normalizeName(value);
         const [labs, errorLabs] = await getLabsService();
         if (errorLabs) return helpers.message("Error al validar el nombre del laboratorio");
@@ -29,7 +32,6 @@ export const labBodyValidation = Joi.object({
     id_lab: Joi.number()
     .integer()
     .positive()
-    .required()
     .messages({
         "number.base": "El id del laboratorio debe ser un número.",
         "number.integer": "El id del laboratorio debe ser un número entero.",

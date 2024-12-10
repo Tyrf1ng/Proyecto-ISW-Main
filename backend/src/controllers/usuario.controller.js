@@ -6,13 +6,12 @@ import {
     getUsuarioByRutService,
     getUsuariosByNombreService,
     getUsuariosService,
-    updateUsuarioService, // Importamos la nueva función del servicio
+    updateUsuarioService, 
+    getRutsDocentesService
 } from "../services/usuario.service.js";
 import { handleErrorClient, handleErrorServer, handleSuccess } from "../handlers/responseHandlers.js";
 
-/**
- * Obtener todos los usuarios
- */
+
 export async function getUsuarios(req, res) {
     try {
         const [usuarios, errorUsuarios] = await getUsuariosService();
@@ -25,9 +24,7 @@ export async function getUsuarios(req, res) {
     }
 }
 
-/**
- * Buscar un usuario por RUT
- */
+
 export async function getUsuarioByRut(req, res) {
     try {
         const { rut } = req.params;
@@ -39,9 +36,7 @@ export async function getUsuarioByRut(req, res) {
     }
 }
 
-/**
- * Buscar usuarios por nombre
- */
+
 export async function getUsuariosByNombre(req, res) {
     try {
         const { nombre } = req.query;
@@ -55,9 +50,7 @@ export async function getUsuariosByNombre(req, res) {
     }
 }
 
-/**
- * Crear un nuevo usuario
- */
+
 export async function createUsuario(req, res) {
     try {
         const { rut, nombre, apellido, email, password, direccion, comuna, id_roles, telefono } = req.body;
@@ -70,9 +63,7 @@ export async function createUsuario(req, res) {
     }
 }
 
-/**
- * Actualizar información de un usuario
- */
+
 export async function updateUsuario(req, res) {
     try {
         const { rut } = req.params;
@@ -87,9 +78,7 @@ export async function updateUsuario(req, res) {
     }
 }
 
-/**
- * Eliminar un usuario
- */
+
 export async function deleteUsuario(req, res) {
     try {
         const { rut } = req.params;
@@ -101,18 +90,26 @@ export async function deleteUsuario(req, res) {
     }
 }
 
-/**
- * Obtener usuarios con rol 3 por curso
- */
+
 export async function getAlumnosPorCurso(req, res) {
     try {
-        const { idCurso } = req.params; // Se asume que el ID del curso se pasa como parámetro en la URL
+        const { idCurso } = req.params; 
         const [usuarios, errorUsuarios] = await getAlumnosPorCursoService(idCurso);
 
         if (errorUsuarios) return handleErrorClient(res, 404, errorUsuarios);
         usuarios.length === 0
             ? handleSuccess(res, 204)
             : handleSuccess(res, 200, "Usuarios con rol 3 encontrados en el curso", usuarios);
+    } catch (error) {
+        handleErrorServer(res, 500, error.message);
+    }
+}
+
+export async function getRutsDocentes(req, res) {
+    try {
+        const [docentes, errorDocentes] = await getRutsDocentesService();
+        if (errorDocentes) return handleErrorClient(res, 404, errorDocentes);
+        handleSuccess(res, 200, "Docentes encontrados", docentes);
     } catch (error) {
         handleErrorServer(res, 500, error.message);
     }

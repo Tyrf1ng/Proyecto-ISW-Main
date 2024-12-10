@@ -13,7 +13,7 @@ import BiotechIcon from '@mui/icons-material/Biotech';
 import EventIcon from '@mui/icons-material/Event';
 import logo from '../images/components/logo.svg'; 
 
-// Configuración de navegación por roles
+
 const NAVIGATION_BY_ROLE = {
   directivo: [
     { segment: 'GestionUsuario', title: 'Gestión de Usuarios', 
@@ -65,7 +65,8 @@ const NAVIGATION_BY_ROLE = {
       title: 'Gestion Reservas Laboratorio',
       icon: <SchoolIcon />,
       children: [
-        { segment: 'reservas', title: 'Reservas', icon: <EventIcon /> },
+        { segment: 'add_reserva', title: 'Añadir Reservas', icon: <AddIcon /> },
+        { segment: 'ver_reservas', title: 'Ver Reservas', icon: <EventIcon /> },
         { segment: 'labsdocente', title: 'Laboratorios', icon: <BiotechIcon /> },
       ],
     },
@@ -92,7 +93,7 @@ const NAVIGATION_BY_ROLE = {
       title: 'Notas',
       icon: <HistoryEduRoundedIcon />,
       children: [
-        { segment: 'ver_notas', title: 'Ver Notas', icon: <ManageSearchIcon /> },
+        { segment: 'Ver_Nota_Alumno', title: 'Ver Notas', icon: <ManageSearchIcon /> },
       ],
     },
   ],
@@ -102,7 +103,8 @@ const NAVIGATION_BY_ROLE = {
       title: 'Gestion Reservas Laboratorio',
       icon: <SchoolIcon />,
       children: [
-        { segment: 'reservas', title: 'Reservas', icon: <EventIcon /> },
+        { segment: 'add_reserva', title: 'Añadir Reservas', icon: <AddIcon /> },
+        { segment: 'ver_reservas', title: 'Ver Reservas', icon: <EventIcon /> },
         { segment: 'labs', title: 'Laboratorios', icon: <BiotechIcon /> },
         { segment: 'horarios', title: 'Horarios', icon: <AlarmIcon /> },
       ],
@@ -144,9 +146,9 @@ const DashboardLayoutAccount = () => {
     navigate('/inicio');
   };
 
-  // Verificamos si estamos en la ruta "/cursos"
-  if (location.pathname === '/cursos') {
-    return <Outlet />;  // Solo renderizamos el contenido de la ruta sin el layout
+
+  if (location.pathname === '/cursos' || location.pathname === '/asignaturas') {
+    return <Outlet />; 
   }
 
   // Función para renderizar los enlaces de navegación

@@ -5,10 +5,9 @@ import DeleteIcon from '@mui/icons-material/Delete';
 const TableReservas = ({ reservas = [], handleOpen, handleDelete }) => {
 
   const formatDate = (date) => {
-    const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+    const options = { year: 'numeric', month: '2-digit', day: '2-digit', timeZone: 'UTC' };
     return new Date(date).toLocaleDateString(undefined, options);
   };
-  
 
   return (
     <div className="overflow-x-auto sm:-mx-6 lg:-mx-8">

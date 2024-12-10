@@ -1,4 +1,3 @@
-import React from 'react';
 import { IconButton } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -13,26 +12,28 @@ const TableComponent = ({ notas, onEdit, onDelete, role }) => {
               <tr>
                 <th className="p-4 text-left text-sm font-normal text-gray-500 dark:text-gray-400">Tipo</th>
                 <th className="p-4 text-left text-sm font-normal text-gray-500 dark:text-gray-400">Valor</th>
-                <th className="p-4 text-left text-sm font-normal text-gray-500 dark:text-gray-400">RUT</th>
                 <th className="p-4 text-left text-sm font-normal text-gray-500 dark:text-gray-400">Alumno</th>
                 <th className="p-4 text-left text-sm font-normal text-gray-500 dark:text-gray-400">Asignatura</th>
-                {role === 2 && (
-                  <th className="p-4 text-left text-sm font-normal text-gray-500 dark:text-gray-400">Acciones</th>
+                {role === "Docente" && (
+                  <>
+                    <th className="p-4 text-left text-sm font-normal text-gray-500 dark:text-gray-400">RUT del Alumno</th>
+                    <th className="p-4 text-left text-sm font-normal text-gray-500 dark:text-gray-400">Acciones</th>
+                  </>
                 )}
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200 dark:divide-gray-700 dark:bg-gray-900">
-              {notas.length > 0 ? (
+              {notas && notas.length > 0 ? (
                 notas.map((nota) => (
                   <tr key={nota.id_nota}>
-                    {/* Columna Tipo */}
+                    {/* Tipo */}
                     <td className="p-4 text-sm font-medium whitespace-nowrap">
                       <div className="inline px-3 py-1 text-sm font-normal rounded-full text-white bg-gray-500">
                         {nota.tipo}
                       </div>
                     </td>
 
-                    {/* Columna Valor de la nota con color basado en su valor */}
+                    {/* Valor */}
                     <td className="p-4 text-sm font-medium whitespace-nowrap">
                       <div
                         className={`inline px-3 py-1 text-sm font-normal rounded-full ${
@@ -43,14 +44,11 @@ const TableComponent = ({ notas, onEdit, onDelete, role }) => {
                       </div>
                     </td>
 
-                    {/* RUT del Alumno */}
-                    <td className="p-4 text-sm whitespace-nowrap">
-                      <div className="text-gray-800 dark:text-white">{nota.rut}</div>
-                    </td>
-
                     {/* Alumno */}
                     <td className="p-4 text-sm whitespace-nowrap">
-                      <div className="text-gray-800 dark:text-white">{`${nota.nombre_alumno} ${nota.apellido_alumno}`}</div>
+                      <div className="text-gray-800 dark:text-white">
+                        {`${nota.nombre_alumno} ${nota.apellido_alumno}`}
+                      </div>
                     </td>
 
                     {/* Asignatura */}
@@ -58,27 +56,33 @@ const TableComponent = ({ notas, onEdit, onDelete, role }) => {
                       <div className="text-gray-800 dark:text-white">{nota.nombre_asignatura}</div>
                     </td>
 
-                    {/* Acciones (Editar y Eliminar) - Solo para role === 2 */}
-                    {role === 2 && (
-                      <td className="p-4 text-sm whitespace-nowrap">
-                        <div className="flex space-x-2">
-                          {/* Icono Editar */}
+                    {/* RUT del Alumno (solo para role === "Docente") */}
+                    {role === "Docente" && (
+                      <>
+                        <td className="p-4 text-sm whitespace-nowrap">
+                          <div className="text-gray-800 dark:text-white">{nota.rut}</div>
+                        </td>
+
+                        {/* Acciones */}
+                        <td className="p-4 text-sm whitespace-nowrap">
                           <IconButton color="primary" onClick={() => onEdit(nota)}>
                             <EditIcon />
                           </IconButton>
-                          {/* Icono Delete con color rojo */}
                           <IconButton color="primary" onClick={() => onDelete(nota.id_nota)}>
                             <DeleteIcon className="text-red-500" />
                           </IconButton>
-                        </div>
-                      </td>
+                        </td>
+                      </>
                     )}
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan={role === 2 ? 6 : 5} className="text-center py-4 text-gray-500">
-                    No hay notas para este curso
+                  <td
+                    colSpan="5"
+                    className="text-center py-4 text-gray-500"
+                  >
+                    No hay notas registradas
                   </td>
                 </tr>
               )}

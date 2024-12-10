@@ -18,7 +18,6 @@ export const horarioBodyValidation = Joi.object({
     id_horario: Joi.number()
     .integer()
     .positive()
-    .required()
     .messages({
         "number.base": "El id del horario debe ser un número.",
         "number.integer": "El id del horario debe ser un número entero.",

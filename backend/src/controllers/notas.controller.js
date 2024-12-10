@@ -2,8 +2,8 @@
 import {
     createNota,
     deleteNota,
-    getAllNotas,
     getNota,
+    getNotasAlumnoAsignatura,
     getNotasAlumno,
     getNotasAsignatura,
     getNotasCurso,
@@ -79,17 +79,21 @@ export const updateNotaController = async (req, res) => {
     try {
         const { id_nota } = req.params;
         const { valor, tipo } = req.body;
+
         if (!id_nota) {
             return res.status(400).json({
                 message: "El id de la nota es requerido",
             });
         }
 
-        if (valor === undefined || valor === null) {
+        const { error } = notasQueryValidation.validate({ valor, tipo });
+        if (error) {
             return res.status(400).json({
-                message: "El valor de la nota es requerido",
+                message: "Datos inválidos en la solicitud",
+                error: error.message,
             });
         }
+
         const parsedValor = parseFloat(valor);
         if (isNaN(parsedValor)) {
             return res.status(400).json({
@@ -114,6 +118,7 @@ export const updateNotaController = async (req, res) => {
         });
     }
 };
+
 export async function createNotaController(req, res) {
     try {
         const { id_asignatura, rut, valor, tipo } = req.body;
@@ -152,9 +157,11 @@ export async function deleteNotasController(req, res) {
     }
 }
 
-export async function getAllNotasController(req, res) {
+export async function getNotasAlumnoAsignaturaController(req, res) {
     try {
-        const [notas, errorNotas] = await getAllNotas();
+        const { rut_alumno, id_asignatura } = req.params;
+
+        const [notas, errorNotas] = await getNotasAlumnoAsignatura(rut_alumno, id_asignatura);
 
         if (errorNotas) return handleErrorClient(res, 404, errorNotas);
 
@@ -164,4 +171,5 @@ export async function getAllNotasController(req, res) {
     } catch (error) {
         handleErrorServer(res, 500, error.message);
     }
-}
+    
+}   

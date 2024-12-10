@@ -22,7 +22,7 @@ export async function getCurso(id_curso) {
 
 export async function getCursosByProfesor(rut) {
     try {
-        // Validación del usuario y rol directamente en el servicio
+        
         const usuarioResponse = await axios.get(`/usuarios/rut/${rut}`);
         const usuario = usuarioResponse.data.data;
 
@@ -30,7 +30,7 @@ export async function getCursosByProfesor(rut) {
             throw new Error('El usuario no tiene el rol de profesor o no existe');
         }
 
-        // Si es válido, obtenemos los cursos
+        
         const response = await axios.get(`/cursos/profesor/${rut}`);
         return response.data.data;
     } catch (error) {

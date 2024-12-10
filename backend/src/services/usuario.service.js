@@ -152,3 +152,25 @@
             return [null, "Error interno del servidor"];
         }
     }
+
+    export async function getRutsDocentesService() {
+        try {
+            const UsuarioRepository = AppDataSource.getRepository(Usuario);
+            const usuarios = await UsuarioRepository.find({
+                where: { id_roles: 2 },
+                select: ["rut", "nombre", "apellido"]
+            });
+            if (!usuarios || usuarios.length === 0) {
+                return [null, "No se encontraron usuarios con rol de docente"];
+            }
+            const docentes = usuarios.map(usuario => ({
+                rut: usuario.rut,
+                nombre: usuario.nombre,
+                apellido: usuario.apellido
+            }));
+            return [docentes, null];
+        } catch (error) {
+            console.error("Error al obtener RUTs de usuarios con rol de docente:", error);
+            return [null, "Error interno del servidor"];
+        }
+    }
