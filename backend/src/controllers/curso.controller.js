@@ -3,6 +3,7 @@
 import{
     createCurso,
     deleteCurso,
+    getAlumnosPorCurso,
     getCurso,
     getCursos,
     getCursosByProfesor,
@@ -13,6 +14,18 @@ import {
     handleErrorServer,
     handleSuccess,
 }from "../handlers/responseHandlers.js";
+
+
+export async function getAlumnosPorCursoController(req, res) {
+    try {
+        const { id_curso } = req.params;
+        const [alumnos, errorAlumnos] = await getAlumnosPorCurso(id_curso);
+        if (errorAlumnos) return handleErrorClient(res, 404, errorAlumnos);
+        handleSuccess(res, 200, "Alumnos del curso encontrados", alumnos);
+    } catch (error) {
+        handleErrorServer(res, 500, error.message);
+    }
+}
 
 export async function getCursosController(req, res) {
     try {

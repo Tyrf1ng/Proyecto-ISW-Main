@@ -5,6 +5,8 @@ import { AppDataSource } from "../config/configDb.js";
 import AsignaturaCursoSchema from "../entity/asignatura.curso.entity.js";
 import AsignaturasSchema from "../entity/asignatura.entity.js";
 import Usuario from "../entity/usuario.entity.js"; 
+import Conect_Usuario_CursoSchema from "..//entity/conect_usuario_curso.entity.js";
+
 
 //funcion para traer todos los cursos
 export async function getCursos() {
@@ -129,6 +131,29 @@ export async function getCursosByProfesor(rut) {
         return [cursos, "Cursos encontrados"];
     } catch (error) {
         console.error("Error al obtener los cursos:", error);
+        return [null, "Error interno del servidor"];
+    }
+}
+
+export async function getAlumnosPorCurso(id_curso) {
+    try {
+        const conectUsuarioCursoRepository = AppDataSource.getRepository(Conect_Usuario_CursoSchema);
+        const usuarioRepository = AppDataSource.getRepository(Usuario);
+
+        // Obtener las relaciones de alumnos con el curso
+        const relaciones = await conectUsuarioCursoRepository.find({ where: { id_curso } });
+
+        if (!relaciones || relaciones.length === 0) {
+            return [null, "No hay alumnos en este curso"];
+        }
+
+        // Obtener los detalles de los alumnos
+        const ruts = relaciones.map(relacion => relacion.rut);
+        const alumnos = await usuarioRepository.find({ where: { rut: In(ruts) } });
+
+        return [alumnos, null];
+    } catch (error) {
+        console.error("Error al obtener los alumnos del curso:", error);
         return [null, "Error interno del servidor"];
     }
 }
