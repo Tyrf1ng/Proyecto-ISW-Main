@@ -22,10 +22,10 @@ const TableRegisterAsistencias = ({ students, handleRegister }) => {
         if (record.rut === rut) {
           return {
             ...record,
-            presente: type === 'presente',
-            ausente: type === 'ausente',
-            justificado: type === 'justificado',
-            observacion: type === 'justificado' ? record.observacion : ''
+            presente: type === 'presente' ? !record.presente : false,
+            ausente: type === 'ausente' ? !record.ausente : false,
+            justificado: type === 'justificado' ? !record.justificado : false,
+            observacion: type === 'justificado' && !record.justificado ? record.observacion : ''
           };
         }
         return record;
