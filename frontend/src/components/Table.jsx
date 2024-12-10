@@ -2,11 +2,25 @@ import { useEffect, useState } from 'react';
 import { IconButton } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { getUsuarioByRut } from '@services/usuarios.service'; 
+import { getUsuarioByRut } from '@services/usuarios.service';
 
 const TableAnotacionComponent = ({ anotaciones, handleOpen, handleDelete, role }) => {
   const [usuarios, setUsuarios] = useState({});
-  
+  const [sortOrder, setSortOrder] = useState('asc'); // Estado para el orden (ascendente o descendente)
+  const [sortedAnotaciones, setSortedAnotaciones] = useState(anotaciones);
+
+  // Función para ordenar las anotaciones por el tipo
+  const sortAnotacionesByType = () => {
+    const sorted = [...anotaciones].sort((a, b) => {
+      if (a.tipo > b.tipo) return sortOrder === 'asc' ? 1 : -1;
+      if (a.tipo < b.tipo) return sortOrder === 'asc' ? -1 : 1;
+      return 0;
+    });
+
+    setSortedAnotaciones(sorted);
+    setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc'); // Cambiar el orden después de cada clic
+  };
+
   useEffect(() => {
     const fetchUsuarios = async () => {
       const usuariosByRut = {};
@@ -26,6 +40,9 @@ const TableAnotacionComponent = ({ anotaciones, handleOpen, handleDelete, role }
     if (anotaciones.length > 0) {
       fetchUsuarios();
     }
+
+    // Asegurarse de que las anotaciones se ordenen cuando cambien
+    setSortedAnotaciones(anotaciones);
   }, [anotaciones]);
 
   return (
@@ -40,8 +57,13 @@ const TableAnotacionComponent = ({ anotaciones, handleOpen, handleDelete, role }
                     Nombre
                   </th>
                 )}
-                <th className="px-12 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                {/* Cabecera de Tipo con evento de ordenación */}
+                <th
+                  className="px-12 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400 cursor-pointer"
+                  onClick={sortAnotacionesByType}
+                >
                   Tipo
+                  {sortOrder === 'asc' ? ' ↑' : ' ↓'} {/* Indicador de orden */}
                 </th>
                 <th className="px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400">
                   Fecha
@@ -59,8 +81,8 @@ const TableAnotacionComponent = ({ anotaciones, handleOpen, handleDelete, role }
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200 dark:divide-gray-700 dark:bg-gray-900">
-              {anotaciones.length > 0 ? (
-                anotaciones.map((anotacion) => (
+              {sortedAnotaciones.length > 0 ? (
+                sortedAnotaciones.map((anotacion) => (
                   <tr key={anotacion.id_anotacion}>
                     {role === 'Docente' && (
                       <td className="px-4 py-4 text-sm whitespace-nowrap">

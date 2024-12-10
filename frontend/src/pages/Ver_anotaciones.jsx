@@ -3,7 +3,7 @@ import { CursoContext } from '../context/CursoContext';
 import { UsuarioContext } from '../context/UsuarioContext';
 import useAnotaciones from '@hooks/anotaciones/useAnotaciones';
 import { createAnotacion, deleteAnotacion, updateAnotacion } from '@services/anotaciones.service.js';
-import { getAlumnosByCurso } from '@services/alumnos.service'; // Asumimos que este servicio ya existe
+import { getAlumnosByCurso } from '@services/alumnos.service'; 
 import TableAnotacionComponent from '../components/Table';
 
 const Ver_anotaciones = () => {
@@ -12,15 +12,16 @@ const Ver_anotaciones = () => {
   const { anotaciones, fetchAnotaciones } = useAnotaciones();
   
   const [filterText, setFilterText] = useState('');
+  const [filterDate, setFilterDate] = useState(''); // Estado para el filtro de fecha
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [currentAnotacion, setCurrentAnotacion] = useState(null);
   const [newAnotacion, setNewAnotacion] = useState({
     tipo: 'Positiva',
-    rut_alumno: '',
+    rut: '',
     descripcion: '',
     id_asignatura: curso.idCurso || '',
-    fecha: new Date().toISOString(),
+    createdAt: new Date().toISOString(),
   });
   
   const [alumnos, setAlumnos] = useState([]);
@@ -55,6 +56,8 @@ const Ver_anotaciones = () => {
 
   const handleFilterChange = (e) => setFilterText(e.target.value);
 
+  const handleDateFilterChange = (e) => setFilterDate(e.target.value); // Función para cambiar el valor de la fecha
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setNewAnotacion({ ...newAnotacion, [name]: value });
@@ -84,14 +87,21 @@ const Ver_anotaciones = () => {
   const handleOpenModal = (anotacion = null) => {
     setIsEditMode(!!anotacion);
     setCurrentAnotacion(anotacion);
+    
+    if (anotacion) {
+      // Si estamos en modo edición, buscamos el alumno relacionado con la anotación
+      const alumno = alumnos.find(a => a.rut === anotacion.rut);
+      setSearchTerm(alumno ? `${alumno.nombre} ${alumno.apellido}` : ''); // Seteamos el nombre del alumno en el campo de búsqueda
+    }
+
     setNewAnotacion(anotacion || {
       tipo: 'Positiva',
-      rut_alumno: '',
+      rut: '',
       descripcion: '',
       id_asignatura: curso.idCurso || '',
-      fecha: new Date().toISOString(),
+      createdAt: new Date().toISOString(),
     });
-    setSearchTerm('');
+
     setIsModalOpen(true);
   };
 
@@ -127,22 +137,49 @@ const Ver_anotaciones = () => {
     }
   };
 
+  // Función para filtrar las anotaciones por descripción y fecha
+  const filterAnotaciones = (anotaciones) => {
+    // Convertir la fecha seleccionada del filtro a solo fecha (sin hora)
+    const filterDateFormatted = filterDate ? new Date(filterDate).toISOString().split('T')[0] : null;
+
+    return anotaciones.filter((anotacion) => {
+      // Convertir la fecha de la anotación a solo fecha (sin hora)
+      const anotacionDateFormatted = anotacion.createdAt ? new Date(anotacion.createdAt).toISOString().split('T')[0] : null;
+
+      const descriptionMatch = anotacion.descripcion.toLowerCase().includes(filterText.toLowerCase());
+      const dateMatch = filterDateFormatted ? anotacionDateFormatted === filterDateFormatted : true;
+
+      return descriptionMatch && dateMatch;
+    });
+  };
+
   return (
     <div className="p-4 bg-gray-50 dark:bg-gray-800">
-      <div className="mb-4">
-        <input
-          type="text"
-          value={filterText}
-          onChange={handleFilterChange}
-          placeholder="Filtrar anotaciones..."
-          className="w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300"
-        />
+      <div className="flex mb-4 space-x-4">
+        {/* Filtro por Descripción */}
+        <div className="flex-grow">
+          <input
+            type="text"
+            value={filterText}
+            onChange={handleFilterChange}
+            placeholder="Filtrar anotaciones..."
+            className="w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300"
+          />
+        </div>
+
+        {/* Filtro por Fecha */}
+        <div className="w-1/8">
+          <input
+            type="date"
+            value={filterDate}
+            onChange={handleDateFilterChange}
+            className="w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300"
+          />
+        </div>
       </div>
 
       <TableAnotacionComponent
-        anotaciones={anotaciones.filter((a) =>
-          a.descripcion.toLowerCase().includes(filterText.toLowerCase())
-        )}
+        anotaciones={filterAnotaciones(anotaciones)} // Filtramos las anotaciones aquí
         handleOpen={handleOpenModal}
         handleDelete={handleDeleteRequest}
         role={usuario?.rol}
