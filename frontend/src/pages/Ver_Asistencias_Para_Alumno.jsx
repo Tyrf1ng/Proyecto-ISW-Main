@@ -10,7 +10,7 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import CircularProgress from "@mui/material/CircularProgress";
 import TextField from "@mui/material/TextField";
-import { getAsistenciasPorAlumno } from "../services/Asistencias.service"; // Asegúrate de que este servicio esté implementado
+import { getAsistenciasPorAlumno } from "../services/Asistencias.service"; 
 
 const Ver_Asistencias_Para_Alumno = () => {
   const [asistencias, setAsistencias] = useState([]);
