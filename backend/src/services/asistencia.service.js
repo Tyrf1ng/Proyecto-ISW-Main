@@ -1,5 +1,5 @@
 "use strict";
-import { In } from "typeorm";
+import { In, MoreThanOrEqual, LessThan } from "typeorm";
 import Asistencia from "../entity/asistencia.entity.js";
 import { AppDataSource } from "../config/configDb.js";
 import Usuario from "../entity/usuario.entity.js";
@@ -23,7 +23,7 @@ export async function getAsistenciasCurso(id_curso) {
         }
 
         const rutAlumnos = conexiones.map(conexion => conexion.usuario.rut);
-        
+
         const asistencias = await asistenciaRepository.find({
             where: { rut: In(rutAlumnos) },
             relations: ["usuario"]
@@ -56,7 +56,7 @@ export async function getAsistenciasCurso(id_curso) {
         }));
 
         return [asistenciasData, null];
-        
+
     } catch (error) {
         console.error("Error al obtener las asistencias:", error);
         return [null, "Error interno del servidor"];
@@ -69,15 +69,16 @@ export async function getAsistenciasAlumno(rut) {
         if (!alumno) return [null, "El usuario no es un alumno o no existe"];
 
         const asistencias = await asistenciaRepository.find({ where: { rut } });
-        
-        if (!asistencias || asistencias.length === 0) return [null, "No hay asistencias"];
-        return [asistencias, null];  
 
-    } catch (error) {
-        console.error("Error al obtener las asistencias:", error);
-        return [null, "Error interno del servidor"];
+        if (!asistencias || asistencias.length === 0) return [null, "No hay asistencias"];
+            return [asistencias, null];
+    
+        } catch (error) {
+            console.error("Error al obtener las asistencias:", error);
+            return [null, "Error interno del servidor"];
+        }
     }
-}
+
 
 export async function getAsistenciasAsignatura(id_asignatura) {
     try {
@@ -106,6 +107,36 @@ export async function getAsistencia(id_asistencia) {
     }
 }
 
+export async function getAsistenciasAlumnoFecha(rut, fecha) {
+    try {
+        const alumno = await usuarioRepository.findOne({ where: { rut, id_roles: 3 } });
+        if (!alumno) return [null, "El usuario no es un alumno o no existe"];
+
+        const fechaInicio = new Date(fecha);
+        fechaInicio.setHours(0, 0, 0, 0); 
+        const fechaFin = new Date(fecha);
+        fechaFin.setHours(23, 59, 59, 999); 
+
+        // Crear consulta con rango de fechas
+        const asistencias = await asistenciaRepository.createQueryBuilder("asistencia")
+            .leftJoinAndSelect("asistencia.usuario", "usuario")
+            .where("asistencia.rut = :rut", { rut })
+            .andWhere("asistencia.createdAt BETWEEN :fechaInicio AND :fechaFin", { fechaInicio, fechaFin })
+            .getMany();
+
+        // Verificar si hay asistencias
+        if (!asistencias || asistencias.length === 0) {
+            return [null, "No hay asistencias para esta fecha"];
+        }
+
+        // Retornar asistencias encontradas
+        return [asistencias, null];
+    } catch (error) {
+        console.error("Error al obtener las asistencias:", error);
+        return [null, "Error interno del servidor"];
+    }
+}
+
 export async function updateAsistencia(id_asistencia, nuevoTipo, observacion) {
     try {
         if (nuevoTipo === "Justificado" && !observacion) {
@@ -113,15 +144,15 @@ export async function updateAsistencia(id_asistencia, nuevoTipo, observacion) {
         }
 
         const result = await asistenciaRepository.update(
-            { id_asistencia: id_asistencia },  
-            { tipo: nuevoTipo, observacion: observacion || null }   
+            { id_asistencia: id_asistencia },
+            { tipo: nuevoTipo, observacion: observacion || null }
         );
 
         if (result.affected === 0) {
             return [null, "No se encontró la asistencia"];
         }
 
-        return [{ id_asistencia, tipo: nuevoTipo, observacion: observacion || null }, null]; 
+        return [{ id_asistencia, tipo: nuevoTipo, observacion: observacion || null }, null];
     } catch (error) {
         console.error("Error al actualizar la asistencia:", error);
         return [null, "Error interno del servidor"];
@@ -132,7 +163,10 @@ export async function createAsistencia(data) {
     try {
         console.log("Datos recibidos para crear asistencia:", data);
 
-        const asistencia = asistenciaRepository.create(data);
+        const asistencia = asistenciaRepository.create({
+            ...data,
+            createdAt: data.createdAt ? new Date(data.createdAt) : new Date()
+        });
         const savedAsistencia = await asistenciaRepository.save(asistencia);
         return [savedAsistencia, null];
     } catch (error) {

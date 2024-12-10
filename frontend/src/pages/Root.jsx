@@ -1,6 +1,7 @@
 import DashboardLayoutAccount from '@components/Dashboard';
 import { AuthProvider } from '@context/AuthContext';
-import { CursoProvider } from '../context/CursoContext';
+import { CursoProvider } from '../context/CursoContext'; 
+import { AsignaturaProvider } from '../context/AsignaturaContext';
 import { UsuarioProvider } from '../context/UsuarioContext';
 
 function Root() {
@@ -8,7 +9,9 @@ function Root() {
     <AuthProvider>
       <UsuarioProvider>
         <CursoProvider>
-          <DashboardLayoutAccount />
+          <AsignaturaProvider>
+            <DashboardLayoutAccount />
+          </AsignaturaProvider>
         </CursoProvider>
       </UsuarioProvider>
     </AuthProvider>

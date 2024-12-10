@@ -17,6 +17,7 @@ const AsignaturasSchema = new EntitySchema({
     rut: {
       type: "varchar",  // Debe ser del mismo tipo que el campo 'rut' en Usuario
       nullable: false,
+      unique: true,
     },
     createdAt: {
       type: "timestamp with time zone",
@@ -40,13 +41,6 @@ const AsignaturasSchema = new EntitySchema({
       },
     },
   },
-  indices: [
-    {
-      name: "IDX_RUT_UNICO",
-      columns: ["rut"],
-      unique: true, // Asegura que el 'rut' sea único en la tabla asignaturas
-    },
-  ],
 });
 
 export default AsignaturasSchema;

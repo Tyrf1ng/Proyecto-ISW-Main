@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useHorarios } from '@hooks/horarios/useHorarios';
 import TableHorarios from '../components/TableHorarios';
 import SuccessAlert from '../components/SuccessAlert';
+import ErrorAlert from '../components/ErrorAlert';
 
 const Horarios = () => {
     const { horarios = [], fetchHorarios, addHorario, editHorario, removeHorario, isHorarioValid, error } = useHorarios();
@@ -19,6 +20,8 @@ const Horarios = () => {
     const [deleteSuccess, setDeleteSuccess] = useState(false);
     const [createSuccess, setCreateSuccess] = useState(false);
     const [validationError, setValidationError] = useState(null);
+    const [message, setMessage] = useState('');
+    const [messageType, setMessageType] = useState('');
 
     const handleFilterChange = (e) => setFilterText(e.target.value);
     const handleOpen = () => {
@@ -76,6 +79,8 @@ const Horarios = () => {
         setOpen(false);
         setNewHorario({ hora_inicio: '', hora_fin: '' });
         fetchHorarios();
+        setMessage('Horario creado con éxito');
+        setMessageType('success');
     };
 
     const handleEditSubmit = async () => {
@@ -99,6 +104,8 @@ const Horarios = () => {
         setEditSuccess(true);
         setEditOpen(false);
         fetchHorarios();
+        setMessage('Horario editado con éxito');
+        setMessageType('success');
     };
 
     const handleDelete = async () => {
@@ -106,10 +113,23 @@ const Horarios = () => {
             setDeleteError("ID de horario no válido");
             return;
         }
-        await removeHorario(currentHorario.id_horario);
-        setDeleteSuccess(true);
-        setDeleteOpen(false);
-        fetchHorarios();
+        try {
+            const response = await removeHorario(currentHorario.id_horario);
+            if (response.error) {
+                throw new Error(response.error);
+            }
+            setDeleteSuccess(true);
+            setDeleteOpen(false);
+            fetchHorarios();
+            setMessage('Horario eliminado con éxito');
+            setMessageType('success');
+        } catch (error) {
+            console.error('Error al eliminar el horario:', error);
+            setMessage('Hubo un error al eliminar el horario');
+            setMessageType('error');
+            setDeleteOpen(false);
+            fetchHorarios(); 
+        }
     };
 
     useEffect(() => {
@@ -136,6 +156,18 @@ const Horarios = () => {
             return () => clearTimeout(timer);
         }
     }, [deleteSuccess]);
+
+    const renderMessage = () => {
+        if (messageType === 'success') {
+            return <SuccessAlert message={message} />;
+        }
+
+        if (messageType === 'error') {
+            return <ErrorAlert message={message} />;
+        }
+
+        return null;
+    };
 
     return (
         <div className="p-4 bg-gray-50 dark:bg-gray-800 min-h-screen">
@@ -214,9 +246,7 @@ const Horarios = () => {
                 </div>
             )}
 
-            {createSuccess && <SuccessAlert message="Horario creado con éxito" />}
-            {editSuccess && <SuccessAlert message="Horario editado con éxito" />}
-            {deleteSuccess && <SuccessAlert message="Horario eliminado con éxito" />}
+            {renderMessage()}
         </div>
     );
 };

@@ -43,6 +43,10 @@ function Inicio() {
     }
   }, []);
 
+  const handleSeleccionarAsignatura = () => {
+    navigate('/asignaturas'); // Redirige a la página de selección de asignaturas
+  };
+
   const handleSeleccionarCurso = () => {
     navigate('/cursos');
   };
@@ -66,7 +70,16 @@ function Inicio() {
           <p className="text-lg text-gray-500 dark:text-gray-300">
             {usuario.rol === 'Alumno' ? (
               <span>
-                Bienvenido a tu página personal del liceo <span className="text-[#3B82F6]">XXXXXXXXX</span>.
+                Bienvenido a tu página personal del liceo 
+                 <span className="text-[#3B82F6]"> XXXXXXXXX <br />
+                 </span>
+                {errorAsignatura ? (
+                  <span className="text-red-500">{errorAsignatura}</span>
+                ) : (
+                  <span>
+                     Tu asignatura seleccionada es <span className="text-[#3B82F6]">{asignatura|| 'Cargando asignatura...'}</span>
+                  </span>
+                )}
               </span>
             ) : usuario.rol === 'Docente' ? (
               <>
@@ -87,7 +100,7 @@ function Inicio() {
               </>
             ) : usuario.rol === 'Directivo' ? (
               <span>
-                Bienvenido a la página de administración del liceo <span className="text-[#3B82F6]">XXXXXXXXX</span>.
+                Bienvenido a la página de administración del liceo <span className="text-[#3B82F6]">XXXXXXXXX</span>.<br />
                 Desde aquí puedes gestionar los recursos educativos y coordinar con los profesores y alumnos.
               </span>
             ) : (
@@ -95,6 +108,17 @@ function Inicio() {
             )}
           </p>
 
+          {/* Botones para seleccionar asignatura o curso */}
+          {usuario.rol === 'Alumno' && (
+            <div className="inline-flex w-full mt-6 sm:w-auto">
+              <button
+                onClick={handleSeleccionarAsignatura}
+                className="inline-flex items-center justify-center w-full px-6 py-2 text-sm text-white duration-300 bg-blue-600 rounded-lg hover:bg-blue-500 focus:ring focus:ring-blue-300 focus:ring-opacity-80"
+              >
+                Seleccionar asignatura
+              </button>
+            </div>
+          )}
           {usuario.rol === 'Docente' && (
             <div className="inline-flex w-full mt-6 sm:w-auto">
               <button

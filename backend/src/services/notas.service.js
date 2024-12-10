@@ -204,8 +204,6 @@ export async function createNota(data) {
     }
 }
 
-
-
 //funcion para eliminar una nota
 //FUNCIONA NO TOCAR
 export async function deleteNota(id_nota) {
@@ -218,23 +216,28 @@ export async function deleteNota(id_nota) {
         return [null, "Error interno del servidor"];
     }
 }
+//Funcion para notas de una asigantura para un alumno
 
-export async function getAllNotas() {
+export async function getNotasAlumnoAsignatura(rut, id_asignatura) {
     try {
         const notasRepository = AppDataSource.getRepository(Notas);
         const notas = await notasRepository.find({
-            relations: ["asignatura", "usuario"], 
+            where: { rut: rut, id_asignatura: id_asignatura },
+            relations: ["asignatura", "usuario"],
         });
-        
-        const notasConDatos = notas.map(nota => ({
+
+        if (!notas || notas.length === 0) return [null, "No hay notas"];
+
+        const notasData = notas.map(nota => ({
             ...nota,
-            nombre_asignatura: nota.asignatura.nombre, 
+            nota_tipo: nota.tipo,
+            nota_valor: nota.valor,
             nombre_alumno: nota.usuario.nombre,
             apellido_alumno: nota.usuario.apellido,
+            nombre_asignatura: nota.asignatura.nombre
         }));
-        
-        
-        return [notasConDatos, null];
+
+        return [notasData, null];
     } catch (error) {
         console.error("Error al obtener las notas:", error);
         return [null, "Error interno del servidor"];

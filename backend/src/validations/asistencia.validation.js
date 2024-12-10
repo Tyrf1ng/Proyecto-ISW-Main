@@ -1,4 +1,3 @@
-"use strict";
 import Joi from "joi";
 
 export const asistenciaQueryValidation = Joi.object({
@@ -21,7 +20,6 @@ export const asistenciaQueryValidation = Joi.object({
             "number.positive": "El id de la asistencia debe ser un número positivo.",
             "number.empty": "El id de la asistencia no puede estar vacío."
         }),
-
     rut: Joi.string()
         .optional()
         .min(9)
@@ -34,7 +32,6 @@ export const asistenciaQueryValidation = Joi.object({
             "string.max": "El rut debe tener como maximo 12 caracteres",
             "string.pattern.base": "El rut debe tener un formato valido: xx.xxx.xxx-x o xxxxxxxx-x"
         }),
-
     tipo: Joi.string()
         .optional()
         .valid("Presente", "Ausente", "Justificado")
@@ -51,11 +48,6 @@ export const asistenciaQueryValidation = Joi.object({
         }),
         otherwise: Joi.optional()
     }),
-    updatedAt: Joi.date()
-        .optional()
-        .messages({
-            "date.base": "El campo 'updatedAt' debe ser una fecha válida."
-        })
-
-
-})
+    createdAt: Joi.date().optional(),
+    updatedAt: Joi.date().optional(),
+});

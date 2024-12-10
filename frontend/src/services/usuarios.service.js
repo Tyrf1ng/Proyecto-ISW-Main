@@ -49,3 +49,14 @@ export async function getUsuarioByRut(rut) {
     throw error;
   }
 }
+
+
+export async function getRutsDocentes() {
+  try {
+    const { data } = await axios.get('/usuarios/docentes/ruts');
+    return data.data; 
+  } catch (error) {
+    console.error('Error al obtener RUTs de docentes:', error);
+    throw error;
+  }
+}

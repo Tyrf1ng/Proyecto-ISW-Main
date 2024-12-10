@@ -13,10 +13,13 @@ export async function getReservasService() {
 
         const reservasData = reservas.map(reserva => ({
             id_reserva: reserva.id_reserva,
+            id_lab: reserva.id_lab,
+            rut: reserva.rut,
             laboratorio: reserva.lab.nombre,
             usuario: `${reserva.usuario.nombre} ${reserva.usuario.apellido}`,
             fecha: reserva.fecha,
             horario: `${reserva.horarios.hora_inicio} - ${reserva.horarios.hora_fin}`,
+            id_horario: reserva.horarios.id_horario, // Asegúrate de incluir id_horario
             id_asignatura: reserva.asignatura.id_asignatura,
             id_curso: reserva.curso.id_curso,
         }));
@@ -45,6 +48,7 @@ export async function getReservaService(id) {
             usuario: `${reserva.usuario.nombre} ${reserva.usuario.apellido}`,
             fecha: reserva.fecha,
             horario: `${reserva.horarios.hora_inicio} - ${reserva.horarios.hora_fin}`,
+            id_horario: reserva.horarios.id_horario, // Asegúrate de incluir id_horario
             id_asignatura: reserva.asignatura.id_asignatura,
             id_curso: reserva.curso.id_curso,
         };

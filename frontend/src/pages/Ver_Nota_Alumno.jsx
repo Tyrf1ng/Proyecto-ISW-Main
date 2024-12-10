@@ -1,78 +1,60 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import TextField from '@mui/material/TextField';
-import { getNotasPorRUT } from '@services/notas.service';
-import TableComponent from '@components/TableNotas'; // Ajusta la ruta según tu proyecto
+import { AsignaturaContext } from '@context/AsignaturaContext';
+import TableComponent from '@components/TableNotas';
+import useNotasAsignatura from '@hooks/notas/useNotasAsignatura';
+import { useAuth } from '@context/AuthContext';
 
-const Ver_Nota_Alumno = () => {
-  const [notas, setNotas] = useState([]);
-  const [rut, setRUT] = useState('');
-  const [role, setRole] = useState(null); // Role del usuario autenticado
+const VerNotaAlumno = () => {
+  const { idAsignatura } = useContext(AsignaturaContext); // Obtiene el id_asignatura del contexto
+  const { isAuthenticated, user } = useAuth(); // Obtiene el estado de autenticación y el usuario del contexto
   const [filterText, setFilterText] = useState('');
+  const { notas, loading, error, fetchNotas } = useNotasAsignatura(user?.rut, idAsignatura);
 
-  const filteredNotas = notas.filter((nota) =>
-    nota.tipo.toLowerCase().includes(filterText.toLowerCase())
-  );
+  const filteredNotas = notas
+    ? notas.filter((nota) =>
+        nota.nombre_asignatura.toLowerCase().includes(filterText.toLowerCase())
+      )
+    : [];
 
   useEffect(() => {
-    const usuarioGuardado = JSON.parse(sessionStorage.getItem('usuario'));
-    if (usuarioGuardado) {
-      setRUT(usuarioGuardado.rut || '');
-      setRole(usuarioGuardado.role || null); // Obtener el rol automáticamente
-      fetchNotas(usuarioGuardado.rut);
+    if (isAuthenticated && user?.rut && idAsignatura) {
+      fetchNotas(); 
     }
-  }, []);
-
-  const fetchNotas = async (rut) => {
-    try {
-      const response = await getNotasPorRUT(rut);
-      if (response && response.status === 'Success' && Array.isArray(response.data)) {
-        setNotas(response.data);
-      } else {
-        console.error('Respuesta inesperada:', response);
-        setNotas([]);
-      }
-    } catch (error) {
-      console.error('Error al obtener las notas:', error);
-      setNotas([]);
-    }
-  };
+  }, [isAuthenticated, user?.rut, idAsignatura, fetchNotas]);
 
   const handleFilterChange = (e) => {
     setFilterText(e.target.value);
   };
-
-
+console.log("notas", notas)
   return (
     <Box sx={{ padding: 4 }}>
-      <Typography variant="h4" gutterBottom>
-        Notas del Alumno
-      </Typography>
-      <Typography variant="h6" gutterBottom>
-        RUT: {rut}
-      </Typography>
       <Box
         sx={{
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          marginBottom: 2,
+          marginBottom: 4,
         }}
       >
-        <TextField
-          label="Filtrar por Tipo"
-          variant="outlined"
+        <input
+          type="text"
           value={filterText}
           onChange={handleFilterChange}
+          placeholder="Filtrar por asignatura"
+          className="w-96 p-2 border rounded dark:text-gray-300 dark:bg-gray-900"
         />
       </Box>
-      <TableComponent
-        notas={filteredNotas}
-        role={role}
-        />
+      {loading ? (
+        <p>Cargando notas...</p>
+      ) : error ? (
+        <p>Error: {error}</p>
+      ) : (
+        <TableComponent 
+        notas={filteredNotas} role={isAuthenticated.role} />
+      )}
     </Box>
   );
 };
 
-export default Ver_Nota_Alumno;
+export default VerNotaAlumno;
