@@ -6,7 +6,8 @@ import { getUsuarioByRut } from '@services/usuarios.service';
 
 const TableAnotacionComponent = ({ anotaciones, handleOpen, handleDelete, role }) => {
   const [usuarios, setUsuarios] = useState({});
-  const [sortOrder, setSortOrder] = useState('asc'); // Estado para el orden (ascendente o descendente)
+  const [sortOrder, setSortOrder] = useState('asc'); // Estado para el orden de tipo
+  const [sortOrderNombre, setSortOrderNombre] = useState('asc'); // Estado para el orden de nombre
   const [sortedAnotaciones, setSortedAnotaciones] = useState(anotaciones);
 
   // Función para ordenar las anotaciones por el tipo
@@ -19,6 +20,20 @@ const TableAnotacionComponent = ({ anotaciones, handleOpen, handleDelete, role }
 
     setSortedAnotaciones(sorted);
     setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc'); // Cambiar el orden después de cada clic
+  };
+
+  // Función para ordenar las anotaciones por nombre
+  const sortAnotacionesByNombre = () => {
+    const sorted = [...anotaciones].sort((a, b) => {
+      const nombreA = usuarios[a.rut] || ''; // Obtener el nombre del usuario A
+      const nombreB = usuarios[b.rut] || ''; // Obtener el nombre del usuario B
+      if (nombreA > nombreB) return sortOrderNombre === 'asc' ? 1 : -1;
+      if (nombreA < nombreB) return sortOrderNombre === 'asc' ? -1 : 1;
+      return 0;
+    });
+
+    setSortedAnotaciones(sorted);
+    setSortOrderNombre(sortOrderNombre === 'asc' ? 'desc' : 'asc'); // Cambiar el orden después de cada clic
   };
 
   useEffect(() => {
@@ -53,8 +68,9 @@ const TableAnotacionComponent = ({ anotaciones, handleOpen, handleDelete, role }
             <thead className="bg-gray-50 dark:bg-gray-800">
               <tr>
                 {role === 'Docente' && (
-                  <th className="px-12 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                  <th className="px-12 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400 cursor-pointer" onClick={sortAnotacionesByNombre}>
                     Nombre
+                    {sortOrderNombre === 'asc' ? ' ↑' : ' ↓'} {/* Indicador de orden */}
                   </th>
                 )}
                 {/* Cabecera de Tipo con evento de ordenación */}
