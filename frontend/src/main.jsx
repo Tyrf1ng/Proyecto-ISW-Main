@@ -20,7 +20,6 @@ import Ver_anotaciones from '@pages/Ver_anotaciones';
 import '@styles/styles.css';
 import VerAsistencias from '@pages/VerAsistencias';
 import Reservas from '@pages/Reservas';
-import Reservas from '@pages/Reservas';
 import Profile from './pages/Profile';
 import Add_usuario from '@pages/Add_usuario';
 import Asignaturas from '@pages/Asignaturas';
