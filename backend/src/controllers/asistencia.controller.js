@@ -124,10 +124,14 @@ export async function createAsistenciaController(req, res) {
         if (validationError) {
             return handleErrorClient(res, 400, validationError.details[0].message);
         }
-
+        
         const { id_asignatura, rut, tipo, observacion, createdAt } = value;
         const selectedDate = new Date(createdAt);
         const currentYear = new Date().getFullYear();
+
+        if (!createdAt) {
+            return handleErrorClient(res, 400, "La fecha no puede estar vacia");
+        }
 
         if (selectedDate.getFullYear() !== currentYear) {
             return handleErrorClient(res, 400, "La fecha seleccionada no es del año actual.");

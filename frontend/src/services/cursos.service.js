@@ -38,3 +38,13 @@ export async function getCursosByProfesor(rut) {
         throw error.response?.data || { message: error.message };
     }
 }
+
+
+export async function getSoloAlumnosByCurso(id_curso) {
+    try {
+        const { data } = await axios.get(`/cursos/alumnos/${id_curso}`);
+        return data.data;
+    } catch (error) {
+        return error.response.data;
+    }
+}
