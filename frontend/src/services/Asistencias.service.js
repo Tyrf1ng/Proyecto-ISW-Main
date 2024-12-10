@@ -60,3 +60,19 @@ export const getAsistenciasPorAlumno = async (rutAlumno) => {
     throw error;
   }
 };
+
+export const getAsistenciasAlumnoFecha = async (rutAlumno, fecha) => {
+  try {
+      const response = await axios.get(`/asistencias/alumno/${rutAlumno}/fecha/${fecha}`);
+      return response.data?.data || null;
+  } catch (error) {
+      if (error.response && error.response.status === 404) {
+          console.warn(`No hay asistencias para el alumno ${rutAlumno} en la fecha ${fecha}.`);
+          return null; 
+      }
+      console.error("Error al obtener las asistencias por alumno en fecha:", error);
+      throw error; 
+  }
+};
+
+
