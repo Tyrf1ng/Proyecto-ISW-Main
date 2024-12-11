@@ -52,7 +52,8 @@ const RegisterAsistencia = () => {
         setMessageType("error");
         return;
       }
-
+      console.log("fecha actual hora y minutos actual", new Date().getDate(), new Date().getHours(), new Date().getMinutes());
+      console.log("fecha seleccionada hora y minutos seleccionados", utcDate.getDate() , selected.getHours(), selected.getMinutes() );
       const currentDate = new Date().getDate();
       if(utcDate.getDate() > currentDate) {
         setMensaje("La fecha seleccionada no puede ser mayor a la fecha actual.");
