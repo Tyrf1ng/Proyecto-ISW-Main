@@ -136,6 +136,10 @@ export async function createAsistenciaController(req, res) {
             return handleErrorClient(res, 400, "La fecha seleccionada no es del año actual.");
         }
 
+        if(selectedDate.getDate() > new Date().getDate()) {
+            return handleErrorClient(res, 400, "La fecha seleccionada no puede ser mayor a la fecha actual.");
+        }
+
         const dayOfWeek = selectedDate.getUTCDay();
         if (dayOfWeek === 0 || dayOfWeek === 6) {
             return handleErrorClient(res, 400, "No se puede registrar asistencia en fines de semana (sábado o domingo).");
