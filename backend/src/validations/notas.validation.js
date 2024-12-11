@@ -2,12 +2,13 @@
 import Joi from "joi";
 
 export const notasQueryValidation = Joi.object({
+id_nota: Joi.number()
+.messages({
+"number.empty": "El id del curso no puede estar vacío." }),
 id_asignatura: Joi.number()
-.required()
 .messages({
 "number.empty": "El id de la asignatura no puede estar vacío." }),
 rut: Joi.string()
-.required()
 .messages({
 "string.empty": "El rut del alumno no puede estar vacío." }),
 valor: Joi.number()
@@ -21,7 +22,7 @@ valor: Joi.number()
 "number.empty": "El valor de la nota no puede estar vacío."
 }),
 tipo: Joi.string()
-.required("Prueba", "Tarea", "Presentacion","Test")
+.valid("Prueba", "Tarea", "Presentacion","Test")
 .messages({
 "string.base": "El tipo de nota debe ser Prueba/Tarea/Test/Presentacion.",
 "string.empty": "El tipo de nota no puede estar vacío.",

@@ -26,23 +26,20 @@ export const deleteNota = async (id) => {
         return error.response;
     }
 }
-export const updateNota = async (id, valor, tipo) => {
+export const updateNota = async (id, data) => {
     try {
-        const data = { valor: parseFloat(valor) };
-        if (tipo) {
-            data.tipo = tipo;
-        }
-        const response = await axios.patch(`/notas/actualizar/${id}`, data);
-        return response.data; 
+      
+      const payload = {
+        valor: parseFloat(data.valor), 
+        tipo: data.tipo,              
+      };
+      const response = await axios.patch(`/notas/actualizar/${id}`, payload)
+      return response.data; 
     } catch (error) {
-        console.error("Error al actualizar la nota:", error);
-        return {
-            success: false,
-            message: error.response?.data?.message || "Error al actualizar la nota",
-            status: error.response?.status || 500,
-        };
+      console.error("Error al actualizar la nota:", error);
+      return { success: false, message: error.message };
     }
-};
+  };
 
 
 export const getNotasPorRUT = async (rut) => {

@@ -3,8 +3,8 @@ import {
     createNota,
     deleteNota,
     getNota,
-    getNotasAlumnoAsignatura,
     getNotasAlumno,
+    getNotasAlumnoAsignatura,
     getNotasAsignatura,
     getNotasCurso,
     updateNota
@@ -79,14 +79,13 @@ export const updateNotaController = async (req, res) => {
     try {
         const { id_nota } = req.params;
         const { valor, tipo } = req.body;
-
         if (!id_nota) {
             return res.status(400).json({
                 message: "El id de la nota es requerido",
             });
         }
 
-        const { error } = notasQueryValidation.validate({ valor, tipo });
+        const { error } = notasQueryValidation.validate({ valor, tipo, id_nota });
         if (error) {
             return res.status(400).json({
                 message: "Datos inválidos en la solicitud",
@@ -107,6 +106,7 @@ export const updateNotaController = async (req, res) => {
                 error: errorMessage,
             });
         }
+        
         return res.status(200).json({
             message: "Nota actualizada correctamente",
             data: notaActualizada,
