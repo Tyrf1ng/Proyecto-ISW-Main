@@ -1,15 +1,18 @@
 import { useEffect, useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import backgroundImage from '../images/components/books.svg';
-import { CursoContext } from '../context/CursoContext';
-import { getAsignaturasByProfesor } from '../services/asignatura.service';
+import backgroundImage from '../images/components/books.svg'; // Imagen local
+import { CursoContext } from '../context/CursoContext'; // Importación del contexto de curso
+import { AsignaturaContext } from '../context/AsignaturaContext';
+import { getAsignaturasByProfesor } from '../services/asignatura.service'; 
+
 
 function Inicio() {
   const navigate = useNavigate();
   const { curso } = useContext(CursoContext); 
   const [usuario, setUsuario] = useState({ nombre: '', apellido: '', rut: '', rol: '' });
-  const [asignatura, setAsignatura] = useState('Cargando asignatura...');
+  const { asignatura } = useContext(AsignaturaContext);
   const [errorAsignatura, setErrorAsignatura] = useState(''); 
+  const [asignaturas, setAsignaturas] = useState('Cargando asignaturas...');
   const [errorCurso, setErrorCurso] = useState(''); 
 
   useEffect(() => {
@@ -30,7 +33,7 @@ function Inicio() {
             console.log('Asignaturas obtenidas:', asignaturas);
             if (asignaturas.length > 0) {
               const asignaturaSeleccionada = asignaturas[0];
-              setAsignatura(asignaturaSeleccionada.nombre);
+              setAsignaturas(asignaturaSeleccionada.nombre);
             } else {
               setErrorAsignatura('No se encontraron asignaturas para este profesor.');
             }
@@ -40,9 +43,11 @@ function Inicio() {
             setErrorAsignatura('Hubo un error al cargar las asignaturas.');
           });
       }
+
     }
   }, []);
 
+  
   const handleSeleccionarAsignatura = () => {
     navigate('/asignaturas'); // Redirige a la página de selección de asignaturas
   };
@@ -58,8 +63,7 @@ function Inicio() {
           <div
             className="h-64 bg-cover lg:h-full"
             style={{ backgroundImage: `url(${backgroundImage})` }}
-          >
-          </div>
+          ></div>
         </div>
 
         <div className="max-w-xl px-6 py-10 my-20 lg:max-w-5xl lg:w-1/2 flex flex-col justify-center space-y-6">
@@ -70,14 +74,16 @@ function Inicio() {
           <p className="text-lg text-gray-500 dark:text-gray-300">
             {usuario.rol === 'Alumno' ? (
               <span>
-                Bienvenido a tu página personal del liceo 
-                 <span className="text-[#3B82F6]"> XXXXXXXXX <br />
-                 </span>
+                Bienvenido a tu página personal del liceo{' '}
+                <span className="text-[#3B82F6]">XXXXXXXXX</span>. <br />
                 {errorAsignatura ? (
                   <span className="text-red-500">{errorAsignatura}</span>
                 ) : (
                   <span>
-                     Tu asignatura seleccionada es <span className="text-[#3B82F6]">{asignatura|| 'Cargando asignatura...'}</span>
+                    Bienvenido a tu página de la asignatura{' '}
+                    <span className="text-[#3B82F6]">
+                      {asignatura && asignatura.nombre ? asignatura.nombre : 'Cargando asignatura...'}
+                    </span>
                   </span>
                 )}
               </span>
@@ -87,20 +93,27 @@ function Inicio() {
                   <span className="text-red-500">{errorAsignatura}</span>
                 ) : (
                   <span>
-                    Bienvenido a tu página de la asignatura <span className="text-[#3B82F6]">{asignatura} </span>
+                    Bienvenido a tu página de la asignatura {' '} 
+                    <span className="text-[#3B82F6]">
+                      {asignatura && asignatura.nombre ? asignatura.nombre : 'Cargando asignatura...'}
+                    </span>
                   </span>
                 )}
                 {errorCurso || !curso.idCurso ? (
                   <span className="text-red-500">{errorCurso || 'No has seleccionado un curso.'}</span>
                 ) : (
                   <span>
-                    y el curso seleccionado es  <span className="text-[#3B82F6]">{curso.nombre || 'Cargando curso...'}</span>.
+                    <br /> y el curso seleccionado es{' '}
+                    <span className="text-[#3B82F6]">
+                      {curso.nombre ? curso.nombre : 'Cargando curso...'}
+                    </span>.
                   </span>
                 )}
               </>
             ) : usuario.rol === 'Directivo' ? (
               <span>
-                Bienvenido a la página de administración del liceo <span className="text-[#3B82F6]">XXXXXXXXX</span>.<br />
+                Bienvenido a la página de administración del liceo{' '}
+                <span className="text-[#3B82F6]">XXXXXXXXX</span>. <br />
                 Desde aquí puedes gestionar los recursos educativos y coordinar con los profesores y alumnos.
               </span>
             ) : (
