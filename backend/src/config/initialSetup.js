@@ -64,13 +64,13 @@ async function createCursos() {
     await Promise.all([
       cursoRepository.save(
         cursoRepository.create({
-          nombre: "Sigma",
+          nombre: "1ero medio A",
           nivel: 2,
         }),
       ),
       cursoRepository.save(
         cursoRepository.create({
-          nombre: "Toilet",
+          nombre: "2do medio A",
           nivel: 4,
         }),
       ),
@@ -92,13 +92,13 @@ async function createAsignaturas() {
     await Promise.all([
       AsignaturasRepository.save(
         AsignaturasRepository.create({
-          nombre: "Precocidad Prematura",
+          nombre: "Química",
           rut: "20.960.538-4",
         }),
       ),
       AsignaturasRepository.save(
         AsignaturasRepository.create({
-          nombre: "Historia de Coronel",
+          nombre: "Historia",
           rut: "21.151.773-5",
         }),
       ),
@@ -389,8 +389,8 @@ async function createUsuario() {
       usuarioRepository.save(
         usuarioRepository.create({
           rut: "21.282.977-3",
-          nombre: "Skibidi",
-          apellido: "Insano",
+          nombre: "Benjamin",
+          apellido: "Ortiz",
           email: "benjamin@gmail.cl",
           telefono: 123456789,
           password: await encryptPassword("benja123"),
@@ -402,8 +402,8 @@ async function createUsuario() {
       usuarioRepository.save(
         usuarioRepository.create({
           rut: "20.960.538-4",
-          nombre: "Toilet",
-          apellido: "Jonathan",
+          nombre: "Jonathan",
+          apellido: "Olivares",
           email: "jonypirinoli@gmail.cl",
           telefono: 987654321,
           password: await encryptPassword("jonypirinoli123"),
@@ -415,8 +415,8 @@ async function createUsuario() {
       usuarioRepository.save(
         usuarioRepository.create({
           rut: "21.070.073-0",
-          nombre: "Mochap",
-          apellido: "PL",
+          nombre: "Joaquin",
+          apellido: "Perez",
           email: "mochap@gmail.cl",
           telefono: 987655321,
           password: await encryptPassword("mochap123"),
@@ -428,7 +428,7 @@ async function createUsuario() {
       usuarioRepository.save(
         usuarioRepository.create({
           rut: "21.151.773-5",
-          nombre: "Kuka",
+          nombre: "Alvaro",
           apellido: "Loyola",
           email: "alvaro@gmail.cl",
           telefono: 987655321,
@@ -441,7 +441,7 @@ async function createUsuario() {
       usuarioRepository.save(
         usuarioRepository.create({
           rut: "21.137.508-6",
-          nombre: "Nicoflenn",
+          nombre: "Nicolas",
           apellido: "Ibieta",
           email: "nicoflenn@gmail.cl",
           telefono: 987655321,
@@ -454,7 +454,7 @@ async function createUsuario() {
       usuarioRepository.save(
         usuarioRepository.create({
           rut: "21.019.643-9",
-          nombre: "Cristox",
+          nombre: "Cristobal",
           apellido: "Betancurt",
           email: "cristox@gmail.cl",
           telefono: 987655321,
@@ -466,8 +466,8 @@ async function createUsuario() {
         usuarioRepository.save(
           usuarioRepository.create({
             rut: "21.123.456-7",
-            nombre: "rocio",
-            apellido: "rivas",
+            nombre: "Rocio",
+            apellido: "Rivas",
             email: "rocio@gmail.cl",
             telefono: 123456789,
             password: await encryptPassword("rocio123"),
@@ -479,8 +479,8 @@ async function createUsuario() {
         usuarioRepository.save(
           usuarioRepository.create({
             rut: "21.765.432-1",
-            nombre: "alejandro",
-            apellido: "yañez",
+            nombre: "Alejandro",
+            apellido: "Yañez",
             email: "alejandro@gmail.cl",
             telefono: 987654321,
             password: await encryptPassword("alejandro123"),
@@ -493,8 +493,8 @@ async function createUsuario() {
           usuarioRepository.create({
             
             rut: "21.987.654-3",
-            nombre: "kevin",
-            apellido: "miranda",
+            nombre: "Kevin",
+            apellido: "Miranda",
             email: "kevin@gmail.cl",
             telefono: 123456789,
             password: await encryptPassword("kevin123"),

@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from 'react';
 import { CursoContext } from '../context/CursoContext';
 import { getAlumnosByCurso } from '../services/alumnos.service';
 import { createAnotacion } from '@services/anotaciones.service.js';
+import WarningAlert from '../components/WarningAlert'; // Importamos el componente de alerta
 
 function Add_anotaciones() {
   const { curso } = useContext(CursoContext);
@@ -12,13 +13,17 @@ function Add_anotaciones() {
     id_asignatura: curso.idCurso || '',
     fecha: new Date().toISOString(),
   });
-  const [message, setMessage] = useState('');
-  const [messageType, setMessageType] = useState('');
   const [alumnos, setAlumnos] = useState([]);
   const [filteredAlumnos, setFilteredAlumnos] = useState([]);
   const [selectedAlumno, setSelectedAlumno] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [isListVisible, setIsListVisible] = useState(false);
+
+  // Estado para manejar los mensajes de la alerta
+  const [alert, setAlert] = useState({
+    message: '',
+    type: '', // 'success', 'error', 'warning'
+  });
 
   useEffect(() => {
     const cargarAlumnos = async () => {
@@ -70,20 +75,26 @@ function Add_anotaciones() {
 
   const handleSubmit = async () => {
     if (!newAnotacion.rut) {
-      setMessage('Debe seleccionar un alumno.');
-      setMessageType('warning');
+      setAlert({
+        message: 'Debe seleccionar un alumno.',
+        type: 'warning',
+      });
       return;
     }
     if (!newAnotacion.descripcion.trim()) {
-      setMessage('La descripción no puede estar vacía.');
-      setMessageType('warning');
+      setAlert({
+        message: 'La descripción no puede estar vacía.',
+        type: 'warning',
+      });
       return;
     }
 
     try {
       await createAnotacion(newAnotacion);
-      setMessage('Anotación creada exitosamente');
-      setMessageType('success');
+      setAlert({
+        message: 'Anotación creada exitosamente',
+        type: 'success',
+      });
       setNewAnotacion({
         tipo: 'Positiva',
         rut: '',
@@ -95,125 +106,90 @@ function Add_anotaciones() {
       setFilteredAlumnos(alumnos);
     } catch (error) {
       console.error('Error al crear la anotación:', error);
-      setMessage('Hubo un error al crear la anotación');
-      setMessageType('error');
+      setAlert({
+        message: 'Hubo un error al crear la anotación',
+        type: 'error',
+      });
     }
   };
 
-  const renderMessage = () => {
-    const messageClasses = "fixed top-5 right-5 w-full max-w-sm overflow-hidden bg-[#111827] rounded-lg shadow-md z-50 animate-bounce-slow";
-
-    if (messageType === 'success') {
-      return (
-        <div className={messageClasses}>
-          <div className="px-4 py-2 -mx-3">
-            <div className="mx-3">
-              <span className="font-semibold text-emerald-500">Success</span>
-              <p className="text-sm text-gray-100">{message}</p>
-            </div>
-          </div>
-        </div>
-      );
-    }
-
-    if (messageType === 'error') {
-      return (
-        <div className={messageClasses}>
-          <div className="px-4 py-2 -mx-3">
-            <div className="mx-3">
-              <span className="font-semibold text-red-500">Error</span>
-              <p className="text-sm text-gray-100">{message}</p>
-            </div>
-          </div>
-        </div>
-      );
-    }
-
-    if (messageType === 'warning') {
-      return (
-        <div className={messageClasses}>
-          <div className="px-4 py-2 -mx-3">
-            <div className="mx-3">
-              <span className="font-semibold text-yellow-400">Warning</span>
-              <p className="text-sm text-gray-100">{message}</p>
-            </div>
-          </div>
-        </div>
-      );
-    }
-
-    return null;
-  };
+  const maxDescripcionLength = 280;
+  const isMaxReached = newAnotacion.descripcion.length > maxDescripcionLength;
 
   return (
-    <div className="p-6 max-w-3xl mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-md">
-      <h2 className="text-2xl font-semibold text-gray-800 dark:text-white mb-6">Añadir Anotaciones</h2>
+    <div className="flex py-10 justify-center bg-gray-50 dark:bg-gray-800">
+      <div className="w-full max-w-2xl bg-white dark:bg-gray-900 p-8 rounded-xl shadow-lg mb-6"> {/* Card más ancho y largo */}
+        <h2 className="text-2xl font-semibold text-center text-gray-800 dark:text-white mb-6">Añadir Anotación</h2>
 
-      <div className="mb-4">
-        <label htmlFor="tipo" className="block text-sm text-gray-500 dark:text-gray-300">Tipo de Anotación</label>
-        <select
-          name="tipo"
-          id="tipo"
-          value={newAnotacion.tipo}
-          onChange={handleSelectChange}
-          className="mt-2 block w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300"
-        >
-          <option value="Positiva">Positiva</option>
-          <option value="Negativa">Negativa</option>
-        </select>
-      </div>
-
-      <div className="mb-4">
-        <label htmlFor="alumno" className="block text-sm text-gray-500 dark:text-gray-300">Buscar Alumno</label>
-        <input
-          type="text"
-          id="alumno"
-          value={searchTerm}
-          onChange={handleSearchChange}
-          placeholder="Buscar Alumno"
-          className="mt-2 block w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300"
-        />
-      </div>
-
-      {isListVisible && filteredAlumnos.length > 0 && (
-        <div className="mb-4 max-h-64 overflow-y-auto">
-          <ul className="mt-2 bg-white dark:bg-gray-900 shadow-lg rounded-lg">
-            {filteredAlumnos.map((alumno) => (
-              <li
-                key={alumno.rut}
-                onClick={() => handleAlumnoSelect(alumno)}
-                className="px-4 py-2 cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-700 text-gray-800 dark:text-white"
-              >
-                {alumno.nombre} {alumno.apellido}
-              </li>
-            ))}
-          </ul>
+        <div className="mb-4 flex space-x-4">
+          <div className="w-1/2">
+            <label htmlFor="tipo" className="block text-sm text-gray-500 dark:text-gray-300">Tipo de Anotación</label>
+            <select
+              name="tipo"
+              id="tipo"
+              value={newAnotacion.tipo}
+              onChange={handleSelectChange}
+              className="mt-2 block w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300"
+            >
+              <option value="Positiva">Positiva</option>
+              <option value="Negativa">Negativa</option>
+            </select>
+          </div>
+          <div className="w-1/2">
+            <label htmlFor="alumno" className="block text-sm text-gray-500 dark:text-gray-300">Buscar Alumno</label>
+            <input
+              type="text"
+              id="alumno"
+              value={searchTerm}
+              onChange={handleSearchChange}
+              placeholder="Buscar Alumno"
+              className="mt-2 block w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300"
+            />
+          </div>
         </div>
-      )}
 
-      <div className="mb-4">
-        <label htmlFor="descripcion" className="block text-sm text-gray-500 dark:text-gray-300">Descripción</label>
-        <textarea
-          name="descripcion"
-          id="descripcion"
-          value={newAnotacion.descripcion}
-          onChange={handleInputChange}
-          placeholder="Ingrese la descripción"
-          rows="4"
-          className="mt-2 block w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300 resize-none"
-        ></textarea>
-      </div>
+        {isListVisible && filteredAlumnos.length > 0 && (
+          <div className="mb-4 max-h-64 overflow-y-auto">
+            <ul className="mt-2 bg-white dark:bg-gray-900 shadow-lg rounded-lg">
+              {filteredAlumnos.map((alumno) => (
+                <li
+                  key={alumno.rut}
+                  onClick={() => handleAlumnoSelect(alumno)}
+                  className="px-4 py-2 cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-700 text-gray-800 dark:text-white"
+                >
+                  {alumno.nombre} {alumno.apellido}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
 
-      <div className="mt-4">
+        <div className="mb-4">
+          <label htmlFor="descripcion" className="block text-sm text-gray-500 dark:text-gray-300">Descripción</label>
+          <textarea
+            name="descripcion"
+            id="descripcion"
+            value={newAnotacion.descripcion}
+            onChange={handleInputChange}
+            placeholder="Ingrese la descripción"
+            rows="6"
+            className="mt-2 block w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300 resize-none"
+          ></textarea>
+          <div className={`text-right text-sm ${isMaxReached ? 'text-red-500 dark:text-red-500' : 'text-gray-500'} dark:text-gray-400 mt-1`}>
+            {newAnotacion.descripcion.length}/{maxDescripcionLength} caracteres
+          </div>
+        </div>
+
         <button
           onClick={handleSubmit}
-          className="px-6 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-500 w-full"
+          className="w-full mt-4 py-2 px-4 rounded-lg bg-blue-500 text-white hover:bg-blue-600 focus:ring focus:ring-blue-300"
         >
-          Guardar Anotación
+          Crear Anotación
         </button>
       </div>
 
-      {renderMessage()}
+      {/* Usamos el componente WarningAlert para mostrar los mensajes */}
+      {alert.message && <WarningAlert message={alert.message} type={alert.type} />}
     </div>
   );
 }
