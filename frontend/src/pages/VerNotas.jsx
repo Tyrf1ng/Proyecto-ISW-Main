@@ -65,8 +65,8 @@ const VerNotas = () => {
         return;
       }
 
-      if (valor < 1.0 || valor > 7.0) {
-        setMessage('El valor de la nota debe estar entre 1.0 y 7.0');
+      if (valor < 2.0 || valor > 7.0) {
+        setMessage('El valor de la nota debe estar entre 2.0 y 7.0');
         setMessageType('warning');
         return;
       }
@@ -170,7 +170,7 @@ const VerNotas = () => {
                   onChange={(e) =>
                     setNotaToEdit((prevState) => ({ ...prevState, valor: parseFloat(e.target.value) || 0 }))
                   }
-                  min="1.0"
+                  min="2.0"
                   max="7.0"
                   step="0.1"
                   className="w-full p-2 border rounded dark:text-gray-300 dark:bg-gray-900"
