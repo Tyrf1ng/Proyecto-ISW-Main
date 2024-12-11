@@ -11,19 +11,17 @@ const VerNotas = () => {
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [notaToDelete, setNotaToDelete] = useState(null);
   const [notaToEdit, setNotaToEdit] = useState(null);
-  const [setMessage] = useState("");
-  const [setMessageType] = useState("");
+  const [message, setMessage] = useState("");
+  const [messageType, setMessageType] = useState("");
 
   useEffect(() => {
-    // Llamar a cargarUsuario solo si el usuario aún no está cargado
     if (!usuario) {
       cargarUsuario();
     }
-  }, [usuario, cargarUsuario]);  // Solo ejecutar cuando el usuario no esté disponible
+  }, [usuario, cargarUsuario]);
 
-  // Verificar si el usuario está disponible antes de proceder
   if (!usuario) {
-    return <div>Cargando usuario...</div>;  // O una pantalla de carga mientras se obtiene el usuario
+    return <div>Cargando usuario...</div>;
   }
 
   const handleFilterChange = (e) => setFilterText(e.target.value);
@@ -45,38 +43,45 @@ const VerNotas = () => {
       setConfirmDialogOpen(false);
     }
   };
+
   const handleEdit = (nota) => {
-    setNotaToEdit({ id_nota: nota.id_nota, valor: nota.valor, tipo: nota.tipo, originalTipo: nota.tipo });
+    setNotaToEdit({
+      id_nota: nota.id_nota,
+      valor: nota.valor || 0,
+      tipo: nota.tipo || "Prueba",
+      originalTipo: nota.tipo || "Prueba",
+    });
   };
 
   const handleUpdate = async (e) => {
     e.preventDefault();
     try {
-      const { id_nota, valor, tipo, originalTipo } = notaToEdit;
-  
-      if (!id_nota || typeof valor !== 'number') {
-        console.error('ID o Valor inválido:', { id_nota, valor });
+      const { id_nota, valor, tipo } = notaToEdit;
+
+      if (!id_nota || typeof valor !== 'number' || isNaN(valor)) {
+        console.error('Datos inválidos:', { id_nota, valor });
+        setMessage('Los datos de la nota no son válidos.');
+        setMessageType('error');
         return;
       }
-  
+
       if (valor < 1.0 || valor > 7.0) {
         setMessage('El valor de la nota debe estar entre 1.0 y 7.0');
         setMessageType('warning');
         return;
       }
-  
-      if (tipo !== originalTipo) {
-        console.log(`El tipo cambió de "${originalTipo}" a "${tipo}"`);
-      }
-      await updateNota(id_nota, valor, tipo);
+
+      await updateNota(id_nota, { valor, tipo });
       setMessage('Nota actualizada correctamente');
+      setMessageType('success');
       fetchNotas();
-      setNotaToEdit(null); 
+      setNotaToEdit(null);
     } catch (error) {
       console.error('Error al actualizar la nota:', error);
+      setMessage('Hubo un problema al actualizar la nota');
+      setMessageType('error');
     }
   };
-
 
   return (
     <div className="p-4 bg-gray-50 dark:bg-gray-800">
@@ -89,14 +94,12 @@ const VerNotas = () => {
       />
 
       <TableComponent
-        
         notas={(Array.isArray(notas) ? notas : []).filter((nota) =>
           `${nota.nombre_alumno.toLowerCase()} ${nota.apellido_alumno.toLowerCase()}`.includes(filterText.toLowerCase())
         )}
         onEdit={handleEdit}
         onDelete={handleDelete}
-        role={usuario?.rol
-        }
+        role={usuario?.rol}
       />
 
       {confirmDialogOpen && (
@@ -126,69 +129,71 @@ const VerNotas = () => {
         </div>
       )}
 
-{notaToEdit !==null && (
-  <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-    <div className="p-8 rounded-lg shadow-xl bg-white text-black dark:bg-[#111827] dark:text-white w-96">
-      <h2 className="text-lg font-bold mb-4">Editar Nota</h2>
-      <form onSubmit={handleUpdate}>
+      {notaToEdit !== null && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="p-8 rounded-lg shadow-xl bg-white text-black dark:bg-[#111827] dark:text-white w-96">
+            <h2 className="text-lg font-bold mb-4">Editar Nota</h2>
+            <form onSubmit={handleUpdate}>
+              <div className="mb-4">
+                <label
+                  htmlFor="tipo"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                >
+                  Tipo
+                </label>
+                <select
+                  id="tipo"
+                  value={notaToEdit?.tipo || ''}
+                  onChange={(e) =>
+                    setNotaToEdit((prevState) => ({ ...prevState, tipo: e.target.value }))
+                  }
+                  className="w-full p-2 border rounded dark:text-gray-300 dark:bg-gray-900"
+                >
+                  <option value="Prueba">Prueba</option>
+                  <option value="Presentacion">Presentación</option>
+                  <option value="Test">Test</option>
+                  <option value="Tarea">Tarea</option>
+                </select>
+              </div>
 
-        {/* Tipo */}
-        <div className="mb-4">
-          <label
-            htmlFor="tipo"
-            className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-          >
-            Tipo
-          </label>
-          <select
-            id="tipo"
-            value={notaToEdit?.tipo ||''} 
-            onChange={(e) => setNotaToEdit((prevState) => ({ ...prevState, tipo: e.target.value }))}
-            className="w-full p-2 border rounded dark:text-gray-300 dark:bg-gray-900"
-          >
-            <option value="Prueba">Prueba</option>
-            <option value="Presentacion">Presentación</option>
-            <option value="Test">Test</option>
-            <option value="Tarea">Tarea</option>
-          </select>
+              <div className="mb-4">
+                <label
+                  htmlFor="valor"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                >
+                  Valor
+                </label>
+                <input
+                  type="number"
+                  id="valor"
+                  value={notaToEdit?.valor || ''}
+                  onChange={(e) =>
+                    setNotaToEdit((prevState) => ({ ...prevState, valor: parseFloat(e.target.value) || 0 }))
+                  }
+                  min="1.0"
+                  max="7.0"
+                  step="0.1"
+                  className="w-full p-2 border rounded dark:text-gray-300 dark:bg-gray-900"
+                />
+              </div>
+
+              <button
+                type="submit"
+                className="w-full px-6 py-3 bg-blue-600 text-white rounded-lg"
+              >
+                Actualizar
+              </button>
+              <button
+                type="button"
+                onClick={() => setNotaToEdit(null)}
+                className="w-full px-6 py-3 bg-red-500 text-white rounded-lg mt-4"
+              >
+                Cancelar
+              </button>
+            </form>
+          </div>
         </div>
-
-        {/* Valor */}
-        <div className="mb-4">
-          <label
-            htmlFor="valor"
-            className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-          >
-            Valor
-          </label>
-          <input
-            type="number"
-            id="valor"
-            value={notaToEdit?.valor||''}
-            onChange={(e) => setNotaToEdit((prevState) => ({ ...prevState, valor: parseFloat(e.target.value) }))}
-            min="1.0" 
-            max="7.0" 
-            step="0.1" 
-            className="w-full p-2 border rounded dark:text-gray-300 dark:bg-gray-900"
-          />
-        </div>
-
-        <button
-          type="submit"
-          className="w-full px-6 py-3 bg-blue-600 text-white rounded-lg"
-        >
-          Actualizar
-        </button>
-        <button
-          onClick={() => setNotaToEdit(null)}
-          className="w-full px-6 py-3  bg-red-500 text-white rounded-lg mt-4"
-        >
-          Cancelar
-        </button>
-      </form>
-    </div>
-  </div>
-)}
+      )}
     </div>
   );
 };

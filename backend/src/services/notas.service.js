@@ -181,8 +181,6 @@ export async function updateNota(id_nota, nuevoValor, nuevoTipo) {
         if (result.affected === 0) {
             return [null, "No se pudo actualizar la nota"];
         }
-
-        // Retornar los valores actualizados
         return [{ id_nota, valor: parsedValor, tipo: nuevoTipo || notaExistente.tipo }, null];
     } catch (error) {
         console.error("Error al actualizar la nota:", error);
