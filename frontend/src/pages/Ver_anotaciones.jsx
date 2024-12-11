@@ -5,6 +5,7 @@ import useAnotaciones from '@hooks/anotaciones/useAnotaciones';
 import { createAnotacion, deleteAnotacion, updateAnotacion } from '@services/anotaciones.service.js';
 import { getAlumnosByCurso } from '@services/alumnos.service'; 
 import TableAnotacionComponent from '../components/Table';
+import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 
 const Ver_anotaciones = () => {
   const { curso } = useContext(CursoContext);
@@ -153,38 +154,108 @@ const Ver_anotaciones = () => {
     });
   };
 
+  // Contar anotaciones positivas y negativas de las filtradas
+  const countAnotacionesTipo = (anotaciones) => {
+    let positivas = 0;
+    let negativas = 0;
+
+    anotaciones.forEach((anotacion) => {
+      if (anotacion.tipo === 'Positiva') {
+        positivas++;
+      } else if (anotacion.tipo === 'Negativa') {
+        negativas++;
+      }
+    });
+
+    return { positivas, negativas };
+  };
+
+  // Filtramos las anotaciones visibles
+  const filteredAnotaciones = filterAnotaciones(anotaciones);
+  const { positivas, negativas } = countAnotacionesTipo(filteredAnotaciones);
+
+  const data = [
+    { name: 'Positivas', value: positivas },
+    { name: 'Negativas', value: negativas },
+  ];
+
+  const COLORS = ['#10B981', '#EF4444'];
   return (
     <div className="p-4 bg-gray-50 dark:bg-gray-800">
-      <div className="flex mb-4 space-x-4">
-        {/* Filtro por Descripción */}
-        <div className="flex-grow">
-          <input
-            type="text"
-            value={filterText}
-            onChange={handleFilterChange}
-            placeholder="Filtrar anotaciones..."
-            className="w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300"
+      {/* Contenedor principal con Flexbox */}
+      <div className="flex flex-wrap gap-6">
+        
+        {/* Card de anotaciones (ocupa la mayor parte del espacio) */}
+        <div className="flex-1 min-w-0 bg-white dark:bg-gray-900 p-6 rounded-xl shadow-lg mb-6">
+          {/* Filtros */}
+<div className="flex mb-4 justify-between">
+  <div className="w-1/2">
+    <input
+      type="text"
+      value={filterText}
+      onChange={handleFilterChange}
+      placeholder="Filtrar por descripción"
+      className="w-full rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring-2 focus:ring-blue-300 focus:border-blue-500" // Cambié el borde y añadí foco
+    />
+  </div>
+
+  {/* Filtro por Fecha */}
+  <div className="w-1/8">
+    <input
+      type="date"
+      value={filterDate}
+      onChange={handleDateFilterChange}
+      className="w-full rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring-2 focus:ring-blue-300 focus:border-blue-500" // Igual que el anterior
+    />
+  </div>
+</div>
+
+          {/* Tabla de anotaciones */}
+          <TableAnotacionComponent
+            anotaciones={filteredAnotaciones} // Filtramos las anotaciones aquí
+            handleOpen={handleOpenModal}
+            handleDelete={handleDeleteRequest}
+            role={usuario?.rol}
           />
         </div>
 
-        {/* Filtro por Fecha */}
-        <div className="w-1/8">
-          <input
-            type="date"
-            value={filterDate}
-            onChange={handleDateFilterChange}
-            className="w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300"
-          />
+        {/* Card para el gráfico de anotaciones (ocupa 1/3 del espacio) */}
+        <div className="w-full md:w-1/5 bg-white dark:bg-gray-900 p-6 rounded-xl shadow-lg mb-6">
+            <h2 className="text-2xl font-semibold text-gray-800 dark:text-white mb-4">Anotaciones totales</h2>
+          {/* Contadores de anotaciones */}
+          <div className="flex flex-row items-center text-gray-600 mb-4">
+          <div className="flex flex-col w-1/2 items-center text-green-600 mb-4">
+            <span className="text-3xl font-bold">{positivas}</span>
+            <span className="text-sm">Positivas</span>
+          </div>
+          <div className="flex w-1/2 flex-col items-center text-red-600 mb-6">
+            <span className="text-3xl font-bold">{negativas}</span>
+            <span className="text-sm">Negativas</span>
+          </div>
+          </div>
+
+          {/* Gráfico de torta */}
+          <ResponsiveContainer width="100%" height={300}>
+            <PieChart>
+              <Pie
+                data={data}
+                dataKey="value"
+                nameKey="name"
+                cx="50%"
+                cy="50%"
+                outerRadius={100}
+                fill="#8884d8"
+              >
+                {data.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                ))}
+              </Pie>
+            </PieChart>
+          </ResponsiveContainer>
         </div>
       </div>
 
-      <TableAnotacionComponent
-        anotaciones={filterAnotaciones(anotaciones)} // Filtramos las anotaciones aquí
-        handleOpen={handleOpenModal}
-        handleDelete={handleDeleteRequest}
-        role={usuario?.rol}
-      />
-
+      {/* Modal para editar o agregar anotación */}
       {isModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="p-6 rounded-lg shadow-xl w-96 bg-[#1F2937] text-black dark:bg-[#1F2937] dark:text-white">
@@ -267,6 +338,7 @@ const Ver_anotaciones = () => {
         </div>
       )}
 
+      {/* Confirmación de eliminación */}
       {confirmDialogOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="p-8 rounded-lg shadow-xl bg-white text-black dark:bg-[#111827] dark:text-white">
