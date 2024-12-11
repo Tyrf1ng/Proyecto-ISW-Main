@@ -6,20 +6,20 @@ export const AsignaturaContext = createContext();
 // Crear el proveedor del contexto
 export const AsignaturaProvider = ({ children }) => {
   // Recupera el idAsignatura desde localStorage al cargar la aplicación
-  const [idAsignatura, setIdAsignatura] = useState(() => {
-    const savedAsignatura = localStorage.getItem('idAsignatura');
-    return savedAsignatura ? JSON.parse(savedAsignatura) : null;
+  const [asignatura, setAsignatura] = useState(() => {
+    const savedAsignatura = localStorage.getItem('asignatura');
+    return savedAsignatura ? JSON.parse(savedAsignatura) : { idAsignatura: null, nombre: null };
   });
 
   // Guarda el idAsignatura en localStorage cuando cambie
   useEffect(() => {
-    if (idAsignatura) {
-      localStorage.setItem('idAsignatura', JSON.stringify(idAsignatura));
+    if (asignatura.idAsignatura && asignatura.nombre) {
+      localStorage.setItem('asignatura', JSON.stringify(asignatura));
     }
-  }, [idAsignatura]);
+  }, [asignatura]);
 
   return (
-    <AsignaturaContext.Provider value={{ idAsignatura, setIdAsignatura }}>
+    <AsignaturaContext.Provider value={{ asignatura, setAsignatura }}>
       {children}
     </AsignaturaContext.Provider>
   );

@@ -2,13 +2,15 @@ import { useEffect, useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import backgroundImage from '../images/components/books.svg'; // Imagen local
 import { CursoContext } from '../context/CursoContext'; // Importación del contexto de curso
-import { getAsignaturasByProfesor } from '../services/asignatura.service'; // Importación del servicio de asignaturas
+import { getAsignaturasByProfesor } from '../services/asignatura.service'; 
+import { AsignaturaContext } from '../context/AsignaturaContext';
 
 function Inicio() {
   const navigate = useNavigate();
   const { curso } = useContext(CursoContext); 
   const [usuario, setUsuario] = useState({ nombre: '', apellido: '', rut: '', rol: '' });
-  const [asignatura, setAsignatura] = useState('Cargando asignatura...'); // Valor inicial
+  const  { asignatura } = useContext(AsignaturaContext);
+  const [asignaturas, setAsignatura] = useState('Cargando asignatura...'); // Valor inicial
   const [errorAsignatura, setErrorAsignatura] = useState(''); 
   const [errorCurso, setErrorCurso] = useState(''); 
 
@@ -83,7 +85,7 @@ function Inicio() {
                   <span className="text-red-500">{errorAsignatura}</span>
                 ) : (
                   <span>
-                     Tu asignatura seleccionada es <span className="text-[#3B82F6]">{asignatura|| 'Cargando asignatura...'}</span>
+                     Tu asignatura seleccionada es <span className="text-[#3B82F6]">{asignatura.nombre|| 'Cargando asignatura...'}</span>
                   </span>
                 )}
               </span>
