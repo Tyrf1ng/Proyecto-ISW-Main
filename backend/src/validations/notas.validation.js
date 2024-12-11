@@ -12,7 +12,7 @@ rut: Joi.string()
 .messages({
 "string.empty": "El rut del alumno no puede estar vacío." }),
 valor: Joi.number()
-.min(1.0)
+.min(2.0)
 .required()
 .max(7.0)
 .messages({
