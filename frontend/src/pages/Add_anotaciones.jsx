@@ -1,8 +1,8 @@
 import { useContext, useEffect, useState } from 'react';
 import { CursoContext } from '../context/CursoContext';
-import { getAlumnosByCurso } from '../services/alumnos.service';
+import { getSoloAlumnosByCurso } from '@services/cursos.service';
 import { createAnotacion } from '@services/anotaciones.service.js';
-import WarningAlert from '../components/WarningAlert'; // Importamos el componente de alerta
+import Alert from '../components/WarningAlert';
 
 function Add_anotaciones() {
   const { curso } = useContext(CursoContext);
@@ -32,7 +32,7 @@ function Add_anotaciones() {
         return;
       }
       try {
-        const alumnosData = await getAlumnosByCurso(curso.idCurso);
+        const alumnosData = await getSoloAlumnosByCurso(curso.idCurso);
         if (Array.isArray(alumnosData)) {
           setAlumnos(alumnosData);
           setFilteredAlumnos(alumnosData.slice(0, 5));
@@ -74,51 +74,78 @@ function Add_anotaciones() {
   };
 
   const handleSubmit = async () => {
+    // Primero reseteamos el estado de la alerta para asegurarnos de que siempre se actualice
+    setAlert({
+        message: '',
+        type: '',
+    });
+
+    // Validación de alumno
     if (!newAnotacion.rut) {
-      setAlert({
-        message: 'Debe seleccionar un alumno.',
-        type: 'warning',
-      });
-      return;
-    }
-    if (!newAnotacion.descripcion.trim()) {
-      setAlert({
-        message: 'La descripción no puede estar vacía.',
-        type: 'warning',
-      });
-      return;
+        setAlert({
+            message: 'Debe seleccionar un alumno.',
+            type: 'warning',
+        });
+        console.log("Alerta warning: ", { message: 'Debe seleccionar un alumno.', type: 'warning' });
+        return;
     }
 
-    try {
-      await createAnotacion(newAnotacion);
-      setAlert({
-        message: 'Anotación creada exitosamente',
-        type: 'success',
-      });
-      setNewAnotacion({
-        tipo: 'Positiva',
-        rut: '',
-        descripcion: '',
-        id_asignatura: curso.idCurso || '',
-        fecha: new Date().toISOString(),
-      });
-      setSelectedAlumno(null);
-      setFilteredAlumnos(alumnos);
-    } catch (error) {
-      console.error('Error al crear la anotación:', error);
-      setAlert({
-        message: 'Hubo un error al crear la anotación',
-        type: 'error',
-      });
+    // Validación de descripción vacía
+    if (!newAnotacion.descripcion.trim()) {
+        console.log('Descripción vacía:', newAnotacion.descripcion);  // Verifica si entra en esta condición
+        setAlert({
+            message: 'La descripción no puede estar vacía.',
+            type: 'warning',
+        });
+        console.log("Alerta warning: ", { message: 'La descripción no puede estar vacía.', type: 'warning' });
+        return;
     }
-  };
+
+    // Resto del código
+    try {
+        // Intentamos crear la anotación
+        await createAnotacion(newAnotacion);
+        setAlert({
+            message: 'Anotación creada exitosamente',
+            type: 'success',
+        });
+        console.log("Alerta success: ", { message: 'Anotación creada exitosamente', type: 'success' });
+
+        // Limpiar los campos después de crear la anotación
+        setNewAnotacion({
+            tipo: 'Positiva',
+            rut: '',
+            descripcion: '',
+            id_asignatura: curso.idCurso || '',
+            fecha: new Date().toISOString(),
+        });
+        setSelectedAlumno(null);  // Limpiar la selección de alumno
+        setSearchTerm('');        // Limpiar el término de búsqueda
+        setFilteredAlumnos(alumnos); // Restaurar la lista de alumnos
+
+        // Limpiar la alerta después de 3 segundos
+        setTimeout(() => {
+            setAlert({
+                message: '',
+                type: '',
+            });
+        }, 3000);  // Se resetea la alerta después de 3 segundos
+    } catch (error) {
+        console.error('Error al crear la anotación:', error);
+        setAlert({
+            message: 'Hubo un error al crear la anotación',
+            type: 'error',
+        });
+        console.log("Alerta error: ", { message: 'Hubo un error al crear la anotación', type: 'error' });
+    }
+};
 
   const maxDescripcionLength = 280;
   const isMaxReached = newAnotacion.descripcion.length > maxDescripcionLength;
 
   return (
     <div className="flex py-10 justify-center bg-gray-50 dark:bg-gray-800">
-      <div className="w-full max-w-2xl bg-white dark:bg-gray-900 p-8 rounded-xl shadow-lg mb-6"> {/* Card más ancho y largo */}
+      <div className="w-full max-w-2xl bg-white dark:bg-gray-900 p-8 rounded-xl shadow-lg mb-6"> 
         <h2 className="text-2xl font-semibold text-center text-gray-800 dark:text-white mb-6">Añadir Anotación</h2>
 
         <div className="mb-4 flex space-x-4">
@@ -167,29 +194,31 @@ function Add_anotaciones() {
         <div className="mb-4">
           <label htmlFor="descripcion" className="block text-sm text-gray-500 dark:text-gray-300">Descripción</label>
           <textarea
-            name="descripcion"
             id="descripcion"
+            name="descripcion"
             value={newAnotacion.descripcion}
             onChange={handleInputChange}
-            placeholder="Ingrese la descripción"
-            rows="6"
-            className="mt-2 block w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300 resize-none"
-          ></textarea>
-          <div className={`text-right text-sm ${isMaxReached ? 'text-red-500 dark:text-red-500' : 'text-gray-500'} dark:text-gray-400 mt-1`}>
+            maxLength={maxDescripcionLength}
+            placeholder="Escribe la descripción"
+            rows="4"
+            className="mt-2 block w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300"
+          />
+          <small className={`text-sm ${isMaxReached ? 'text-red-500' : 'text-gray-500'}`}>
             {newAnotacion.descripcion.length}/{maxDescripcionLength} caracteres
-          </div>
+          </small>
         </div>
 
-        <button
-          onClick={handleSubmit}
-          className="w-full mt-4 py-2 px-4 rounded-lg bg-blue-500 text-white hover:bg-blue-600 focus:ring focus:ring-blue-300"
-        >
-          Crear Anotación
-        </button>
-      </div>
+        <div className="flex justify-center">
+          <button
+            onClick={handleSubmit}
+            className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-6 rounded-md"
+          >
+            Crear Anotación
+          </button>
+        </div>
 
-      {/* Usamos el componente WarningAlert para mostrar los mensajes */}
-      {alert.message && <WarningAlert message={alert.message} type={alert.type} />}
+        {alert.message && <Alert message={alert.message} type={alert.type} />}
+      </div>
     </div>
   );
 }

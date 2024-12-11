@@ -3,7 +3,7 @@ import { CursoContext } from '../context/CursoContext';
 import { UsuarioContext } from '../context/UsuarioContext';
 import useAnotaciones from '@hooks/anotaciones/useAnotaciones';
 import { createAnotacion, deleteAnotacion, updateAnotacion } from '@services/anotaciones.service.js';
-import { getAlumnosByCurso } from '@services/alumnos.service'; 
+import { getSoloAlumnosByCurso } from '@services/cursos.service'; // Importamos la nueva función
 import TableAnotacionComponent from '../components/Table';
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 
@@ -44,7 +44,7 @@ const Ver_anotaciones = () => {
     if (curso.idCurso) {
       const cargarAlumnos = async () => {
         try {
-          const alumnosData = await getAlumnosByCurso(curso.idCurso);
+          const alumnosData = await getSoloAlumnosByCurso(curso.idCurso); // Usamos la nueva función
           setAlumnos(alumnosData);
           setFilteredAlumnos(alumnosData.slice(0, 5));
         } catch (error) {
