@@ -72,14 +72,6 @@ export async function createReservaService(data) {
             return [null, "El laboratorio ya está reservado en la misma fecha y horario"];
         }
 
-        const existingReservaUsuario = await reservaRepository.findOne({
-            where: { rut: data.rut, fecha: data.fecha, id_horario: data.id_horario },
-        });
-
-        if (existingReservaUsuario) {
-            return [null, "El usuario ya tiene una reserva en la misma fecha y horario"];
-        }
-
         const reserva = reservaRepository.create({
             ...data,
             id_asignatura: data.id_asignatura,
@@ -104,14 +96,6 @@ export async function updateReservaService(id_reserva, data) {
 
         if (existingReservaLab && existingReservaLab.id_reserva !== id_reserva) {
             return [null, "El laboratorio ya está reservado en la misma fecha y horario"];
-        }
-
-        const existingReservaUsuario = await reservaRepository.findOne({
-            where: { rut: data.rut, fecha: data.fecha, id_horario: data.id_horario },
-        });
-
-        if (existingReservaUsuario && existingReservaUsuario.id_reserva !== id_reserva) {
-            return [null, "El usuario ya tiene una reserva en la misma fecha y horario"];
         }
 
         const reserva = await reservaRepository.findOne({ where: { id_reserva } });
