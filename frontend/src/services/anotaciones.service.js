@@ -20,7 +20,6 @@ export async function createAnotacion(data) {
   }
 }
 
-// Agregar esta función si no está definida
 export async function updateAnotacion(id, data) {
   try {
     const response = await axios.put(`/anotaciones/actualizar/${id}`, data);
@@ -43,15 +42,8 @@ export async function deleteAnotacion(id) {
 
 export async function getAnotacionesAlumno(rut) {
   try {
-    // Obtener las anotaciones del backend
     const { data } = await axios.get(`/anotaciones/alumno/${rut}`);
-
-    // Filtrar anotaciones para el rol 3
-    const anotacionesFiltradas = data.data.filter((anotacion) => anotacion.rol === 3);
-
-    console.log('getAnotacionesAlumno (filtrado):', anotacionesFiltradas);
-
-    return anotacionesFiltradas;
+    return data.data;
   } catch (error) {
     console.error('Error al obtener anotaciones del alumno:', error);
     throw error;

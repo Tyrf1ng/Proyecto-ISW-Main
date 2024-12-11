@@ -1,14 +1,14 @@
 import ReactDOM from 'react-dom/client';
 import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom";
-import Root from '@pages/Root'; // El layout principal
+import Root from '@pages/Root';
 import Inicio from '@pages/Inicio';
 import Cursos from '@pages/Cursos';
 import Login from '@pages/Login';
 import Error404 from '@pages/Error404';
-import ProtectedRoute from '@components/ProtectedRoute'; // Mantener este import si es necesario
 import Anotaciones from '@pages/Anotaciones';
 import Labs from '@pages/Labs';
 import Horarios from '@pages/Horarios';
+import Ver_usuarios from '@pages/Ver_usuarios';
 import VerNotas from '@pages/VerNotas';
 import Ver_Nota_Alumno from '@pages/Ver_Nota_Alumno';
 import Ver_Asistencias_Para_Alumno from '@pages/Ver_Asistencias_Para_Alumno';
@@ -80,6 +80,7 @@ const router = createBrowserRouter([
         element: <Outlet />,
         children: [
           { path: 'add_usuario', element: <Add_usuario /> },
+          { path: 'ver_usuarios', element: <Ver_usuarios /> },
         ],
       },
     ],
