@@ -59,10 +59,11 @@ function Add_Notas() {
         return;
       }
       try {
-        const alumnosData = await getAlumnosByCurso(curso.idCurso);  // Obtener alumnos según curso.idCurso
+        // Obtener alumnos según curso.idCurso
+        const alumnosData = await getAlumnosByCurso(curso.idCurso);  
         if (Array.isArray(alumnosData)) {
           setAlumnos(alumnosData);
-          setFilteredAlumnos(alumnosData.slice(0, 5)); // Mostrar solo los primeros 5 alumnos
+          setFilteredAlumnos(alumnosData.slice(0, 5));
         } else {
           console.error("Formato inesperado de datos:", alumnosData);
         }
@@ -98,25 +99,40 @@ function Add_Notas() {
   };
 
   const handleSubmit = async () => {
+    // Limpia el mensaje antes de validar
+    setMessage("");
+    setMessageType("");
+  
+    // Validaciones
     if (!newNota.rut || !newNota.tipo || !newNota.valor || !newNota.id_asignatura) {
       setMessage("Debe completar todos los campos.");
       setMessageType("warning");
       return;
     }
-    if (!newNota.valor || newNota.valor < 1 || newNota.valor > 7) {
-      setMessage("El valor de la nota debe estar entre 1.0 y 7.0.");
+  
+    // Asegúrate de que el valor sea numérico
+    const valorNumerico = parseFloat(newNota.valor);
+    if (isNaN(valorNumerico) || valorNumerico < 2.0 || valorNumerico > 7.0) {
+      setMessage("El valor de la nota debe estar entre 2.0 y 7.0.");
       setMessageType("error");
       return;
     }
-
+  
     try {
-      await createNota(newNota);
+      // Crea la nueva nota
+      await createNota({ ...newNota, valor: valorNumerico }); // Se asegura de enviar `valor` como número
       setMessage("Nota creada exitosamente.");
       setMessageType("success");
-      setNewNota({ tipo: "", 
-        valor: "", 
-        rut: "", 
-        id_asignatura: "" });
+  
+      // Restablece el formulario
+      setNewNota({
+        tipo: "",
+        valor: "",
+        rut: "",
+        id_asignatura: "",
+      });
+  
+      // Restablece otras variables de estado
       setSelectedAlumno(null);
       setFilteredAlumnos(alumnos);
     } catch (error) {
@@ -197,29 +213,20 @@ function Add_Notas() {
         </select>
       </div>
 
-      {/* Asignatura */}
-      <div className="mb-4">
-        <label htmlFor="id_asignatura" className="block text-sm text-gray-500 dark:text-gray-300">Asignatura</label>
-        <select
-  name="id_asignatura"
-  id="id_asignatura"
-  value={newNota.id_asignatura}
-  onChange={handleInputChange}
-  className="mt-2 block w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300"
->
-  <option value="">Seleccione asignatura</option>
-  {asignaturas && asignaturas.length > 0 ? (
-    asignaturas.map((asignatura) => (
-      <option key={asignatura.id_asignatura} value={asignatura.id_asignatura}>
-        {asignatura.nombre}
-      </option>
-    ))
-  ) : (
-    <option value="" disabled>No hay asignaturas disponibles</option>
-  )}
-</select>
-
-      </div>
+        {/* Asignatura */}
+        <div className="mb-4">
+          <label htmlFor="id_asignatura" className="block text-sm text-gray-500 dark:text-gray-300">Asignatura</label>
+          {asignaturas && asignaturas.length === 1 ? (
+            <p className="mt-2 block w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300"
+        >
+              {asignaturas[0].nombre} {/* Muestra el nombre de la asignatura */}
+            </p>
+          ) : (
+            <p className="mt-2 text-gray-700 dark:text-gray-300">
+              No se encontró asignatura asignada.
+            </p>
+          )}
+        </div>
 
       {/* Búsqueda de alumno */}
       <div className="mb-4">
@@ -253,7 +260,7 @@ function Add_Notas() {
           name="valor"
           value={newNota.valor}
           onChange={handleInputChange}
-          min="1.0"
+          min="2.0"
           max="7.0"
           step="0.1"
           className="mt-2 block w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300"
