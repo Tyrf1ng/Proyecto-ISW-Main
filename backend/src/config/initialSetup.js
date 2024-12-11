@@ -168,7 +168,6 @@ async function createAnotaciones() {
       ),
       AnotacionesRepository.save(
         AnotacionesRepository.create({
-          // eslint-disable-next-line max-len
           descripcion: "Alumno constantemente interrumpe la clase intentando convencer a sus compañeros de unirse al partido comunista",
           rut: "21.070.073-0",
           tipo: "Negativa",

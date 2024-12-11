@@ -41,7 +41,7 @@ export async function getCursosController(req, res) {
 
 export async function getCursoController(req, res) {
     try {
-        const { id_curso } = req.params; // Cambiar 'id' a 'id_curso'
+        const { id_curso } = req.params;
         const [curso, errorCurso] = await getCurso(id_curso);
         if (errorCurso) return handleErrorClient(res, 404, errorCurso);
         handleSuccess(res, 200, "Curso encontrado", curso);
@@ -71,8 +71,6 @@ export async function updateCursoController(req, res) {
     }
 }
 
-
-// deleteCursoController en curso.controller.js
 export async function deleteCursoController(req, res) {
     try {
         const { id_curso } = req.params; 
@@ -95,7 +93,6 @@ export async function getCursosByProfesorController(req, res) {
         }
         const [cursos, mensaje] = await getCursosByProfesor(rut_docente);
 
-        // Validar la respuesta del servicio
         if (!cursos) {
             return res.status(404).json({
                 status: "Error",

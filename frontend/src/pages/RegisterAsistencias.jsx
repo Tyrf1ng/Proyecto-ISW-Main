@@ -53,6 +53,13 @@ const RegisterAsistencia = () => {
         return;
       }
 
+      const currentDate = new Date().getDate();
+      if(utcDate.getDate() > currentDate) {
+        setMensaje("La fecha seleccionada no puede ser mayor a la fecha actual.");
+        setMessageType("error");
+        return;
+      }
+
       const dayOfWeek = utcDate.getUTCDay();
       if (dayOfWeek === 0 || dayOfWeek === 6) {
         setMensaje("No se puede registrar asistencia en fines de semana.");

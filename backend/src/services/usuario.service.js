@@ -3,9 +3,7 @@
     import Usuario from "../entity/usuario.entity.js";
     import { AppDataSource } from "../config/configDb.js";
 
-    /**
-     * Obtener todos los usuarios
-     */
+
     export async function getUsuariosService() {
         try {
             const UsuarioRepository = AppDataSource.getRepository(Usuario);
@@ -18,9 +16,6 @@
         }
     }
 
-    /**
-     * Buscar usuario por RUT
-     */
     export async function getUsuarioByRutService(rut) {
         try {
             const UsuarioRepository = AppDataSource.getRepository(Usuario);
@@ -38,9 +33,7 @@
         }
     }
 
-    /**
-     * Buscar usuarios por nombre
-     */
+  
     export async function getUsuariosByNombreService(nombre) {
         try {
             const UsuarioRepository = AppDataSource.getRepository(Usuario);
@@ -59,9 +52,7 @@
         }
     }
 
-    /**
-     * Crear un nuevo usuario
-     */
+   
     export async function createUsuarioService(data) {
         try {
             const { rut, nombre, apellido, email, password, direccion, comuna, id_roles, telefono } = data;
@@ -86,9 +77,6 @@
         }
     }
 
-    /**
-     * Actualizar información de un usuario
-     */
     export async function updateUsuarioService(rut, datosActualizados) {
         try {
             const UsuarioRepository = AppDataSource.getRepository(Usuario);
@@ -109,9 +97,6 @@
         }
     }
 
-    /**
-     * Eliminar un usuario
-     */
     export async function deleteUsuarioService(rut) {
         try {
             const UsuarioRepository = AppDataSource.getRepository(Usuario);
@@ -134,11 +119,10 @@
         try {
             const UsuarioRepository = AppDataSource.getRepository(Usuario);
 
-            // Consulta usuarios con rol 3 que pertenecen al curso especificado
             const usuarios = await UsuarioRepository.find({
                 where: {
-                    id_curso: idCurso, // Asegúrate de ajustar el nombre del campo si es diferente
-                    id_roles: 3, // Asumiendo que el rol 3 es el valor de rol de interés
+                    id_curso: idCurso, 
+                    id_roles: 3, 
                 },
             });
 

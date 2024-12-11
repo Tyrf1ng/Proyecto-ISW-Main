@@ -117,19 +117,16 @@ export async function getAsistenciasAlumnoFecha(rut, fecha) {
         const fechaFin = new Date(fecha);
         fechaFin.setHours(23, 59, 59, 999); 
 
-        // Crear consulta con rango de fechas
         const asistencias = await asistenciaRepository.createQueryBuilder("asistencia")
             .leftJoinAndSelect("asistencia.usuario", "usuario")
             .where("asistencia.rut = :rut", { rut })
             .andWhere("asistencia.createdAt BETWEEN :fechaInicio AND :fechaFin", { fechaInicio, fechaFin })
             .getMany();
 
-        // Verificar si hay asistencias
         if (!asistencias || asistencias.length === 0) {
             return [null, "No hay asistencias para esta fecha"];
         }
 
-        // Retornar asistencias encontradas
         return [asistencias, null];
     } catch (error) {
         console.error("Error al obtener las asistencias:", error);

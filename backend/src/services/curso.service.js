@@ -8,7 +8,6 @@ import Usuario from "../entity/usuario.entity.js";
 import Conect_Usuario_CursoSchema from "..//entity/conect_usuario_curso.entity.js";
 
 
-//funcion para traer todos los cursos
 export async function getCursos() {
     try {
         const cursoRepository = AppDataSource.getRepository(Cursos);
@@ -22,7 +21,6 @@ export async function getCursos() {
     }
 }
 
-//funcion para traer un curso por id
 export async function getCurso(id_curso) {
     try {
         const cursoRepository = AppDataSource.getRepository(Cursos);
@@ -39,7 +37,6 @@ export async function getCurso(id_curso) {
     }
 }
 
-//funcion para crear un curso
 export async function createCurso(curso) {
     try {
         const cursoRepository = AppDataSource.getRepository(Cursos);
@@ -51,7 +48,6 @@ export async function createCurso(curso) {
     }
 }
 
-//funcion para actualizar un curso
 export async function updateCurso(id_curso, curso) {
     try {
         const cursoRepository = AppDataSource.getRepository(Cursos);
@@ -64,7 +60,6 @@ export async function updateCurso(id_curso, curso) {
     }
 }
 
-//funcion para eliminar un curso
 export async function deleteCurso(id_curso) {
     try {
         const cursoRepository = AppDataSource.getRepository(Cursos);
@@ -86,7 +81,6 @@ export async function getCursosByProfesor(rut) {
         const cursoRepository = AppDataSource.getRepository(Cursos);
         const usuarioRepository = AppDataSource.getRepository(Usuario);
 
-        // Buscar el usuario con el rut y validar que tiene id_roles = 2 (profesor)
         const usuario = await usuarioRepository.findOne({
             where: { rut: rut, id_roles: 2 } 
         });
@@ -106,7 +100,6 @@ export async function getCursosByProfesor(rut) {
             return [null, "No hay asignaturas para este profesor"];
         }
 
-        // Obtener los cursos asociados a esas asignaturas
         const cursosAsociados = await AsignaturaCursoRepository.find({
             where: { id_asignatura: In(idsAsignaturas) }
         });
@@ -117,7 +110,6 @@ export async function getCursosByProfesor(rut) {
             return [null, "No hay cursos asociados a las asignaturas de este profesor"];
         }
 
-        // Obtener los cursos filtrados por ids de cursos
         const cursos = await cursoRepository.find({
             where: {
                 id_curso: In(idsCursos)
@@ -140,14 +132,12 @@ export async function getAlumnosPorCurso(id_curso) {
         const conectUsuarioCursoRepository = AppDataSource.getRepository(Conect_Usuario_CursoSchema);
         const usuarioRepository = AppDataSource.getRepository(Usuario);
 
-        // Obtener las relaciones de alumnos con el curso
         const relaciones = await conectUsuarioCursoRepository.find({ where: { id_curso } });
 
         if (!relaciones || relaciones.length === 0) {
             return [null, "No hay alumnos en este curso"];
         }
 
-        // Obtener los detalles de los alumnos
         const ruts = relaciones.map(relacion => relacion.rut);
         const alumnos = await usuarioRepository.find({ where: { rut: In(ruts) } });
 

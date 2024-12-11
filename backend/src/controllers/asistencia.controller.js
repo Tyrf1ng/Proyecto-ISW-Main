@@ -99,7 +99,6 @@ export const updateAsistenciaController = async (req, res) => {
         const { id_asistencia } = req.params;
         const { tipo, observacion } = req.body;
 
-        // Set observacion to null if tipo is "Presente" or "Ausente"
         const updatedObservacion = (tipo === "Presente" || tipo === "Ausente") ? null : observacion;
 
         const { error: validationError } = asistenciaQueryValidation.validate({ tipo, observacion: updatedObservacion });
