@@ -115,10 +115,9 @@ const VerAsistencias = () => {
     const matchesText = normalizeText(`${asistencia.usuario.nombre} ${asistencia.usuario.apellido}`)
       .toLowerCase()
       .includes(normalizeText(filterText).toLowerCase());
-
-    // Format both dates to the same format for comparison
-    const formattedCreatedAt = formatTempo(asistencia.createdAt, "YYYY-MM-DD");
-    const formattedFilterDate = filterDate ? formatTempo(filterDate, "YYYY-MM-DD") : "";
+  
+    const formattedCreatedAt = formatTempo(new Date(asistencia.createdAt).toISOString(), "DD-MM-YYYY");
+    const formattedFilterDate = filterDate ? formatTempo(new Date(filterDate).toISOString(), "DD-MM-YYYY") : "";
 
     const matchesDate = filterDate ? formattedCreatedAt === formattedFilterDate : true;
     return matchesText && matchesDate;

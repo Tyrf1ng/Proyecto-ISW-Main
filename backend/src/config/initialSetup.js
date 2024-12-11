@@ -168,7 +168,6 @@ async function createAnotaciones() {
       ),
       AnotacionesRepository.save(
         AnotacionesRepository.create({
-          // eslint-disable-next-line max-len
           descripcion: "Alumno constantemente interrumpe la clase intentando convencer a sus compañeros de unirse al partido comunista",
           rut: "21.070.073-0",
           tipo: "Negativa",
@@ -181,7 +180,6 @@ async function createAnotaciones() {
     console.error("Error al crear anotaciones:", error);
   }
 }
-
 async function createAsistencia() {
   try {
     const AsistenciaRepository = AppDataSource.getRepository(Asistencia);
@@ -196,6 +194,7 @@ async function createAsistencia() {
           tipo: "Presente",
           rut: "21.070.073-0",
           id_asignatura: 1,
+          createdAt: new Date(),
         }),
       ),
     ]);
@@ -352,6 +351,24 @@ async function createConectUsuarioCurso() {
           id_curso: 1,
         }),
       ),
+      conectUsuarioCursoRepository.save(
+        conectUsuarioCursoRepository.create({
+          rut: "21.123.456-7",
+          id_curso: 2,
+        }),
+      ),
+      conectUsuarioCursoRepository.save(
+        conectUsuarioCursoRepository.create({
+          rut: "21.765.432-1",
+          id_curso: 2,
+        }),
+      ),
+      conectUsuarioCursoRepository.save(
+        conectUsuarioCursoRepository.create({
+          rut: "21.987.654-3",
+          id_curso: 1,
+        }),
+      ),
     ]);
     console.log("* => Conect_Usuario_Curso creadas exitosamente");
   }
@@ -446,6 +463,46 @@ async function createUsuario() {
           comuna: "Mulchen City",
           direccion: "Calle del papu 69",
         }),
+        usuarioRepository.save(
+          usuarioRepository.create({
+            rut: "21.123.456-7",
+            nombre: "rocio",
+            apellido: "rivas",
+            email: "rocio@gmail.cl",
+            telefono: 123456789,
+            password: await encryptPassword("rocio123"),
+            id_roles: 3,
+            comuna: "Comuna1",
+            direccion: "Direccion1",
+          }),
+        ),
+        usuarioRepository.save(
+          usuarioRepository.create({
+            rut: "21.765.432-1",
+            nombre: "alejandro",
+            apellido: "yañez",
+            email: "alejandro@gmail.cl",
+            telefono: 987654321,
+            password: await encryptPassword("alejandro123"),
+            id_roles: 3,
+            comuna: "Comuna2",
+            direccion: "Direccion2",
+          }),
+        ),
+        usuarioRepository.save(
+          usuarioRepository.create({
+            
+            rut: "21.987.654-3",
+            nombre: "kevin",
+            apellido: "miranda",
+            email: "kevin@gmail.cl",
+            telefono: 123456789,
+            password: await encryptPassword("kevin123"),
+            id_roles: 3,
+            comuna: "Comuna3",
+            direccion: "Direccion3",
+          })
+        ),
       ),
     ]);
     console.log("* => Usuario creado exitosamente");

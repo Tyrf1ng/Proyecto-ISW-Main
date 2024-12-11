@@ -27,67 +27,44 @@ import { passportJwtSetup } from "./auth/passport.auth.js";
 async function setupServer() {
   try {
     const app = express();
-
     app.disable("x-powered-by");
 
     const corsOptions = {
-      credentials: true, // Habilitar el uso de cookies (si las usas)
+      credentials: true,
       origin: (origin, callback) => {
-        // Aquí solo permitimos las solicitudes desde los orígenes específicos
         const allowedOrigins = [
-          'http://localhost:5173',
-          'http://146.83.198.35:1288'
+          "http://localhost:5173",
+          "http://146.83.198.35:1288"
         ];
-
         if (allowedOrigins.includes(origin) || !origin) {
-          callback(null, true); // Permite solicitudes desde los orígenes listados
+          callback(null, true);
         } else {
-          callback(new Error('No permitido por CORS')); // Bloquea los demás orígenes
+          callback(new Error("No permitido por CORS"));
         }
       },
       methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'], // Métodos HTTP permitidos
       allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'], // Cabeceras permitidas
     };
 
-    // Aplicamos la configuración de CORS a nuestra aplicación
     app.use(cors(corsOptions));
-
-    app.use(
-      urlencoded({
-        extended: true,
-        limit: "1mb",
-      })
-    );
-
-    app.use(
-      json({
-        limit: "1mb",
-      })
-    );
-
+    app.use(urlencoded({ extended: true, limit: "1mb" }));
+    app.use(json({ limit: "1mb" }));
     app.use(cookieParser());
-
     app.use(morgan("dev"));
-
-    app.use(
-      session({
-        secret: cookieKey,
-        resave: false,
-        saveUninitialized: false,
-        cookie: {
-          secure: false, // Si estás usando HTTPS, cambia esto a true
-          httpOnly: true,
-          sameSite: "strict",
-        },
-      })
-    );
-
+    app.use(session({
+      secret: cookieKey,
+      resave: false,
+      saveUninitialized: false,
+      cookie: {
+        secure: false,
+        httpOnly: true,
+        sameSite: "strict",
+      },
+    }));
     app.use(passport.initialize());
     app.use(passport.session());
-
     passportJwtSetup();
-
-    app.use("/api", indexRoutes); // Rutas principales
+    app.use("/api", indexRoutes);
 
     app.listen(PORT, () => {
       console.log(`=> Servidor corriendo en ${HOST}:${PORT}/api`);

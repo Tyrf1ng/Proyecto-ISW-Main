@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import useLabs from '../hooks/labs/useLabs';
 import TableLabs from '../components/TableLabs';
-import SuccessAlert from '../components/SuccessAlert'; // Importa el componente SuccessAlert
+import SuccessAlert from '../components/SuccessAlert';
+import ErrorAlert from '../components/ErrorAlert';
 
 const Labs = () => {
   const { labs = [], fetchLabs, addLab, editLab, removeLab, error } = useLabs();
@@ -18,6 +19,8 @@ const Labs = () => {
   const [deleteSuccess, setDeleteSuccess] = useState(false);
   const [createSuccess, setCreateSuccess] = useState(false);
   const [validationError, setValidationError] = useState(null);
+  const [message, setMessage] = useState('');
+  const [messageType, setMessageType] = useState('');
   const [sortConfig, setSortConfig] = useState({ key: 'nombre', direction: 'asc' });
 
   const handleFilterChange = (e) => setFilterText(e.target.value);
@@ -72,14 +75,16 @@ const Labs = () => {
         await addLab({ ...newLab, nombre: normalizedNombre });
         handleClose();
         fetchLabs();
-        setCreateSuccess(true); // Mostrar mensaje de éxito
+        setCreateSuccess(true);
+        setMessage('Laboratorio creado con éxito');
+        setMessageType('success');
     } catch (error) {
         console.error("Error al crear el laboratorio: ", error);
         setValidationError(error.message || "Los valores ingresados no son válidos");
     }
-};
+  };
 
-const handleEditSubmit = async () => {
+  const handleEditSubmit = async () => {
     const normalizedNombre = normalizeName(currentLab.nombre);
     if (!Number.isInteger(Number(currentLab.capacidad)) || currentLab.capacidad <= 0 || currentLab.capacidad >= 100) {
         setValidationError('Capacidad debe ser un número entero mayor a 0 y menor a 100');
@@ -93,20 +98,32 @@ const handleEditSubmit = async () => {
         await editLab({ ...currentLab, nombre: normalizedNombre });
         handleEditClose();
         fetchLabs();
-        setEditSuccess(true); // Mostrar mensaje de éxito
+        setEditSuccess(true);
+        setMessage('Laboratorio editado con éxito');
+        setMessageType('success');
     } catch (error) {
         console.error("Error al actualizar el laboratorio: ", error);
         setValidationError(error.message || "Los valores ingresados no son válidos");
     }
-};
+  };
+
   const handleDelete = async () => {
     try {
-      await removeLab(currentLab.id_lab);
+      const response = await removeLab(currentLab.id_lab);
+      if (response.error) {
+        throw new Error(response.error);
+      }
       handleDeleteClose();
       fetchLabs();
-      setDeleteSuccess(true); // Mostrar mensaje de éxito
+      setDeleteSuccess(true);
+      setMessage('Laboratorio eliminado con éxito');
+      setMessageType('success');
     } catch (error) {
       console.error("Error al eliminar el laboratorio: ", error);
+      setMessage('Hubo un error al eliminar el laboratorio');
+      setMessageType('error');
+      setDeleteOpen(false);
+      fetchLabs();
     }
   };
 
@@ -122,26 +139,18 @@ const handleEditSubmit = async () => {
     fetchLabs();
   }, []);
 
-  useEffect(() => {
-    if (createSuccess) {
-      const timer = setTimeout(() => setCreateSuccess(false), 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [createSuccess]);
 
-  useEffect(() => {
-    if (editSuccess) {
-      const timer = setTimeout(() => setEditSuccess(false), 3000);
-      return () => clearTimeout(timer);
+  const renderMessage = () => {
+    if (messageType === 'success') {
+      return <SuccessAlert message={message} />;
     }
-  }, [editSuccess]);
 
-  useEffect(() => {
-    if (deleteSuccess) {
-      const timer = setTimeout(() => setDeleteSuccess(false), 3000);
-      return () => clearTimeout(timer);
+    if (messageType === 'error') {
+      return <ErrorAlert message={message} />;
     }
-  }, [deleteSuccess]);
+
+    return null;
+  };
 
   return (
     <div className="p-4 bg-gray-50 dark:bg-gray-800 min-h-screen">
@@ -161,56 +170,56 @@ const handleEditSubmit = async () => {
         sortConfig={sortConfig}
       />
 
-        {open && (
-          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50" onClick={handleClose}>
-              <div className="bg-white dark:bg-[#111827] dark:text-white p-8 rounded-lg shadow-xl w-96" onClick={(e) => e.stopPropagation()}>
-                  <h2 className="text-lg font-bold mb-4">Crear Nuevo Laboratorio</h2>
-                  {validationError && <div className="text-red-500 mb-4">{validationError}</div>}
-                  <input
-                      type="text"
-                      name="nombre"
-                      value={newLab.nombre}
-                      onChange={handleInputChange}
-                      className="w-full p-2 mb-4 border rounded dark:bg-gray-700 dark:text-white"
-                      placeholder="Nombre"
-                  />
-                  <input
-                      type="number"
-                      name="capacidad"
-                      value={newLab.capacidad}
-                      onChange={handleInputChange}
-                      className="w-full p-2 mb-4 border rounded dark:bg-gray-700 dark:text-white"
-                      placeholder="Capacidad"
-                  />
-                  <button onClick={handleSubmit} className="w-full px-4 py-2 bg-blue-600 text-white rounded">Guardar</button>
-              </div>
+      {open && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50" onClick={handleClose}>
+          <div className="bg-white dark:bg-[#111827] dark:text-white p-8 rounded-lg shadow-xl w-96" onClick={(e) => e.stopPropagation()}>
+            <h2 className="text-lg font-bold mb-4">Crear Nuevo Laboratorio</h2>
+            {validationError && <div className="text-red-500 mb-4">{validationError}</div>}
+            <input
+              type="text"
+              name="nombre"
+              value={newLab.nombre}
+              onChange={handleInputChange}
+              className="w-full p-2 mb-4 border rounded dark:bg-gray-700 dark:text-white"
+              placeholder="Nombre"
+            />
+            <input
+              type="number"
+              name="capacidad"
+              value={newLab.capacidad}
+              onChange={handleInputChange}
+              className="w-full p-2 mb-4 border rounded dark:bg-gray-700 dark:text-white"
+              placeholder="Capacidad"
+            />
+            <button onClick={handleSubmit} className="w-full px-4 py-2 bg-blue-600 text-white rounded">Guardar</button>
           </div>
+        </div>
       )}
 
       {editOpen && (
-          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50" onClick={handleEditClose}>
-              <div className="bg-white dark:bg-[#111827] dark:text-white p-8 rounded-lg shadow-xl w-96" onClick={(e) => e.stopPropagation()}>
-                  <h2 className="text-lg font-bold mb-4">Editar Laboratorio</h2>
-                  {validationError && <div className="text-red-500 mb-4">{validationError}</div>}
-                  <input
-                      type="text"
-                      name="nombre"
-                      value={currentLab?.nombre || ''}
-                      onChange={handleEditInputChange}
-                      className="w-full p-2 mb-4 border rounded dark:bg-gray-700 dark:text-white"
-                      placeholder="Nombre"
-                  />
-                  <input
-                      type="number"
-                      name="capacidad"
-                      value={currentLab?.capacidad || ''}
-                      onChange={handleEditInputChange}
-                      className="w-full p-2 mb-4 border rounded dark:bg-gray-700 dark:text-white"
-                      placeholder="Capacidad"
-                  />
-                  <button onClick={handleEditSubmit} className="w-full px-4 py-2 bg-blue-600 text-white rounded">Guardar</button>
-              </div>
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50" onClick={handleEditClose}>
+          <div className="bg-white dark:bg-[#111827] dark:text-white p-8 rounded-lg shadow-xl w-96" onClick={(e) => e.stopPropagation()}>
+            <h2 className="text-lg font-bold mb-4">Editar Laboratorio</h2>
+            {validationError && <div className="text-red-500 mb-4">{validationError}</div>}
+            <input
+              type="text"
+              name="nombre"
+              value={currentLab?.nombre || ''}
+              onChange={handleEditInputChange}
+              className="w-full p-2 mb-4 border rounded dark:bg-gray-700 dark:text-white"
+              placeholder="Nombre"
+            />
+            <input
+              type="number"
+              name="capacidad"
+              value={currentLab?.capacidad || ''}
+              onChange={handleEditInputChange}
+              className="w-full p-2 mb-4 border rounded dark:bg-gray-700 dark:text-white"
+              placeholder="Capacidad"
+            />
+            <button onClick={handleEditSubmit} className="w-full px-4 py-2 bg-blue-600 text-white rounded">Guardar</button>
           </div>
+        </div>
       )}
 
       {deleteOpen && (
@@ -226,9 +235,7 @@ const handleEditSubmit = async () => {
         </div>
       )}
 
-      {createSuccess && <SuccessAlert message="Laboratorio creado con éxito" />}
-      {editSuccess && <SuccessAlert message="Laboratorio editado con éxito" />}
-      {deleteSuccess && <SuccessAlert message="Laboratorio eliminado con éxito" />}
+      {renderMessage()}
     </div>
   );
 };

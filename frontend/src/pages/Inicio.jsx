@@ -16,7 +16,7 @@ function Inicio() {
 
   useEffect(() => {
     const usuarioGuardado = JSON.parse(sessionStorage.getItem('usuario'));
-    console.log('Usuario cargado desde sessionStorage:', usuarioGuardado);  // Verificar los datos cargados
+    console.log('Usuario cargado desde sessionStorage:', usuarioGuardado);
 
     if (usuarioGuardado) {
       setUsuario({
@@ -26,14 +26,13 @@ function Inicio() {
         rol: usuarioGuardado.rol || ''  
       });
 
-      // Obtener las asignaturas del profesor solo si el usuario es un profesor
       if (usuarioGuardado.rut && usuarioGuardado.rol === 'Docente') {
         getAsignaturasByProfesor(usuarioGuardado.rut)
           .then((asignaturas) => {
-            console.log('Asignaturas obtenidas:', asignaturas);  // Verificar las asignaturas obtenidas
+            console.log('Asignaturas obtenidas:', asignaturas);
             if (asignaturas.length > 0) {
-              const asignaturaSeleccionada = asignaturas[0]; // Tomamos la primera asignatura
-              setAsignatura(asignaturaSeleccionada.nombre);  // Actualizamos el estado
+              const asignaturaSeleccionada = asignaturas[0];
+              setAsignatura(asignaturaSeleccionada.nombre);
             } else {
               setErrorAsignatura('No se encontraron asignaturas para este profesor.');
             }
@@ -51,32 +50,27 @@ function Inicio() {
   };
 
   const handleSeleccionarCurso = () => {
-    navigate('/cursos'); // Redirige a la página de selección de cursos
+    navigate('/cursos');
   };
 
   return (
     <div className="flex items-center justify-center px-20 min-h-screen bg-gray-100 dark:bg-gray-800">
       <div className="overflow-hidden bg-white dark:bg-gray-900 lg:mx-8 lg:flex lg:max-w-6xl lg:w-full lg:shadow-md lg:rounded-xl">
-        {/* Imagen de fondo local */}
         <div className="lg:w-1/2">
           <div
             className="h-64 bg-cover lg:h-full"
-            style={{ backgroundImage: `url(${backgroundImage})` }}  // Usando la imagen local
+            style={{ backgroundImage: `url(${backgroundImage})` }}
           >
-            {/* Puedes agregar algún contenido adicional sobre la imagen si es necesario */}
           </div>
         </div>
 
-        {/* Información del usuario */}
-        <div className="max-w-xl px-6 py-10 my-20 lg:max-w-5xl lg:w-1/2 flex flex-col justify-center space-y-6"> {/* Ajuste aquí */}
+        <div className="max-w-xl px-6 py-10 my-20 lg:max-w-5xl lg:w-1/2 flex flex-col justify-center space-y-6">
           <h2 className="text-2xl font-semibold text-gray-800 dark:text-white md:text-3xl">
             Bienvenido, <span className="text-blue-500">{usuario.nombre} {usuario.apellido}</span>
           </h2>
 
-          {/* Texto condicional dependiendo del rol */}
           <p className="text-lg text-gray-500 dark:text-gray-300">
             {usuario.rol === 'Alumno' ? (
-              // Texto para alumnos
               <span>
                 Bienvenido a tu página personal del liceo 
                  <span className="text-[#3B82F6]"> XXXXXXXXX <br />
@@ -90,7 +84,6 @@ function Inicio() {
                 )}
               </span>
             ) : usuario.rol === 'Docente' ? (
-              // Texto para profesores
               <>
                 {errorAsignatura ? (
                   <span className="text-red-500">{errorAsignatura}</span>
@@ -108,7 +101,6 @@ function Inicio() {
                 )}
               </>
             ) : usuario.rol === 'Directivo' ? (
-              // Texto para directivos
               <span>
                 Bienvenido a la página de administración del liceo <span className="text-[#3B82F6]">XXXXXXXXX</span>.<br />
                 Desde aquí puedes gestionar los recursos educativos y coordinar con los profesores y alumnos.

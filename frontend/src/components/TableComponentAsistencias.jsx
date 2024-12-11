@@ -1,6 +1,8 @@
 import { IconButton } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { format as formatTempo } from "@formkit/tempo";
+
 
 const TableComponentAsistencias = ({ asistencias, handleEdit, handleDelete }) => {
   return (
@@ -35,7 +37,7 @@ const TableComponentAsistencias = ({ asistencias, handleEdit, handleDelete }) =>
                 <tr key={asistencia.id_asistencia}>
                   <td className="px-4 py-4 text-sm whitespace-nowrap">
                     <div className="text-gray-800 dark:text-white">
-                      {new Date(asistencia.createdAt).toLocaleDateString()}
+                    {formatTempo(new Date(asistencia.createdAt).toISOString().split('T')[0], "DD-MM-YYYY")}
                     </div>
                   </td>
                   <td className="px-4 py-4 text-sm whitespace-nowrap">
@@ -50,13 +52,12 @@ const TableComponentAsistencias = ({ asistencias, handleEdit, handleDelete }) =>
                   </td>
                   <td className="px-4 py-4 text-sm whitespace-nowrap">
                     <div
-                      className={`inline px-3 py-1 text-sm font-normal rounded-full ${
-                        asistencia.tipo === "Presente"
-                          ? "bg-green-500 text-white"
-                          : asistencia.tipo === "Ausente"
+                      className={`inline px-3 py-1 text-sm font-normal rounded-full ${asistencia.tipo === "Presente"
+                        ? "bg-green-500 text-white"
+                        : asistencia.tipo === "Ausente"
                           ? "bg-red-500 text-white"
                           : "bg-orange-500 text-white"
-                      }`}
+                        }`}
                     >
                       {asistencia.tipo}
                     </div>
@@ -75,9 +76,9 @@ const TableComponentAsistencias = ({ asistencias, handleEdit, handleDelete }) =>
                       </IconButton>
 
                       {/* Botón Eliminar */}
-                      <IconButton 
-                        color="primary" 
-                        onClick={() => handleDelete(asistencia.id_asistencia)} 
+                      <IconButton
+                        color="primary"
+                        onClick={() => handleDelete(asistencia.id_asistencia)}
                         aria-label="Eliminar"
                       >
                         <DeleteIcon className='text-red-500' />

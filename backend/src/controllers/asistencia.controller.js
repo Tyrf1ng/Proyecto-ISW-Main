@@ -8,13 +8,31 @@ import {
     getAsistenciasAlumno,
     getAsistenciasAsignatura,
     getAsistenciasCurso,
-    updateAsistencia
+    updateAsistencia,
+    getAsistenciasAlumnoFecha
 } from "../services/asistencia.service.js";
 import {
     handleErrorClient,
     handleErrorServer,
     handleSuccess,
 } from "../handlers/responseHandlers.js";
+
+
+export async function getAsistenciasAlumnoFechaController(req, res) {
+    try {
+        const { rut, fecha } = req.params;
+
+        const [asistencias, errorAsistencias] = await getAsistenciasAlumnoFecha(rut, fecha);
+
+        if (errorAsistencias) return handleErrorClient(res, 404, errorAsistencias);
+
+        asistencias.length === 0
+            ? handleSuccess(res, 204)
+            : handleSuccess(res, 200, "Asistencias encontradas", asistencias);
+    } catch (error) {
+        handleErrorServer(res, 500, error.message);
+    }
+}
 
 
 export async function getAsistenciasCursoController(req, res) {
@@ -78,29 +96,26 @@ export async function getAsistenciaController(req, res) {
 
 export const updateAsistenciaController = async (req, res) => {
     try {
-      const { id_asistencia } = req.params;
-      const { tipo, observacion } = req.body;
+        const { id_asistencia } = req.params;
+        const { tipo, observacion } = req.body;
 
-      // Set observacion to null if tipo is "Presente" or "Ausente"
-      const updatedObservacion = (tipo === "Presente" || tipo === "Ausente") ? null : observacion;
+        const updatedObservacion = (tipo === "Presente" || tipo === "Ausente") ? null : observacion;
 
-      const { error: validationError } = asistenciaQueryValidation.validate({ tipo, observacion: updatedObservacion });
-      if (validationError) {
-        return handleErrorClient(res, 400, "Datos de entrada no válidos", validationError.details[0].message);
-      }
+        const { error: validationError } = asistenciaQueryValidation.validate({ tipo, observacion: updatedObservacion });
+        if (validationError) {
+            return handleErrorClient(res, 400, "Datos de entrada no válidos", validationError.details[0].message);
+        }
 
-      const [asistenciaActualizada, error] = await updateAsistencia(id_asistencia, tipo, updatedObservacion);
-      if (error) {
-        return handleErrorClient(res, 404, error);
-      }
+        const [asistenciaActualizada, error] = await updateAsistencia(id_asistencia, tipo, updatedObservacion);
+        if (error) {
+            return handleErrorClient(res, 404, error);
+        }
 
-      handleSuccess(res, 200, "Asistencia actualizada", asistenciaActualizada);
+        handleSuccess(res, 200, "Asistencia actualizada", asistenciaActualizada);
     } catch (error) {
-      handleErrorServer(res, 500, error.message);
+        handleErrorServer(res, 500, error.message);
     }
 };
-  
-  
 
 export async function createAsistenciaController(req, res) {
     try {
@@ -108,9 +123,29 @@ export async function createAsistenciaController(req, res) {
         if (validationError) {
             return handleErrorClient(res, 400, validationError.details[0].message);
         }
-        const { id_asignatura, rut, tipo, observacion } = value;
+        
+        const { id_asignatura, rut, tipo, observacion, createdAt } = value;
+        const selectedDate = new Date(createdAt);
+        const currentYear = new Date().getFullYear();
 
-        const [asistenciaCreada, errorAsistencia] = await createAsistencia({ id_asignatura, rut, tipo, observacion });
+        if (!createdAt) {
+            return handleErrorClient(res, 400, "La fecha no puede estar vacia");
+        }
+
+        if (selectedDate.getFullYear() !== currentYear) {
+            return handleErrorClient(res, 400, "La fecha seleccionada no es del año actual.");
+        }
+
+        if(selectedDate.getDate() > new Date().getDate()) {
+            return handleErrorClient(res, 400, "La fecha seleccionada no puede ser mayor a la fecha actual.");
+        }
+
+        const dayOfWeek = selectedDate.getUTCDay();
+        if (dayOfWeek === 0 || dayOfWeek === 6) {
+            return handleErrorClient(res, 400, "No se puede registrar asistencia en fines de semana (sábado o domingo).");
+        }
+
+        const [asistenciaCreada, errorAsistencia] = await createAsistencia({ id_asignatura, rut, tipo, observacion, createdAt });
         if (errorAsistencia) {
             return handleErrorClient(res, 400, errorAsistencia);
         }

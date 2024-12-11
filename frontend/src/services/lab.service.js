@@ -35,6 +35,7 @@ export async function deleteLab(id_lab) {
         const response = await axios.delete(`/labs/delete/${id_lab}`);
         return response.data;
     } catch (error) {
+        console.error("Error al eliminar el laboratorio: ", error.response ? error.response.data : error.message);
         alert(error.response.data.message);
         return error.response ? error.response.data : { error: error.message };
     }

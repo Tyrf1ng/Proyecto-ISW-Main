@@ -13,7 +13,6 @@ import BiotechIcon from '@mui/icons-material/Biotech';
 import EventIcon from '@mui/icons-material/Event';
 import logo from '../images/components/logo.svg'; 
 
-
 const NAVIGATION_BY_ROLE = {
   directivo: [
     { segment: 'GestionUsuario', title: 'Gestión de Usuarios', 
@@ -22,14 +21,12 @@ const NAVIGATION_BY_ROLE = {
         { segment: 'add_usuario', title: 'Añadir usuario', icon: <AddIcon /> },
         { segment: 'ver_usuarios', title: 'Ver todos los usuarios', icon: <ManageSearchIcon /> },
       ],
-
     },
     { segment: 'Estadisticas', title: 'Gestión de Usuarios', 
       icon: <SchoolIcon />,
       children: [
         { segment: 'estad_docentes', title: 'Estadisticas docente', icon: <AddIcon /> },
       ],
-
     },
   ],
   docente: [
@@ -111,8 +108,9 @@ const NAVIGATION_BY_ROLE = {
     },
   ],
 };
+
 const DashboardLayoutAccount = () => {
-  const location = useLocation(); // Usamos useLocation para obtener la ruta actual
+  const location = useLocation();
   const navigate = useNavigate();
   const [session, setSession] = useState(() => {
     const usuarioGuardado = JSON.parse(sessionStorage.getItem('usuario'));
@@ -121,7 +119,7 @@ const DashboardLayoutAccount = () => {
 
   useEffect(() => {
     if (!session || !session.user) {
-      navigate('/auth'); // Redirigir si no está logueado
+      navigate('/auth');
     }
   }, [session, navigate]);
 
@@ -134,7 +132,7 @@ const DashboardLayoutAccount = () => {
 
   const handleLogout = async () => {
     try {
-      logout();  // Llama a tu función logout desde auth.service.js
+      logout();
       sessionStorage.removeItem('usuario');
       navigate('/auth');
     } catch (error) {
@@ -151,22 +149,18 @@ const DashboardLayoutAccount = () => {
     return <Outlet />; 
   }
 
-  // Función para renderizar los enlaces de navegación
   const renderNavLinks = (navigation) => {
     return navigation.map((item) => (
       <div key={item.segment}>
-        {/* Enlace del padre que no navega, solo se despliega el menú */}
         <div
           className={`block p-2 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded cursor-pointer`}
-          onClick={(e) => e.preventDefault()} // Evita que navegue al hacer clic en el padre
+          onClick={(e) => e.preventDefault()}
         >
           <div className="flex items-center space-x-2">
             {item.icon}
             <span className="text-sm font-medium">{item.title}</span>
           </div>
         </div>
-  
-        {/* Si tiene submenú (children), renderizamos los subenlaces */}
         {item.children && (
           <div className="pl-4 space-y-2">
             {item.children.map((child) => (
@@ -189,7 +183,6 @@ const DashboardLayoutAccount = () => {
 
   return (
     <div className="flex h-screen">
-      {/* Sidebar */}
       <aside className="flex flex-col w-64 px-5 py-8 overflow-y-auto bg-white border-r rtl:border-r-0 rtl:border-l dark:bg-gray-900 dark:border-gray-700">
         <div 
           className="flex justify-center items-center mb-6 space-x-2 cursor-pointer"
@@ -200,15 +193,12 @@ const DashboardLayoutAccount = () => {
             SmeBook
           </span>
         </div>
-  
         <div className="flex flex-col justify-between flex-1 mt-6">
           <nav className="flex-1 -mx-3 space-y-3">
             {renderNavLinks(navigation)}
           </nav>
-  
           <div className="mt-6">
             <div className="flex items-center justify-between px-5 mt-6">
-              {/* Enlace de perfil */}
               <Link to="/perfil" className="flex items-center gap-x-2">
                 <div>
                   <span className="text-sm font-medium text-gray-700 dark:text-gray-200">
@@ -220,8 +210,6 @@ const DashboardLayoutAccount = () => {
                   </span>
                 </div>
               </Link>
-  
-              {/* Botón de Logout */}
               <button
                 onClick={handleLogout}
                 className="text-gray-500 transition-colors duration-200 rotate-180 dark:text-gray-400 rtl:rotate-0"
@@ -234,10 +222,8 @@ const DashboardLayoutAccount = () => {
           </div>
         </div>
       </aside>
-  
-      {/* Main Content */}
       <main className="flex-1 overflow-y-auto bg-gray-100 dark:bg-gray-800 p-4">
-        <Outlet />  {/* Aquí se renderiza el contenido de las rutas hijas */}
+        <Outlet />
       </main>
     </div>
   );

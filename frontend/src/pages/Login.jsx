@@ -1,4 +1,4 @@
-import { motion } from "framer-motion"; // Importar motion
+import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { login } from "@services/auth.service.js";
 import useLogin from "@hooks/auth/useLogin.jsx";
@@ -17,7 +17,7 @@ const Login = () => {
     inputData,
   } = useLogin();
 
-  const [loginError, setLoginError] = useState(null); 
+  const [loginError, setLoginError] = useState(null);
   const [passwordVisible, setPasswordVisible] = useState(false);
 
   const loginSubmit = async (event) => {
@@ -54,7 +54,6 @@ const Login = () => {
         position: "relative",
       }}
     >
-      {/* Mostrar mensaje de error */}
       {loginError && (
         <div
           role="alert"
@@ -67,12 +66,11 @@ const Login = () => {
         </div>
       )}
 
-      {/* Usamos motion.div para la animación del card */}
       <motion.div
         className="relative z-10 w-full max-w-md p-8 bg-white dark:bg-gray-900 rounded-lg shadow-lg"
-        initial={{ opacity: 0, y: 50 }} // Comienza con opacidad 0 y desplazado hacia abajo
-        animate={{ opacity: 1, y: 0 }}   // Se desplaza hacia su posición original y aparece
-        transition={{ ease: "easeOut", duration: 0.5 }} // Transición suave
+        initial={{ opacity: 0, y: 50 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ ease: "easeOut", duration: 0.5 }}
       >
         <div className="text-center">
           <img
@@ -85,7 +83,6 @@ const Login = () => {
         </div>
 
         <form onSubmit={loginSubmit} className="mt-6 space-y-4">
-          {/* Campo Email */}
           <div>
             <label htmlFor="email" className="block text-sm text-gray-500 dark:text-gray-300">
               Correo electronico
@@ -110,7 +107,6 @@ const Login = () => {
             )}
           </div>
 
-          {/* Campo Contraseña */}
           <div>
             <div className="flex items-center justify-between">
               <label htmlFor="password" className="block text-sm text-gray-500 dark:text-gray-300">
@@ -122,10 +118,10 @@ const Login = () => {
               <button
                 type="button"
                 className="absolute right-0 focus:outline-none rtl:left-0 rtl:right-auto"
-                onClick={() => setPasswordVisible(!passwordVisible)} 
+                onClick={() => setPasswordVisible(!passwordVisible)}
               >
                 <img
-                  src={passwordVisible ? eyeo : eyec} 
+                  src={passwordVisible ? eyeo : eyec}
                   alt="Mostrar/Ocultar contraseña"
                   className="w-6 h-6 mx-4"
                 />
@@ -133,7 +129,7 @@ const Login = () => {
               <input
                 id="password"
                 name="password"
-                type={passwordVisible ? "text" : "password"} 
+                type={passwordVisible ? "text" : "password"}
                 required
                 placeholder="********"
                 className="block w-full py-2.5 text-gray-700 placeholder-gray-400/70 bg-white border border-gray-200 rounded-lg pl-5 pr-11 rtl:pr-5 rtl:pl-11 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40"
@@ -145,7 +141,6 @@ const Login = () => {
             )}
           </div>
 
-          {/* Botón de Login */}
           <button
             type="submit"
             className="w-full py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-400"
