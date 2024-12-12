@@ -15,7 +15,7 @@ import logo from '../images/components/logo.svg';
 
 const NAVIGATION_BY_ROLE = {
   directivo: [
-    { segment: 'GestionUsuario', title: 'Gestión de Usuarios', 
+    { segment: 'GestionUsuario', title: 'Gestión de Alumnos', 
       icon: <SchoolIcon />,
       children: [
         { segment: 'add_usuario', title: 'Añadir usuario', icon: <AddIcon /> },
