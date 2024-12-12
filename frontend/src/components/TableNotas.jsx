@@ -109,18 +109,19 @@ const TableComponent = ({ notas, onEdit, onDelete, role }) => {
                         {nota.valor}
                       </div>
                     </td>
-                    <td className="p-4 text-sm whitespace-nowrap">
+                 
+                    {role === 'Docente' && (
+                      <>
+                        <td className="p-4 text-sm whitespace-nowrap">
+                          <div className="text-gray-800 dark:text-white">{nota.rut}</div>
+                        </td>
+                        <td className="p-4 text-sm whitespace-nowrap">
                       <div className="text-gray-800 dark:text-white">
                         {`${usuarios[nota.rut]?.nombre || 'Cargando...'} ${
                           usuarios[nota.rut]?.apellido || ''
                         }`}
                       </div>
                     </td>
-                    {role === 'Docente' && (
-                      <>
-                        <td className="p-4 text-sm whitespace-nowrap">
-                          <div className="text-gray-800 dark:text-white">{nota.rut}</div>
-                        </td>
                         <td className="p-4 text-sm whitespace-nowrap">
                           <IconButton color="primary" onClick={() => onEdit(nota)}>
                             <EditIcon />
