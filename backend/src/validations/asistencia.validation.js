@@ -43,4 +43,14 @@ export const asistenciaQueryValidation = Joi.object({
     }),
     createdAt: Joi.date().optional(),
     updatedAt: Joi.date().optional(),
+    id_curso: Joi.number()
+    .integer()
+    .positive()
+    .optional()
+    .messages({
+            "number.base": "El id del curso debe ser un número.",
+            "number.integer": "El id del curso debe ser un número entero.",
+            "number.positive": "El id del curso debe ser un número positivo.",
+            "number.empty": "El id del curso no puede estar vacío."
+    })
 });

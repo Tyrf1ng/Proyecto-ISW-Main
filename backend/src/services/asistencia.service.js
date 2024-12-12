@@ -5,11 +5,13 @@ import { AppDataSource } from "../config/configDb.js";
 import Usuario from "../entity/usuario.entity.js";
 import Asignaturas from "../entity/asignatura.entity.js";
 import Conect_Usuario_Curso from "../entity/conect_usuario_curso.entity.js";
+import AsignaturaCursoSchema from "../entity/asignatura.curso.entity.js";
 
 const asistenciaRepository = AppDataSource.getRepository(Asistencia);
 const usuarioRepository = AppDataSource.getRepository(Usuario);
 const asignaturaRepository = AppDataSource.getRepository(Asignaturas);
 const conectUsuarioCursoRepository = AppDataSource.getRepository(Conect_Usuario_Curso);
+const asignaturaCursoRepository = AppDataSource.getRepository(AsignaturaCursoSchema);
 
 export async function getAsistenciasCurso(id_curso) {
     try {
@@ -80,15 +82,39 @@ export async function getAsistenciasAlumno(rut) {
     }
 
 
-export async function getAsistenciasAsignatura(id_asignatura) {
+export async function getAsistenciasAsignatura(id_asignatura, id_curso) {
     try {
+        const asignaturaCurso = await asignaturaCursoRepository.findOne({
+            where: {
+                id_asignatura: id_asignatura,
+                id_curso: id_curso
+            }
+        });
+
+        if (!asignaturaCurso) {
+            return [null, "No se encontró la asignatura para el curso especificado"];
+        }
+
         const asistencias = await asistenciaRepository.find({
             where: { id_asignatura: id_asignatura }
         });
 
-        if (!asistencias || asistencias.length === 0) return [null, "No hay asistencias"];
+        if (!asistencias || asistencias.length === 0) {
+            return [null, "No hay asistencias"];
+        }
 
-        return [asistencias, null];
+        const asistenciasData = asistencias.map(asistencia => ({
+            id_asistencia: asistencia.id_asistencia,
+            rut: asistencia.rut,
+            id_asignatura: asistencia.id_asignatura,
+            tipo: asistencia.tipo,
+            observacion: asistencia.tipo === "Justificado" ? asistencia.observacion : null,
+            createdAt: asistencia.createdAt,
+            updatedAt: asistencia.updatedAt,
+            id_curso: id_curso
+        }));
+
+        return [asistenciasData, null];
     } catch (error) {
         console.error("Error al obtener las asistencias:", error);
         return [null, "Error interno del servidor"];
@@ -162,7 +188,9 @@ export async function createAsistencia(data) {
 
         const asistencia = asistenciaRepository.create({
             ...data,
-            createdAt: data.createdAt ? new Date(data.createdAt) : new Date()
+            createdAt: data.createdAt ? new Date(data.createdAt) : new Date(),
+            id_asignatura: data.id_asignatura,
+            id_curso: data.id_curso
         });
         const savedAsistencia = await asistenciaRepository.save(asistencia);
         return [savedAsistencia, null];
