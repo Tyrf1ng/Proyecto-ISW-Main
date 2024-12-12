@@ -52,14 +52,6 @@ const RegisterAsistencia = () => {
         setMessageType("error");
         return;
       }
-      console.log("fecha actual hora y minutos actual", new Date().getDate(), new Date().getHours(), new Date().getMinutes());
-      console.log("fecha seleccionada hora y minutos seleccionados", utcDate.getDate(), selected.getHours(), selected.getMinutes());
-      const currentDate = new Date().getDate();
-      if (utcDate.getDate() > currentDate) {
-        setMensaje("La fecha seleccionada no puede ser mayor a la fecha actual.");
-        setMessageType("error");
-        return;
-      }
 
       const dayOfWeek = utcDate.getUTCDay();
       if (dayOfWeek === 0 || dayOfWeek === 6) {
@@ -92,6 +84,12 @@ const RegisterAsistencia = () => {
       }
 
       for (let record of selectedStudents) {
+        if (record.justificado && (!record.observacion || record.observacion.trim() === "")) {
+          setMensaje(`El campo de observación no puede estar vacío para el alumno ${record.nombre}.`);
+          setMessageType("error");
+          return;
+        }
+
         const data = {
           id_asignatura: idCurso,
           rut: record.rut,
@@ -100,7 +98,7 @@ const RegisterAsistencia = () => {
             : record.ausente
               ? "Ausente"
               : "Justificado",
-          observacion: record.justificado ? record.observacion : null,
+          observacion: record.justificado ? record.observacion.trim() : null,
           createdAt: selectedDate
             ? new Date(selectedDate).toISOString()
             : new Date().toISOString(),

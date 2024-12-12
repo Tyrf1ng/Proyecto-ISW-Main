@@ -46,7 +46,7 @@ const VerAsistencias = () => {
 
   const handleFilterChange = (e) => setFilterText(e.target.value);
 
-  const handleFilterDateChange = (e) => setFilterDate(e.target.value); // Date filter change handler
+  const handleFilterDateChange = (e) => setFilterDate(e.target.value); 
 
   const handleEdit = (asistencia) => {
     setAsistenciaSeleccionada(asistencia);
@@ -188,6 +188,7 @@ const VerAsistencias = () => {
           type="date"
           value={filterDate}
           onChange={handleFilterDateChange}
+          onKeyDown={(e) => e.preventDefault()}
           className="rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300"
         />
       </div>
