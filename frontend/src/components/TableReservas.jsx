@@ -1,13 +1,33 @@
+import { useState } from 'react';
 import { IconButton } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 
 const TableReservas = ({ reservas = [], handleOpen, handleDelete }) => {
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
 
   const formatDate = (date) => {
     const options = { year: 'numeric', month: '2-digit', day: '2-digit', timeZone: 'UTC' };
     return new Date(date).toLocaleDateString(undefined, options);
   };
+
+  const handleSort = (key) => {
+    let direction = 'asc';
+    if (sortConfig.key === key && sortConfig.direction === 'asc') {
+      direction = 'desc';
+    }
+    setSortConfig({ key, direction });
+  };
+
+  const sortedReservas = [...reservas].sort((a, b) => {
+    if (a[sortConfig.key] < b[sortConfig.key]) {
+      return sortConfig.direction === 'asc' ? -1 : 1;
+    }
+    if (a[sortConfig.key] > b[sortConfig.key]) {
+      return sortConfig.direction === 'asc' ? 1 : -1;
+    }
+    return 0;
+  });
 
   return (
     <div className="overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -19,11 +39,31 @@ const TableReservas = ({ reservas = [], handleOpen, handleDelete }) => {
                 <th className="py-3.5 px-4 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400">
                   Docente
                 </th>
-                <th className="px-12 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                  Fecha
+                <th className="px-12 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400 cursor-pointer" onClick={() => handleSort('fecha')}>
+                  <div className="flex items-center">
+                    Fecha
+                    {sortConfig.key === 'fecha' ? (
+                      sortConfig.direction === 'asc' ? ' ↑' : ' ↓'
+                    ) : (
+                      <div className="flex items-center ml-1">
+                        <span>↑</span>
+                        <span>↓</span>
+                      </div>
+                    )}
+                  </div>
                 </th>
-                <th className="px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                  Horario
+                <th className="px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400 cursor-pointer" onClick={() => handleSort('horario')}>
+                  <div className="flex items-center">
+                    Horario
+                    {sortConfig.key === 'horario' ? (
+                      sortConfig.direction === 'asc' ? ' ↑' : ' ↓'
+                    ) : (
+                      <div className="flex items-center ml-1">
+                        <span>↑</span>
+                        <span>↓</span>
+                      </div>
+                    )}
+                  </div>
                 </th>
                 <th className="px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400">
                   Laboratorio
@@ -40,8 +80,8 @@ const TableReservas = ({ reservas = [], handleOpen, handleDelete }) => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200 dark:divide-gray-700 dark:bg-gray-900">
-              {reservas.length > 0 ? (
-                reservas.map((reserva) => (
+              {sortedReservas.length > 0 ? (
+                sortedReservas.map((reserva) => (
                   <tr key={reserva.id_reserva}>
                     <td className="px-4 py-4 text-sm font-medium whitespace-nowrap">
                       <div className="text-gray-800 dark:text-white">{reserva.usuario}</div>
@@ -53,13 +93,13 @@ const TableReservas = ({ reservas = [], handleOpen, handleDelete }) => {
                       <div className="text-gray-800 dark:text-white">{reserva.horario}</div>
                     </td>
                     <td className="px-4 py-4 text-sm whitespace-nowrap">
-                      <div className="text-gray-800 dark:text-white">{reserva.laboratorio}</div>
+                      <div className="text-gray-800 dark:text-white">{reserva.nombre_lab}</div>
                     </td>
                     <td className="px-4 py-4 text-sm whitespace-nowrap">
                       <div className="text-gray-800 dark:text-white">{reserva.nombre_asignatura}</div>
                     </td>
                     <td className="px-4 py-4 text-sm whitespace-nowrap">
-                      <div className="text-gray-800 dark:text-white">{reserva.nombre_curso}</div>
+                      <div className="text-gray-800 dark:text-white">{reserva.nombreCurso}</div>
                     </td>
                     <td className="px-4 py-4 text-sm whitespace-nowrap">
                       <div className="flex space-x-2">
