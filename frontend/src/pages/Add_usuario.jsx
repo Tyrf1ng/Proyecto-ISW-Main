@@ -1,5 +1,6 @@
-import {  useState } from 'react';
-import { createUsuario,  updateUsuario, deleteUsuario } from '../services/usuarios.service';
+import { useState } from 'react';
+import { createUsuario, updateUsuario, deleteUsuario } from '../services/usuarios.service';
+import { useRut } from "react-rut-formatter";
 
 function Add_Usuarios() {
   const [usuarios, setUsuarios] = useState([]);
@@ -17,14 +18,30 @@ function Add_Usuarios() {
   const [messageType, setMessageType] = useState('');
   const [selectedUsuario, setSelectedUsuario] = useState(null);
 
+  // Usamos useRut para formatear el campo de RUT
+  const { rut, updateRut, isValid } = useRut();
+
   // Manejar cambios en el formulario de usuario
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setNewUsuario({ ...newUsuario, [name]: value });
   };
 
+  // Validar RUT
+  const validateRut = () => {
+    if (newUsuario.id_roles === 'Alumno' && !isValid) {
+      setMessage('El RUT ingresado no es válido.');
+      setMessageType('warning');
+      return false;
+    }
+    return true;
+  };
+
   // Crear un nuevo usuario
   const handleCreate = async () => {
+    // Validar RUT antes de continuar
+    if (!validateRut()) return;
+
     if (!newUsuario.nombre || !newUsuario.apellido || !newUsuario.email || !newUsuario.telefono || !newUsuario.password || !newUsuario.id_roles || 
         (newUsuario.id_roles === 'Alumno' && !newUsuario.rut) ||
         (newUsuario.id_roles === 'Profesor' && !newUsuario.asignatura)) {
@@ -56,6 +73,9 @@ function Add_Usuarios() {
 
   // Actualizar un usuario
   const handleUpdate = async () => {
+    // Validar RUT antes de continuar
+    if (!validateRut()) return;
+
     if (!newUsuario.nombre || !newUsuario.apellido || !newUsuario.email || !newUsuario.id_roles || 
         (newUsuario.id_roles === 'Alumno' && !newUsuario.rut) ||
         (newUsuario.id_roles === 'Profesor' && !newUsuario.asignatura)) {
@@ -150,8 +170,8 @@ function Add_Usuarios() {
     <div className='p-6 max-w-3xl mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-md'>
       <h2 className='text-2xl font-semibold text-center text-gray-800 dark:text-white mb-6'>{getPageTitle()}</h2>
 
-            {/* Selección del id_roles */}
-            <div className='mb-4'>
+      {/* Selección del id_roles */}
+      <div className='mb-4'>
         <label htmlFor='id_roles' className='block text-sm text-gray-500 dark:text-gray-300'>
           id_roles
         </label>
@@ -199,7 +219,7 @@ function Add_Usuarios() {
 
       <div className='mb-4'>
         <label htmlFor='email' className='block text-sm text-gray-500 dark:text-gray-300'>
-          email
+          Email
         </label>
         <input
           type='email'
@@ -239,21 +259,23 @@ function Add_Usuarios() {
         />
       </div>
 
-
-
-        <div className='mb-4'>
-          <label htmlFor='rut' className='block text-sm text-gray-500 dark:text-gray-300'>
-            RUT
-          </label>
-          <input
-            type='text'
-            name='rut'
-            placeholder='12345678-9'
-            value={newUsuario.rut}
-            onChange={handleInputChange}
-            className='mt-2 block w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300'
-          />
-        </div>
+      {/* Campo RUT con formato */}
+      <div className='mb-4'>
+        <label htmlFor='rut' className='block text-sm text-gray-500 dark:text-gray-300'>
+          RUT
+        </label>
+        <input
+          type='text'
+          name='rut'
+          placeholder='12345678-9'
+          value={rut.formatted}
+          onChange={(e) => {
+            updateRut(e.target.value);  // Actualizamos el RUT mientras el usuario escribe
+            setNewUsuario({ ...newUsuario, rut: e.target.value });
+          }}
+          className='mt-2 block w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300'
+        />
+      </div>
 
       {/* Mostrar campo asignatura solo si es Profesor */}
       {newUsuario.id_roles === 'Profesor' && (

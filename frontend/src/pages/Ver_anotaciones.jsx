@@ -1,17 +1,17 @@
 import { useState, useContext, useEffect } from 'react';
 import { CursoContext } from '../context/CursoContext';
+import { AsignaturaContext } from '../context/AsignaturaContext';
 import { UsuarioContext } from '../context/UsuarioContext';
-import useAnotaciones from '@hooks/anotaciones/useAnotaciones';
-import { createAnotacion, deleteAnotacion, updateAnotacion } from '@services/anotaciones.service.js';
-import { getSoloAlumnosByCurso } from '@services/cursos.service';
+import { getAnotacionesPorCursoYAsignatura, createAnotacion, deleteAnotacion, updateAnotacion } from '@services/anotaciones.service.js';
 import TableAnotacionComponent from '../components/Table';
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 
 const Ver_anotaciones = () => {
   const { curso } = useContext(CursoContext);
+  const { asignatura } = useContext(AsignaturaContext);
   const { usuario, cargarUsuario } = useContext(UsuarioContext);
-  const { anotaciones, fetchAnotaciones } = useAnotaciones();
 
+  const [anotaciones, setAnotaciones] = useState([]);
   const [filterText, setFilterText] = useState('');
   const [filterDate, setFilterDate] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -21,16 +21,14 @@ const Ver_anotaciones = () => {
     tipo: 'Positiva',
     rut: '',
     descripcion: '',
-    id_asignatura: curso.idCurso || '',
+    id_asignatura: asignatura.id_asignatura || '',
     createdAt: new Date().toISOString(),
   });
 
   const [alumnos, setAlumnos] = useState([]);
   const [filteredAlumnos, setFilteredAlumnos] = useState([]);
-  const [selectedAlumno, setSelectedAlumno] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [isListVisible, setIsListVisible] = useState(false);
-
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [anotacionToDelete, setAnotacionToDelete] = useState(null);
 
@@ -41,32 +39,22 @@ const Ver_anotaciones = () => {
   }, [usuario, cargarUsuario]);
 
   useEffect(() => {
-    if (curso.idCurso) {
-      const cargarAlumnos = async () => {
+    if (curso.idCurso && asignatura.id_asignatura) {
+      const cargarAnotaciones = async () => {
         try {
-          const alumnosData = await getSoloAlumnosByCurso(curso.idCurso);
-          setAlumnos(alumnosData);
-          setFilteredAlumnos(alumnosData.slice(0, 5));
+          const data = await getAnotacionesPorCursoYAsignatura(curso.idCurso, asignatura.id_asignatura);
+          setAnotaciones(data);
         } catch (error) {
-          console.error("Error al cargar los alumnos", error);
+          console.error('Error al cargar las anotaciones', error);
         }
       };
-      cargarAlumnos();
+      cargarAnotaciones();
     }
-  }, [curso.idCurso]);
+  }, [curso.idCurso, asignatura.id_asignatura]);
 
   const handleFilterChange = (e) => setFilterText(e.target.value);
 
   const handleDateFilterChange = (e) => setFilterDate(e.target.value);
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setNewAnotacion({ ...newAnotacion, [name]: value });
-  };
-
-  const handleSelectChange = (e) => {
-    setNewAnotacion({ ...newAnotacion, tipo: e.target.value });
-  };
 
   const handleAlumnoSearchChange = (e) => {
     const query = e.target.value.toLowerCase();
@@ -79,7 +67,6 @@ const Ver_anotaciones = () => {
   };
 
   const handleAlumnoSelect = (alumno) => {
-    setSelectedAlumno(alumno);
     setNewAnotacion({ ...newAnotacion, rut: alumno.rut });
     setSearchTerm(`${alumno.nombre} ${alumno.apellido}`);
     setIsListVisible(false);
@@ -90,7 +77,7 @@ const Ver_anotaciones = () => {
     setCurrentAnotacion(anotacion);
 
     if (anotacion) {
-      const alumno = alumnos.find(a => a.rut === anotacion.rut);
+      const alumno = alumnos.find((a) => a.rut === anotacion.rut);
       setSearchTerm(alumno ? `${alumno.nombre} ${alumno.apellido}` : '');
     }
 
@@ -98,7 +85,7 @@ const Ver_anotaciones = () => {
       tipo: 'Positiva',
       rut: '',
       descripcion: '',
-      id_asignatura: curso.idCurso || '',
+      id_asignatura: asignatura.id_asignatura || '',
       createdAt: new Date().toISOString(),
     });
 
@@ -114,7 +101,8 @@ const Ver_anotaciones = () => {
       } else {
         await createAnotacion(newAnotacion);
       }
-      fetchAnotaciones();
+      const updatedAnotaciones = await getAnotacionesPorCursoYAsignatura(curso.idCurso, asignatura.id_asignatura);
+      setAnotaciones(updatedAnotaciones);
       handleCloseModal();
     } catch (error) {
       console.error('Error al guardar la anotación:', error);
@@ -129,7 +117,8 @@ const Ver_anotaciones = () => {
   const handleConfirmDelete = async () => {
     try {
       await deleteAnotacion(anotacionToDelete);
-      fetchAnotaciones();
+      const updatedAnotaciones = await getAnotacionesPorCursoYAsignatura(curso.idCurso, asignatura.id_asignatura);
+      setAnotaciones(updatedAnotaciones);
     } catch (error) {
       console.error('Error al eliminar la anotación:', error);
     } finally {
@@ -141,7 +130,9 @@ const Ver_anotaciones = () => {
     const filterDateFormatted = filterDate ? new Date(filterDate).toISOString().split('T')[0] : null;
 
     return anotaciones.filter((anotacion) => {
-      const anotacionDateFormatted = anotacion.createdAt ? new Date(anotacion.createdAt).toISOString().split('T')[0] : null;
+      const anotacionDateFormatted = anotacion.createdAt
+        ? new Date(anotacion.createdAt).toISOString().split('T')[0]
+        : null;
 
       const descriptionMatch = anotacion.descripcion.toLowerCase().includes(filterText.toLowerCase());
       const dateMatch = filterDateFormatted ? anotacionDateFormatted === filterDateFormatted : true;
@@ -226,7 +217,6 @@ const Ver_anotaciones = () => {
                 cx="50%"
                 cy="50%"
                 outerRadius={100}
-                fill="#8884d8"
               >
                 {data.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
@@ -239,9 +229,7 @@ const Ver_anotaciones = () => {
       {isModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="p-6 rounded-lg shadow-xl w-96 bg-[#1F2937] text-black dark:bg-[#1F2937] dark:text-white">
-            <h2 className="text-2xl font-bold mb-4">
-              {isEditMode ? 'Editar Anotación' : 'Nueva Anotación'}
-            </h2>
+            <h2 className="text-2xl font-bold mb-4">{isEditMode ? 'Editar Anotación' : 'Nueva Anotación'}</h2>
             <div className="mb-4">
               <label htmlFor="alumno" className="block text-sm text-gray-500 dark:text-gray-300">
                 Buscar Alumno
@@ -277,7 +265,7 @@ const Ver_anotaciones = () => {
                 name="tipo"
                 id="tipo"
                 value={newAnotacion.tipo}
-                onChange={handleSelectChange}
+                onChange={(e) => setNewAnotacion({ ...newAnotacion, tipo: e.target.value })}
                 className="mt-2 block w-full rounded-lg border-gray-300 dark:border-gray-600 bg-[#111827] dark:bg-[#111827] text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300"
               >
                 <option value="Positiva">Positiva</option>
@@ -292,10 +280,10 @@ const Ver_anotaciones = () => {
                 name="descripcion"
                 id="descripcion"
                 value={newAnotacion.descripcion}
-                onChange={handleInputChange}
+                onChange={(e) => setNewAnotacion({ ...newAnotacion, descripcion: e.target.value })}
                 placeholder="Ingrese la descripción"
                 rows="4"
-                className="mt-2 block w-full rounded-lg border-gray-300 dark:border-gray-600 bg-[#111827] dark:bg-[#111827] text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300 resize-none"
+                className="mt-2 block w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-[#111827] dark:bg-[#111827] text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300 resize-none"
               ></textarea>
             </div>
             <div className="flex justify-between mt-6">

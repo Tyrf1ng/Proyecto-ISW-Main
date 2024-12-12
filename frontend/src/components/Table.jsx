@@ -23,8 +23,8 @@ const TableAnotacionComponent = ({ anotaciones, handleOpen, handleDelete, role }
 
   const sortAnotacionesByNombre = () => {
     const sorted = [...anotaciones].sort((a, b) => {
-      const nombreA = usuarios[a.rut] || '';
-      const nombreB = usuarios[b.rut] || '';
+      const nombreA = usuarios[a.rut] ? usuarios[a.rut].nombre : '';
+      const nombreB = usuarios[b.rut] ? usuarios[b.rut].nombre : '';
       if (nombreA > nombreB) return sortOrderNombre === 'asc' ? 1 : -1;
       if (nombreA < nombreB) return sortOrderNombre === 'asc' ? -1 : 1;
       return 0;
@@ -41,7 +41,7 @@ const TableAnotacionComponent = ({ anotaciones, handleOpen, handleDelete, role }
         if (!usuariosByRut[anotacion.rut]) {
           try {
             const usuario = await getUsuarioByRut(anotacion.rut);
-            usuariosByRut[anotacion.rut] = usuario.nombre;
+            usuariosByRut[anotacion.rut] = usuario; // Guardamos tanto nombre como apellido
           } catch (error) {
             console.error('Error al obtener el usuario por rut', error);
           }
@@ -102,7 +102,9 @@ const TableAnotacionComponent = ({ anotaciones, handleOpen, handleDelete, role }
                     {role === 'Docente' && (
                       <td className="px-4 py-4 text-sm whitespace-nowrap">
                         <div className="text-gray-800 dark:text-white">
-                          {usuarios[anotacion.rut] || 'Cargando...'}
+                          {usuarios[anotacion.rut]
+                            ? `${usuarios[anotacion.rut].nombre} ${usuarios[anotacion.rut].apellido}`
+                            : 'Cargando...'}
                         </div>
                       </td>
                     )}

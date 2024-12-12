@@ -1,16 +1,18 @@
 import { useContext, useEffect, useState } from 'react';
 import { CursoContext } from '../context/CursoContext';
+import { AsignaturaContext } from '../context/AsignaturaContext';
 import { getSoloAlumnosByCurso } from '@services/cursos.service';
 import { createAnotacion } from '@services/anotaciones.service.js';
 import Alert from '../components/WarningAlert';
 
 function Add_anotaciones() {
-  const { curso } = useContext(CursoContext);
+  const { curso } = useContext(CursoContext); // Obtener el curso actual
+  const { asignatura } = useContext(AsignaturaContext); // Obtener la asignatura actual
   const [newAnotacion, setNewAnotacion] = useState({
     tipo: 'Positiva',
     rut: '',
     descripcion: '',
-    id_asignatura: curso.idCurso || '',
+    id_asignatura: asignatura.id_asignatura || '', // Asignar id_asignatura desde el contexto
     fecha: new Date().toISOString(),
   });
   const [alumnos, setAlumnos] = useState([]);
@@ -26,9 +28,14 @@ function Add_anotaciones() {
   });
 
   useEffect(() => {
+    console.log('Contexto asignatura:', asignatura); // Verificar idAsignatura
+    console.log('Contexto curso:', curso); // Verificar idCurso
+  }, [asignatura, curso]);
+
+  useEffect(() => {
     const cargarAlumnos = async () => {
       if (!curso.idCurso) {
-        console.error("ID del curso no válido:", curso.idCurso);
+        console.error('ID del curso no válido:', curso.idCurso);
         return;
       }
       try {
@@ -37,10 +44,10 @@ function Add_anotaciones() {
           setAlumnos(alumnosData);
           setFilteredAlumnos(alumnosData.slice(0, 5));
         } else {
-          console.error("Formato inesperado de datos:", alumnosData);
+          console.error('Formato inesperado de datos:', alumnosData);
         }
       } catch (error) {
-        console.error("Error al cargar alumnos:", error);
+        console.error('Error al cargar alumnos:', error);
       }
     };
 
@@ -74,78 +81,65 @@ function Add_anotaciones() {
   };
 
   const handleSubmit = async () => {
-    // Primero reseteamos el estado de la alerta para asegurarnos de que siempre se actualice
-    setAlert({
-        message: '',
-        type: '',
-    });
-
-    // Validación de alumno
+    // Validaciones antes de crear la anotación
     if (!newAnotacion.rut) {
-        setAlert({
-            message: 'Debe seleccionar un alumno.',
-            type: 'warning',
-        });
-        console.log("Alerta warning: ", { message: 'Debe seleccionar un alumno.', type: 'warning' });
-        return;
+      setAlert({
+        message: 'Debe seleccionar un alumno.',
+        type: 'warning',
+      });
+      return;
     }
 
-    // Validación de descripción vacía
     if (!newAnotacion.descripcion.trim()) {
-        console.log('Descripción vacía:', newAnotacion.descripcion);  // Verifica si entra en esta condición
-        setAlert({
-            message: 'La descripción no puede estar vacía.',
-            type: 'warning',
-        });
-        console.log("Alerta warning: ", { message: 'La descripción no puede estar vacía.', type: 'warning' });
-        return;
+      setAlert({
+        message: 'La descripción no puede estar vacía.',
+        type: 'warning',
+      });
+      return;
     }
 
-    // Resto del código
     try {
-        // Intentamos crear la anotación
-        await createAnotacion(newAnotacion);
+      // Intentar crear la anotación
+      await createAnotacion(newAnotacion);
+      setAlert({
+        message: 'Anotación creada exitosamente',
+        type: 'success',
+      });
+
+      // Limpiar los campos después de crear la anotación
+      setNewAnotacion({
+        tipo: 'Positiva',
+        rut: '',
+        descripcion: '',
+        id_asignatura: asignatura.id_asignatura || '', // Usar idAsignatura del contexto
+        fecha: new Date().toISOString(),
+      });
+      setSelectedAlumno(null); // Limpiar la selección de alumno
+      setSearchTerm(''); // Limpiar el término de búsqueda
+      setFilteredAlumnos(alumnos); // Restaurar la lista de alumnos
+
+      // Limpiar la alerta después de 3 segundos
+      setTimeout(() => {
         setAlert({
-            message: 'Anotación creada exitosamente',
-            type: 'success',
+          message: '',
+          type: '',
         });
-        console.log("Alerta success: ", { message: 'Anotación creada exitosamente', type: 'success' });
-
-        // Limpiar los campos después de crear la anotación
-        setNewAnotacion({
-            tipo: 'Positiva',
-            rut: '',
-            descripcion: '',
-            id_asignatura: curso.idCurso || '',
-            fecha: new Date().toISOString(),
-        });
-        setSelectedAlumno(null);  // Limpiar la selección de alumno
-        setSearchTerm('');        // Limpiar el término de búsqueda
-        setFilteredAlumnos(alumnos); // Restaurar la lista de alumnos
-
-        // Limpiar la alerta después de 3 segundos
-        setTimeout(() => {
-            setAlert({
-                message: '',
-                type: '',
-            });
-        }, 3000);  // Se resetea la alerta después de 3 segundos
+      }, 3000);
     } catch (error) {
-        console.error('Error al crear la anotación:', error);
-        setAlert({
-            message: 'Hubo un error al crear la anotación',
-            type: 'error',
-        });
-        console.log("Alerta error: ", { message: 'Hubo un error al crear la anotación', type: 'error' });
+      console.error('Error al crear la anotación:', error);
+      setAlert({
+        message: 'Hubo un error al crear la anotación',
+        type: 'error',
+      });
     }
-};
+  };
 
   const maxDescripcionLength = 280;
   const isMaxReached = newAnotacion.descripcion.length > maxDescripcionLength;
 
   return (
     <div className="flex py-10 justify-center bg-gray-50 dark:bg-gray-800">
-      <div className="w-full max-w-2xl bg-white dark:bg-gray-900 p-8 rounded-xl shadow-lg mb-6"> 
+      <div className="w-full max-w-2xl bg-white dark:bg-gray-900 p-8 rounded-xl shadow-lg mb-6">
         <h2 className="text-2xl font-semibold text-center text-gray-800 dark:text-white mb-6">Añadir Anotación</h2>
 
         <div className="mb-4 flex space-x-4">
