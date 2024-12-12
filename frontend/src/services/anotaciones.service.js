@@ -49,3 +49,13 @@ export async function getAnotacionesAlumno(rut) {
     throw error;
   }
 }
+
+export const getAnotacionesPorCursoYAsignatura = async (idCurso, idAsignatura) => {
+  try {
+    const response = await axios.get(`/anotaciones/curso/${idCurso}/asignatura/${idAsignatura}`);
+    return response.data.data; // Asumiendo que el backend envía los datos en { data: ... }
+  } catch (error) {
+    console.error('Error al obtener anotaciones por curso y asignatura:', error);
+    throw new Error('No se pudieron cargar las anotaciones');
+  }
+};
