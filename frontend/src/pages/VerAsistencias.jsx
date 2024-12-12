@@ -3,6 +3,8 @@ import { CursoContext } from "../context/CursoContext";
 import { getAsistenciasCurso, deleteAsistencia, updateAsistencia } from "../services/Asistencias.service";
 import TableComponentAsistencias from "../components/TableComponentAsistencias";
 import { format as formatTempo } from "@formkit/tempo"; // Import format function
+import SuccessAlert from '../components/SuccessAlert';
+import ErrorAlert from '../components/ErrorAlert';
 
 const VerAsistencias = () => {
   const { curso } = useContext(CursoContext);
@@ -19,6 +21,9 @@ const VerAsistencias = () => {
   // Estado para el diálogo de confirmación de eliminación
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [asistenciaToDelete, setAsistenciaToDelete] = useState(null);
+
+  const [message, setMessage] = useState('');
+  const [messageType, setMessageType] = useState('');
 
   useEffect(() => {
     const cargarAsistencias = async () => {
@@ -41,7 +46,7 @@ const VerAsistencias = () => {
 
   const handleFilterChange = (e) => setFilterText(e.target.value);
 
-  const handleFilterDateChange = (e) => setFilterDate(e.target.value); // Date filter change handler
+  const handleFilterDateChange = (e) => setFilterDate(e.target.value); 
 
   const handleEdit = (asistencia) => {
     setAsistenciaSeleccionada(asistencia);
@@ -63,8 +68,12 @@ const VerAsistencias = () => {
       await deleteAsistencia(asistenciaToDelete); 
 
       setAsistencias(asistencias.filter((asistencia) => asistencia.id_asistencia !== asistenciaToDelete));
+      setMessage('Asistencia eliminada con éxito');
+      setMessageType('success');
     } catch (error) {
       console.error("Error al eliminar la asistencia:", error);
+      setMessage('Hubo un error al eliminar la asistencia');
+      setMessageType('error');
     } finally {
       setConfirmDialogOpen(false); 
     }
@@ -75,6 +84,12 @@ const VerAsistencias = () => {
       if (!asistenciaSeleccionada || !asistenciaSeleccionada.id_asistencia) {
         console.error("ID de asistencia no válido", asistenciaSeleccionada);
         throw new Error("ID de asistencia no válido");
+      }
+  
+      if (asistenciaSeleccionada.tipo === "Justificado" && (!asistenciaSeleccionada.observacion || asistenciaSeleccionada.observacion.trim() === "")) {
+        setMessage('El campo de observación no puede estar vacío');
+        setMessageType('error');
+        return;
       }
   
       const updatedAsistencia = {
@@ -96,8 +111,12 @@ const VerAsistencias = () => {
       setAsistencias(asistencias.map((asistencia) =>
         asistencia.id_asistencia === updatedAsistencia.id_asistencia ? newAsistencia : asistencia
       ));
+      setMessage('Asistencia actualizada con éxito');
+      setMessageType('success');
     } catch (error) {
       console.error("Error al actualizar la asistencia:", error);
+      setMessage('Hubo un error al actualizar la asistencia');
+      setMessageType('error');
     }
   };
 
@@ -112,16 +131,39 @@ const VerAsistencias = () => {
   const normalizeText = (text) => text.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
   const filteredAsistencias = asistencias.filter((asistencia) => {
+    const sanitizedFilterText = normalizeText(filterText).replace(/[^a-zA-Z\s]/g, "").toLowerCase();
     const matchesText = normalizeText(`${asistencia.usuario.nombre} ${asistencia.usuario.apellido}`)
       .toLowerCase()
-      .includes(normalizeText(filterText).toLowerCase());
-  
+      .includes(sanitizedFilterText);
+
     const formattedCreatedAt = formatTempo(new Date(asistencia.createdAt).toISOString(), "DD-MM-YYYY");
     const formattedFilterDate = filterDate ? formatTempo(new Date(filterDate).toISOString(), "DD-MM-YYYY") : "";
 
     const matchesDate = filterDate ? formattedCreatedAt === formattedFilterDate : true;
     return matchesText && matchesDate;
   });
+
+  useEffect(() => {
+    if (message) {
+      const timer = setTimeout(() => {
+        setMessage('');
+        setMessageType('');
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [message]);
+
+  const renderMessage = () => {
+    if (messageType === 'success') {
+      return <SuccessAlert message={message} />;
+    }
+
+    if (messageType === 'error') {
+      return <ErrorAlert message={message} />;
+    }
+
+    return null;
+  };
 
   if (cargando) {
     return (
@@ -133,6 +175,7 @@ const VerAsistencias = () => {
 
   return (
     <div className="p-4 bg-gray-50 dark:bg-gray-800">
+      {renderMessage()}
       <div className="mb-4 flex space-x-4">
         <input
           type="text"
@@ -145,6 +188,7 @@ const VerAsistencias = () => {
           type="date"
           value={filterDate}
           onChange={handleFilterDateChange}
+          onKeyDown={(e) => e.preventDefault()}
           className="rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300"
         />
       </div>

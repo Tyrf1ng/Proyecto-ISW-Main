@@ -5,21 +5,26 @@ import useNotasAsignatura from '@hooks/notas/useNotasAsignatura';
 import { UsuarioContext } from '@context/UsuarioContext';
 
 const VerNotaAlumno = () => {
+
   const [filterText, setFilterText] = useState('');
-  const { usuario } = useContext(UsuarioContext);
-  const { notas, loading, error, fetchNotas } = useNotasAsignatura([]);
+  const { usuario,cargarUsuario } = useContext(UsuarioContext);
+  const { notas, loading, error } = useNotasAsignatura([]);
 
-  const filteredNotas = notas?.filter((nota) =>
-    nota.nombre_asignatura.toLowerCase().includes(filterText.toLowerCase())
-  ) || [];
-
-
+  // Validación inicial del usuario
   useEffect(() => {
-    if (fetchNotas) {
-      fetchNotas();
+    if (!usuario) {
+      cargarUsuario();
     }
-  }, [fetchNotas]);  
+  }, [usuario, cargarUsuario]);
 
+  if (!usuario) {
+    return <div>Cargando usuario...</div>;
+  }
+
+  // Filtrado de las notas
+  const filteredNotas = notas?.filter((nota) =>
+    nota.tipo.toLowerCase().includes(filterText.toLowerCase())
+  ) || [];
 
   const handleFilterChange = (e) => {
     setFilterText(e.target.value);
@@ -27,31 +32,41 @@ const VerNotaAlumno = () => {
 
   return (
     <Box sx={{ padding: 4 }}>
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          marginBottom: 4,
-        }}
-      >
-        <input
-          type="text"
-          value={filterText}
-          onChange={handleFilterChange}
-          placeholder="Filtrar por Tipo de Evaluación..."
-          className="w-96 p-2 border rounded dark:text-gray-300 dark:bg-gray-900"
-        />
-      </Box>
-      {loading ? (
-        <p>Cargando notas...</p>
-      ) : error ? (
-        <p>Error: {error}</p>
+      {/* Validación del usuario */}
+      {!usuario || !usuario.rut ? (
+        <p>Error: No se encontró información del usuario</p>
       ) : (
-        <TableComponent 
-          notas={filteredNotas} 
-          role={usuario?.rol}  // Asegúrate de que user tenga un rol
-        />
+        <>
+          {/* Barra de filtro */}
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginBottom: 4,
+            }}
+          >
+            <input
+              type="text"
+              value={filterText}
+              onChange={handleFilterChange}
+              placeholder="Filtrar por Tipo de Evaluación..."
+              className="w-96 p-2 border rounded dark:text-gray-300 dark:bg-gray-900"
+            />
+          </Box>
+
+          {/* Contenido dinámico */}
+          {loading ? (
+            <p>Cargando notas...</p>
+          ) : error ? (
+            <p>Error: {error}</p>
+          ) : (
+            <TableComponent 
+              notas={filteredNotas} 
+              role={usuario?.rol}
+            />
+          )}
+        </>
       )}
     </Box>
   );

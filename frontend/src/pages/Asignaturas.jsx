@@ -3,18 +3,18 @@ import { useNavigate } from "react-router-dom";
 import { getAsignaturasByAlumno } from "../services/asignatura.service"; 
 import { AsignaturaContext } from "../context/AsignaturaContext"; 
 import { useAuth } from "../context/AuthContext"; 
-import { motion } from "framer-motion"; // Importar motion
+import { motion } from "framer-motion"; 
 
 const Asignaturas = () => {
   const [asignaturas, setAsignaturas] = useState([]);
   const [cargando, setCargando] = useState(true);
-  const { setIdAsignatura } = useContext(AsignaturaContext);
+  const { setAsignatura } = useContext(AsignaturaContext);
   const { user } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
     // Validar si el usuario tiene rol correcto antes de cargar las asignaturas
-    if (!user || (user.rol !== "Docente" && user.rol !== "Alumno")) {
+    if (!user ||user.rol !== "Alumno") {
       navigate("/inicio"); 
       return;
     }
@@ -27,11 +27,7 @@ const Asignaturas = () => {
       }
       
       try {
-        let asignaturasObtenidas;
-        if (user.rol === "Alumno") {
-          asignaturasObtenidas = await getAsignaturasByAlumno(user.rut); // Si es alumno
-        }
-
+        const asignaturasObtenidas = await getAsignaturasByAlumno(user.rut)
         setAsignaturas(asignaturasObtenidas);
       } catch (error) {
         console.error("Error al cargar asignaturas:", error);
@@ -43,8 +39,8 @@ const Asignaturas = () => {
     cargarAsignaturas();
   }, [user, navigate]);
 
-  const seleccionarAsignatura = (id_asignatura) => {
-    setIdAsignatura(id_asignatura);
+  const seleccionarAsignatura = (id_asignatura, nombre) => {
+    setAsignatura({ idAsignatura:id_asignatura, nombre: nombre });
     navigate("/inicio"); 
   };
 
@@ -64,7 +60,7 @@ const Asignaturas = () => {
           <motion.div
             key={asignatura.id_asignatura}
             className="w-11/12 sm:w-11/12 md:w-7/10 bg-[#111827] dark:bg-[#111827] p-6 rounded-lg shadow-lg cursor-pointer"
-            onClick={() => seleccionarAsignatura(asignatura.id_asignatura)}
+            onClick={() => seleccionarAsignatura(asignatura.id_asignatura,asignatura.nombre)}
             whileHover={{ scale: 1.05 }} // Aumentar tamaño al pasar el ratón
             whileTap={{ scale: 0.95 }}  // Reducir tamaño al hacer clic
             transition={{ type: "spring", stiffness: 400, damping: 20 }} // Transición fluida
