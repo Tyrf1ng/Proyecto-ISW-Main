@@ -37,14 +37,14 @@ async function createRoles() {
       ),
       RolesRepository.save(
         RolesRepository.create({
-          id_roles: 4,
-          nombre: "Encargado_Laboratorio",
+          id_roles: 3,
+          nombre: "Alumno",
         }),
       ),
       RolesRepository.save(
         RolesRepository.create({
-          id_roles: 3,
-          nombre: "Alumno",
+          id_roles: 4,
+          nombre: "Encargado_Laboratorio",
         }),
       ),
     ]);
@@ -432,7 +432,7 @@ async function createUsuario() {
           password: await encryptPassword("mochap123"),
           id_roles: 3,
           comuna: "Conce City",
-          direccion: "Calle del smegma 69",
+          direccion: "calle falsa 3",
         }),
       ),
       usuarioRepository.save(

@@ -43,6 +43,13 @@ const RegisterAsistencia = () => {
         return;
       }
 
+      if(selectedDate > new Date().toISOString().substring(0, 10)) {
+        setMensaje("No se puede registrar asistencia en fechas futuras.");
+        setMessageType("error");
+        return;
+      }
+
+
       const selected = new Date(selectedDate);
       const utcDate = new Date(selected.toISOString().substring(0, 10));
 
