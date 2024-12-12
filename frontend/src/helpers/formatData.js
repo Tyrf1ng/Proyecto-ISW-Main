@@ -8,9 +8,8 @@ export function formatUserData(usuario) {
         nombreCompleto: startCase(usuario.nombreCompleto),
         id_roles: startCase(usuario.id_roles),
         rut: formatRut(usuario.rut),
-        createdAt: formatTempo(usuario.createdAt, "DD-MM-YYYY"),
-        updatedAt: formatTempo(usuario.updatedAtd, "DD-MM-YYYY")
-
+        createdAt: formatDateToDMY(usuario.createdAt),
+        updatedAt: formatDateToDMY(usuario.updatedAt)
     };
 }
 
@@ -29,7 +28,7 @@ export function formatPostUpdate(user) {
         rol: startCase(user.rol),
         rut: formatRut(user.rut),
         email: user.email,
-        createdAt: formatTempo(user.createdAt, "DD-MM-YYYY")
+        createdAt: formatDateToDMY(user.createdAt)
     };
 }
 
@@ -40,4 +39,9 @@ export function formatCourseData(course) {
         nivel: startCase(course.nivel),
         rut_directivo: formatRut(course.rut_directivo)
     };
+}
+
+export function formatDateToDMY(date) {
+    if (!date) return null; // Maneja fechas no válidas
+    return formatTempo(date, "DD-MM-YYYY");
 }

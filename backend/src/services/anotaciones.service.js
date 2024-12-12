@@ -205,3 +205,39 @@ export async function deleteAnotacionService(id_anotacion) {
         return [null, "Error interno del servidor"];
     }
 }
+
+export async function getAnotacionesPorCursoYAsignaturaService(id_curso, id_asignatura) {
+    try {
+        const AnotacionRepository = AppDataSource.getRepository(Anotaciones);
+        const ConectUsuarioCursoRepository = AppDataSource.getRepository(Conect_Usuario_CursoSchema);
+        
+        // Obtener los alumnos relacionados con el curso
+        const relacionesCurso = await ConectUsuarioCursoRepository.find({
+            where: { id_curso },
+        });
+
+        if (!relacionesCurso || relacionesCurso.length === 0) {
+            return [null, "No hay alumnos asociados a este curso"];
+        }
+
+        // Extraer los ruts de los alumnos relacionados con el curso
+        const rutsAlumnos = relacionesCurso.map(relacion => relacion.rut);
+
+        // Buscar las anotaciones relacionadas con estos ruts y la asignatura específica
+        const anotaciones = await AnotacionRepository.find({
+            where: {
+                rut: In(rutsAlumnos),
+                id_asignatura,
+            },
+        });
+
+        if (!anotaciones || anotaciones.length === 0) {
+            return [null, "No hay anotaciones para este curso y asignatura"];
+        }
+
+        return [anotaciones, null];
+    } catch (error) {
+        console.error("Error al obtener las anotaciones por curso y asignatura:", error);
+        return [null, "Error interno del servidor"];
+    }
+}

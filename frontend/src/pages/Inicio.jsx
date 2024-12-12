@@ -5,14 +5,13 @@ import { CursoContext } from '../context/CursoContext'; // Importación del cont
 import { AsignaturaContext } from '../context/AsignaturaContext';
 import { getAsignaturasByProfesor } from '../services/asignatura.service'; 
 
-
 function Inicio() {
   const navigate = useNavigate();
   const { curso } = useContext(CursoContext); 
   const [usuario, setUsuario] = useState({ nombre: '', apellido: '', rut: '', rol: '' });
-  const { asignatura } = useContext(AsignaturaContext);
+  const { asignatura, setAsignatura } = useContext(AsignaturaContext);
   const [errorAsignatura, setErrorAsignatura] = useState(''); 
-  const [asignaturas, setAsignaturas] = useState('Cargando asignaturas...');
+  const [asignaturas, setAsignaturas] = useState(null); // Almacenar las asignaturas obtenidas
   const [errorCurso, setErrorCurso] = useState(''); 
 
   useEffect(() => {
@@ -32,8 +31,8 @@ function Inicio() {
           .then((asignaturas) => {
             console.log('Asignaturas obtenidas:', asignaturas);
             if (asignaturas.length > 0) {
-              const asignaturaSeleccionada = asignaturas[0];
-              setAsignaturas(asignaturaSeleccionada.nombre);
+              setAsignaturas(asignaturas); // Guardar todas las asignaturas
+              setAsignatura(asignaturas[0]); // Si quieres que la asignatura seleccionada se guarde en el contexto
             } else {
               setErrorAsignatura('No se encontraron asignaturas para este profesor.');
             }
@@ -43,11 +42,9 @@ function Inicio() {
             setErrorAsignatura('Hubo un error al cargar las asignaturas.');
           });
       }
-
     }
   }, []);
 
-  
   const handleSeleccionarAsignatura = () => {
     navigate('/asignaturas'); // Redirige a la página de selección de asignaturas
   };

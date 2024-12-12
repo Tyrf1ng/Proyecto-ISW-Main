@@ -69,8 +69,8 @@ export async function getAsistenciasAlumnoController(req, res) {
 
 export async function getAsistenciasAsignaturaController(req, res) {
     try {
-        const { id_asignatura } = req.params;
-        const [asistencias, errorAsistencias] = await getAsistenciasAsignatura(id_asignatura);
+        const { id_asignatura, id_curso } = req.params;
+        const [asistencias, errorAsistencias] = await getAsistenciasAsignatura(id_asignatura, id_curso);
         if (errorAsistencias) return handleErrorClient(res, 404, errorAsistencias);
         asistencias.length === 0
             ? handleSuccess(res, 204)
@@ -124,7 +124,7 @@ export async function createAsistenciaController(req, res) {
             return handleErrorClient(res, 400, validationError.details[0].message);
         }
         
-        const { id_asignatura, rut, tipo, observacion, createdAt } = value;
+        const { id_asignatura, id_curso, rut, tipo, observacion, createdAt } = value;
         const selectedDate = new Date(createdAt);
         const currentYear = new Date().getFullYear();
 
@@ -145,7 +145,7 @@ export async function createAsistenciaController(req, res) {
             return handleErrorClient(res, 400, "No se puede registrar asistencia en fines de semana (sábado o domingo).");
         }
 
-        const [asistenciaCreada, errorAsistencia] = await createAsistencia({ id_asignatura, rut, tipo, observacion, createdAt });
+        const [asistenciaCreada, errorAsistencia] = await createAsistencia({ id_asignatura, id_curso, rut, tipo, observacion, createdAt });
         if (errorAsistencia) {
             return handleErrorClient(res, 400, errorAsistencia);
         }

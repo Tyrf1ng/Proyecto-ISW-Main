@@ -6,11 +6,10 @@ import { getUsuarioByRut } from '@services/usuarios.service';
 
 const TableAnotacionComponent = ({ anotaciones, handleOpen, handleDelete, role }) => {
   const [usuarios, setUsuarios] = useState({});
-  const [sortOrder, setSortOrder] = useState('asc'); // Estado para el orden de tipo
-  const [sortOrderNombre, setSortOrderNombre] = useState('asc'); // Estado para el orden de nombre
+  const [sortOrder, setSortOrder] = useState('asc');
+  const [sortOrderNombre, setSortOrderNombre] = useState('asc');
   const [sortedAnotaciones, setSortedAnotaciones] = useState(anotaciones);
 
-  // Función para ordenar las anotaciones por el tipo
   const sortAnotacionesByType = () => {
     const sorted = [...anotaciones].sort((a, b) => {
       if (a.tipo > b.tipo) return sortOrder === 'asc' ? 1 : -1;
@@ -19,21 +18,20 @@ const TableAnotacionComponent = ({ anotaciones, handleOpen, handleDelete, role }
     });
 
     setSortedAnotaciones(sorted);
-    setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc'); // Cambiar el orden después de cada clic
+    setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
   };
 
-  // Función para ordenar las anotaciones por nombre
   const sortAnotacionesByNombre = () => {
     const sorted = [...anotaciones].sort((a, b) => {
-      const nombreA = usuarios[a.rut] || ''; // Obtener el nombre del usuario A
-      const nombreB = usuarios[b.rut] || ''; // Obtener el nombre del usuario B
+      const nombreA = usuarios[a.rut] ? usuarios[a.rut].nombre : '';
+      const nombreB = usuarios[b.rut] ? usuarios[b.rut].nombre : '';
       if (nombreA > nombreB) return sortOrderNombre === 'asc' ? 1 : -1;
       if (nombreA < nombreB) return sortOrderNombre === 'asc' ? -1 : 1;
       return 0;
     });
 
     setSortedAnotaciones(sorted);
-    setSortOrderNombre(sortOrderNombre === 'asc' ? 'desc' : 'asc'); // Cambiar el orden después de cada clic
+    setSortOrderNombre(sortOrderNombre === 'asc' ? 'desc' : 'asc');
   };
 
   useEffect(() => {
@@ -43,7 +41,7 @@ const TableAnotacionComponent = ({ anotaciones, handleOpen, handleDelete, role }
         if (!usuariosByRut[anotacion.rut]) {
           try {
             const usuario = await getUsuarioByRut(anotacion.rut);
-            usuariosByRut[anotacion.rut] = usuario.nombre;
+            usuariosByRut[anotacion.rut] = usuario; // Guardamos tanto nombre como apellido
           } catch (error) {
             console.error('Error al obtener el usuario por rut', error);
           }
@@ -56,7 +54,6 @@ const TableAnotacionComponent = ({ anotaciones, handleOpen, handleDelete, role }
       fetchUsuarios();
     }
 
-    // Asegurarse de que las anotaciones se ordenen cuando cambien
     setSortedAnotaciones(anotaciones);
   }, [anotaciones]);
 
@@ -68,18 +65,20 @@ const TableAnotacionComponent = ({ anotaciones, handleOpen, handleDelete, role }
             <thead className="bg-gray-50 dark:bg-gray-800">
               <tr>
                 {role === 'Docente' && (
-                  <th className="px-12 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400 cursor-pointer" onClick={sortAnotacionesByNombre}>
+                  <th
+                    className="px-12 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400 cursor-pointer"
+                    onClick={sortAnotacionesByNombre}
+                  >
                     Nombre
-                    {sortOrderNombre === 'asc' ? ' ↑' : ' ↓'} {/* Indicador de orden */}
+                    {sortOrderNombre === 'asc' ? ' ↑' : ' ↓'}
                   </th>
                 )}
-                {/* Cabecera de Tipo con evento de ordenación */}
                 <th
                   className="px-12 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400 cursor-pointer"
                   onClick={sortAnotacionesByType}
                 >
                   Tipo
-                  {sortOrder === 'asc' ? ' ↑' : ' ↓'} {/* Indicador de orden */}
+                  {sortOrder === 'asc' ? ' ↑' : ' ↓'}
                 </th>
                 <th className="px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400">
                   Fecha
@@ -103,7 +102,9 @@ const TableAnotacionComponent = ({ anotaciones, handleOpen, handleDelete, role }
                     {role === 'Docente' && (
                       <td className="px-4 py-4 text-sm whitespace-nowrap">
                         <div className="text-gray-800 dark:text-white">
-                          {usuarios[anotacion.rut] || 'Cargando...'}
+                          {usuarios[anotacion.rut]
+                            ? `${usuarios[anotacion.rut].nombre} ${usuarios[anotacion.rut].apellido}`
+                            : 'Cargando...'}
                         </div>
                       </td>
                     )}
@@ -120,7 +121,7 @@ const TableAnotacionComponent = ({ anotaciones, handleOpen, handleDelete, role }
                     </td>
                     <td className="px-4 py-4 text-sm whitespace-nowrap">
                       <div className="text-gray-800 dark:text-white">
-                        {new Date(anotacion.createdAt).toLocaleDateString()}
+                        {new Date(anotacion.createdAt).toLocaleDateString('es-ES')}
                       </div>
                     </td>
                     <td className="px-4 py-4 text-sm font-medium whitespace-normal max-w-xs break-words">

@@ -2,6 +2,7 @@
 import {
     createAnotacionService,
     deleteAnotacionService,
+    getAnotacionesPorCursoYAsignaturaService,
     getAnotacionesAlumnoService,
     getAnotacionesAsignaturaService,
     getAnotacionesCursoService,
@@ -130,6 +131,31 @@ export async function deleteAnotacion(req, res) {
         if (errorAnotacion) return handleErrorClient(res, 404, errorAnotacion);
         handleSuccess(res, 200, "Anotacion eliminada", anotacion);
     } catch (error) {
+        handleErrorServer(res, 500, error.message);
+    }
+}
+
+export async function getAnotacionesPorCursoYAsignatura(req, res) {
+    try {
+        const { id_curso, id_asignatura } = req.params;
+
+        // Validar parámetros
+        if (!id_curso || !id_asignatura) {
+            return handleErrorClient(
+                res,
+                400,
+                "Los parámetros 'id_curso' e 'id_asignatura' son obligatorios"
+            );
+        }
+
+        // Llamar al servicio
+        const [anotaciones, error] = await getAnotacionesPorCursoYAsignaturaService(id_curso, id_asignatura);
+
+        if (error) return handleErrorClient(res, 404, error);
+
+        handleSuccess(res, 200, "Anotaciones encontradas", anotaciones);
+    } catch (error) {
+        console.error("Error en el controller de obtener anotaciones por curso y asignatura:", error);
         handleErrorServer(res, 500, error.message);
     }
 }
