@@ -3,16 +3,18 @@ import { CursoContext } from '../context/CursoContext';
 import { AsignaturaContext } from '../context/AsignaturaContext';
 import { getSoloAlumnosByCurso } from '@services/cursos.service';
 import { createAnotacion } from '@services/anotaciones.service.js';
-import Alert from '../components/WarningAlert';
+import WarningAlert from '../components/WarningAlert';
+import SuccessAlert from '../components/SuccessAlert';
+import ErrorAlert from '../components/ErrorAlert';
 
 function Add_anotaciones() {
-  const { curso } = useContext(CursoContext); // Obtener el curso actual
-  const { asignatura } = useContext(AsignaturaContext); // Obtener la asignatura actual
+  const { curso } = useContext(CursoContext);
+  const { asignatura } = useContext(AsignaturaContext);
   const [newAnotacion, setNewAnotacion] = useState({
     tipo: 'Positiva',
     rut: '',
     descripcion: '',
-    id_asignatura: asignatura.id_asignatura || '', // Asignar id_asignatura desde el contexto
+    id_asignatura: asignatura.id_asignatura || '',
     fecha: new Date().toISOString(),
   });
   const [alumnos, setAlumnos] = useState([]);
@@ -20,17 +22,22 @@ function Add_anotaciones() {
   const [selectedAlumno, setSelectedAlumno] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [isListVisible, setIsListVisible] = useState(false);
-
-  // Estado para manejar los mensajes de la alerta
   const [alert, setAlert] = useState({
     message: '',
-    type: '', // 'success', 'error', 'warning'
+    type: '',
   });
 
   useEffect(() => {
-    console.log('Contexto asignatura:', asignatura); // Verificar idAsignatura
-    console.log('Contexto curso:', curso); // Verificar idCurso
-  }, [asignatura, curso]);
+    if (alert.message) {
+      const timer = setTimeout(() => {
+        setAlert({
+          message: '',
+          type: '',
+        });
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [alert]);
 
   useEffect(() => {
     const cargarAlumnos = async () => {
@@ -81,7 +88,6 @@ function Add_anotaciones() {
   };
 
   const handleSubmit = async () => {
-    // Validaciones antes de crear la anotación
     if (!newAnotacion.rut) {
       setAlert({
         message: 'Debe seleccionar un alumno.',
@@ -99,32 +105,22 @@ function Add_anotaciones() {
     }
 
     try {
-      // Intentar crear la anotación
       await createAnotacion(newAnotacion);
       setAlert({
         message: 'Anotación creada exitosamente',
         type: 'success',
       });
 
-      // Limpiar los campos después de crear la anotación
       setNewAnotacion({
         tipo: 'Positiva',
         rut: '',
         descripcion: '',
-        id_asignatura: asignatura.id_asignatura || '', // Usar idAsignatura del contexto
+        id_asignatura: asignatura.id_asignatura || '',
         fecha: new Date().toISOString(),
       });
-      setSelectedAlumno(null); // Limpiar la selección de alumno
-      setSearchTerm(''); // Limpiar el término de búsqueda
-      setFilteredAlumnos(alumnos); // Restaurar la lista de alumnos
-
-      // Limpiar la alerta después de 3 segundos
-      setTimeout(() => {
-        setAlert({
-          message: '',
-          type: '',
-        });
-      }, 3000);
+      setSelectedAlumno(null);
+      setSearchTerm('');
+      setFilteredAlumnos(alumnos);
     } catch (error) {
       console.error('Error al crear la anotación:', error);
       setAlert({
@@ -211,7 +207,9 @@ function Add_anotaciones() {
           </button>
         </div>
 
-        {alert.message && <Alert message={alert.message} type={alert.type} />}
+        {alert.type === 'warning' && <WarningAlert message={alert.message} />}
+        {alert.type === 'success' && <SuccessAlert message={alert.message} />}
+        {alert.type === 'error' && <ErrorAlert message={alert.message} />}
       </div>
     </div>
   );
