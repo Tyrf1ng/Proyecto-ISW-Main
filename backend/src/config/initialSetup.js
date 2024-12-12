@@ -37,14 +37,14 @@ async function createRoles() {
       ),
       RolesRepository.save(
         RolesRepository.create({
-          id_roles: 3,
-          nombre: "Alumno",
+          id_roles: 4,
+          nombre: "Encargado_Laboratorio",
         }),
       ),
       RolesRepository.save(
         RolesRepository.create({
-          id_roles: 4,
-          nombre: "Encargado_Laboratorio",
+          id_roles: 3,
+          nombre: "Alumno",
         }),
       ),
     ]);
@@ -312,7 +312,7 @@ async function createReserva() {
       ),
       reservaRepository.save(
         reservaRepository.create({
-          fecha:"2024-12-20",
+          fecha:"2024-12-12",
           id_horario: 2,
           rut: "20.960.538-4",
           id_lab: 2,
@@ -328,6 +328,16 @@ async function createReserva() {
           id_lab: 3,
           id_asignatura: 2,
           id_curso: 1,
+        }),
+      ),
+      reservaRepository.save(
+        reservaRepository.create({
+          fecha:"2024-12-02",
+          id_horario: 1,
+          rut: "21.151.773-5",
+          id_lab: 1,
+          id_asignatura: 2,
+          id_curso: 2,
         }),
       ),
     ]);
