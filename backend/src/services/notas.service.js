@@ -21,6 +21,7 @@ export async function getNotasCurso(id_curso) {
         if (rutsAlumnos === 0) {
             return [null, "No hay alumnos en este curso"];
         }
+        
 
         const asignaturasDelCurso = await AsignaturaCursoRepository.find({
             where: { id_curso },

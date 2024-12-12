@@ -123,23 +123,23 @@ export async function createNotaController(req, res) {
     try {
         const { id_asignatura, rut, valor, tipo } = req.body;
         const { error } = notasQueryValidation.validate(req.body);
-        if (error) {
-            return handleErrorClient(res, 400, "Faltan datos obligatorios", error.message);
-        }
 
+        if (error) {
+            return handleErrorClient(res, 400, "Datos inválidos", error.message); // Mensaje más descriptivo
+        }
         const [notaCreada] = await createNota({
             id_asignatura,
             rut,
             tipo,
             valor,
         });
-        const { errorNota } = notasQueryValidation.validate(notaCreada);
-
-        if (errorNota) return handleErrorClient(res, 400, errorNota);
-
-        handleSuccess(res, 201, "Nota creada", notaCreada);
+        if (!notaCreada) {
+            return handleErrorClient(res, 400, "No se pudo crear la nota. Verifica los datos proporcionados.");
+        }
+        handleSuccess(res, 201, "Nota creada exitosamente", notaCreada);
     } catch (error) {
-        handleErrorServer(res, 500, error.message);
+        // Manejar errores del servidor
+        handleErrorServer(res, 500, "Error interno del servidor", error.message);
     }
 }
 

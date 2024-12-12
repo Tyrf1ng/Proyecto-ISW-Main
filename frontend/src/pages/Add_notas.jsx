@@ -1,9 +1,12 @@
 import { useContext, useEffect, useState } from "react";
 import { CursoContext } from "../context/CursoContext";
-import { getAlumnosByCurso } from "../services/alumnos.service";
+import { getSoloAlumnosByCurso } from '@services/cursos.service';
 import { createNota } from "../services/notas.service";
 import { getAsignaturasByProfesor } from "@services/asignatura.service";
 import { useAuth } from "../context/AuthContext";
+import SuccessAlert from '../components/SuccessAlert';
+import ErrorAlert from '../components/ErrorAlert';
+import WarningAlert from '../components/WarningAlert';
 
 function Add_Notas() {
   const { curso } = useContext(CursoContext);
@@ -12,7 +15,7 @@ function Add_Notas() {
     tipo: "",
     valor: "",
     rut: "",
-    id_asignatura: "",
+    id_asignatura: "", // Nueva asignatura por defecto vacío
   });
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("");
@@ -32,14 +35,19 @@ function Add_Notas() {
         setCargando(false);
         return;
       }
+  
       try {
         const asignaturasObtenidas = await getAsignaturasByProfesor(user.rut);
-        console.log("Asignaturas obtenidas:", asignaturasObtenidas); // Verifica qué datos llegan
-        if (asignaturasObtenidas && asignaturasObtenidas.length > 0) {
-          setAsignaturas(asignaturasObtenidas);  // Guardamos las asignaturas en el estado
+        if (asignaturasObtenidas && asignaturasObtenidas.length === 1) {
+          const asignatura = asignaturasObtenidas[0]; // Solo hay una asignatura
+          setAsignaturas([asignatura]); 
+          setNewNota((prev) => ({
+            ...prev,
+            id_asignatura: asignatura.id_asignatura, 
+          }));
         } else {
           console.warn("No se encontraron asignaturas para este profesor.");
-          setAsignaturas([]);  // En caso de que no haya asignaturas
+          setAsignaturas([]);
         }
       } catch (error) {
         console.error("Error al cargar las asignaturas:", error);
@@ -47,9 +55,9 @@ function Add_Notas() {
         setCargando(false);
       }
     };
+  
     cargarAsignaturas();
   }, [user]);
-
 
   // Cargar alumnos cuando se monta el componente o cambia curso.idCurso
   useEffect(() => {
@@ -60,7 +68,7 @@ function Add_Notas() {
       }
       try {
         // Obtener alumnos según curso.idCurso
-        const alumnosData = await getAlumnosByCurso(curso.idCurso);  
+        const alumnosData = await getSoloAlumnosByCurso(curso.idCurso);  
         if (Array.isArray(alumnosData)) {
           setAlumnos(alumnosData);
           setFilteredAlumnos(alumnosData.slice(0, 5));
@@ -93,7 +101,11 @@ function Add_Notas() {
 
   const handleAlumnoSelect = (alumno) => {
     setSelectedAlumno(alumno);
-    setNewNota({ ...newNota, rut: alumno.rut });
+    setNewNota((prev) => ({
+      ...prev,
+      rut: alumno.rut,
+      id_asignatura: asignaturas.length === 1 ? asignaturas[0].id_asignatura : "",
+    }));
     setSearchTerm(`${alumno.nombre} ${alumno.apellido}`);
     setIsListVisible(false);
   };
@@ -102,14 +114,14 @@ function Add_Notas() {
     // Limpia el mensaje antes de validar
     setMessage("");
     setMessageType("");
-  
+
     // Validaciones
     if (!newNota.rut || !newNota.tipo || !newNota.valor || !newNota.id_asignatura) {
       setMessage("Debe completar todos los campos.");
       setMessageType("warning");
       return;
     }
-  
+
     // Asegúrate de que el valor sea numérico
     const valorNumerico = parseFloat(newNota.valor);
     if (isNaN(valorNumerico) || valorNumerico < 2.0 || valorNumerico > 7.0) {
@@ -117,13 +129,13 @@ function Add_Notas() {
       setMessageType("error");
       return;
     }
-  
+
     try {
-      // Crea la nueva nota
+      console.log("Creando nota:", newNota);
       await createNota({ ...newNota, valor: valorNumerico }); // Se asegura de enviar `valor` como número
       setMessage("Nota creada exitosamente.");
       setMessageType("success");
-  
+
       // Restablece el formulario
       setNewNota({
         tipo: "",
@@ -131,10 +143,11 @@ function Add_Notas() {
         rut: "",
         id_asignatura: "",
       });
-  
+
       // Restablece otras variables de estado
       setSelectedAlumno(null);
-      setFilteredAlumnos(alumnos);
+      setSearchTerm("");
+      setIsListVisible(false);
     } catch (error) {
       console.error("Error al crear la nota:", error);
       setMessage("Hubo un error al crear la nota.");
@@ -143,50 +156,20 @@ function Add_Notas() {
   };
 
   const renderMessage = () => {
-    const messageClasses = "fixed top-5 right-5 w-full max-w-sm overflow-hidden bg-[#111827] rounded-lg shadow-md z-50 animate-bounce-slow";
-
     if (messageType === 'success') {
-      return (
-        <div className={messageClasses}>
-          <div className="px-4 py-2 -mx-3">
-            <div className="mx-3">
-              <span className="font-semibold text-emerald-500">Success</span>
-              <p className="text-sm text-gray-100">{message}</p>
-            </div>
-          </div>
-        </div>
-      );
+      return <SuccessAlert message={message} />;
     }
 
     if (messageType === 'error') {
-      return (
-        <div className={messageClasses}>
-          <div className="px-4 py-2 -mx-3">
-            <div className="mx-3">
-              <span className="font-semibold text-red-500">Error</span>
-              <p className="text-sm text-gray-100">{message}</p>
-            </div>
-          </div>
-        </div>
-      );
+      return <ErrorAlert message={message} />;
     }
 
     if (messageType === 'warning') {
-      return (
-        <div className={messageClasses}>
-          <div className="px-4 py-2 -mx-3">
-            <div className="mx-3">
-              <span className="font-semibold text-yellow-400">Warning</span>
-              <p className="text-sm text-gray-100">{message}</p>
-            </div>
-          </div>
-        </div>
-      );
+      return <WarningAlert message={message} />;
     }
 
     return null;
   };
-
 
   // Mostrar el mensaje de carga si es necesario
   if (cargando) return <p>Cargando...</p>;
@@ -213,20 +196,17 @@ function Add_Notas() {
         </select>
       </div>
 
-        {/* Asignatura */}
-        <div className="mb-4">
-          <label htmlFor="id_asignatura" className="block text-sm text-gray-500 dark:text-gray-300">Asignatura</label>
-          {asignaturas && asignaturas.length === 1 ? (
-            <p className="mt-2 block w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300"
-        >
-              {asignaturas[0].nombre} {/* Muestra el nombre de la asignatura */}
-            </p>
-          ) : (
-            <p className="mt-2 text-gray-700 dark:text-gray-300">
-              No se encontró asignatura asignada.
-            </p>
-          )}
-        </div>
+      {/* Asignatura */}
+      <div className="mb-4">
+        <label className="block text-sm text-gray-500 dark:text-gray-300">Asignatura</label>
+        {asignaturas.length === 1 ? (
+          <p className="mt-2 block w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2">
+            {asignaturas[0].nombre}
+          </p>
+        ) : (
+          <p className="text-gray-500 dark:text-gray-400">No hay asignaturas disponibles.</p>
+        )}
+      </div>
 
       {/* Búsqueda de alumno */}
       <div className="mb-4">
@@ -240,9 +220,13 @@ function Add_Notas() {
           className="mt-2 block w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300"
         />
         {isListVisible && (
-          <ul className="mt-2 bg-white dark:bg-gray-900 shadow-lg rounded-lg">
+          <ul className="list-none border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden mt-2 bg-white dark:bg-gray-900 shadow-lg">
             {filteredAlumnos.map((alumno) => (
-              <li key={alumno.rut} className="px-4 py-2 cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-700 text-gray-800 dark:text-white" onClick={() => handleAlumnoSelect(alumno)}>
+              <li
+                key={alumno.rut}
+                onClick={() => handleAlumnoSelect(alumno)}
+                className="px-4 py-2 cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-700 text-gray-800 dark:text-white"
+              >
                 {alumno.nombre} {alumno.apellido}
               </li>
             ))}
@@ -250,32 +234,27 @@ function Add_Notas() {
         )}
       </div>
 
-      {/* Valor de la Nota */}
+      {/* Valor */}
       <div className="mb-4">
-        <label htmlFor="valor" className="block text-sm text-gray-500 dark:text-gray-300"
-        >Valor
-        </label>
+        <label htmlFor="valor" className="block text-sm text-gray-500 dark:text-gray-300">Valor</label>
         <input
-          type="number"
+          type="text"
           name="valor"
           value={newNota.valor}
           onChange={handleInputChange}
-          min="2.0"
-          max="7.0"
-          step="0.1"
+          placeholder="Ingrese el valor de la nota"
           className="mt-2 block w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300"
         />
       </div>
 
-      {/* Botón de enviar */}
+      {renderMessage()}
+
       <button
         onClick={handleSubmit}
-        className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg focus:outline-none"
+        className="block w-full rounded-lg bg-blue-500 dark:bg-blue-800 text-white px-6 py-2 text-sm font-medium hover:bg-blue-600 dark:hover:bg-blue-900 focus:outline-none focus:ring focus:ring-blue-300"
       >
         Crear Nota
       </button>
-
-      {renderMessage()}
     </div>
   );
 }
