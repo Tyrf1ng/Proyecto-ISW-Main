@@ -6,12 +6,17 @@ import TableReservas from '../components/TableReservas';
 import { getCurso, getCursosByProfesor } from '@services/cursos.service.js'; 
 import { getNombreAsignaturaById, getAsignaturasByProfesor } from '@services/asignatura.service.js'; 
 import { getRutsDocentes } from '@services/usuarios.service.js';
+import { addDays, isWithinInterval, isAfter, isSameDay, parseISO } from 'date-fns';
 
 const Reservas = () => {
   const { reservas, fetchReservas, addReserva, editReserva, removeReserva, error } = useReservas();
   const { labs: laboratorios, fetchLabs } = useLabs();
   const { horarios, fetchHorarios } = useHorarios(); 
   const [filterText, setFilterText] = useState('');
+  const [selectedFilter, setSelectedFilter] = useState('option1'); 
+  const [showPreviousReservations, setShowPreviousReservations] = useState(false); // Estado para mostrar reservas anteriores
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1); // Estado para el mes seleccionado
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear()); // Estado para el año seleccionado
   const [open, setOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
@@ -45,7 +50,7 @@ const Reservas = () => {
     if (reservas.length > 0) {
       mapReservasConNombre();
     }
-  }, [reservas]);
+  }, [reservas, laboratorios]);
 
   const fetchRutsDocentes = async () => {
     try {
@@ -80,10 +85,12 @@ const Reservas = () => {
     const reservasMapeadas = await Promise.all(reservas.map(async reserva => {
       const nombreCurso = reserva.id_curso ? await fetchNombreCurso(reserva.id_curso) : reserva.id_curso;
       const nombreAsignatura = reserva.id_asignatura ? await fetchNombreAsignatura(reserva.id_asignatura) : reserva.id_asignatura;
+      const nombreLab = laboratorios.find(lab => lab.id_lab === reserva.id_lab)?.nombre || reserva.id_lab;
       const reservaConNombre = { 
         ...reserva, 
-        nombre_curso: nombreCurso ? nombreCurso.nombre : reserva.id_curso,
-        nombre_asignatura: nombreAsignatura
+        nombreCurso: nombreCurso ? nombreCurso.nombre : reserva.id_curso, // Asegúrate de que nombreCurso.nombre esté asignado correctamente
+        nombre_asignatura: nombreAsignatura,
+        nombre_lab: nombreLab
       };
       return reservaConNombre;
     }));
@@ -91,6 +98,13 @@ const Reservas = () => {
   };
 
   const handleFilterChange = (e) => setFilterText(e.target.value);
+
+  const handleFilterSelectChange = (e) => setSelectedFilter(e.target.value); 
+
+  const handleShowPreviousReservationsChange = (e) => setShowPreviousReservations(e.target.checked); // Maneja el cambio del checkbox
+
+  const handleMonthChange = (e) => setSelectedMonth(e.target.value); // Maneja el cambio del mes
+  const handleYearChange = (e) => setSelectedYear(e.target.value); // Maneja el cambio del año
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -115,7 +129,10 @@ const Reservas = () => {
     setEditOpen(true);
   };
 
-  const handleEditClose = () => setEditOpen(false);
+  const handleEditClose = () => {
+    setEditOpen(false);
+    setValidationError(null); // Restablece el mensaje de error
+  };
 
   const handleDeleteOpen = (reserva) => {
     setCurrentReserva({
@@ -147,7 +164,6 @@ const Reservas = () => {
         const cursos = await getCursosByProfesor(value);
         setCursos(cursos);
 
-
         setCurrentReserva((prevState) => ({
           ...prevState,
           usuario: value,
@@ -161,6 +177,20 @@ const Reservas = () => {
   };
 
   const handleSubmit = async () => {
+    const today = new Date();
+    const maxDate = addDays(today, 31);
+    const reservaDate = new Date(newReserva.fecha);
+  
+    if (!isAfter(reservaDate, today)) {
+      setValidationError("La fecha de la reserva debe ser posterior a la fecha actual.");
+      return;
+    }
+  
+    if (!isWithinInterval(reservaDate, { start: today, end: maxDate })) {
+      setValidationError("La fecha de la reserva debe estar dentro del próximo mes.");
+      return;
+    }
+  
     try {
       await addReserva(newReserva);
       handleClose();
@@ -173,24 +203,25 @@ const Reservas = () => {
   };
 
   const handleEditSubmit = async () => {
-    if (!currentReserva.id_horario) {
-      setValidationError("El campo 'Horario' es obligatorio.");
+    const today = new Date();
+    const maxDate = addDays(today, 31);
+    const reservaDate = new Date(currentReserva.fecha);
+  
+    if (!isAfter(reservaDate, today)) {
+      setValidationError("La fecha de la reserva debe ser posterior a la fecha actual.");
       return;
     }
-
-
+  
+    if (!isWithinInterval(reservaDate, { start: today, end: maxDate })) {
+      setValidationError("La fecha de la reserva debe estar dentro del próximo mes.");
+      return;
+    }
+  
     try {
-      await editReserva(currentReserva.id_reserva, {
-        id_lab: currentReserva.id_lab,
-        rut: currentReserva.rut,
-        fecha: currentReserva.fecha,
-        id_horario: currentReserva.id_horario,
-        id_asignatura: currentReserva.id_asignatura,
-        id_curso: currentReserva.id_curso
-      });
+      await editReserva(currentReserva.id_reserva, currentReserva);
       handleEditClose();
       fetchReservas();
-      setEditSuccess(true); 
+      setEditSuccess(true);
     } catch (error) {
       console.error("Error al actualizar la reserva: ", error);
       setValidationError("Los valores ingresados no son válidos");
@@ -209,15 +240,142 @@ const Reservas = () => {
     }
   };
 
+  const filteredReservas = reservasConNombre.filter(reserva => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); 
+  
+    const reservaDate = parseISO(reserva.fecha);
+    reservaDate.setHours(0, 0, 0, 0); 
+    
+    console.log('Comparing dates:', { today, reservaDate, reservaFecha: reserva.fecha, isSameDay: isSameDay(reservaDate, today) });
+  
+    if (!showPreviousReservations && reservaDate < today && !isSameDay(reservaDate, today)) {
+      return false;
+    }
+
+    if (selectedFilter === 'option5') {
+      return reservaDate.getMonth() + 1 === parseInt(selectedMonth) && reservaDate.getFullYear() === parseInt(selectedYear);
+    }
+  
+    if (selectedFilter === 'option1') {
+      return reserva.usuario.toLowerCase().includes(filterText.toLowerCase());
+    } else if (selectedFilter === 'option2') {
+      return reserva.nombre_lab && reserva.nombre_lab.toLowerCase().includes(filterText.toLowerCase());
+    } else if (selectedFilter === 'option3') {
+      return reserva.nombre_asignatura && reserva.nombre_asignatura.toLowerCase().includes(filterText.toLowerCase());
+    } else if (selectedFilter === 'option4') {
+      return reserva.nombreCurso && reserva.nombreCurso.toLowerCase().includes(filterText.toLowerCase());
+    }
+    return true;
+  });
+
   return (
     <div className="p-4 bg-gray-50 dark:bg-gray-800 min-h-screen">
         <h1 className="text-4xl text-center text-blue-100 mb-4">Reservas</h1>
         {error && <div className="text-red-500">{error}</div>}
-        <div className="flex justify-between items-center mb-4">
+        <div className="flex items-center mb-1">
+          {selectedFilter === 'option1' && (
+            <input
+              type="text"
+              placeholder="Buscar por nombre del docente"
+              value={filterText}
+              onChange={handleFilterChange}
+              className="mt-7 block rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300"
+              style={{ width: '325px' }}
+            />
+          )}
+          {selectedFilter === 'option2' && (
+            <input
+              type="text"
+              placeholder="Buscar por nombre del laboratorio"
+              value={filterText}
+              onChange={handleFilterChange}
+              className="mt-7 block rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300"
+              style={{ width: '325px' }}
+            />
+          )}
+          {selectedFilter === 'option3' && (
+            <input
+              type="text"
+              placeholder="Buscar por nombre de la Asignatura"
+              value={filterText}
+              onChange={handleFilterChange}
+              className="mt-7 block rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300"
+              style={{ width: '325px' }}
+            />
+          )}
+          {selectedFilter === 'option4' && (
+            <input
+              type="text"
+              placeholder="Buscar por Curso"
+              value={filterText}
+              onChange={handleFilterChange}
+              className="mt-7 block rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300"
+              style={{ width: '325px' }}
+            />
+          )}
+          {selectedFilter === 'option5' && (
+            <div className="flex items-center mt-7">
+              <select
+                value={selectedMonth}
+                onChange={handleMonthChange}
+                className="block rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300"
+              >
+                <option value="1">Enero</option>
+                <option value="2">Febrero</option>
+                <option value="3">Marzo</option>
+                <option value="4">Abril</option>
+                <option value="5">Mayo</option>
+                <option value="6">Junio</option>
+                <option value="7">Julio</option>
+                <option value="8">Agosto</option>
+                <option value="9">Septiembre</option>
+                <option value="10">Octubre</option>
+                <option value="11">Noviembre</option>
+                <option value="12">Diciembre</option>
+              </select>
+              <select
+                value={selectedYear}
+                onChange={handleYearChange}
+                className="ml-4 block rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300"
+              >
+                {Array.from({ length: 3 }, (_, i) => new Date().getFullYear() + 1 - i).map(year => (
+                  <option key={year} value={year}>{year}</option>
+                ))}
+              </select>
+            </div>
+          )}
+          <div className="ml-4 mt-1">
+            <label htmlFor="filter" className="block text-sm text-gray-500 dark:text-gray-300">Seleccionar filtro</label>
+            <select
+              name="filter"
+              id="filter"
+              value={selectedFilter}
+              onChange={handleFilterSelectChange}
+              className="mt-1 block w-64 h-10 rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-400 px-4 py-2 focus:ring focus:ring-blue-300"
+            >
+              <option value="option1">Filtrar por Docente</option>
+              <option value="option2">Filtrar por Laboratorio</option>
+              <option value="option3">Filtrar por Asignatura</option>
+              <option value="option4">Filtrar por Curso</option>
+              <option value="option5">Filtrar por Mes</option>
+            </select>
+          </div>
+          <div className="flex items-right ml-auto mt-8">
+            <input
+              type="checkbox"
+              id="showPreviousReservations"
+              checked={showPreviousReservations}
+              onChange={handleShowPreviousReservationsChange}
+              className="mr-1"
+              style={{ height: '20px' }}
+            />
+            <label htmlFor="showPreviousReservations" className="text-sm text-gray-500 dark:text-gray-300" style={{ lineHeight: '20px' }}>Mostrar reservas anteriores</label>
+          </div>
         </div>
 
         <TableReservas
-            reservas={reservasConNombre}
+            reservas={filteredReservas} 
             handleOpen={handleEditOpen}
             handleDelete={handleDeleteOpen}
         />
