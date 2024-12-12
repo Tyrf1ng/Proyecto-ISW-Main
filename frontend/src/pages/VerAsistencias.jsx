@@ -85,8 +85,8 @@ const VerAsistencias = () => {
         console.error("ID de asistencia no válido", asistenciaSeleccionada);
         throw new Error("ID de asistencia no válido");
       }
-
-      if (asistenciaSeleccionada.tipo === "Justificado" && !asistenciaSeleccionada.observacion) {
+  
+      if (asistenciaSeleccionada.tipo === "Justificado" && (!asistenciaSeleccionada.observacion || asistenciaSeleccionada.observacion.trim() === "")) {
         setMessage('El campo de observación no puede estar vacío');
         setMessageType('error');
         return;
@@ -131,10 +131,11 @@ const VerAsistencias = () => {
   const normalizeText = (text) => text.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
   const filteredAsistencias = asistencias.filter((asistencia) => {
+    const sanitizedFilterText = normalizeText(filterText).replace(/[^a-zA-Z\s]/g, "").toLowerCase();
     const matchesText = normalizeText(`${asistencia.usuario.nombre} ${asistencia.usuario.apellido}`)
       .toLowerCase()
-      .includes(normalizeText(filterText).toLowerCase());
-  
+      .includes(sanitizedFilterText);
+
     const formattedCreatedAt = formatTempo(new Date(asistencia.createdAt).toISOString(), "DD-MM-YYYY");
     const formattedFilterDate = filterDate ? formatTempo(new Date(filterDate).toISOString(), "DD-MM-YYYY") : "";
 
