@@ -3,6 +3,8 @@ import { CursoContext } from "../context/CursoContext";
 import { getAsistenciasCurso, deleteAsistencia, updateAsistencia } from "../services/Asistencias.service";
 import TableComponentAsistencias from "../components/TableComponentAsistencias";
 import { format as formatTempo } from "@formkit/tempo"; // Import format function
+import SuccessAlert from '../components/SuccessAlert';
+import ErrorAlert from '../components/ErrorAlert';
 
 const VerAsistencias = () => {
   const { curso } = useContext(CursoContext);
@@ -19,6 +21,9 @@ const VerAsistencias = () => {
   // Estado para el diálogo de confirmación de eliminación
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [asistenciaToDelete, setAsistenciaToDelete] = useState(null);
+
+  const [message, setMessage] = useState('');
+  const [messageType, setMessageType] = useState('');
 
   useEffect(() => {
     const cargarAsistencias = async () => {
@@ -63,8 +68,12 @@ const VerAsistencias = () => {
       await deleteAsistencia(asistenciaToDelete); 
 
       setAsistencias(asistencias.filter((asistencia) => asistencia.id_asistencia !== asistenciaToDelete));
+      setMessage('Asistencia eliminada con éxito');
+      setMessageType('success');
     } catch (error) {
       console.error("Error al eliminar la asistencia:", error);
+      setMessage('Hubo un error al eliminar la asistencia');
+      setMessageType('error');
     } finally {
       setConfirmDialogOpen(false); 
     }
@@ -75,6 +84,12 @@ const VerAsistencias = () => {
       if (!asistenciaSeleccionada || !asistenciaSeleccionada.id_asistencia) {
         console.error("ID de asistencia no válido", asistenciaSeleccionada);
         throw new Error("ID de asistencia no válido");
+      }
+
+      if (asistenciaSeleccionada.tipo === "Justificado" && !asistenciaSeleccionada.observacion) {
+        setMessage('El campo de observación no puede estar vacío');
+        setMessageType('error');
+        return;
       }
   
       const updatedAsistencia = {
@@ -96,8 +111,12 @@ const VerAsistencias = () => {
       setAsistencias(asistencias.map((asistencia) =>
         asistencia.id_asistencia === updatedAsistencia.id_asistencia ? newAsistencia : asistencia
       ));
+      setMessage('Asistencia actualizada con éxito');
+      setMessageType('success');
     } catch (error) {
       console.error("Error al actualizar la asistencia:", error);
+      setMessage('Hubo un error al actualizar la asistencia');
+      setMessageType('error');
     }
   };
 
@@ -123,7 +142,27 @@ const VerAsistencias = () => {
     return matchesText && matchesDate;
   });
 
-  
+  useEffect(() => {
+    if (message) {
+      const timer = setTimeout(() => {
+        setMessage('');
+        setMessageType('');
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [message]);
+
+  const renderMessage = () => {
+    if (messageType === 'success') {
+      return <SuccessAlert message={message} />;
+    }
+
+    if (messageType === 'error') {
+      return <ErrorAlert message={message} />;
+    }
+
+    return null;
+  };
 
   if (cargando) {
     return (
@@ -135,6 +174,7 @@ const VerAsistencias = () => {
 
   return (
     <div className="p-4 bg-gray-50 dark:bg-gray-800">
+      {renderMessage()}
       <div className="mb-4 flex space-x-4">
         <input
           type="text"
