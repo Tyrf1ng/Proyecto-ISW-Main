@@ -123,6 +123,8 @@ const VerAsistencias = () => {
     return matchesText && matchesDate;
   });
 
+  
+
   if (cargando) {
     return (
       <div className="flex justify-center items-center h-64">

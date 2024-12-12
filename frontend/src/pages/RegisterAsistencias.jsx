@@ -1,10 +1,11 @@
 import { useState, useContext, useEffect } from "react";
 import { createAsistencia } from "../services/Asistencias.service";
-import { getAlumnosByCurso } from "../services/alumnos.service";
 import { CursoContext } from "../context/CursoContext";
 import TableRegisterAsistencias from "../components/TableRegisterAsistencias";
 import { getAsistenciasAlumnoFecha } from "../services/Asistencias.service";
 import { getSoloAlumnosByCurso } from "../services/cursos.service";
+import SuccessAlert from '../components/SuccessAlert';
+import ErrorAlert from '../components/ErrorAlert';
 
 const RegisterAsistencia = () => {
   const { curso } = useContext(CursoContext);
@@ -36,7 +37,6 @@ const RegisterAsistencia = () => {
 
   const handleRegister = async (attendance) => {
     try {
-
       if (!selectedDate) {
         setMensaje("Debe seleccionar una fecha");
         setMessageType("error");
@@ -53,9 +53,9 @@ const RegisterAsistencia = () => {
         return;
       }
       console.log("fecha actual hora y minutos actual", new Date().getDate(), new Date().getHours(), new Date().getMinutes());
-      console.log("fecha seleccionada hora y minutos seleccionados", utcDate.getDate() , selected.getHours(), selected.getMinutes() );
+      console.log("fecha seleccionada hora y minutos seleccionados", utcDate.getDate(), selected.getHours(), selected.getMinutes());
       const currentDate = new Date().getDate();
-      if(utcDate.getDate() > currentDate) {
+      if (utcDate.getDate() > currentDate) {
         setMensaje("La fecha seleccionada no puede ser mayor a la fecha actual.");
         setMessageType("error");
         return;
@@ -118,34 +118,23 @@ const RegisterAsistencia = () => {
     }
   };
 
-  const renderMessage = () => {
-    const messageClasses =
-      "fixed top-5 right-5 w-full max-w-sm overflow-hidden bg-[#111827] rounded-lg shadow-md z-50";
+  useEffect(() => {
+    if (mensaje) {
+      const timer = setTimeout(() => {
+        setMensaje("");
+        setMessageType("");
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [mensaje]);
 
+  const renderMessage = () => {
     if (messageType === "success") {
-      return (
-        <div className={messageClasses}>
-          <div className="px-4 py-2 -mx-3">
-            <div className="mx-3">
-              <span className="font-semibold text-emerald-500">Success</span>
-              <p className="text-sm text-gray-100">{mensaje}</p>
-            </div>
-          </div>
-        </div>
-      );
+      return <SuccessAlert message={mensaje} />;
     }
 
     if (messageType === "error") {
-      return (
-        <div className={messageClasses}>
-          <div className="px-4 py-2 -mx-3">
-            <div className="mx-3">
-              <span className="font-semibold text-red-500">Error</span>
-              <p className="text-sm text-gray-100">{mensaje}</p>
-            </div>
-          </div>
-        </div>
-      );
+      return <ErrorAlert message={mensaje} />;
     }
 
     return null;
