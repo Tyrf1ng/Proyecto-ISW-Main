@@ -137,25 +137,14 @@ const Horarios = () => {
     }, []);
 
     useEffect(() => {
-        if (createSuccess) {
-            const timer = setTimeout(() => setCreateSuccess(false), 3000);
-            return () => clearTimeout(timer);
+        if (message) {
+          const timer = setTimeout(() => {
+            setMessage("");
+            setMessageType("");
+          }, 3000);
+          return () => clearTimeout(timer);
         }
-    }, [createSuccess]);
-
-    useEffect(() => {
-        if (editSuccess) {
-            const timer = setTimeout(() => setEditSuccess(false), 3000);
-            return () => clearTimeout(timer);
-        }
-    }, [editSuccess]);
-
-    useEffect(() => {
-        if (deleteSuccess) {
-            const timer = setTimeout(() => setDeleteSuccess(false), 3000);
-            return () => clearTimeout(timer);
-        }
-    }, [deleteSuccess]);
+      }, [message]);
 
     const renderMessage = () => {
         if (messageType === 'success') {

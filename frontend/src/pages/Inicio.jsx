@@ -113,6 +113,10 @@ function Inicio() {
                 <span className="text-[#3B82F6]">XXXXXXXXX</span>. <br />
                 Desde aquí puedes gestionar los recursos educativos y coordinar con los profesores y alumnos.
               </span>
+            ) : usuario.rol === 'Encargado de Laboratorio' ? (
+              <span>
+                Bienvenido a la página de administración de las reservas, laboratorios y horarios.
+              </span>
             ) : (
               <span>Rol no reconocido</span>
             )}

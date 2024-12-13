@@ -3,7 +3,6 @@ import useLabs from '../hooks/labs/useLabs';
 import TableLabs from '../components/TableLabs';
 import SuccessAlert from '../components/SuccessAlert';
 import ErrorAlert from '../components/ErrorAlert';
-
 const Labs = () => {
   const { labs = [], fetchLabs, addLab, editLab, removeLab, error } = useLabs();
   const [filterText, setFilterText] = useState('');
@@ -139,6 +138,25 @@ const Labs = () => {
     fetchLabs();
   }, []);
 
+  const sortedLabs = [...labs].sort((a, b) => {
+    if (a[sortConfig.key] < b[sortConfig.key]) {
+      return sortConfig.direction === 'asc' ? -1 : 1;
+    }
+    if (a[sortConfig.key] > b[sortConfig.key]) {
+      return sortConfig.direction === 'asc' ? 1 : -1;
+    }
+    return 0;
+  });
+
+  useEffect(() => {
+    if (message) {
+      const timer = setTimeout(() => {
+        setMessage("");
+        setMessageType("");
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [message]);
 
   const renderMessage = () => {
     if (messageType === 'success') {
@@ -156,12 +174,20 @@ const Labs = () => {
     <div className="p-4 bg-gray-50 dark:bg-gray-800 min-h-screen">
       <h1 className="text-4xl text-center text-blue-100 mb-4">Laboratorios</h1>
       {error && <div className="text-red-500">{error}</div>}
-      <div className="flex justify-between items-center mb-4">
-        <button onClick={handleOpen} className="ml-auto px-4 py-2 bg-blue-600 text-white rounded">Crear Laboratorio</button>
+      <div className="flex justify-between items-center mb-2 mt-6">
+        <input
+          type="text"
+          value={filterText}
+          onChange={handleFilterChange}
+          placeholder="Filtrar por nombre"
+          className="mt-2 block rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300"
+          style={{ maxWidth: '300px' }}
+        />
+        <button onClick={handleOpen} className="ml-4 h-10 px-4 py-2 bg-blue-600 text-white rounded">Crear Laboratorio</button>
       </div>
 
       <TableLabs
-        labs={labs.filter((lab) =>
+        labs={sortedLabs.filter((lab) =>
           lab.nombre && lab.nombre.toLowerCase().includes(filterText.toLowerCase())
         )}
         handleOpen={handleEditOpen}
@@ -180,7 +206,7 @@ const Labs = () => {
               name="nombre"
               value={newLab.nombre}
               onChange={handleInputChange}
-              className="w-full p-2 mb-4 border rounded dark:bg-gray-700 dark:text-white"
+              className="w-full p-2 mb-4 border rounded bg-gray-50 dark:bg-gray-700 dark:text-white"
               placeholder="Nombre"
             />
             <input
@@ -188,7 +214,7 @@ const Labs = () => {
               name="capacidad"
               value={newLab.capacidad}
               onChange={handleInputChange}
-              className="w-full p-2 mb-4 border rounded dark:bg-gray-700 dark:text-white"
+              className="w-full p-2 mb-4 border rounded bg-gray-50 dark:bg-gray-700 dark:text-white"
               placeholder="Capacidad"
             />
             <button onClick={handleSubmit} className="w-full px-4 py-2 bg-blue-600 text-white rounded">Guardar</button>
@@ -206,7 +232,7 @@ const Labs = () => {
               name="nombre"
               value={currentLab?.nombre || ''}
               onChange={handleEditInputChange}
-              className="w-full p-2 mb-4 border rounded dark:bg-gray-700 dark:text-white"
+              className="w-full p-2 mb-4 border rounded bg-gray-50 dark:bg-gray-700 dark:text-white"
               placeholder="Nombre"
             />
             <input
@@ -214,7 +240,7 @@ const Labs = () => {
               name="capacidad"
               value={currentLab?.capacidad || ''}
               onChange={handleEditInputChange}
-              className="w-full p-2 mb-4 border rounded dark:bg-gray-700 dark:text-white"
+              className="w-full p-2 mb-4 border rounded bg-gray-50 dark:bg-gray-700 dark:text-white"
               placeholder="Capacidad"
             />
             <button onClick={handleEditSubmit} className="w-full px-4 py-2 bg-blue-600 text-white rounded">Guardar</button>
