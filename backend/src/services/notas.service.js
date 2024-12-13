@@ -214,6 +214,7 @@ export async function getNotasPorCursoYAsignatura(id_curso, id_asignatura) {
                 rut: In(rutsAlumnos),
                 id_asignatura,
             },
+            relations: ["usuario", "asignatura"],
         });
 
 

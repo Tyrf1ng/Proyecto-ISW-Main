@@ -11,9 +11,9 @@ function Add_Notas() {
   const { curso } = useContext(CursoContext);
   const { asignatura } = useContext(AsignaturaContext);
   const [newNota, setNewNota] = useState({
-    tipo: "",
-    valor: "",
-    rut: "",
+    tipo: '',
+    valor: '',
+    rut: '',
     id_asignatura: asignatura.id_asignatura || '',
   });
   const [message, setMessage] = useState("");
@@ -25,6 +25,8 @@ function Add_Notas() {
   const [isListVisible, setIsListVisible] = useState(false);
   const [cargando, setCargando] = useState(true);
 
+console.log("curso.idCurso", curso.idCurso);
+console.log("asignatura.id_asignatura", asignatura.id_asignatura);
   useEffect(() => {
     const cargarDatos = async () => {
       if (!curso.idCurso) {  // Comprobar si el curso tiene un idCurso válido
@@ -51,8 +53,9 @@ function Add_Notas() {
     };
 
     cargarDatos();
-  }, [curso.idCurso]); // Solo se monitorea el idCurso para la carga de alumnos
-console.log(asignatura)
+  }, [curso.idCurso]);
+
+
   const handleSearchChange = (e) => {
     const query = e.target.value.toLowerCase();
     setSearchTerm(query);
@@ -67,13 +70,6 @@ console.log(asignatura)
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setNewNota({ ...newNota, [name]: value });
-  };
-
-  const handleAsignaturaSelect = (selected) => {
-    setNewNota((prev) => ({
-      ...prev,
-      id_asignatura: selected.idAsignatura,
-    }));
   };
 
   const handleAlumnoSelect = (alumno) => {
@@ -104,6 +100,7 @@ console.log(asignatura)
     }
 
     try {
+      console.log("Creando nota:", newNota);
       await createNota({ ...newNota, valor: valorNumerico });
       setMessage("Nota creada exitosamente.");
       setMessageType("success");

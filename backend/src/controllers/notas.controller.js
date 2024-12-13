@@ -160,11 +160,11 @@ export async function getNotasPorCursoYAsignaturaController(req, res) {
         }
 
         // Llamar al servicio
-        const [anotaciones, error] = await getAnotacionesPorCursoYAsignaturaService(id_curso, id_asignatura);
+        const [notas, error] = await getNotasPorCursoYAsignatura(id_curso, id_asignatura);
 
         if (error) return handleErrorClient(res, 404, error);
 
-        handleSuccess(res, 200, "Anotaciones encontradas", anotaciones);
+        handleSuccess(res, 200, "Anotaciones encontradas", notas);
     } catch (error) {
         console.error("Error en el controller de obtener anotaciones por curso y asignatura:", error);
         handleErrorServer(res, 500, error.message);

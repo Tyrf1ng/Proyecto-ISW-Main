@@ -26,7 +26,6 @@ const VerNotas = () => {
   if (!usuario) {
     return <div>Cargando usuario...</div>;
   }
-
   const handleFilterChange = (e) => setFilterText(e.target.value);
 
   const handleDelete = (id) => {
