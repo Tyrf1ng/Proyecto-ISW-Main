@@ -6,9 +6,11 @@ id_nota: Joi.number()
 .messages({
 "number.empty": "El id del curso no puede estar vacío." }),
 id_asignatura: Joi.number()
+.required()
 .messages({
 "number.empty": "El id de la asignatura no puede estar vacío." }),
 rut: Joi.string()
+.required()
 .messages({
 "string.empty": "El rut del alumno no puede estar vacío." }),
 valor: Joi.number()

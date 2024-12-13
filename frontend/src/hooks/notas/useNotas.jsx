@@ -1,35 +1,40 @@
 import { useEffect, useState, useContext } from 'react';
-import { NotasCurso } from '@services/notas.service.js';
+import { getNotasPorCursoYAsignatura } from '@services/notas.service.js';
 import { CursoContext } from '@context/CursoContext';
+import { AsignaturaContext } from '@context/AsignaturaContext';
 
 const useNotasCurso = () => {
   const { curso } = useContext(CursoContext);
   const [notas, setNotas] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  const { asignatura } = useContext(AsignaturaContext);
+  
   const fetchNotas = async () => {
     try {
-      if (!curso.idCurso) {
+      if (!curso.idCurso && !asignatura.idAsignatura) {
         return;
       }
-      const response = await NotasCurso(curso.idCurso);
-      if (response.status === 'Success' && Array.isArray(response.data)) {
-        setNotas(response.data);
+      const response = await getNotasPorCursoYAsignatura(curso.idCurso, asignatura.idAsignatura);
+      if (Array.isArray(response)) {
+        setNotas(response); 
       } else {
-        setNotas([]); 
+        setNotas([]);
+        console.error("Formato de respuesta inesperado:", response);
       }
     } catch (error) {
-      console.error("Error en obtener las notas: ", error);
-      setNotas([]); 
+      console.error("Error al obtener las notas:", error);
+      setNotas([]);
     } finally {
       setLoading(false);
     }
   };
+
+
   useEffect(() => {
-    if (curso.idCurso) {
+    if (curso.idCurso && asignatura.idAsignatura) {
       fetchNotas();
     }
-  }, [curso.idCurso]);
+  }, [curso.idCurso, asignatura.idAsignatura]);
   return { notas, loading, fetchNotas };
 };
 

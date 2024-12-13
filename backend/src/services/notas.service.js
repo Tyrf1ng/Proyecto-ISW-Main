@@ -21,6 +21,7 @@ export async function getNotasCurso(id_curso) {
         if (rutsAlumnos === 0) {
             return [null, "No hay alumnos en este curso"];
         }
+        
 
         const asignaturasDelCurso = await AsignaturaCursoRepository.find({
             where: { id_curso },
@@ -67,40 +68,6 @@ export async function getNotasCurso(id_curso) {
     }
 }
 
-
-//FUNCIONA NO TOCAR
-//función para traer todas las notas de un alumno
-export async function getNotasAlumno(rut) {
-    try {
-        const notasRepository = AppDataSource.getRepository(Notas);
-        const notas = await notasRepository.find({
-            where: { rut: rut },
-            relations: ["asignatura", "usuario"], 
-        });
-
-        if (!notas || notas.length === 0) return [null, "No hay notas"];
-
-        
-        const notasConDatos = notas.map(nota => ({
-            id_nota: nota.id_nota,
-            tipo: nota.tipo,
-            valor: nota.valor,
-            rut_alumno: nota.usuario.rut,
-            nombre_alumno: nota.usuario.nombre,
-            apellido_alumno: nota.usuario.apellido,
-            nombre_asignatura: nota.asignatura.nombre,
-            id_asignatura: nota.asignatura.id_asignatura,
-        }));
-
-        return [notasConDatos, null];
-    } catch (error) {
-        console.error("Error al obtener las notas:", error);
-        return [null, "Error interno del servidor"];
-    }
-}
-
-
-
 //funcion para traer todas las notas de un asignatura por alumno
 //FUNCIONA NO TOCAR
 
@@ -127,23 +94,6 @@ export async function getNotasAsignatura(id_asignatura) {
         return [null, "Error interno del servidor"];
     }
 }
-
-//funcion para traer una nota por id
-//FUNCIONA NO TOCAR
-export async function getNota(id_nota) {
-    try {
-        const notasRepository = AppDataSource.getRepository(Notas);
-        const nota = await notasRepository.findOneBy({ id_nota: id_nota });
-
-        if (!nota) return [null, "No se encontró la nota"];
-        return [nota, null];
-    } catch (error) {
-        console.error("Error al obtener la nota:", error);
-        return [null, "Error interno del servidor"];
-    }
-}
-
-
 
 //funcion para actualizar una nota
 //FUNCIONA NO TOCAR
@@ -238,6 +188,51 @@ export async function getNotasAlumnoAsignatura(rut, id_asignatura) {
         return [notasData, null];
     } catch (error) {
         console.error("Error al obtener las notas:", error);
+        return [null, "Error interno del servidor"];
+    }
+}
+export async function getNotasPorCursoYAsignatura(id_curso, id_asignatura) {
+    try {
+        const NotasRepository = AppDataSource.getRepository(Notas);
+        const ConectUsuarioCursoRepository = AppDataSource.getRepository(Conect_Usuario_CursoSchema);
+        
+        // Obtener los alumnos relacionados con el curso
+        const relacionesCurso = await ConectUsuarioCursoRepository.find({
+            where: { id_curso },
+        });
+
+        if (!relacionesCurso || relacionesCurso.length === 0) {
+            return [null, "No hay alumnos asociados a este curso"];
+        }
+
+        // Extraer los ruts de los alumnos relacionados con el curso
+        const rutsAlumnos = relacionesCurso.map(relacion => relacion.rut);
+
+        // Buscar las anotaciones relacionadas con estos ruts y la asignatura específica
+        const notas = await NotasRepository.find({
+            where: {
+                rut: In(rutsAlumnos),
+                id_asignatura,
+            },
+            relations: ["usuario", "asignatura"],
+        });
+
+
+        if (!notas || notas.length === 0) {
+            return [null, "No hay anotaciones para este curso y asignatura"];
+        }
+   const notasData = notas.map(nota => ({
+            ...nota,
+            nota_tipo: nota.tipo,
+            nota_valor: nota.valor,
+            nombre_alumno: nota.usuario.nombre,
+            apellido_alumno: nota.usuario.apellido,
+            nombre_asignatura: nota.asignatura.nombre
+        }));
+
+        return [notasData, null];
+    } catch (error) {
+        console.error("Error al obtener las anotaciones por curso y asignatura:", error);
         return [null, "Error interno del servidor"];
     }
 }
