@@ -5,7 +5,6 @@ import TableComponent from '../components/TableNotas';
 import { UsuarioContext } from '@context/UsuarioContext';
 import SuccessAlert from '@components/SuccessAlert';
 import ErrorAlert from '@components/ErrorAlert';
-import WarningAlert from '@components/warningAlert';
 
 const VerNotas = () => {
   const { usuario, cargarUsuario } = useContext(UsuarioContext);
