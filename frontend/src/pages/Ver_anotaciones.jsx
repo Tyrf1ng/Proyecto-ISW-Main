@@ -3,6 +3,7 @@ import { CursoContext } from '../context/CursoContext';
 import { AsignaturaContext } from '../context/AsignaturaContext';
 import { UsuarioContext } from '../context/UsuarioContext';
 import { getAnotacionesPorCursoYAsignatura, createAnotacion, deleteAnotacion, updateAnotacion } from '@services/anotaciones.service.js';
+import { getAlumnosByCurso } from '@services/alumnos.service.js';
 import TableAnotacionComponent from '../components/Table';
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 
@@ -21,7 +22,7 @@ const Ver_anotaciones = () => {
     tipo: 'Positiva',
     rut: '',
     descripcion: '',
-    id_asignatura: asignatura.id_asignatura || '',
+    idAsignatura: asignatura.idAsignatura || '',
     createdAt: new Date().toISOString(),
   });
 
@@ -39,10 +40,10 @@ const Ver_anotaciones = () => {
   }, [usuario, cargarUsuario]);
 
   useEffect(() => {
-    if (curso.idCurso && asignatura.id_asignatura) {
+    if (curso.idCurso && asignatura.idAsignatura) {
       const cargarAnotaciones = async () => {
         try {
-          const data = await getAnotacionesPorCursoYAsignatura(curso.idCurso, asignatura.id_asignatura);
+          const data = await getAnotacionesPorCursoYAsignatura(curso.idCurso, asignatura.idAsignatura);
           setAnotaciones(data);
         } catch (error) {
           console.error('Error al cargar las anotaciones', error);
@@ -50,11 +51,28 @@ const Ver_anotaciones = () => {
       };
       cargarAnotaciones();
     }
-  }, [curso.idCurso, asignatura.id_asignatura]);
+  }, [curso.idCurso, asignatura.idAsignatura]);
 
-  const handleFilterChange = (e) => setFilterText(e.target.value);
+  useEffect(() => {
+    const cargarAlumnos = async () => {
+      try {
+        const data = await getAlumnosByCurso();
+        setAlumnos(data);
+      } catch (error) {
+        console.error('Error al cargar los alumnos:', error);
+      }
+    };
 
-  const handleDateFilterChange = (e) => setFilterDate(e.target.value);
+    cargarAlumnos();
+  }, []);
+
+  const handleFilterChange = (e) => {
+    setFilterText(e.target.value);
+  };
+
+  const handleDateFilterChange = (e) => {
+    setFilterDate(e.target.value);
+  };
 
   const handleAlumnoSearchChange = (e) => {
     const query = e.target.value.toLowerCase();
@@ -85,14 +103,16 @@ const Ver_anotaciones = () => {
       tipo: 'Positiva',
       rut: '',
       descripcion: '',
-      id_asignatura: asignatura.id_asignatura || '',
+      idAsignatura: asignatura.idAsignatura || '',
       createdAt: new Date().toISOString(),
     });
 
     setIsModalOpen(true);
   };
 
-  const handleCloseModal = () => setIsModalOpen(false);
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
 
   const handleSubmit = async () => {
     try {
@@ -101,7 +121,7 @@ const Ver_anotaciones = () => {
       } else {
         await createAnotacion(newAnotacion);
       }
-      const updatedAnotaciones = await getAnotacionesPorCursoYAsignatura(curso.idCurso, asignatura.id_asignatura);
+      const updatedAnotaciones = await getAnotacionesPorCursoYAsignatura(curso.idCurso, asignatura.idAsignatura);
       setAnotaciones(updatedAnotaciones);
       handleCloseModal();
     } catch (error) {
@@ -117,7 +137,7 @@ const Ver_anotaciones = () => {
   const handleConfirmDelete = async () => {
     try {
       await deleteAnotacion(anotacionToDelete);
-      const updatedAnotaciones = await getAnotacionesPorCursoYAsignatura(curso.idCurso, asignatura.id_asignatura);
+      const updatedAnotaciones = await getAnotacionesPorCursoYAsignatura(curso.idCurso, asignatura.idAsignatura);
       setAnotaciones(updatedAnotaciones);
     } catch (error) {
       console.error('Error al eliminar la anotación:', error);
@@ -287,10 +307,16 @@ const Ver_anotaciones = () => {
               ></textarea>
             </div>
             <div className="flex justify-between mt-6">
-              <button onClick={handleSubmit} className="px-6 py-3 bg-blue-600 text-white rounded-lg text-lg">
+              <button
+                onClick={handleSubmit}
+                className="px-6 py-3 bg-blue-600 text-white rounded-lg text-lg"
+              >
                 {isEditMode ? 'Actualizar' : 'Guardar'}
               </button>
-              <button onClick={handleCloseModal} className="px-6 py-3 bg-gray-400 text-white rounded-lg text-lg">
+              <button
+                onClick={handleCloseModal}
+                className="px-6 py-3 bg-gray-400 text-white rounded-lg text-lg"
+              >
                 Cancelar
               </button>
             </div>
@@ -302,10 +328,16 @@ const Ver_anotaciones = () => {
           <div className="p-8 rounded-lg shadow-xl bg-white text-black dark:bg-[#111827] dark:text-white">
             <h2 className="text-2xl font-bold mb-4">¿Estás seguro de que deseas eliminar esta anotación?</h2>
             <div className="flex justify-between">
-              <button onClick={handleConfirmDelete} className="px-6 py-3 bg-red-600 text-white rounded-lg text-lg">
+              <button
+                onClick={handleConfirmDelete}
+                className="px-6 py-3 bg-red-600 text-white rounded-lg text-lg"
+              >
                 Eliminar
               </button>
-              <button onClick={() => setConfirmDialogOpen(false)} className="px-6 py-3 bg-gray-400 text-white rounded-lg text-lg">
+              <button
+                onClick={() => setConfirmDialogOpen(false)}
+                className="px-6 py-3 bg-gray-400 text-white rounded-lg text-lg"
+              >
                 Cancelar
               </button>
             </div>

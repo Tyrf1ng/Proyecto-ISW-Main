@@ -1,6 +1,6 @@
 "use strict";
 
-import{
+import {
     createCurso,
     deleteCurso,
     getAlumnosPorCurso,
@@ -8,13 +8,13 @@ import{
     getCursos,
     getCursosByProfesor,
     updateCurso,
-}from "../services/curso.service.js";
+    createConectUsuarioCurso,
+} from "../services/curso.service.js";
 import {
     handleErrorClient,
     handleErrorServer,
     handleSuccess,
-}from "../handlers/responseHandlers.js";
-
+} from "../handlers/responseHandlers.js";
 
 export async function getAlumnosPorCursoController(req, res) {
     try {
@@ -110,5 +110,23 @@ export async function getCursosByProfesorController(req, res) {
             status: "Error",
             message: "Error interno del servidor"
         });
+    }
+}
+
+// Nuevo controlador para crear la relación conect_usuario_curso
+export async function createConectUsuarioCursoController(req, res) {
+    try {
+        const { rut, id_curso } = req.body;
+
+        if (!rut || !id_curso) {
+            return handleErrorClient(res, 400, "rut e id_curso son requeridos");
+        }
+
+        const [relacion, errorRelacion] = await createConectUsuarioCurso(rut, id_curso);
+        if (errorRelacion) return handleErrorClient(res, 400, errorRelacion);
+
+        handleSuccess(res, 201, "Relación creada", relacion);
+    } catch (error) {
+        handleErrorServer(res, 500, error.message);
     }
 }

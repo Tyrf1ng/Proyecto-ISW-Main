@@ -37,11 +37,20 @@ export async function getCursosByProfesor(rut) {
     }
 }
 
-
 export async function getSoloAlumnosByCurso(id_curso) {
     try {
         const { data } = await axios.get(`/cursos/alumnos/${id_curso}`);
         return data.data;
+    } catch (error) {
+        return error.response.data;
+    }
+}
+
+// Nueva función para crear la relación de un alumno con un curso
+export async function createConectUsuarioCurso(rut, id_curso) {
+    try {
+        const { data } = await axios.post('/cursos/conectar', { rut, id_curso });
+        return data.data; // Devuelve la relación creada
     } catch (error) {
         return error.response.data;
     }

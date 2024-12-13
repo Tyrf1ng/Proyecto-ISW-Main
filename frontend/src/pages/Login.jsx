@@ -26,11 +26,16 @@ const Login = () => {
       email: inputData.email,
       password: inputData.password,
     };
-
+  
     try {
       const response = await login(data);
       if (response.status === "Success") {
-        navigate("/cursos");
+        const usuario = JSON.parse(sessionStorage.getItem('usuario'));
+        if (usuario && usuario.rol === "Alumno") {
+          navigate("/asignaturas"); // Redirect students to the assignment selection page
+        } else {
+          navigate("/cursos"); // Redirect other users to the courses page
+        }
       } else if (response.status === "Client error") {
         setLoginError("Correo o contraseña incorrectos");
       }
@@ -40,6 +45,7 @@ const Login = () => {
     }
   };
 
+    sessionStorage.getItem('usuario')
   return (
     <div
       style={{
