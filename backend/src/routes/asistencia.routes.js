@@ -8,7 +8,8 @@ import {
     getAsistenciasAsignaturaController,
     getAsistenciasCursoController,
     updateAsistenciaController,
-    getAsistenciasAlumnoFechaController
+    getAsistenciasAlumnoFechaController,
+    getAsistenciasAlumnoAsignaturaController
 } from "../controllers/asistencia.controller.js";
 import { authenticateJwt } from "../middlewares/authentication.middleware.js";
 import authorize from "../middlewares/authorization.middleware.js";
@@ -19,6 +20,8 @@ router
   .use(authenticateJwt);
 
 router
+router
+    .get("/alumno/:rut/asignatura/:id_asignatura", authorize(["Alumno"]), getAsistenciasAlumnoAsignaturaController)
     .get("/:id_asistencia", authorize(["Docente", "Directivo"]), getAsistenciaController)
     .get("/alumno/:rut", authorize(["Docente", "Alumno", "Directivo"]), getAsistenciasAlumnoController)
     .get("/alumno/:rut/asignatura/:id_asignatura/fecha/:fecha", authorize(["Docente", "Alumno", "Directivo"]), getAsistenciasAlumnoFechaController)

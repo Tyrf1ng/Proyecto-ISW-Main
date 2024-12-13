@@ -82,44 +82,59 @@ export async function getAsistenciasAlumno(rut) {
     }
 
 
-export async function getAsistenciasAsignatura(id_asignatura, id_curso) {
-    try {
-        const asignaturaCurso = await asignaturaCursoRepository.findOne({
-            where: {
-                id_asignatura: id_asignatura,
-                id_curso: id_curso
+    export async function getAsistenciasAsignatura(id_asignatura, id_curso) {
+        try {
+            const asignaturaCurso = await asignaturaCursoRepository.findOne({
+                where: {
+                    id_asignatura: id_asignatura,
+                    id_curso: id_curso
+                }
+            });
+    
+            if (!asignaturaCurso) {
+                return [null, "No se encontró la asignatura para el curso especificado"];
             }
-        });
-
-        if (!asignaturaCurso) {
-            return [null, "No se encontró la asignatura para el curso especificado"];
+    
+            // Agregamos la relación con "usuario" para obtener los datos del alumno
+            const asistencias = await asistenciaRepository.find({
+                where: { id_asignatura: id_asignatura },
+                relations: ["usuario"] // Aseguramos que venga la info del usuario
+            });
+    
+            if (!asistencias || asistencias.length === 0) {
+                return [null, "No hay asistencias"];
+            }
+    
+            const asistenciasData = asistencias.map(asistencia => ({
+                id_asistencia: asistencia.id_asistencia,
+                rut: asistencia.rut,
+                id_asignatura: asistencia.id_asignatura,
+                tipo: asistencia.tipo,
+                observacion: asistencia.tipo === "Justificado" ? asistencia.observacion : null,
+                createdAt: asistencia.createdAt,
+                updatedAt: asistencia.updatedAt,
+                id_curso: id_curso,
+                usuario: asistencia.usuario ? {
+                    rut: asistencia.usuario.rut,
+                    nombre: asistencia.usuario.nombre,
+                    apellido: asistencia.usuario.apellido,
+                    email: asistencia.usuario.email,
+                    direccion: asistencia.usuario.direccion,
+                    comuna: asistencia.usuario.comuna,
+                    id_roles: asistencia.usuario.id_roles,
+                    telefono: asistencia.usuario.telefono,
+                    createdAt: asistencia.usuario.createdAt,
+                    updatedAt: asistencia.usuario.updatedAt,
+                } : null
+            }));
+    
+            return [asistenciasData, null];
+        } catch (error) {
+            console.error("Error al obtener las asistencias:", error);
+            return [null, "Error interno del servidor"];
         }
-
-        const asistencias = await asistenciaRepository.find({
-            where: { id_asignatura: id_asignatura }
-        });
-
-        if (!asistencias || asistencias.length === 0) {
-            return [null, "No hay asistencias"];
-        }
-
-        const asistenciasData = asistencias.map(asistencia => ({
-            id_asistencia: asistencia.id_asistencia,
-            rut: asistencia.rut,
-            id_asignatura: asistencia.id_asignatura,
-            tipo: asistencia.tipo,
-            observacion: asistencia.tipo === "Justificado" ? asistencia.observacion : null,
-            createdAt: asistencia.createdAt,
-            updatedAt: asistencia.updatedAt,
-            id_curso: id_curso
-        }));
-
-        return [asistenciasData, null];
-    } catch (error) {
-        console.error("Error al obtener las asistencias:", error);
-        return [null, "Error interno del servidor"];
     }
-}
+    
 
 export async function getAsistencia(id_asistencia) {
     try {
@@ -211,3 +226,65 @@ export async function deleteAsistencia(id_asistencia) {
         return [null, "Error interno del servidor"];
     }
 }
+
+export async function getAsistenciasAlumnoAsignatura(rut, id_asignatura) {
+    try {
+      const alumno = await usuarioRepository.findOne({ where: { rut, id_roles: 3 } });
+      if (!alumno) return [null, "El usuario no es un alumno o no existe"];
+  
+      // Verificar que el alumno efectivamente está inscrito en la asignatura
+      // Primero buscamos las asignaturas del alumno
+      const conexiones = await conectUsuarioCursoRepository.find({ where: { rut } });
+      if (!conexiones || conexiones.length === 0) return [null, "El alumno no tiene cursos asignados"];
+  
+      const idsCursos = conexiones.map(conn => conn.id_curso);
+  
+      // Verificar si la asignatura y el alumno están relacionados a través de asignatura_curso
+      const asignaturaCurso = await asignaturaCursoRepository.findOne({
+        where: {
+          id_asignatura: id_asignatura,
+          id_curso: In(idsCursos) // Debe estar en uno de los cursos del alumno
+        }
+      });
+  
+      if (!asignaturaCurso) {
+        return [null, "El alumno no está inscrito en esta asignatura"];
+      }
+  
+      // Obtener las asistencias filtradas por rut y asignatura
+      const asistencias = await asistenciaRepository.find({
+        where: { rut, id_asignatura },
+        relations: ["usuario"]
+      });
+  
+      if (!asistencias || asistencias.length === 0) return [null, "No hay asistencias para esta asignatura y alumno"];
+  
+      const asistenciasData = asistencias.map(asistencia => ({
+        id_asistencia: asistencia.id_asistencia,
+        rut: asistencia.rut,
+        id_asignatura: asistencia.id_asignatura,
+        tipo: asistencia.tipo,
+        observacion: asistencia.tipo === "Justificado" ? asistencia.observacion : null,
+        createdAt: asistencia.createdAt,
+        updatedAt: asistencia.updatedAt,
+        usuario: asistencia.usuario ? {
+          rut: asistencia.usuario.rut,
+          nombre: asistencia.usuario.nombre,
+          apellido: asistencia.usuario.apellido,
+          email: asistencia.usuario.email,
+          direccion: asistencia.usuario.direccion,
+          comuna: asistencia.usuario.comuna,
+          id_roles: asistencia.usuario.id_roles,
+          telefono: asistencia.usuario.telefono,
+          createdAt: asistencia.usuario.createdAt,
+          updatedAt: asistencia.usuario.updatedAt,
+        } : null
+      }));
+  
+      return [asistenciasData, null];
+    } catch (error) {
+      console.error("Error al obtener asistencias del alumno por asignatura:", error);
+      return [null, "Error interno del servidor"];
+    }
+  }
+  
