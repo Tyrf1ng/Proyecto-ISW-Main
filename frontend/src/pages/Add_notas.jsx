@@ -14,7 +14,7 @@ function Add_Notas() {
     tipo: '',
     valor: '',
     rut: '',
-    id_asignatura: asignatura.id_asignatura || '',
+    id_asignatura: asignatura.idAsignatura || '',
   });
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("");
@@ -26,7 +26,7 @@ function Add_Notas() {
   const [cargando, setCargando] = useState(true);
 
 console.log("curso.idCurso", curso.idCurso);
-console.log("asignatura.id_asignatura", asignatura.id_asignatura);
+console.log("asignatura.id_asignatura", asignatura.idAsignatura);
   useEffect(() => {
     const cargarDatos = async () => {
       if (!curso.idCurso) {  // Comprobar si el curso tiene un idCurso válido
@@ -109,7 +109,7 @@ console.log("asignatura.id_asignatura", asignatura.id_asignatura);
         tipo: "",
         valor: "",
         rut: "",
-        id_asignatura: asignatura.id_asignatura || ''   
+        id_asignatura: asignatura.idAsignatura || ''   
          });
 
       setSelectedAlumno(null);
