@@ -4,6 +4,7 @@ import {
     deleteAnotacionService,
     getAnotacionesPorCursoYAsignaturaService,
     getAnotacionesAlumnoService,
+    getAnotacionesPorRutYAsignaturaService,
     getAnotacionesAsignaturaService,
     getAnotacionesCursoService,
     getAnotacionesService, 
@@ -157,5 +158,44 @@ export async function getAnotacionesPorCursoYAsignatura(req, res) {
     } catch (error) {
         console.error("Error en el controller de obtener anotaciones por curso y asignatura:", error);
         handleErrorServer(res, 500, error.message);
+    }
+}
+export async function getAnotacionesPorRutYAsignatura(req, res) {
+    try {
+        const { rut, id_asignatura } = req.params; // Cambiado de req.query a req.params
+
+        // Validar que ambos parámetros estén presentes
+        if (!rut || !id_asignatura) {
+            return handleErrorClient(
+                res,
+                400,
+                "Los parámetros 'rut' e 'id_asignatura' son obligatorios"
+            );
+        }
+
+        // Validar que id_asignatura sea un número válido
+        const idAsignatura = parseInt(id_asignatura, 10);
+        if (isNaN(idAsignatura)) {
+            return handleErrorClient(
+                res,
+                400,
+                "'id_asignatura' debe ser un número válido"
+            );
+        }
+
+        // Llamar al servicio
+        const [anotaciones, error] = await getAnotacionesPorRutYAsignaturaService(rut, idAsignatura);
+
+        if (error) {
+            // Dependiendo del error, podrías querer cambiar el código de estado
+            // Aquí asumo que si el usuario no es válido o no hay anotaciones, se retorna 404
+            return handleErrorClient(res, 404, error);
+        }
+
+        // Retornar las anotaciones encontradas
+        handleSuccess(res, 200, "Anotaciones encontradas", anotaciones);
+    } catch (error) {
+        console.error("Error en el controller de obtener anotaciones por RUT y asignatura:", error);
+        handleErrorServer(res, 500, "Error interno del servidor");
     }
 }
