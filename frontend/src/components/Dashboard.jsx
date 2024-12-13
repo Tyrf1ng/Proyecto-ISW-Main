@@ -20,6 +20,9 @@ const NAVIGATION_BY_ROLE = {
       children: [
         { segment: 'add_usuario', title: 'Añadir usuario', icon: <AddIcon /> },
         { segment: 'ver_usuarios', title: 'Ver todos los usuarios', icon: <ManageSearchIcon /> },
+        { segment: 'add_docente', title: 'Añadir Docente', icon: <AddIcon /> },
+        { segment: 'ver_docentes', title: 'Ver todos los docentes', icon: <ManageSearchIcon /> },
+        { segment: 'add_enc_lab', title: 'Añadir Encargado de Laboratorio', icon: <AddIcon /> },
       ],
     },
     { segment: 'Estadisticas', title: 'Gestión de Usuarios', 

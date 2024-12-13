@@ -1,28 +1,30 @@
 import { useState, useEffect, useContext } from "react";
 import { CursoContext } from "../context/CursoContext";
+import { AsignaturaContext } from "../context/AsignaturaContext";
 import {
-  getAsistenciasCurso,
+  getAsistenciasAsignatura,
   deleteAsistencia,
   updateAsistencia,
 } from "../services/Asistencias.service";
 import TableComponentAsistencias from "../components/TableComponentAsistencias";
-import { format as formatTempo } from "@formkit/tempo"; // Import format function
+import { format as formatTempo } from "@formkit/tempo"; 
 import SuccessAlert from "../components/SuccessAlert";
 import ErrorAlert from "../components/ErrorAlert";
 
 const VerAsistencias = () => {
   const { curso } = useContext(CursoContext);
   const { idCurso } = curso;
+  const { asignatura } = useContext(AsignaturaContext);
+  const { idAsignatura } = asignatura;
+
   const [asistencias, setAsistencias] = useState([]);
   const [filterText, setFilterText] = useState("");
-  const [filterDate, setFilterDate] = useState(""); // State for date filter
+  const [filterDate, setFilterDate] = useState("");
   const [cargando, setCargando] = useState(true);
 
-  // Estado para el modal de edición
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [asistenciaSeleccionada, setAsistenciaSeleccionada] = useState(null);
 
-  // Estado para el diálogo de confirmación de eliminación
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [asistenciaToDelete, setAsistenciaToDelete] = useState(null);
 
@@ -31,13 +33,15 @@ const VerAsistencias = () => {
 
   useEffect(() => {
     const cargarAsistencias = async () => {
-      if (!idCurso) {
-        console.error("ID del curso no válido:", idCurso);
+      // Validar que tengamos idCurso e idAsignatura
+      if (!idCurso || !idAsignatura) {
+        console.error("ID del curso o de la asignatura no válido:", idCurso, idAsignatura);
         setCargando(false);
         return;
       }
       try {
-        const datosAsistencias = await getAsistenciasCurso(idCurso);
+        // Ahora obtenemos solo las asistencias de la asignatura que imparte el profesor
+        const datosAsistencias = await getAsistenciasAsignatura(idAsignatura, idCurso);
         setAsistencias(datosAsistencias || []);
       } catch (error) {
         console.error("Error al cargar las asistencias:", error);
@@ -46,7 +50,7 @@ const VerAsistencias = () => {
       }
     };
     cargarAsistencias();
-  }, [idCurso]);
+  }, [idCurso, idAsignatura]);
 
   const handleFilterChange = (e) => setFilterText(e.target.value);
 
@@ -100,43 +104,45 @@ const VerAsistencias = () => {
         console.error("ID de asistencia no válido", asistenciaSeleccionada);
         throw new Error("ID de asistencia no válido");
       }
-  
+
       const asistenciaOriginal = asistencias.find(
         (a) => a.id_asistencia === asistenciaSeleccionada.id_asistencia
       );
-  
+
       const tipoNoCambio = asistenciaOriginal && asistenciaOriginal.tipo === asistenciaSeleccionada.tipo;
       const observacionNoCambio = asistenciaOriginal && asistenciaOriginal.observacion === asistenciaSeleccionada.observacion;
-  
+
       if (tipoNoCambio && observacionNoCambio) {
         setMessage("No se han realizado cambios en la asistencia");
         setMessageType("error");
         return;
       }
-  
-      // Validación específica para observación vacía en tipo Justificado
-      if (asistenciaSeleccionada.tipo === "Justificado" && (!asistenciaSeleccionada.observacion || asistenciaSeleccionada.observacion.trim() === "")) {
+
+      if (
+        asistenciaSeleccionada.tipo === "Justificado" &&
+        (!asistenciaSeleccionada.observacion || asistenciaSeleccionada.observacion.trim() === "")
+      ) {
         setMessage("El campo de observación no puede estar vacío");
         setMessageType("error");
         return;
       }
-  
+
       const updatedAsistencia = {
         ...asistenciaSeleccionada,
         tipo: asistenciaSeleccionada.tipo,
         observacion: asistenciaSeleccionada.tipo === "Justificado" ? asistenciaSeleccionada.observacion : null
       };
-  
+
       const response = await updateAsistencia(updatedAsistencia);
-  
+
       setIsModalOpen(false);
-  
+
       const newAsistencia = {
         ...updatedAsistencia,
         ...response, 
         usuario: updatedAsistencia.usuario 
       };
-  
+
       setAsistencias(
         asistencias.map((asistencia) =>
           asistencia.id_asistencia === updatedAsistencia.id_asistencia
@@ -152,6 +158,7 @@ const VerAsistencias = () => {
       setMessageType("error");
     }
   };
+
   const handleModalChange = (e) => {
     const { name, value } = e.target;
     setAsistenciaSeleccionada({
@@ -164,15 +171,17 @@ const VerAsistencias = () => {
     text.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
   const filteredAsistencias = asistencias.filter((asistencia) => {
+    const usuario = asistencia.usuario || { nombre: "", apellido: "" };
     const sanitizedFilterText = normalizeText(filterText)
       .replace(/[^a-zA-Z\s]/g, "")
       .toLowerCase();
+    
     const matchesText = normalizeText(
-      `${asistencia.usuario.nombre} ${asistencia.usuario.apellido}`
+      `${usuario.nombre} ${usuario.apellido}`
     )
       .toLowerCase()
       .includes(sanitizedFilterText);
-
+  
     const formattedCreatedAt = formatTempo(
       new Date(asistencia.createdAt).toISOString(),
       "DD-MM-YYYY"
@@ -180,12 +189,11 @@ const VerAsistencias = () => {
     const formattedFilterDate = filterDate
       ? formatTempo(new Date(filterDate).toISOString(), "DD-MM-YYYY")
       : "";
-
-    const matchesDate = filterDate
-      ? formattedCreatedAt === formattedFilterDate
-      : true;
+  
+    const matchesDate = filterDate ? formattedCreatedAt === formattedFilterDate : true;
     return matchesText && matchesDate;
   });
+  
 
   useEffect(() => {
     if (message) {
@@ -242,12 +250,11 @@ const VerAsistencias = () => {
         handleDelete={handleDeleteRequest}
       />
 
-      {/* Modal de Edición */}
       {isModalOpen && asistenciaSeleccionada && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white dark:bg-gray-900 p-8 rounded-lg shadow-xl max-w-sm w-full">
             <h2 className="text-2xl font-bold mb-4 text-white">
-              Editar Asistencia{" "}
+              Editar Asistencia
             </h2>
             <div className="mb-4">
               <label
@@ -283,7 +290,6 @@ const VerAsistencias = () => {
                 </option>
               </select>
             </div>
-            {/* Mostrar el campo de observación solo si el tipo es "Justificado" */}
             {asistenciaSeleccionada.tipo === "Justificado" && (
               <div className="mb-4">
                 <label
@@ -320,7 +326,6 @@ const VerAsistencias = () => {
         </div>
       )}
 
-      {/* Cuadro de Confirmación para eliminar */}
       {confirmDialogOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="p-8 rounded-lg shadow-xl bg-white text-black dark:bg-[#111827] dark:text-white">

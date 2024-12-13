@@ -1,5 +1,7 @@
 import ReactDOM from 'react-dom/client';
 import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom";
+import '@styles/styles.css';
+
 import Root from '@pages/Root';
 import Inicio from '@pages/Inicio';
 import Cursos from '@pages/Cursos';
@@ -17,15 +19,18 @@ import Notas from '@pages/Notas';
 import Add_notas from '@pages/Add_notas';
 import Add_anotaciones from '@pages/Add_anotaciones';
 import Ver_anotaciones from '@pages/Ver_anotaciones';
-import '@styles/styles.css';
 import VerAsistencias from '@pages/VerAsistencias';
 import Reservas from '@pages/Reservas';
-import Profile from './pages/Profile';
 import Add_usuario from '@pages/Add_usuario';
 import Asignaturas from '@pages/Asignaturas';
+import Add_Reserva from '@pages/Add_reservas';
+
+import Profile from './pages/Profile';
 import LabsDocente from './pages/LabsDocente';
 import RegisterAsistencia from './pages/RegisterAsistencias';
-import Add_Reserva from '@pages/Add_reservas'; 
+import Add_docente from './pages/Add_docente';
+import Ver_docentes from './pages/Ver_docentes';
+import Add_enc_lab from './pages/Add_enc_lab';
 import Add_reservasDocentes from '@pages/Add_reservasdocentes';
 
 const router = createBrowserRouter([
@@ -82,7 +87,10 @@ const router = createBrowserRouter([
         element: <Outlet />,
         children: [
           { path: 'add_usuario', element: <Add_usuario /> },
+          { path: 'add_docente', element: <Add_docente /> },
           { path: 'ver_usuarios', element: <Ver_usuarios /> },
+          { path: 'ver_docentes', element: <Ver_docentes /> },
+          { path: 'add_enc_lab', element: <Add_enc_lab /> },
         ],
       },
     ],

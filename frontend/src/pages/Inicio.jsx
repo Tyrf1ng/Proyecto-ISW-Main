@@ -1,18 +1,18 @@
 import { useEffect, useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import backgroundImage from '../images/components/books.svg'; // Imagen local
-import { CursoContext } from '../context/CursoContext'; 
+import backgroundImage from '../images/components/books.svg';
+import { CursoContext } from '../context/CursoContext';
 import { AsignaturaContext } from '../context/AsignaturaContext';
-import { getAsignaturasByProfesor } from '../services/asignatura.service'; 
+import { getAsignaturasByProfesor } from '../services/asignatura.service';
 
 function Inicio() {
   const navigate = useNavigate();
-  const { curso } = useContext(CursoContext); 
+  const { curso } = useContext(CursoContext);
   const [usuario, setUsuario] = useState({ nombre: '', apellido: '', rut: '', rol: '' });
   const { asignatura, setAsignatura } = useContext(AsignaturaContext);
-  const [errorAsignatura, setErrorAsignatura] = useState(''); 
-  const [asignaturas, setAsignaturas] = useState(null); 
-  const [errorCurso, setErrorCurso] = useState(''); 
+  const [errorAsignatura, setErrorAsignatura] = useState('');
+  const [asignaturas, setAsignaturas] = useState(null);
+  const [errorCurso, setErrorCurso] = useState('');
 
   useEffect(() => {
     const usuarioGuardado = JSON.parse(sessionStorage.getItem('usuario'));
@@ -22,23 +22,23 @@ function Inicio() {
       setUsuario({
         nombre: usuarioGuardado.nombre,
         apellido: usuarioGuardado.apellido,
-        rut: usuarioGuardado.rut, 
-        rol: usuarioGuardado.rol || ''  
+        rut: usuarioGuardado.rut,
+        rol: usuarioGuardado.rol || ''
       });
 
       if (usuarioGuardado.rut && usuarioGuardado.rol === 'Docente') {
         getAsignaturasByProfesor(usuarioGuardado.rut)
           .then((asignaturas) => {
             console.log('Asignaturas obtenidas:', asignaturas);
-            // Ahora asumimos que "asignaturas" es un array, según el backend
-            if (Array.isArray(asignaturas) && asignaturas.length > 0) {
-              // Guardamos todas las asignaturas
-              setAsignaturas(asignaturas); 
-              // Seteamos la asignatura en el contexto AsignaturaContext con las claves correctas
-              setAsignatura({
+            if (asignaturas.length > 0) {
+              setAsignaturas(asignaturas);
+              setAsignatura(asignaturas[0] ? {
                 idAsignatura: asignaturas[0].id_asignatura,
-                nombre: asignaturas[0].nombre
-              });
+                nombre: asignaturas[0].nombre,
+                rut: asignaturas[0].rut,
+                createdAt: asignaturas[0].createdAt,
+                updatedAt: asignaturas[0].updatedAt,
+              } : asignaturas[0]);
             } else {
               setErrorAsignatura('No se encontraron asignaturas para este profesor.');
             }
@@ -49,10 +49,10 @@ function Inicio() {
           });
       }
     }
-  }, []);
+  }, [setAsignatura]);
 
   const handleSeleccionarAsignatura = () => {
-    navigate('/asignaturas'); // Redirige a la página de selección de asignaturas
+    navigate('/asignaturas');
   };
 
   const handleSeleccionarCurso = () => {

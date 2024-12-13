@@ -3,70 +3,7 @@ import { In } from "typeorm";
 import Notas from "../entity/nota.entity.js";
 import { AppDataSource } from "../config/configDb.js";
 import Conect_Usuario_CursoSchema from "../entity/conect_usuario_curso.entity.js";
-import AsignaturaCursoSchema from "../entity/asignatura.curso.entity.js";
-
-//funcion para traer todas las notas de un curso
-//Funciona no tocar
-export async function getNotasCurso(id_curso) {
-    try {
-        const UsuarioCursoRepository = AppDataSource.getRepository(Conect_Usuario_CursoSchema);
-        const AsignaturaCursoRepository = AppDataSource.getRepository(AsignaturaCursoSchema);
-
-        const alumno = await UsuarioCursoRepository.find({
-            where: { id_curso },
-            relations: ["usuario"], 
-        });
-
-        const rutsAlumnos = alumno.map(entry => entry.rut)
-        if (rutsAlumnos === 0) {
-            return [null, "No hay alumnos en este curso"];
-        }
-        
-
-        const asignaturasDelCurso = await AsignaturaCursoRepository.find({
-            where: { id_curso },
-        });
-        const idsAsignaturas = asignaturasDelCurso.map(entry => entry.id_asignatura);
-
-
-        if (idsAsignaturas.length === 0) {
-            return [null, "No hay asignaturas asociadas a este curso"];
-        }
-
-      
-        const notaRepository = AppDataSource.getRepository(Notas);
-
-        const notas = await notaRepository.find({
-            where: { rut: In(rutsAlumnos),
-                id_asignatura: In(idsAsignaturas)
-            },
-            relations: ["asignatura", "usuario"],
-
-        });
-
-        if (!notas || notas.length === 0) {
-            return [null, "No hay notas para este curso"];
-        }
-
-
-        const notasData = notas.map(nota => ({
-            id_nota: nota.id_nota,
-            tipo: nota.tipo,
-            valor: nota.valor,
-            rut: nota.usuario.rut,
-            nombre_alumno: nota.usuario.nombre,
-            apellido_alumno: nota.usuario.apellido,
-            nombre_asignatura: nota.asignatura.nombre,
-            id_asignatura: nota.asignatura.id_asignatura,
-        }));
-
-        return [notasData, null];
-        
-    } catch (error) {
-        console.error("Error al obtener las notas:", error);
-        return [null, "Error interno del servidor"];
-    }
-}
+import Usuario from "../entity/usuario.entity.js";
 
 //funcion para traer todas las notas de un asignatura por alumno
 //FUNCIONA NO TOCAR
@@ -169,12 +106,28 @@ export async function deleteNota(id_nota) {
 export async function getNotasAlumnoAsignatura(rut, id_asignatura) {
     try {
         const notasRepository = AppDataSource.getRepository(Notas);
+        const ConectUsuarioCursoRepository = AppDataSource.getRepository(Conect_Usuario_CursoSchema);
+
+        if (!rut || !id_asignatura) {
+            return [null, "RUT y ID de asignatura son requeridos"];
+        }
+        const UsuarioRepository = AppDataSource.getRepository(Usuario);
+        const alumno = await UsuarioRepository.findOne({
+            where: { rut: rut, id_roles: 3 },
+        });
+
+        if (!alumno) {
+            console.error(`Usuario con RUT ${rut} no encontrado o no tiene el rol 3`);
+            return [null, "Usuario no es un alumno válido"];
+        }
+
         const notas = await notasRepository.find({
             where: { rut: rut, id_asignatura: id_asignatura },
             relations: ["asignatura", "usuario"],
         });
 
         if (!notas || notas.length === 0) return [null, "No hay notas"];
+        
 
         const notasData = notas.map(nota => ({
             ...nota,
@@ -219,7 +172,7 @@ export async function getNotasPorCursoYAsignatura(id_curso, id_asignatura) {
 
 
         if (!notas || notas.length === 0) {
-            return [null, "No hay anotaciones para este curso y asignatura"];
+            return [null, "No hay Notas para este curso y asignatura"];
         }
    const notasData = notas.map(nota => ({
             ...nota,
@@ -232,7 +185,7 @@ export async function getNotasPorCursoYAsignatura(id_curso, id_asignatura) {
 
         return [notasData, null];
     } catch (error) {
-        console.error("Error al obtener las anotaciones por curso y asignatura:", error);
+        console.error("Error al obtener las Notas por curso y asignatura:", error);
         return [null, "Error interno del servidor"];
     }
 }

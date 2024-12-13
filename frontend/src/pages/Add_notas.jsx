@@ -25,8 +25,6 @@ function Add_Notas() {
   const [isListVisible, setIsListVisible] = useState(false);
   const [cargando, setCargando] = useState(true);
 
-console.log("curso.idCurso", curso.idCurso);
-console.log("asignatura.id_asignatura", asignatura.idAsignatura);
   useEffect(() => {
     const cargarDatos = async () => {
       if (!curso.idCurso) {  // Comprobar si el curso tiene un idCurso válido

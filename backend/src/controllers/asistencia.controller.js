@@ -1,5 +1,6 @@
 "use strict";
 import { asistenciaQueryValidation } from "../validations/asistencia.validation.js"
+import { getAsistenciasAlumnoAsignatura } from "../services/asistencia.service.js";
 
 import {
     createAsistencia,
@@ -170,3 +171,18 @@ export async function deleteAsistenciaController(req, res) {
         handleErrorServer(res, 500, error.message);
     }
 }
+
+export async function getAsistenciasAlumnoAsignaturaController(req, res) {
+    try {
+      const { rut, id_asignatura } = req.params;
+      const [asistencias, errorAsistencias] = await getAsistenciasAlumnoAsignatura(rut, id_asignatura);
+  
+      if (errorAsistencias) return handleErrorClient(res, 404, errorAsistencias);
+  
+      asistencias.length === 0
+        ? handleSuccess(res, 204)
+        : handleSuccess(res, 200, "Asistencias encontradas", asistencias);
+    } catch (error) {
+      handleErrorServer(res, 500, error.message);
+    }
+  }

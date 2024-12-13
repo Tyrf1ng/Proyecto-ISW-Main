@@ -4,7 +4,6 @@ import {
     deleteNota,
     getNotasAlumnoAsignatura,
     getNotasAsignatura,
-    getNotasCurso,
     getNotasPorCursoYAsignatura,
     updateNota
    
@@ -16,23 +15,6 @@ import {
   } from "../handlers/responseHandlers.js";
 
 import { notasQueryValidation } from "../validations/notas.validation.js";
-
-export async function getNotasCursoController(req, res) {
-    try {
-        const { id_curso } = req.params;
-
-        const [notas, errorNotas] = await getNotasCurso(id_curso);
-
-        if (errorNotas) return handleErrorClient(res, 404, errorNotas);
-
-        notas.length === 0
-            ? handleSuccess(res, 204)
-            : handleSuccess(res, 200, "Notas encontradas", notas);
-    } catch (error) {
-        handleErrorServer(res, 500, error.message);
-    }
-}
-
 
  export async function getNotasAsignaturaController(req, res) { 
     try { 
@@ -131,9 +113,25 @@ export async function deleteNotasController(req, res) {
 
 export async function getNotasAlumnoAsignaturaController(req, res) {
     try {
-        const { rut_alumno, id_asignatura } = req.params;
+        const { rut, id_asignatura } = req.params;
+        if (!rut || !id_asignatura) {
+            return handleErrorClient(
+                res,
+                400,
+                "Los parámetros 'rut' e 'id_asignatura' son obligatorios"
+            );
+        }
 
-        const [notas, errorNotas] = await getNotasAlumnoAsignatura(rut_alumno, id_asignatura);
+        const idAsignatura = parseInt(id_asignatura, 10);
+        if (isNaN(idAsignatura)) {
+            return handleErrorClient(
+                res,
+                400,
+                "'id_asignatura' debe ser un número válido"
+            );
+        }
+
+        const [notas, errorNotas] = await getNotasAlumnoAsignatura(rut, idAsignatura);
 
         if (errorNotas) return handleErrorClient(res, 404, errorNotas);
 
@@ -164,9 +162,9 @@ export async function getNotasPorCursoYAsignaturaController(req, res) {
 
         if (error) return handleErrorClient(res, 404, error);
 
-        handleSuccess(res, 200, "Anotaciones encontradas", notas);
+        handleSuccess(res, 200, "Notas encontradas", notas);
     } catch (error) {
-        console.error("Error en el controller de obtener anotaciones por curso y asignatura:", error);
+        console.error("Error en el controller de obtener Notas por curso y asignatura:", error);
         handleErrorServer(res, 500, error.message);
     }
 }
