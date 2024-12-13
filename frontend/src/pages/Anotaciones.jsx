@@ -1,10 +1,12 @@
 import { useContext, useEffect, useState } from 'react';
 import { CursoContext } from '../context/CursoContext';
+import { AsignaturaContext } from '../context/AsignaturaContext';
 import { getCursos } from '../services/cursos.service';
 import { Outlet } from 'react-router-dom';
 
 function Anotaciones() {
   const { curso } = useContext(CursoContext);
+  const { asignatura } = useContext(AsignaturaContext);
   const [nombreCurso, setNombreCurso] = useState('');
   const [loading, setLoading] = useState(true);
 
@@ -41,7 +43,7 @@ function Anotaciones() {
     <div className="px-4 bg-gray-100 dark:bg-[#1F2937] min-h-screen">
       <div className="text-center mt-12">
         <h3 className="text-3xl font-semibold text-gray-800 dark:text-white">
-          {loading ? 'Cargando...' : `Anotaciones del curso ${nombreCurso}`}
+          {loading ? 'Cargando...' : `Anotaciones para  ${asignatura.nombre}`}
         </h3>
       </div>
       <div className="mt-6">
