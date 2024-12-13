@@ -3,6 +3,9 @@ import useNotasCurso from '@hooks/notas/useNotas';
 import { deleteNota, updateNota } from '@services/notas.service';
 import TableComponent from '../components/TableNotas';
 import { UsuarioContext } from '@context/UsuarioContext';
+import SuccessAlert from '@components/SuccessAlert';
+import ErrorAlert from '@components/ErrorAlert';
+import WarningAlert from '@components/warningAlert';
 
 const VerNotas = () => {
   const { usuario, cargarUsuario } = useContext(UsuarioContext);
@@ -56,7 +59,7 @@ const VerNotas = () => {
   const handleUpdate = async (e) => {
     e.preventDefault();
     try {
-      const { id_nota, valor, tipo } = notaToEdit;
+      const { id_nota, valor, tipo, } = notaToEdit;
 
       if (!id_nota || typeof valor !== 'number' || isNaN(valor)) {
         console.error('Datos inválidos:', { id_nota, valor });
@@ -70,7 +73,7 @@ const VerNotas = () => {
         setMessageType('warning');
         return;
       }
-
+      console.log(notaToEdit);
       await updateNota(id_nota, { valor, tipo });
       setMessage('Nota actualizada correctamente');
       setMessageType('success');
@@ -82,6 +85,23 @@ const VerNotas = () => {
       setMessageType('error');
     }
   };
+
+  const renderMessage = () => {
+    if (messageType === 'success') {
+      return <SuccessAlert message={message} />;
+    }
+
+    if (messageType === 'error') {
+      return <ErrorAlert message={message} />;
+    }
+
+    if (messageType === 'warning') {
+      return <WarningAlert message={message} />;
+    }
+
+    return null;
+  };
+
 
   return (
     <div className="p-4 bg-gray-50 dark:bg-gray-800">
@@ -176,7 +196,7 @@ const VerNotas = () => {
                   className="w-full p-2 border rounded dark:text-gray-300 dark:bg-gray-900"
                 />
               </div>
-
+              {renderMessage()}
               <button
                 type="submit"
                 className="w-full px-6 py-3 bg-blue-600 text-white rounded-lg"

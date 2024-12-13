@@ -68,40 +68,6 @@ export async function getNotasCurso(id_curso) {
     }
 }
 
-
-//FUNCIONA NO TOCAR
-//función para traer todas las notas de un alumno
-export async function getNotasAlumno(rut) {
-    try {
-        const notasRepository = AppDataSource.getRepository(Notas);
-        const notas = await notasRepository.find({
-            where: { rut: rut },
-            relations: ["asignatura", "usuario"], 
-        });
-
-        if (!notas || notas.length === 0) return [null, "No hay notas"];
-
-        
-        const notasConDatos = notas.map(nota => ({
-            id_nota: nota.id_nota,
-            tipo: nota.tipo,
-            valor: nota.valor,
-            rut_alumno: nota.usuario.rut,
-            nombre_alumno: nota.usuario.nombre,
-            apellido_alumno: nota.usuario.apellido,
-            nombre_asignatura: nota.asignatura.nombre,
-            id_asignatura: nota.asignatura.id_asignatura,
-        }));
-
-        return [notasConDatos, null];
-    } catch (error) {
-        console.error("Error al obtener las notas:", error);
-        return [null, "Error interno del servidor"];
-    }
-}
-
-
-
 //funcion para traer todas las notas de un asignatura por alumno
 //FUNCIONA NO TOCAR
 
@@ -128,23 +94,6 @@ export async function getNotasAsignatura(id_asignatura) {
         return [null, "Error interno del servidor"];
     }
 }
-
-//funcion para traer una nota por id
-//FUNCIONA NO TOCAR
-export async function getNota(id_nota) {
-    try {
-        const notasRepository = AppDataSource.getRepository(Notas);
-        const nota = await notasRepository.findOneBy({ id_nota: id_nota });
-
-        if (!nota) return [null, "No se encontró la nota"];
-        return [nota, null];
-    } catch (error) {
-        console.error("Error al obtener la nota:", error);
-        return [null, "Error interno del servidor"];
-    }
-}
-
-
 
 //funcion para actualizar una nota
 //FUNCIONA NO TOCAR

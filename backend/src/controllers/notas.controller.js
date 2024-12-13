@@ -2,8 +2,6 @@
 import {
     createNota,
     deleteNota,
-    getNota,
-    getNotasAlumno,
     getNotasAlumnoAsignatura,
     getNotasAsignatura,
     getNotasCurso,
@@ -34,21 +32,6 @@ export async function getNotasCursoController(req, res) {
     }
 }
 
-export async function getNotasAlumnoController(req, res) {
-    try {
-        const { rut_alumno } = req.params;
-
-        const [notas, errorNotas] = await getNotasAlumno(rut_alumno);
-
-        if (errorNotas) return handleErrorClient(res, 404, errorNotas);
-
-        notas.length === 0
-            ? handleSuccess(res, 204)
-            : handleSuccess(res, 200, "Notas encontradas", notas);
-    } catch (error) {
-        handleErrorServer(res, 500, error.message);
-    }
-}
 
  export async function getNotasAsignaturaController(req, res) { 
     try { 
@@ -61,19 +44,7 @@ export async function getNotasAlumnoController(req, res) {
     }
 }
 
-export async function getNotaController(req, res) {
-    try {
-        const { id_nota } = req.params;
 
-        const [nota, errorNota] = await getNota(id_nota);
-
-        if (errorNota) return handleErrorClient(res, 404, errorNota);
-
-        handleSuccess(res, 200, "Nota encontrada", nota);
-    } catch (error) {
-        handleErrorServer(res, 500, error.message);
-    }
-}
 
 export const updateNotaController = async (req, res) => {
     try {
