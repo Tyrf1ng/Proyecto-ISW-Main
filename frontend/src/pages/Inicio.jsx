@@ -92,7 +92,7 @@ function Inicio() {
                   <span>
                     Bienvenido a tu página de la asignatura {' '} 
                     <span className="text-[#3B82F6]">
-                    {asignaturas|| 'Cargando asignatura...'}
+                      {asignatura && asignatura.nombre ? asignatura.nombre : 'Cargando asignatura...'}
                     </span>
                   </span>
                 )}
