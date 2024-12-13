@@ -14,15 +14,19 @@ const TableLabs = ({ labs = [], handleOpen, handleDelete, handleSort, sortConfig
               <tr>
                 <th className="py-3.5 px-4 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400">
                   Nombre
-                  <IconButton size="small" onClick={() => handleSort('nombre')}>
-                    {sortConfig.key === 'nombre' && sortConfig.direction === 'asc' ? <ArrowUpwardIcon /> : <ArrowDownwardIcon />}
-                  </IconButton>
                 </th>
-                <th className="px-12 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                  Capacidad
-                  <IconButton size="small" onClick={() => handleSort('capacidad')}>
-                    {sortConfig.key === 'capacidad' && sortConfig.direction === 'asc' ? <ArrowUpwardIcon /> : <ArrowDownwardIcon />}
-                  </IconButton>
+                <th className="px-12 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400 cursor-pointer" onClick={() => handleSort('capacidad')}>
+                  <div className="flex items-center">
+                    Capacidad
+                    {sortConfig.key === 'capacidad' ? (
+                      sortConfig.direction === 'asc' ? ' ↑' : ' ↓'
+                    ) : (
+                      <div className="flex items-center ml-1">
+                        <span>↑</span>
+                        <span>↓</span>
+                      </div>
+                    )}
+                  </div>
                 </th>
                 <th className="relative py-3.5 px-4">
                   <span className="sr-only">Acciones</span>
