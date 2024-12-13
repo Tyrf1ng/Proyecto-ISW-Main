@@ -133,7 +133,7 @@ export async function getAsistencia(id_asistencia) {
     }
 }
 
-export async function getAsistenciasAlumnoFecha(rut, fecha) {
+export async function getAsistenciasAlumnoFecha(rut, fecha, id_asignatura) {
     try {
         const alumno = await usuarioRepository.findOne({ where: { rut, id_roles: 3 } });
         if (!alumno) return [null, "El usuario no es un alumno o no existe"];
@@ -146,11 +146,12 @@ export async function getAsistenciasAlumnoFecha(rut, fecha) {
         const asistencias = await asistenciaRepository.createQueryBuilder("asistencia")
             .leftJoinAndSelect("asistencia.usuario", "usuario")
             .where("asistencia.rut = :rut", { rut })
+            .andWhere("asistencia.id_asignatura = :id_asignatura", { id_asignatura })
             .andWhere("asistencia.createdAt BETWEEN :fechaInicio AND :fechaFin", { fechaInicio, fechaFin })
             .getMany();
 
         if (!asistencias || asistencias.length === 0) {
-            return [null, "No hay asistencias para esta fecha"];
+            return [null, "No hay asistencias para esta fecha y asignatura"];
         }
 
         return [asistencias, null];
@@ -159,6 +160,7 @@ export async function getAsistenciasAlumnoFecha(rut, fecha) {
         return [null, "Error interno del servidor"];
     }
 }
+
 
 export async function updateAsistencia(id_asistencia, nuevoTipo, observacion) {
     try {

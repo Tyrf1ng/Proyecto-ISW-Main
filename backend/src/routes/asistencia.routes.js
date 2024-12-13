@@ -21,7 +21,7 @@ router
 router
     .get("/:id_asistencia", authorize(["Docente", "Directivo"]), getAsistenciaController)
     .get("/alumno/:rut", authorize(["Docente", "Alumno", "Directivo"]), getAsistenciasAlumnoController)
-    .get("/alumno/:rut/fecha/:fecha", authorize(["Docente", "Alumno", "Directivo"]), getAsistenciasAlumnoFechaController)
+    .get("/alumno/:rut/asignatura/:id_asignatura/fecha/:fecha", authorize(["Docente", "Alumno", "Directivo"]), getAsistenciasAlumnoFechaController)
     .get("/asignatura/:id_asignatura/curso/:id_curso", authorize(["Docente", "Directivo"]), getAsistenciasAsignaturaController)
     .get("/curso/:id_curso", authorize(["Docente", "Directivo","Alumno"]), getAsistenciasCursoController)
     .patch("/actualizar/:id_asistencia", authorize(["Docente"]), updateAsistenciaController)

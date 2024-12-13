@@ -6,10 +6,14 @@ import { getAsistenciasAlumnoFecha } from "../services/Asistencias.service";
 import { getSoloAlumnosByCurso } from "../services/cursos.service";
 import SuccessAlert from '../components/SuccessAlert';
 import ErrorAlert from '../components/ErrorAlert';
+import { AsignaturaContext } from "../context/AsignaturaContext";
 
 const RegisterAsistencia = () => {
   const { curso } = useContext(CursoContext);
   const { idCurso } = curso;
+  const { asignatura } = useContext(AsignaturaContext);
+  const { idAsignatura } = asignatura; 
+
 
   const [alumnos, setAlumnos] = useState([]);
   const [mensaje, setMensaje] = useState("");
@@ -77,16 +81,11 @@ const RegisterAsistencia = () => {
       }
 
       for (let record of selectedStudents) {
-        const asistencia = await getAsistenciasAlumnoFecha(
-          record.rut,
-          selectedDate
-        );
+        const asistencia = await getAsistenciasAlumnoFecha(record.rut, selectedDate, idAsignatura);
         if (asistencia) {
-          setMensaje(
-            `Ya existe una asistencia registrada para el alumno ${record.nombre} en la fecha seleccionada.`
-          );
-          setMessageType("error");
-          return;
+            setMensaje(`Ya existe una asistencia registrada para el alumno ${record.nombre} en la fecha seleccionada.`);
+            setMessageType("error");
+            return;
         }
       }
 
@@ -98,7 +97,8 @@ const RegisterAsistencia = () => {
         }
 
         const data = {
-          id_asignatura: idCurso,
+          id_asignatura: idAsignatura,
+          id_curso: idCurso,
           rut: record.rut,
           tipo: record.presente
             ? "Presente"

@@ -61,18 +61,19 @@ export const getAsistenciasPorAlumno = async (rutAlumno) => {
   }
 };
 
-export const getAsistenciasAlumnoFecha = async (rutAlumno, fecha) => {
+export const getAsistenciasAlumnoFecha = async (rutAlumno, fecha, idAsignatura) => {
   try {
-      const response = await axios.get(`/asistencias/alumno/${rutAlumno}/fecha/${fecha}`);
+      const response = await axios.get(`/asistencias/alumno/${rutAlumno}/asignatura/${idAsignatura}/fecha/${fecha}`);
       return response.data?.data || null;
   } catch (error) {
       if (error.response && error.response.status === 404) {
-          console.warn(`No hay asistencias para el alumno ${rutAlumno} en la fecha ${fecha}.`);
+          console.warn(`No hay asistencias para el alumno ${rutAlumno} en la fecha ${fecha} y asignatura ${idAsignatura}.`);
           return null; 
       }
       console.error("Error al obtener las asistencias por alumno en fecha:", error);
       throw error; 
   }
 };
+
 
 
