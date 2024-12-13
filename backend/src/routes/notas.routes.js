@@ -5,7 +5,6 @@ import {
     deleteNotasController,
     getNotasAlumnoAsignaturaController,
     getNotasAsignaturaController,
-    getNotasCursoController,
     getNotasPorCursoYAsignaturaController,
     updateNotaController,
     
@@ -22,7 +21,6 @@ router
 router
     .get("/asignatura/:id_asignatura/alumno/:rut",authorize(["Alumno"]), getNotasAlumnoAsignaturaController)
     .get("/asignatura/:id_asignatura",authorize(["Directivo","Docente"]), getNotasAsignaturaController)
-    .get("/curso/:id_curso",authorize(["Directivo","Docente"]), getNotasCursoController)
     .get("/curso/:id_curso/asignatura/:id_asignatura",
         authorize(["Directivo","Docente"]), getNotasPorCursoYAsignaturaController)
     .patch("/actualizar/:id_nota",authorize(["Docente"]), updateNotaController)

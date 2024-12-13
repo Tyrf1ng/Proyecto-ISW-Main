@@ -10,6 +10,7 @@ const VerNotaAlumno = () => {
   const { usuario,cargarUsuario } = useContext(UsuarioContext);
   const { notas, loading, error } = useNotasAsignatura([]);
 
+console.log("notas",notas)
   // Validación inicial del usuario
   useEffect(() => {
     if (!usuario) {
