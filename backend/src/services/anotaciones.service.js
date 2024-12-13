@@ -241,3 +241,44 @@ export async function getAnotacionesPorCursoYAsignaturaService(id_curso, id_asig
         return [null, "Error interno del servidor"];
     }
 }
+
+export async function getAnotacionesPorRutYAsignaturaService(rut, id_asignatura) {
+    try {
+        // Validar que el RUT y la asignatura están proporcionados
+        if (!rut || !id_asignatura) {
+            return [null, "RUT y ID de asignatura son requeridos"];
+        }
+
+        // Verificar que el RUT pertenece a un usuario con rol 3
+        const UsuarioRepository = AppDataSource.getRepository(Usuario);
+        const alumno = await UsuarioRepository.findOne({
+            where: { rut: rut, id_roles: 3 },
+        });
+
+        if (!alumno) {
+            console.error(`Usuario con RUT ${rut} no encontrado o no tiene el rol 3`);
+            return [null, "Usuario no es un alumno válido"];
+        }
+
+        // Obtener las anotaciones filtradas por rut y asignatura
+        const AnotacionRepository = AppDataSource.getRepository(Anotaciones);
+        const anotaciones = await AnotacionRepository.find({
+            where: {
+                rut: rut,
+                id_asignatura: id_asignatura,
+            },
+            order: {
+                createdAt: "DESC", // Opcional: ordenar por fecha de creación descendente
+            },
+        });
+
+        if (!anotaciones || anotaciones.length === 0) {
+            return [null, "No hay anotaciones para este alumno y asignatura"];
+        }
+
+        return [anotaciones, null];
+    } catch (error) {
+        console.error("Error al obtener las anotaciones por RUT y asignatura:", error);
+        return [null, "Error interno del servidor"];
+    }
+}

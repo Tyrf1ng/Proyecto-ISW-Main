@@ -8,6 +8,7 @@ import {
     getAnotacionesAlumno,
     getAnotacionesAsignatura,
     getAnotacionesCurso,
+    getAnotacionesPorRutYAsignatura,
     updateAnotacion,
     getAnotacionesPorCursoYAsignatura
 } from "../controllers/anotaciones.controller.js";
@@ -32,6 +33,7 @@ router
     "/curso/:id_curso/asignatura/:id_asignatura",
     authorize(["Docente", "Directivo"]),
     getAnotacionesPorCursoYAsignatura
-);
+)
+  .get("/rut/:rut/asignatura/:id_asignatura", authorize(["Docente", "Directivo", "Alumno"]), getAnotacionesPorRutYAsignatura);
 
 export default router;
