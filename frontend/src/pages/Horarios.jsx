@@ -160,7 +160,7 @@ const Horarios = () => {
 
     return (
         <div className="p-4 bg-gray-50 dark:bg-gray-800 min-h-screen">
-            <h1 className="text-4xl text-center text-blue-100 mb-4">Horarios</h1>
+            <h1 className="text-4xl text-center font-semibold text-blue-100 mb-4">Horarios</h1>
             {error && <div className="text-red-500">{error}</div>}
             <div className="flex justify-between items-center mb-4">
                 <button onClick={handleOpen} className="ml-auto px-4 py-2 bg-blue-600 text-white rounded">Crear Horario</button>

@@ -8,8 +8,12 @@ import {
     updateLab,
   } from "../controllers/lab.controller.js"
 
+  import { authenticateJwt } from "../middlewares/authentication.middleware.js";
   import authorize from "../middlewares/authorization.middleware.js";
   const router = Router();
+
+router
+    .use(authenticateJwt)
 
 router
     .get("/",authorize(["Directivo","Encargado de Laboratorio","Docente"]), getLabs)         

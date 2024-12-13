@@ -62,7 +62,7 @@ const NAVIGATION_BY_ROLE = {
       title: 'Gestion Reservas Laboratorio',
       icon: <SchoolIcon />,
       children: [
-        { segment: 'add_reserva', title: 'Añadir Reservas', icon: <AddIcon /> },
+        { segment: 'add_reservadocente', title: 'Añadir Reservas', icon: <AddIcon /> },
         { segment: 'ver_reservas', title: 'Ver Reservas', icon: <EventIcon /> },
         { segment: 'labsdocente', title: 'Laboratorios', icon: <BiotechIcon /> },
       ],
