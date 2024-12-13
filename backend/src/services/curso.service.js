@@ -5,7 +5,7 @@ import { AppDataSource } from "../config/configDb.js";
 import AsignaturaCursoSchema from "../entity/asignatura.curso.entity.js";
 import AsignaturasSchema from "../entity/asignatura.entity.js";
 import Usuario from "../entity/usuario.entity.js"; 
-import Conect_Usuario_CursoSchema from "..//entity/conect_usuario_curso.entity.js";
+import Conect_Usuario_CursoSchema from "../entity/conect_usuario_curso.entity.js";
 
 
 export async function getCursos() {
@@ -72,8 +72,6 @@ export async function deleteCurso(id_curso) {
     }
 }
 
-
-
 export async function getCursosByProfesor(rut) {
     try {
         const AsignaturaRepository = AppDataSource.getRepository(AsignaturasSchema);
@@ -89,7 +87,6 @@ export async function getCursosByProfesor(rut) {
             return [null, "No se encuentra un usuario con el rol de profesor para este rut"];
         }
 
-      
         const asignaturasDelDocente = await AsignaturaRepository.find({
             where: { rut: rut } 
         });
@@ -144,6 +141,29 @@ export async function getAlumnosPorCurso(id_curso) {
         return [alumnos, null];
     } catch (error) {
         console.error("Error al obtener los alumnos del curso:", error);
+        return [null, "Error interno del servidor"];
+    }
+}
+
+// Nueva función para crear una conexión entre un alumno (usuario con id_roles = 3) y un curso
+export async function createConectUsuarioCurso(rut, id_curso) {
+    try {
+        const usuarioRepository = AppDataSource.getRepository(Usuario);
+        const conectUsuarioCursoRepository = AppDataSource.getRepository(Conect_Usuario_CursoSchema);
+
+        // Verificar que el usuario es alumno
+        const usuario = await usuarioRepository.findOne({ where: { rut, id_roles: 3 } });
+        if (!usuario) {
+            return [null, "No se encontró un usuario con el RUT especificado o el usuario no es un alumno."];
+        }
+
+        // Crear la nueva relación
+        const nuevaRelacion = conectUsuarioCursoRepository.create({ rut, id_curso });
+        const relacionCreada = await conectUsuarioCursoRepository.save(nuevaRelacion);
+
+        return [relacionCreada, null];
+    } catch (error) {
+        console.error("Error al crear la relación conect_usuario_curso:", error);
         return [null, "Error interno del servidor"];
     }
 }

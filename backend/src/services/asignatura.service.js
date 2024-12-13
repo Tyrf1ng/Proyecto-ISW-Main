@@ -3,6 +3,7 @@ import Asignaturas from "../entity/asignatura.entity.js";
 import { AppDataSource } from "../config/configDb.js";
 import conect_usuario_curso from "../entity/conect_usuario_curso.entity.js";
 import AsignaturaCursoSchema from "../entity/asignatura.curso.entity.js";
+import AsignaturasSchema from "../entity/asignatura.entity.js";
 import Usuario from "../entity/usuario.entity.js"; 
 
 // Función para obtener todas las asignaturas
@@ -36,11 +37,20 @@ export async function getAsignatura(id_asignatura) {
     }
 }
 
-// Función para crear una asignatura
-export async function createAsignatura(asignatura) {
+export async function createAsignatura(rut_docente, nombre) {
     try {
-        const asignaturaRepository = AppDataSource.getRepository(Asignaturas);
-        const asignaturaCreada = await asignaturaRepository.save(asignatura);
+        const usuarioRepository = AppDataSource.getRepository(Usuario);
+        const asignaturaRepository = AppDataSource.getRepository(AsignaturasSchema);
+
+        // Verificar que el usuario existe y es docente (id_roles = 2)
+        const usuario = await usuarioRepository.findOne({ where: { rut: rut_docente, id_roles: 2 } });
+        if (!usuario) {
+            return [null, "No se encontró un usuario docente con ese RUT."];
+        }
+
+        const nuevaAsignatura = asignaturaRepository.create({ nombre, rut: rut_docente });
+        const asignaturaCreada = await asignaturaRepository.save(nuevaAsignatura);
+
         return [asignaturaCreada, null];
     } catch (error) {
         console.error("Error al crear la asignatura:", error);
@@ -179,3 +189,4 @@ export async function getNombreAsignaturaById(id_asignatura) {
         return [null, "Error interno del servidor"];
     }
 }
+

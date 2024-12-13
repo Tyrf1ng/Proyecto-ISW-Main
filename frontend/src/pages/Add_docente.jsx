@@ -4,22 +4,26 @@ import { useRut } from "react-rut-formatter";
 import WarningAlert from '../components/WarningAlert';
 import SuccessAlert from '../components/SuccessAlert';
 import ErrorAlert from '../components/ErrorAlert';
-import { getCursos, createConectUsuarioCurso } from '../services/cursos.service';
+import { createAsignatura } from '../services/asignatura.service';
 
-function Add_alumno() {
-  const [newAlumno, setNewAlumno] = useState({
+function Add_docente() {
+  const [newDocente, setNewDocente] = useState({
     nombre: '',
     apellido: '',
     email: '',
     telefono: '',
     rut: '',
     password: '',
-    id_roles: '3',
+    id_roles: '2',
   });
 
-  const [cursos, setCursos] = useState([]);
-  const [selectedCurso, setSelectedCurso] = useState('');
-  const [alert, setAlert] = useState({ message: '', type: '' });
+  const [nombreAsignatura, setNombreAsignatura] = useState('');
+
+  const [alert, setAlert] = useState({
+    message: '',
+    type: '',
+  });
+
   const { rut, updateRut, isValid } = useRut();
 
   useEffect(() => {
@@ -31,21 +35,9 @@ function Add_alumno() {
     }
   }, [alert]);
 
-  useEffect(() => {
-    const fetchCursos = async () => {
-      try {
-        const data = await getCursos();
-        setCursos(data);
-      } catch (error) {
-        console.error('Error al obtener cursos:', error);
-      }
-    };
-    fetchCursos();
-  }, []);
-
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setNewAlumno({ ...newAlumno, [name]: value });
+    setNewDocente({ ...newDocente, [name]: value });
   };
 
   const handleTelefonoChange = (e) => {
@@ -54,24 +46,27 @@ function Add_alumno() {
     if (value.length > 8) {
       value = value.slice(0, 8);
     }
-    setNewAlumno({ ...newAlumno, telefono: value });
+    setNewDocente({ ...newDocente, telefono: value });
   };
 
   const handleNombreChange = (e) => {
     let value = e.target.value;
     value = value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '');
-    setNewAlumno({ ...newAlumno, nombre: value });
+    setNewDocente({ ...newDocente, nombre: value });
   };
 
   const handleApellidoChange = (e) => {
     let value = e.target.value;
     value = value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '');
-    setNewAlumno({ ...newAlumno, apellido: value });
+    setNewDocente({ ...newDocente, apellido: value });
   };
 
   const validateRut = () => {
     if (!isValid) {
-      setAlert({ message: 'El RUT ingresado no es válido.', type: 'warning' });
+      setAlert({
+        message: 'El RUT ingresado no es válido.',
+        type: 'warning',
+      });
       return false;
     }
     return true;
@@ -80,43 +75,57 @@ function Add_alumno() {
   const handleSubmit = async () => {
     if (!validateRut()) return;
 
-    if (!newAlumno.nombre || !newAlumno.apellido || !newAlumno.email || !newAlumno.telefono || !newAlumno.password) {
-      setAlert({ message: 'Debe completar todos los campos obligatorios.', type: 'warning' });
+    if (!newDocente.nombre || !newDocente.apellido || !newDocente.email || !newDocente.telefono || !newDocente.password) {
+      setAlert({
+        message: 'Debe completar todos los campos obligatorios.',
+        type: 'warning',
+      });
       return;
     }
 
-    if (!selectedCurso) {
-      setAlert({ message: 'Debe seleccionar un curso.', type: 'warning' });
+    if (!nombreAsignatura.trim()) {
+      setAlert({
+        message: 'Debe ingresar un nombre de asignatura.',
+        type: 'warning',
+      });
       return;
     }
 
     try {
-      await createUsuario(newAlumno);
-      const rutAlumno = newAlumno.rut;
-      const id_curso = selectedCurso;
-      const relacion = await createConectUsuarioCurso(rutAlumno, id_curso);
+      await createUsuario(newDocente);
+      const rutDocente = newDocente.rut;
+      const asignaturaCreada = await createAsignatura(rutDocente, nombreAsignatura);
 
-      if (relacion && relacion.id_curso && relacion.rut) {
-        setAlert({ message: 'Alumno añadido y conectado al curso exitosamente.', type: 'success' });
+      if (asignaturaCreada && asignaturaCreada.id_asignatura) {
+        setAlert({
+          message: 'Docente añadido y asignatura creada exitosamente.',
+          type: 'success',
+        });
       } else {
-        setAlert({ message: 'Alumno creado, pero hubo un error al conectarlo al curso.', type: 'warning' });
+        setAlert({
+          message: 'Docente creado, pero hubo un error al crear la asignatura.',
+          type: 'warning',
+        });
       }
 
-      setNewAlumno({
+      setNewDocente({
         nombre: '',
         apellido: '',
         email: '',
         telefono: '',
         rut: '',
         password: '',
-        id_roles: '3',
+        id_roles: '2',
       });
-      setSelectedCurso('');
+      setNombreAsignatura('');
       updateRut('');
 
     } catch (error) {
-      console.error('Error al añadir el alumno o conectarlo al curso:', error);
-      setAlert({ message: 'Hubo un error al añadir el alumno o conectarlo al curso.', type: 'error' });
+      console.error('Error al añadir el docente o crear la asignatura:', error);
+      setAlert({
+        message: 'Hubo un error al añadir el docente o crear la asignatura.',
+        type: 'error',
+      });
     }
   };
 
@@ -126,7 +135,7 @@ function Add_alumno() {
   return (
     <div className="flex py-10 justify-center bg-gray-50 dark:bg-gray-800">
       <div className="w-full max-w-2xl bg-white dark:bg-gray-900 p-8 rounded-xl shadow-lg mb-6">
-        <h2 className="text-2xl font-semibold text-center text-gray-800 dark:text-white mb-6">Añadir Alumno</h2>
+        <h2 className="text-2xl font-semibold text-center text-gray-800 dark:text-white mb-6">Añadir Docente</h2>
         <div className="mb-4 flex space-x-4">
           <div className="w-1/2">
             <label htmlFor='nombre' className='block text-sm text-gray-500 dark:text-gray-300'>
@@ -136,7 +145,7 @@ function Add_alumno() {
               type='text'
               name='nombre'
               placeholder='Juan'
-              value={newAlumno.nombre}
+              value={newDocente.nombre}
               onChange={handleNombreChange}
               className={inputClass}
             />
@@ -149,7 +158,7 @@ function Add_alumno() {
               type='text'
               name='apellido'
               placeholder='Pérez'
-              value={newAlumno.apellido}
+              value={newDocente.apellido}
               onChange={handleApellidoChange}
               className={inputClass}
             />
@@ -163,7 +172,7 @@ function Add_alumno() {
             type='email'
             name='email'
             placeholder='email@prueba.cl'
-            value={newAlumno.email}
+            value={newDocente.email}
             onChange={handleInputChange}
             className={inputClass}
           />
@@ -176,7 +185,7 @@ function Add_alumno() {
             type='password'
             name='password'
             placeholder='********'
-            value={newAlumno.password}
+            value={newDocente.password}
             onChange={handleInputChange}
             className={inputClass}
           />
@@ -190,7 +199,7 @@ function Add_alumno() {
               type='text'
               name='telefono'
               placeholder='87654321'
-              value={newAlumno.telefono}
+              value={newDocente.telefono}
               onChange={handleTelefonoChange}
               className={inputClass}
             />
@@ -206,36 +215,31 @@ function Add_alumno() {
               value={rut.formatted}
               onChange={(e) => {
                 updateRut(e.target.value);
-                setNewAlumno({ ...newAlumno, rut: e.target.value });
+                setNewDocente({ ...newDocente, rut: e.target.value });
               }}
               className={inputClass}
             />
           </div>
         </div>
         <div className='mb-4'>
-          <label htmlFor='curso' className='block text-sm text-gray-500 dark:text-gray-300'>
-            Seleccionar Curso
+          <label htmlFor='nombreAsignatura' className='block text-sm text-gray-500 dark:text-gray-300'>
+            Nombre de la Asignatura
           </label>
-          <select
-            name='curso'
-            value={selectedCurso}
-            onChange={(e) => setSelectedCurso(e.target.value)}
+          <input
+            type='text'
+            name='nombreAsignatura'
+            placeholder='Ej: Química'
+            value={nombreAsignatura}
+            onChange={(e) => setNombreAsignatura(e.target.value)}
             className={inputClass}
-          >
-            <option value=''>-- Seleccionar --</option>
-            {cursos.map((curso) => (
-              <option key={curso.id_curso} value={curso.id_curso}>
-                {curso.nombre}
-              </option>
-            ))}
-          </select>
+          />
         </div>
         <div className='flex justify-center'>
           <button
             onClick={handleSubmit}
             className='bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg focus:outline-none'
           >
-            Crear Alumno y Conectar a Curso
+            Crear Docente y Asignatura
           </button>
         </div>
         {alert.type === 'warning' && <WarningAlert message={alert.message} />}
@@ -246,4 +250,4 @@ function Add_alumno() {
   );
 }
 
-export default Add_alumno;
+export default Add_docente;
