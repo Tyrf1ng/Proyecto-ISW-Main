@@ -1,12 +1,29 @@
+import React, { useState } from 'react';
 import { IconButton } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 
 const TableHorarios = ({ horarios = [], handleOpen, handleDelete }) => {
-  // Ordenar los horarios por hora de inicio
-  const sortedHorarios = horarios.sort((a, b) => a.hora_inicio.localeCompare(b.hora_inicio));
+  const [sortConfig, setSortConfig] = useState({ key: 'hora_inicio', direction: 'asc' });
 
-  // Función para formatear la hora y quitar los segundos
+  const handleSort = (key) => {
+    let direction = 'asc';
+    if (sortConfig.key === key && sortConfig.direction === 'asc') {
+      direction = 'desc';
+    }
+    setSortConfig({ key, direction });
+  };
+
+  const sortedHorarios = [...horarios].sort((a, b) => {
+    if (a[sortConfig.key] < b[sortConfig.key]) {
+      return sortConfig.direction === 'asc' ? -1 : 1;
+    }
+    if (a[sortConfig.key] > b[sortConfig.key]) {
+      return sortConfig.direction === 'asc' ? 1 : -1;
+    }
+    return 0;
+  });
+
   const formatTime = (time) => {
     return time.slice(0, 5); // Asumiendo que el formato es "HH:MM:SS"
   };
@@ -21,11 +38,31 @@ const TableHorarios = ({ horarios = [], handleOpen, handleDelete }) => {
                 <th className="py-3.5 px-4 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400">
                   N° Horario
                 </th>
-                <th className="px-12 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                  Hora inicio
+                <th className="px-12 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400 cursor-pointer" onClick={() => handleSort('hora_inicio')}>
+                  <div className="flex items-center">
+                    Hora inicio
+                    {sortConfig.key === 'hora_inicio' ? (
+                      sortConfig.direction === 'asc' ? ' ↑' : ' ↓'
+                    ) : (
+                      <div className="flex items-center ml-1">
+                        <span>↑</span>
+                        <span>↓</span>
+                      </div>
+                    )}
+                  </div>
                 </th>
-                <th className="px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                  Hora fin
+                <th className="px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400 cursor-pointer" onClick={() => handleSort('hora_fin')}>
+                  <div className="flex items-center">
+                    Hora fin
+                    {sortConfig.key === 'hora_fin' ? (
+                      sortConfig.direction === 'asc' ? ' ↑' : ' ↓'
+                    ) : (
+                      <div className="flex items-center ml-1">
+                        <span>↑</span>
+                        <span>↓</span>
+                      </div>
+                    )}
+                  </div>
                 </th>
                 <th className="relative py-3.5 px-4">
                   <span className="sr-only">Acciones</span>
