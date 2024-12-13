@@ -20,9 +20,9 @@ import {
 
 export async function getAsistenciasAlumnoFechaController(req, res) {
     try {
-        const { rut, fecha } = req.params;
+        const { rut, fecha, id_asignatura } = req.params;
 
-        const [asistencias, errorAsistencias] = await getAsistenciasAlumnoFecha(rut, fecha);
+        const [asistencias, errorAsistencias] = await getAsistenciasAlumnoFecha(rut, fecha, id_asignatura);
 
         if (errorAsistencias) return handleErrorClient(res, 404, errorAsistencias);
 
@@ -33,6 +33,7 @@ export async function getAsistenciasAlumnoFechaController(req, res) {
         handleErrorServer(res, 500, error.message);
     }
 }
+
 
 
 export async function getAsistenciasCursoController(req, res) {

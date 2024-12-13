@@ -1,7 +1,7 @@
 import { useEffect, useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import backgroundImage from '../images/components/books.svg'; // Imagen local
-import { CursoContext } from '../context/CursoContext'; // Importación del contexto de curso
+import { CursoContext } from '../context/CursoContext'; 
 import { AsignaturaContext } from '../context/AsignaturaContext';
 import { getAsignaturasByProfesor } from '../services/asignatura.service'; 
 
@@ -11,7 +11,7 @@ function Inicio() {
   const [usuario, setUsuario] = useState({ nombre: '', apellido: '', rut: '', rol: '' });
   const { asignatura, setAsignatura } = useContext(AsignaturaContext);
   const [errorAsignatura, setErrorAsignatura] = useState(''); 
-  const [asignaturas, setAsignaturas] = useState(null); // Almacenar las asignaturas obtenidas
+  const [asignaturas, setAsignaturas] = useState(null); 
   const [errorCurso, setErrorCurso] = useState(''); 
 
   useEffect(() => {
@@ -30,9 +30,15 @@ function Inicio() {
         getAsignaturasByProfesor(usuarioGuardado.rut)
           .then((asignaturas) => {
             console.log('Asignaturas obtenidas:', asignaturas);
-            if (asignaturas.length > 0) {
-              setAsignaturas(asignaturas); // Guardar todas las asignaturas
-              setAsignatura(asignaturas[0]); // Si quieres que la asignatura seleccionada se guarde en el contexto
+            // Ahora asumimos que "asignaturas" es un array, según el backend
+            if (Array.isArray(asignaturas) && asignaturas.length > 0) {
+              // Guardamos todas las asignaturas
+              setAsignaturas(asignaturas); 
+              // Seteamos la asignatura en el contexto AsignaturaContext con las claves correctas
+              setAsignatura({
+                idAsignatura: asignaturas[0].id_asignatura,
+                nombre: asignaturas[0].nombre
+              });
             } else {
               setErrorAsignatura('No se encontraron asignaturas para este profesor.');
             }
@@ -122,7 +128,6 @@ function Inicio() {
             )}
           </p>
 
-          {/* Botones para seleccionar asignatura o curso */}
           {usuario.rol === 'Alumno' && (
             <div className="inline-flex w-full mt-6 sm:w-auto">
               <button
