@@ -11,10 +11,14 @@ import {
     
  } 
     from "../controllers/notas.controller.js";
+import { authenticateJwt } from "../middlewares/authentication.middleware.js";
 import authorize from "../middlewares/authorization.middleware.js";
 
 const router = Router();
 
+router
+  .use(authenticateJwt)
+  
 router
     .get("/asignatura/:id_asignatura/alumno/:rut",authorize(["Alumno"]), getNotasAlumnoAsignaturaController)
     .get("/asignatura/:id_asignatura",authorize(["Directivo","Docente"]), getNotasAsignaturaController)
