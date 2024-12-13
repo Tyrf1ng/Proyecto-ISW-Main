@@ -20,7 +20,7 @@ router
 
 router
   .get("/", authorize(["Directivo"]), getUsuarios) 
-  .get("/rut/:rut", authorize(["Directivo", "Docente", "Encargado de Laboratorio"]), getUsuarioByRut) 
+  .get("/rut/:rut", authorize(["Directivo", "Docente", "Encargado de Laboratorio", "Alumno"]), getUsuarioByRut) 
   .get("/alumnoscurso/:id_Curso", authorize(["Directivo", "Docente"]), getAlumnosPorCurso) 
   .get("/buscar", authorize(["Directivo"]), getUsuariosByNombre) 
   .get("/docentes/ruts", authorize(["Directivo", "Docente", "Encargado de Laboratorio"]), getRutsDocentes) 

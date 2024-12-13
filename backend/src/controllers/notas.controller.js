@@ -2,11 +2,10 @@
 import {
     createNota,
     deleteNota,
-    getNota,
-    getNotasAlumno,
     getNotasAlumnoAsignatura,
     getNotasAsignatura,
     getNotasCurso,
+    getNotasPorCursoYAsignatura,
     updateNota
    
 } from "../services/notas.service.js";
@@ -34,21 +33,6 @@ export async function getNotasCursoController(req, res) {
     }
 }
 
-export async function getNotasAlumnoController(req, res) {
-    try {
-        const { rut_alumno } = req.params;
-
-        const [notas, errorNotas] = await getNotasAlumno(rut_alumno);
-
-        if (errorNotas) return handleErrorClient(res, 404, errorNotas);
-
-        notas.length === 0
-            ? handleSuccess(res, 204)
-            : handleSuccess(res, 200, "Notas encontradas", notas);
-    } catch (error) {
-        handleErrorServer(res, 500, error.message);
-    }
-}
 
  export async function getNotasAsignaturaController(req, res) { 
     try { 
@@ -61,19 +45,7 @@ export async function getNotasAlumnoController(req, res) {
     }
 }
 
-export async function getNotaController(req, res) {
-    try {
-        const { id_nota } = req.params;
 
-        const [nota, errorNota] = await getNota(id_nota);
-
-        if (errorNota) return handleErrorClient(res, 404, errorNota);
-
-        handleSuccess(res, 200, "Nota encontrada", nota);
-    } catch (error) {
-        handleErrorServer(res, 500, error.message);
-    }
-}
 
 export const updateNotaController = async (req, res) => {
     try {
@@ -123,23 +95,23 @@ export async function createNotaController(req, res) {
     try {
         const { id_asignatura, rut, valor, tipo } = req.body;
         const { error } = notasQueryValidation.validate(req.body);
-        if (error) {
-            return handleErrorClient(res, 400, "Faltan datos obligatorios", error.message);
-        }
 
+        if (error) {
+            return handleErrorClient(res, 400, "Datos inválidos", error.message); // Mensaje más descriptivo
+        }
         const [notaCreada] = await createNota({
             id_asignatura,
             rut,
             tipo,
             valor,
         });
-        const { errorNota } = notasQueryValidation.validate(notaCreada);
-
-        if (errorNota) return handleErrorClient(res, 400, errorNota);
-
-        handleSuccess(res, 201, "Nota creada", notaCreada);
+        if (!notaCreada) {
+            return handleErrorClient(res, 400, "No se pudo crear la nota. Verifica los datos proporcionados.");
+        }
+        handleSuccess(res, 201, "Nota creada exitosamente", notaCreada);
     } catch (error) {
-        handleErrorServer(res, 500, error.message);
+        // Manejar errores del servidor
+        handleErrorServer(res, 500, "Error interno del servidor", error.message);
     }
 }
 
@@ -173,3 +145,28 @@ export async function getNotasAlumnoAsignaturaController(req, res) {
     }
     
 }   
+
+export async function getNotasPorCursoYAsignaturaController(req, res) {
+    try {
+        const { id_curso, id_asignatura } = req.params;
+
+        // Validar parámetros
+        if (!id_curso || !id_asignatura) {
+            return handleErrorClient(
+                res,
+                400,
+                "Los parámetros 'id_curso' e 'id_asignatura' son obligatorios"
+            );
+        }
+
+        // Llamar al servicio
+        const [notas, error] = await getNotasPorCursoYAsignatura(id_curso, id_asignatura);
+
+        if (error) return handleErrorClient(res, 404, error);
+
+        handleSuccess(res, 200, "Anotaciones encontradas", notas);
+    } catch (error) {
+        console.error("Error en el controller de obtener anotaciones por curso y asignatura:", error);
+        handleErrorServer(res, 500, error.message);
+    }
+}
