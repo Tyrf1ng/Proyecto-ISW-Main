@@ -5,6 +5,7 @@ import {
     getNotasAlumnoAsignatura,
     getNotasAsignatura,
     getNotasCurso,
+    getNotasPorCursoYAsignatura,
     updateNota
    
 } from "../services/notas.service.js";
@@ -144,3 +145,28 @@ export async function getNotasAlumnoAsignaturaController(req, res) {
     }
     
 }   
+
+export async function getNotasPorCursoYAsignaturaController(req, res) {
+    try {
+        const { id_curso, id_asignatura } = req.params;
+
+        // Validar parámetros
+        if (!id_curso || !id_asignatura) {
+            return handleErrorClient(
+                res,
+                400,
+                "Los parámetros 'id_curso' e 'id_asignatura' son obligatorios"
+            );
+        }
+
+        // Llamar al servicio
+        const [anotaciones, error] = await getAnotacionesPorCursoYAsignaturaService(id_curso, id_asignatura);
+
+        if (error) return handleErrorClient(res, 404, error);
+
+        handleSuccess(res, 200, "Anotaciones encontradas", anotaciones);
+    } catch (error) {
+        console.error("Error en el controller de obtener anotaciones por curso y asignatura:", error);
+        handleErrorServer(res, 500, error.message);
+    }
+}

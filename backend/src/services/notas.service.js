@@ -191,3 +191,47 @@ export async function getNotasAlumnoAsignatura(rut, id_asignatura) {
         return [null, "Error interno del servidor"];
     }
 }
+export async function getNotasPorCursoYAsignatura(id_curso, id_asignatura) {
+    try {
+        const NotasRepository = AppDataSource.getRepository(Notas);
+        const ConectUsuarioCursoRepository = AppDataSource.getRepository(Conect_Usuario_CursoSchema);
+        
+        // Obtener los alumnos relacionados con el curso
+        const relacionesCurso = await ConectUsuarioCursoRepository.find({
+            where: { id_curso },
+        });
+
+        if (!relacionesCurso || relacionesCurso.length === 0) {
+            return [null, "No hay alumnos asociados a este curso"];
+        }
+
+        // Extraer los ruts de los alumnos relacionados con el curso
+        const rutsAlumnos = relacionesCurso.map(relacion => relacion.rut);
+
+        // Buscar las anotaciones relacionadas con estos ruts y la asignatura específica
+        const notas = await NotasRepository.find({
+            where: {
+                rut: In(rutsAlumnos),
+                id_asignatura,
+            },
+        });
+
+
+        if (!notas || notas.length === 0) {
+            return [null, "No hay anotaciones para este curso y asignatura"];
+        }
+   const notasData = notas.map(nota => ({
+            ...nota,
+            nota_tipo: nota.tipo,
+            nota_valor: nota.valor,
+            nombre_alumno: nota.usuario.nombre,
+            apellido_alumno: nota.usuario.apellido,
+            nombre_asignatura: nota.asignatura.nombre
+        }));
+
+        return [notasData, null];
+    } catch (error) {
+        console.error("Error al obtener las anotaciones por curso y asignatura:", error);
+        return [null, "Error interno del servidor"];
+    }
+}
