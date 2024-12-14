@@ -1,134 +1,34 @@
-import { useContext, useEffect, useState } from 'react';
-import { CursoContext } from '../context/CursoContext';
-import { AsignaturaContext } from '../context/AsignaturaContext';
-import { getSoloAlumnosByCurso } from '@services/cursos.service';
-import { createAnotacion } from '@services/anotaciones.service.js';
-import WarningAlert from '../components/WarningAlert';
-import SuccessAlert from '../components/SuccessAlert';
-import ErrorAlert from '../components/ErrorAlert';
+// src/components/Add_anotaciones.jsx
+import React from "react";
+import { AnimatePresence } from "framer-motion";
+import useAlert from "../hooks/anotaciones/useAlerts.jsx";
+import useAlumnos from "../hooks/anotaciones/useAlumnos.jsx";
+import useAnotacionForm from "../hooks/anotaciones/useAnotacionForm.jsx";
+import WarningAlert from "../components/WarningAlert.jsx";
+import SuccessAlert from "../components/SuccessAlert.jsx";
+import ErrorAlert from "../components/ErrorAlert.jsx";
 
 function Add_anotaciones() {
-  const { curso } = useContext(CursoContext);
-  const { asignatura } = useContext(AsignaturaContext);
-  const [newAnotacion, setNewAnotacion] = useState({
-    tipo: 'Positiva',
-    rut: '',
-    descripcion: '',
-    id_asignatura: asignatura.id_asignatura || '',
-    fecha: new Date().toISOString(),
-  });
-  const [alumnos, setAlumnos] = useState([]);
-  const [filteredAlumnos, setFilteredAlumnos] = useState([]);
-  const [selectedAlumno, setSelectedAlumno] = useState(null);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [isListVisible, setIsListVisible] = useState(false);
-  const [alert, setAlert] = useState({
-    message: '',
-    type: '',
-  });
+  const [alert, showAlert] = useAlert();
 
-  useEffect(() => {
-    if (alert.message) {
-      const timer = setTimeout(() => {
-        setAlert({
-          message: '',
-          type: '',
-        });
-      }, 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [alert]);
+  const {
+    alumnos,
+    filteredAlumnos,
+    selectedAlumno,
+    searchTerm,
+    isListVisible,
+    handleSearchChange,
+    handleAlumnoSelect,
+    resetAlumnos,
+  } = useAlumnos();
 
-  useEffect(() => {
-    const cargarAlumnos = async () => {
-      if (!curso.idCurso) {
-        console.error('ID del curso no válido:', curso.idCurso);
-        return;
-      }
-      try {
-        const alumnosData = await getSoloAlumnosByCurso(curso.idCurso);
-        if (Array.isArray(alumnosData)) {
-          setAlumnos(alumnosData);
-          setFilteredAlumnos(alumnosData.slice(0, 5));
-        } else {
-          console.error('Formato inesperado de datos:', alumnosData);
-        }
-      } catch (error) {
-        console.error('Error al cargar alumnos:', error);
-      }
-    };
-
-    cargarAlumnos();
-  }, [curso.idCurso]);
-
-  const handleSearchChange = (e) => {
-    const query = e.target.value.toLowerCase();
-    setSearchTerm(query);
-    const filtered = alumnos.filter((alumno) =>
-      `${alumno.nombre} ${alumno.apellido}`.toLowerCase().includes(query)
-    );
-    setFilteredAlumnos(filtered.slice(0, 5));
-    setIsListVisible(filtered.length > 0);
-  };
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setNewAnotacion({ ...newAnotacion, [name]: value });
-  };
-
-  const handleSelectChange = (e) => {
-    setNewAnotacion({ ...newAnotacion, tipo: e.target.value });
-  };
-
-  const handleAlumnoSelect = (alumno) => {
-    setSelectedAlumno(alumno);
-    setNewAnotacion({ ...newAnotacion, rut: alumno.rut });
-    setSearchTerm(`${alumno.nombre} ${alumno.apellido}`);
-    setIsListVisible(false);
-  };
-
-  const handleSubmit = async () => {
-    if (!newAnotacion.rut) {
-      setAlert({
-        message: 'Debe seleccionar un alumno.',
-        type: 'warning',
-      });
-      return;
-    }
-
-    if (!newAnotacion.descripcion.trim()) {
-      setAlert({
-        message: 'La descripción no puede estar vacía.',
-        type: 'warning',
-      });
-      return;
-    }
-
-    try {
-      await createAnotacion(newAnotacion);
-      setAlert({
-        message: 'Anotación creada exitosamente',
-        type: 'success',
-      });
-
-      setNewAnotacion({
-        tipo: 'Positiva',
-        rut: '',
-        descripcion: '',
-        id_asignatura: asignatura.id_asignatura || '',
-        fecha: new Date().toISOString(),
-      });
-      setSelectedAlumno(null);
-      setSearchTerm('');
-      setFilteredAlumnos(alumnos);
-    } catch (error) {
-      console.error('Error al crear la anotación:', error);
-      setAlert({
-        message: 'Hubo un error al crear la anotación',
-        type: 'error',
-      });
-    }
-  };
+  const {
+    newAnotacion,
+    handleInputChange,
+    handleSelectChange,
+    handleSubmit,
+    resetForm,
+  } = useAnotacionForm(selectedAlumno, resetAlumnos, showAlert);
 
   const maxDescripcionLength = 280;
   const isMaxReached = newAnotacion.descripcion.length > maxDescripcionLength;
@@ -136,11 +36,18 @@ function Add_anotaciones() {
   return (
     <div className="flex py-10 justify-center bg-gray-50 dark:bg-gray-800">
       <div className="w-full max-w-2xl bg-white dark:bg-gray-900 p-8 rounded-xl shadow-lg mb-6">
-        <h2 className="text-2xl font-semibold text-center text-gray-800 dark:text-white mb-6">Añadir Anotación</h2>
+        <h2 className="text-2xl font-semibold text-center text-gray-800 dark:text-white mb-6">
+          Añadir Anotación
+        </h2>
 
         <div className="mb-4 flex space-x-4">
           <div className="w-1/2">
-            <label htmlFor="tipo" className="block text-sm text-gray-500 dark:text-gray-300">Tipo de Anotación</label>
+            <label
+              htmlFor="tipo"
+              className="block text-sm text-gray-500 dark:text-gray-300"
+            >
+              Tipo de Anotación
+            </label>
             <select
               name="tipo"
               id="tipo"
@@ -153,7 +60,12 @@ function Add_anotaciones() {
             </select>
           </div>
           <div className="w-1/2">
-            <label htmlFor="alumno" className="block text-sm text-gray-500 dark:text-gray-300">Buscar Alumno</label>
+            <label
+              htmlFor="alumno"
+              className="block text-sm text-gray-500 dark:text-gray-300"
+            >
+              Buscar Alumno
+            </label>
             <input
               type="text"
               id="alumno"
@@ -182,7 +94,12 @@ function Add_anotaciones() {
         )}
 
         <div className="mb-4">
-          <label htmlFor="descripcion" className="block text-sm text-gray-500 dark:text-gray-300">Descripción</label>
+          <label
+            htmlFor="descripcion"
+            className="block text-sm text-gray-500 dark:text-gray-300"
+          >
+            Descripción
+          </label>
           <textarea
             id="descripcion"
             name="descripcion"
@@ -193,7 +110,11 @@ function Add_anotaciones() {
             rows="4"
             className="mt-2 block w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300"
           />
-          <small className={`text-sm ${isMaxReached ? 'text-red-500' : 'text-gray-500'}`}>
+          <small
+            className={`text-sm ${
+              isMaxReached ? "text-red-500" : "text-gray-500"
+            }`}
+          >
             {newAnotacion.descripcion.length}/{maxDescripcionLength} caracteres
           </small>
         </div>
@@ -207,9 +128,18 @@ function Add_anotaciones() {
           </button>
         </div>
 
-        {alert.type === 'warning' && <WarningAlert message={alert.message} />}
-        {alert.type === 'success' && <SuccessAlert message={alert.message} />}
-        {alert.type === 'error' && <ErrorAlert message={alert.message} />}
+        {/* Manejar las alertas con AnimatePresence */}
+        <AnimatePresence>
+          {alert.type === "warning" && (
+            <WarningAlert message={alert.message} key="warning" />
+          )}
+          {alert.type === "success" && (
+            <SuccessAlert message={alert.message} key="success" />
+          )}
+          {alert.type === "error" && (
+            <ErrorAlert message={alert.message} key="error" />
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );
