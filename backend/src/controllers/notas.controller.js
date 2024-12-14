@@ -14,7 +14,7 @@ import {
     handleSuccess,
   } from "../handlers/responseHandlers.js";
 
-import { notasQueryValidation } from "../validations/notas.validation.js";
+import { notasCreateValidation, notasEditValidation } from "../validations/notas.validation.js";
 
  export async function getNotasAsignaturaController(req, res) { 
     try { 
@@ -27,19 +27,16 @@ import { notasQueryValidation } from "../validations/notas.validation.js";
     }
 }
 
-
-
 export const updateNotaController = async (req, res) => {
     try {
         const { id_nota } = req.params;
         const { valor, tipo } = req.body;
+
         if (!id_nota) {
-            return res.status(400).json({
-                message: "El id de la nota es requerido",
-            });
+            return res.status(400).json({ message: "El id de la nota es requerido" });
         }
 
-        const { error } = notasQueryValidation.validate({ valor, tipo, id_nota });
+        const { error } = notasEditValidation.validate({ valor, tipo, id_nota });
         if (error) {
             return res.status(400).json({
                 message: "Datos inválidos en la solicitud",
@@ -47,36 +44,28 @@ export const updateNotaController = async (req, res) => {
             });
         }
 
-        const parsedValor = parseFloat(valor);
-        if (isNaN(parsedValor)) {
-            return res.status(400).json({
-                message: "El valor debe ser un número válido",
-            });
-        }
-        const [notaActualizada, errorMessage] = await updateNota(id_nota, parsedValor, tipo);
+        const [notaActualizada, errorMessage] = await updateNota(id_nota, valor, tipo);
         if (errorMessage) {
             return res.status(400).json({
                 message: "No se pudo actualizar la nota",
                 error: errorMessage,
             });
         }
-        
         return res.status(200).json({
             message: "Nota actualizada correctamente",
             data: notaActualizada,
         });
+        
     } catch (error) {
         console.error("Error en updateNotaController:", error);
-        return res.status(500).json({
-            message: "Error interno del servidor",
-        });
+        return res.status(500).json({ message: "Error interno del servidor" });
     }
 };
 
 export async function createNotaController(req, res) {
     try {
         const { id_asignatura, rut, valor, tipo } = req.body;
-        const { error } = notasQueryValidation.validate(req.body);
+        const { error } = notasCreateValidation.validate(req.body);
 
         if (error) {
             return handleErrorClient(res, 400, "Datos inválidos", error.message); // Mensaje más descriptivo

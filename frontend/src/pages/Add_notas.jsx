@@ -190,7 +190,7 @@ function Add_Notas() {
       <div className="mb-4">
         <label htmlFor="valor" className="block text-sm text-gray-500 dark:text-gray-300">Nota</label>
         <input
-          type="text"
+          type="number"
           name="valor"
           value={newNota.valor}
           onChange={handleInputChange}

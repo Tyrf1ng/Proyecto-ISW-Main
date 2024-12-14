@@ -28,12 +28,12 @@ export const deleteNota = async (id) => {
 }
 export const updateNota = async (id, data) => {
     try {
-      
       const payload = {
         valor: parseFloat(data.valor), 
-        tipo: data.tipo,              
+        tipo: data.tipo,               
       };
-      const response = await axios.patch(`/notas/actualizar/${id}`, payload)
+  
+      const response = await axios.patch(`/notas/actualizar/${id}`, payload);
       return response.data; 
     } catch (error) {
       console.error("Error al actualizar la nota:", error);
