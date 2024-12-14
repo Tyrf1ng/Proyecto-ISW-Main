@@ -73,12 +73,9 @@ const Cursos = () => {
             transition={{ type: "spring", stiffness: 400, damping: 20 }}
           >
             <h2 className="text-xl font-semibold text-white">{curso.nombre}</h2>
-            <p className="text-md text-gray-400 mt-2">
-              Coordinador: {curso.coordinador || "N/A"}
-            </p>
             <p className="text-sm text-gray-300 mt-2">
-              <span className="font-semibold">Código:</span> {curso.codigo} -{" "}
-              <span className="font-semibold">Nivel:</span> {curso.nivel}
+              <span className="font-semibold">Nivel:</span> {curso.nivel}<br />
+              <span className="font-semibold">Año:</span> {curso.año && curso.año.split("-")[0]}
             </p>
           </motion.div>
         ))}

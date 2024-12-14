@@ -77,8 +77,8 @@ function Inicio() {
           <p className="text-lg text-gray-500 dark:text-gray-300">
             {usuario.rol === 'Alumno' ? (
               <span>
-                Bienvenido a tu página personal del liceo{' '}
-                <span className="text-[#3B82F6]">XXXXXXXXX</span>. <br />
+                Bienvenido a tu página personal del liceo.  <br />
+                <span className="text-[#3B82F6]"></span>
                 {errorAsignatura ? (
                   <span className="text-red-500">{errorAsignatura}</span>
                 ) : (

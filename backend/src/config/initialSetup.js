@@ -66,12 +66,14 @@ async function createCursos() {
         cursoRepository.create({
           nombre: "1ero medio A",
           nivel: 2,
+          año: new Date(2024, 1, 1),
         }),
       ),
       cursoRepository.save(
         cursoRepository.create({
           nombre: "2do medio A",
           nivel: 4,
+          año:new Date(2024, 1, 1),
         }),
       ),
     ]);

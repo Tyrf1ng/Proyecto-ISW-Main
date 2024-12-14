@@ -19,6 +19,10 @@ const CursoSchema = new EntitySchema({
       type: "int",
       nullable: false,
     },
+    año: {
+      type: "date",
+      nullable: false,
+    },
     createdAt: {
         type: "timestamp with time zone",
         default: () => "CURRENT_TIMESTAMP",
