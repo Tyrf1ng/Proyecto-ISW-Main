@@ -152,7 +152,7 @@ function Add_Notas() {
   if (cargando) return <p>Cargando...</p>;
 
   return (
-    <div className="p-6 max-w-3xl mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-md">
+    <div className="p-6 max-w-3xl mx-auto bg-white dark:bg-gray-900 rounded-lg shadow-md">
       <h2 className="text-2xl font-semibold text-gray-800 dark:text-white mb-6">Añadir Notas</h2>
 
       {/* Tipo de Nota */}
