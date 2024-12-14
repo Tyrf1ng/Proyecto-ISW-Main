@@ -25,6 +25,7 @@ const VerNotas = () => {
   if (!usuario) {
     return <div>Cargando usuario...</div>;
   }
+
   const handleFilterChange = (e) => setFilterText(e.target.value);
 
   const handleDelete = (id) => {
@@ -57,7 +58,7 @@ const VerNotas = () => {
   const handleUpdate = async (e) => {
     e.preventDefault();
     try {
-      const { id_nota, valor, tipo, } = notaToEdit;
+      const { id_nota, valor, tipo } = notaToEdit;
 
       if (!id_nota || typeof valor !== 'number' || isNaN(valor)) {
         console.error('Datos inválidos:', { id_nota, valor });
@@ -71,7 +72,7 @@ const VerNotas = () => {
         setMessageType('warning');
         return;
       }
-      console.log(notaToEdit);
+
       await updateNota(id_nota, { valor, tipo });
       setMessage('Nota actualizada correctamente');
       setMessageType('success');
@@ -93,13 +94,8 @@ const VerNotas = () => {
       return <ErrorAlert message={message} />;
     }
 
-    if (messageType === 'warning') {
-      return <WarningAlert message={message} />;
-    }
-
     return null;
   };
-
 
   return (
     <div className="p-4 bg-gray-50 dark:bg-gray-800">

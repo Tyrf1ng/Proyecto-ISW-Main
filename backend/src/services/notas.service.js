@@ -127,7 +127,7 @@ export async function getNotasAlumnoAsignatura(rut, id_asignatura) {
         });
 
         if (!notas || notas.length === 0) return [null, "No hay notas"];
-        
+
 
         const notasData = notas.map(nota => ({
             ...nota,
