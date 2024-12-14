@@ -1,6 +1,6 @@
 "use strict";
 import { asistenciaQueryValidation } from "../validations/asistencia.validation.js"
-import { getAsistenciasAlumnoAsignatura } from "../services/asistencia.service.js";
+import * as asistenciaService from "../services/asistencia.service.js";
 
 import {
     createAsistencia,
@@ -18,6 +18,31 @@ import {
     handleSuccess,
 } from "../handlers/responseHandlers.js";
 
+/**
+ * Controlador para obtener asistencias del profesor
+ */
+export async function obtenerAsistenciasProfesor(req, res) {
+    const { id_profesor, id_curso, id_asignatura } = req.params;
+
+    const [data, error] = await asistenciaService.getAsistenciasProfesor(id_profesor, id_curso, id_asignatura);
+    if (error) {
+        return res.status(400).json({ message: error });
+    }
+    res.json(data);
+}
+
+/**
+ * Controlador para obtener asistencias del estudiante
+ */
+export async function obtenerAsistenciasEstudiante(req, res) {
+    const { rut } = req.params;
+
+    const [data, error] = await asistenciaService.getAsistenciasEstudiante(rut);
+    if (error) {
+        return res.status(400).json({ message: error });
+    }
+    res.json(data);
+}
 
 export async function getAsistenciasAlumnoFechaController(req, res) {
     try {
