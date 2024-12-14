@@ -20,10 +20,8 @@ export const anotacionQueryValidation = Joi.object({
       "string.max": "La descripción no puede tener más de 280 caracteres.",
     }),
   rut: Joi.string()
-    .pattern(/^(?:(?:[1-9]\d{0}|[1-2]\d{1})(\.\d{3}){2}|[1-9]\d{6}|[1-2]\d{7}|29\.999\.999|29999999)-[0-9kK]$/)
     .messages({
       "string.base": "El RUT debe ser una cadena de texto.",
-      "string.pattern.base": "El RUT no tiene el formato correcto.",
     }),
   tipo: Joi.string()
     .valid("Positiva", "Negativa") // Definir solo dos valores válidos para el tipo

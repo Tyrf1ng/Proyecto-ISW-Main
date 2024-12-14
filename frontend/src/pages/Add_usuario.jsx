@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import { createUsuario } from '../services/usuarios.service';
-import { useRut } from "react-rut-formatter";
+import { useRut, checkRut, removeSeparators } from "react-rut-formatter";
 import WarningAlert from '../components/WarningAlert';
 import SuccessAlert from '../components/SuccessAlert';
 import ErrorAlert from '../components/ErrorAlert';
 import { getCursos, createConectUsuarioCurso } from '../services/cursos.service';
+import { encryptPassword } from "../../../backend/src/helpers/bcrypt.helper";
 
 function Add_alumno() {
   const [newAlumno, setNewAlumno] = useState({
@@ -70,7 +71,7 @@ function Add_alumno() {
   };
 
   const validateRut = () => {
-    if (!isValid) {
+    if (!isValid || !checkRut(rut.raw)) {
       setAlert({ message: 'El RUT ingresado no es válido.', type: 'warning' });
       return false;
     }
@@ -91,10 +92,18 @@ function Add_alumno() {
     }
 
     try {
-      await createUsuario(newAlumno);
-      const rutAlumno = newAlumno.rut;
-      const id_curso = selectedCurso;
-      const relacion = await createConectUsuarioCurso(rutAlumno, id_curso);
+      // Normaliza el RUT y encripta la contraseña
+      const cleanRut = removeSeparators(rut.raw);
+      const encryptedPassword = await encryptPassword(newAlumno.password);
+
+      const alumnoConDatosProcesados = {
+        ...newAlumno,
+        rut: cleanRut, // RUT sin separadores
+        password: encryptedPassword,
+      };
+
+      await createUsuario(alumnoConDatosProcesados);
+      const relacion = await createConectUsuarioCurso(cleanRut, selectedCurso);
 
       if (relacion && relacion.id_curso && relacion.rut) {
         setAlert({ message: 'Alumno añadido y conectado al curso exitosamente.', type: 'success' });
@@ -102,6 +111,7 @@ function Add_alumno() {
         setAlert({ message: 'Alumno creado, pero hubo un error al conectarlo al curso.', type: 'warning' });
       }
 
+      // Resetea los campos del formulario
       setNewAlumno({
         nombre: '',
         apellido: '',
@@ -203,10 +213,9 @@ function Add_alumno() {
               type='text'
               name='rut'
               placeholder='12345678-9'
-              value={rut.formatted}
+              value={rut.formatted} // Presentación
               onChange={(e) => {
-                updateRut(e.target.value);
-                setNewAlumno({ ...newAlumno, rut: e.target.value });
+                updateRut(e.target.value); // Actualización visual
               }}
               className={inputClass}
             />
