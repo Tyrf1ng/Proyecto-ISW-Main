@@ -13,8 +13,19 @@ const VerNotas = () => {
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [notaToDelete, setNotaToDelete] = useState(null);
   const [notaToEdit, setNotaToEdit] = useState(null);
-  const [message, setMessage] = useState("");
-  const [messageType, setMessageType] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+
+  useEffect(() => {
+    if (successMessage || errorMessage) {
+      const timer = setTimeout(() => {
+        setSuccessMessage("");
+        setErrorMessage("");
+      }, 3000); // 3 segundos
+  
+      return () => clearTimeout(timer); // Limpia el temporizador si el componente se desmonta
+    }
+  }, [successMessage, errorMessage]);
 
   useEffect(() => {
     if (!usuario) {
@@ -57,45 +68,33 @@ const VerNotas = () => {
 
   const handleUpdate = async (e) => {
     e.preventDefault();
+    setErrorMessage(""); // Limpia cualquier mensaje previo
+  
     try {
       const { id_nota, valor, tipo } = notaToEdit;
-
-      if (!id_nota || typeof valor !== 'number' || isNaN(valor)) {
-        console.error('Datos inválidos:', { id_nota, valor });
-        setMessage('Los datos de la nota no son válidos.');
-        setMessageType('error');
+  
+      if (!id_nota || typeof valor !== "number" || isNaN(valor)) {
+        setErrorMessage("Los datos de la nota no son válidos.");
         return;
       }
-
+  
       if (valor < 2.0 || valor > 7.0) {
-        setMessage('El valor de la nota debe estar entre 2.0 y 7.0');
-        setMessageType('warning');
+        setErrorMessage("El valor de la nota debe estar entre 2.0 y 7.0");
         return;
       }
-
+  
       await updateNota(id_nota, { valor, tipo });
-      setMessage('Nota actualizada correctamente');
-      setMessageType('success');
-      fetchNotas();
-      setNotaToEdit(null);
+      setSuccessMessage("Nota actualizada correctamente");
+      fetchNotas(); // Actualiza las notas
+      setNotaToEdit(null); // Cierra el modal
     } catch (error) {
-      console.error('Error al actualizar la nota:', error);
-      setMessage('Hubo un problema al actualizar la nota');
-      setMessageType('error');
+      console.error("Error al actualizar la nota:", error);
+      setErrorMessage("Hubo un problema al actualizar la nota");
     }
   };
 
-  const renderMessage = () => {
-    if (messageType === 'success') {
-      return <SuccessAlert message={message} />;
-    }
 
-    if (messageType === 'error') {
-      return <ErrorAlert message={message} />;
-    }
 
-    return null;
-  };
 
   return (
     <div className="p-4 bg-gray-50 dark:bg-gray-800">
@@ -106,35 +105,36 @@ const VerNotas = () => {
         placeholder="Filtrar por nombre o apellido del alumno..."
         className="w-full p-2 mb-4 border rounded dark:text-gray-300 dark:bg-gray-900"
       />
-
+  
+      {successMessage && <SuccessAlert message={successMessage} />}
+      {errorMessage && <ErrorAlert message={errorMessage} />}
+  
       <TableComponent
         notas={(Array.isArray(notas) ? notas : []).filter((nota) =>
-          `${nota.nombre_alumno.toLowerCase()} ${nota.apellido_alumno.toLowerCase()}`.includes(filterText.toLowerCase())
+          `${nota.nombre_alumno.toLowerCase()} ${nota.apellido_alumno.toLowerCase()}`.includes(
+            filterText.toLowerCase()
+          )
         )}
         onEdit={handleEdit}
         onDelete={handleDelete}
         role={usuario?.rol}
       />
-
+  
       {confirmDialogOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="p-8 rounded-lg shadow-xl bg-white text-black dark:bg-[#111827] dark:text-white w-96">
-            <div className="flex items-center justify-center mb-6">
-              <h2 className="text-lg font-bold">¿Estás seguro de que quieres eliminar esta nota?</h2>
-            </div>
-            <p className="text-base mb-6 mt-6">
-              Esta acción no se puede deshacer. Confirma tu decisión.
-            </p>
-            <div className="flex justify-around mt-6">
+            <h2 className="text-lg font-bold mb-4">Confirmar Eliminación</h2>
+            <p>¿Estás seguro de que deseas eliminar esta nota?</p>
+            <div className="flex justify-end mt-4">
               <button
                 onClick={handleConfirmDelete}
-                className="px-6 py-3 bg-red-600 text-white rounded-lg"
+                className="px-4 py-2 bg-red-500 text-white rounded-lg mr-2"
               >
                 Eliminar
               </button>
               <button
                 onClick={() => setConfirmDialogOpen(false)}
-                className="px-6 py-3 bg-gray-400 text-white rounded-lg"
+                className="px-4 py-2 bg-gray-300 rounded-lg dark:bg-gray-700 dark:text-white"
               >
                 Cancelar
               </button>
@@ -142,11 +142,12 @@ const VerNotas = () => {
           </div>
         </div>
       )}
-
-      {notaToEdit !== null && (
+  
+      {notaToEdit && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="p-8 rounded-lg shadow-xl bg-white text-black dark:bg-[#111827] dark:text-white w-96">
             <h2 className="text-lg font-bold mb-4">Editar Nota</h2>
+            {errorMessage && <ErrorAlert message={errorMessage} />}
             <form onSubmit={handleUpdate}>
               <div className="mb-4">
                 <label
@@ -159,7 +160,10 @@ const VerNotas = () => {
                   id="tipo"
                   value={notaToEdit?.tipo || ''}
                   onChange={(e) =>
-                    setNotaToEdit((prevState) => ({ ...prevState, tipo: e.target.value }))
+                    setNotaToEdit((prevState) => ({
+                      ...prevState,
+                      tipo: e.target.value,
+                    }))
                   }
                   className="w-full p-2 border rounded dark:text-gray-300 dark:bg-gray-900"
                 >
@@ -169,7 +173,7 @@ const VerNotas = () => {
                   <option value="Tarea">Tarea</option>
                 </select>
               </div>
-
+  
               <div className="mb-4">
                 <label
                   htmlFor="valor"
@@ -182,7 +186,10 @@ const VerNotas = () => {
                   id="valor"
                   value={notaToEdit?.valor || ''}
                   onChange={(e) =>
-                    setNotaToEdit((prevState) => ({ ...prevState, valor: parseFloat(e.target.value) || 0 }))
+                    setNotaToEdit((prevState) => ({
+                      ...prevState,
+                      valor: parseFloat(e.target.value) || 0,
+                    }))
                   }
                   min="2.0"
                   max="7.0"
@@ -190,7 +197,6 @@ const VerNotas = () => {
                   className="w-full p-2 border rounded dark:text-gray-300 dark:bg-gray-900"
                 />
               </div>
-              {renderMessage()}
               <button
                 type="submit"
                 className="w-full px-6 py-3 bg-blue-600 text-white rounded-lg"
@@ -210,6 +216,7 @@ const VerNotas = () => {
       )}
     </div>
   );
+  
 };
 
 export default VerNotas;
