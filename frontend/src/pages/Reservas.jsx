@@ -271,7 +271,7 @@ const Reservas = () => {
 
   return (
     <div className="p-4 bg-gray-50 dark:bg-gray-800 min-h-screen">
-        <h1 className="text-4xl text-center text-blue-100 mb-4">Reservas</h1>
+        <h1 className="text-4xl text-center font-semibold text-blue-100 mb-4">Reservas</h1>
         {error && <div className="text-red-500">{error}</div>}
         <div className="flex items-center mb-1">
           {selectedFilter === 'option1' && (

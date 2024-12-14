@@ -31,6 +31,7 @@ import RegisterAsistencia from './pages/RegisterAsistencias';
 import Add_docente from './pages/Add_docente';
 import Ver_docentes from './pages/Ver_docentes';
 import Add_enc_lab from './pages/Add_enc_lab';
+import Add_reservasDocentes from '@pages/Add_reservasdocentes';
 
 const router = createBrowserRouter([
   {
@@ -78,6 +79,7 @@ const router = createBrowserRouter([
           { path: 'horarios', element: <Horarios /> },
           { path: 'ver_reservas', element: <Reservas /> }, 
           { path: 'add_reserva', element: <Add_Reserva /> }, 
+          { path: 'add_reservadocente', element: <Add_reservasDocentes /> },
         ],
       },
       {
