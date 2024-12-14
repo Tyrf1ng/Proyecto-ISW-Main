@@ -68,8 +68,6 @@ const Asignaturas = () => {
             <h2 className="text-xl font-semibold text-white">{asignatura.nombre}</h2>
             <p className="text-md text-gray-400 mt-2">Profesor: {asignatura.profesor || "N/A"}</p>
             <p className="text-sm text-gray-300 mt-2">
-              <span className="font-semibold">Código:</span> {asignatura.codigo} - 
-              <span className="font-semibold">Nivel:</span> {asignatura.nivel}
             </p>
           </motion.div>
         ))}

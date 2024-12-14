@@ -21,9 +21,9 @@ const VerNotas = () => {
       const timer = setTimeout(() => {
         setSuccessMessage("");
         setErrorMessage("");
-      }, 3000); // 3 segundos
+      }, 3000); 
   
-      return () => clearTimeout(timer); // Limpia el temporizador si el componente se desmonta
+      return () => clearTimeout(timer); 
     }
   }, [successMessage, errorMessage]);
 
@@ -45,9 +45,11 @@ const VerNotas = () => {
   };
 
   const handleConfirmDelete = async () => {
+    setSuccessMessage("");
     try {
       if (notaToDelete) {
         await deleteNota(notaToDelete);
+        setSuccessMessage("Nota borrada correctamente");
         fetchNotas();
       }
     } catch (error) {
@@ -68,7 +70,8 @@ const VerNotas = () => {
 
   const handleUpdate = async (e) => {
     e.preventDefault();
-    setErrorMessage(""); // Limpia cualquier mensaje previo
+    setErrorMessage(""); 
+    setSuccessMessage("");
   
     try {
       const { id_nota, valor, tipo } = notaToEdit;
@@ -93,9 +96,24 @@ const VerNotas = () => {
     }
   };
 
+  //Filtrado de  de notas por nombre o apellido del alumno considerando tildes y mayúsculas
+  const normalizeText = (text) =>
+    text.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
-
-
+  const filteredNotas = notas.filter((nota) => {
+    const usuario = nota.usuario || { nombre: "", apellido: "" };
+    const sanitizedFilterText = normalizeText(filterText)
+      .replace(/[^a-zA-Z\s]/g, "")
+      .toLowerCase();
+    
+    const matchesText = normalizeText(
+      `${usuario.nombre} ${usuario.apellido}`
+    )
+      .toLowerCase()
+      .includes(sanitizedFilterText);
+      return matchesText
+  });
+  
   return (
     <div className="p-4 bg-gray-50 dark:bg-gray-800">
       <input
@@ -110,11 +128,7 @@ const VerNotas = () => {
       {errorMessage && <ErrorAlert message={errorMessage} />}
   
       <TableComponent
-        notas={(Array.isArray(notas) ? notas : []).filter((nota) =>
-          `${nota.nombre_alumno.toLowerCase()} ${nota.apellido_alumno.toLowerCase()}`.includes(
-            filterText.toLowerCase()
-          )
-        )}
+        notas={filteredNotas}
         onEdit={handleEdit}
         onDelete={handleDelete}
         role={usuario?.rol}

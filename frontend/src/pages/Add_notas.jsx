@@ -136,6 +136,17 @@ function Add_Notas() {
     return null;
   };
 
+  useEffect(() => {
+    if (messageType === 'success' || messageType === 'error'|| messageType === 'warning') {
+      const timer = setTimeout(() => {
+        setMessageType("");
+        setMessage("");
+      }, 3000); 
+  
+      return () => clearTimeout(timer); 
+    }
+  }, [messageType, message]);
+
   if (cargando) return <p>Cargando...</p>;
 
   return (
