@@ -165,7 +165,7 @@ function Add_Notas() {
           onChange={handleInputChange}
           className="mt-2 block w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300"
         >
-          <option value="">Seleccione tipo</option>
+          <option value="" disabled={newNota.tipo !== ""}>Seleccione tipo</option>
           <option value="Prueba">Prueba</option>
           <option value="Tarea">Tarea</option>
           <option value="Test">Test</option>
