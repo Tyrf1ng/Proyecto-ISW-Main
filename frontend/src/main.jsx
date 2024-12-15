@@ -24,6 +24,7 @@ import Reservas from '@pages/Reservas';
 import Add_usuario from '@pages/Add_usuario';
 import Asignaturas from '@pages/Asignaturas';
 import Add_Reserva from '@pages/Add_reservas';
+import ReservasDocentes from '@pages/ReservasDocentes'; // Importar ReservasDocentes
 
 import Profile from './pages/Profile';
 import LabsDocente from './pages/LabsDocente';
@@ -80,6 +81,7 @@ const router = createBrowserRouter([
           { path: 'ver_reservas', element: <Reservas /> }, 
           { path: 'add_reserva', element: <Add_Reserva /> }, 
           { path: 'add_reservadocente', element: <Add_reservasDocentes /> },
+          { path: 'ver_reservasdocentes', element: <ReservasDocentes /> }, // Añadir ruta para ReservasDocentes
         ],
       },
       {

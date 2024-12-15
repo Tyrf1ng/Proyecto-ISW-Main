@@ -3,13 +3,11 @@ import useReservas from '../hooks/reservas/useReservas';
 import useLabs from '../hooks/labs/useLabs'; 
 import { useHorarios } from '../hooks/horarios/useHorarios'; 
 import TableReservas from '../components/TableReservas'; 
-import { getCurso, getCursosByProfesor } from '@services/cursos.service.js'; 
-import { getNombreAsignaturaById, getAsignaturasByProfesor } from '@services/asignatura.service.js'; 
-import { getRutsDocentes } from '@services/usuarios.service.js';
 import { addDays, isWithinInterval, isAfter, isSameDay, parseISO } from 'date-fns';
 
 const Reservas = () => {
-  const { reservas, fetchReservas, addReserva, editReserva, removeReserva, error } = useReservas();
+  const { reservas, reservasConNombre, rutsDocentes, asignaturas, cursos, fetchReservas, editReserva, 
+    removeReserva, fetchAsignaturasByProfesor, fetchCursosByProfesor, mapReservasConNombre, error } = useReservas();
   const { labs: laboratorios, fetchLabs } = useLabs();
   const { horarios, fetchHorarios } = useHorarios(); 
   const [filterText, setFilterText] = useState('');
@@ -20,108 +18,41 @@ const Reservas = () => {
   const [open, setOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
-  const [newReserva, setNewReserva] = useState({
-    id_lab: '',
-    rut: '',
-    fecha: '',
-    id_horario: '',
-    id_asignatura: '',
-    id_curso: ''
-  });
   const [currentReserva, setCurrentReserva] = useState(null);
   const [deleteError, setDeleteError] = useState(null);
   const [editSuccess, setEditSuccess] = useState(false);
   const [deleteSuccess, setDeleteSuccess] = useState(false);
-  const [createSuccess, setCreateSuccess] = useState(false);
   const [validationError, setValidationError] = useState(null);
-  const [reservasConNombre, setReservasConNombre] = useState([]);
-  const [rutsDocentes, setRutsDocentes] = useState([]);
-  const [asignaturas, setAsignaturas] = useState([]);
-  const [cursos, setCursos] = useState([]);
 
   useEffect(() => {
     fetchReservas();
     fetchLabs(); 
     fetchHorarios(); 
-    fetchRutsDocentes(); 
   }, []);
 
   useEffect(() => {
-    if (reservas.length > 0) {
-      mapReservasConNombre();
+    if (reservas.length > 0 && laboratorios.length > 0) {
+      mapReservasConNombre(laboratorios);
     }
   }, [reservas, laboratorios]);
 
-  const fetchRutsDocentes = async () => {
-    try {
-      const docentes = await getRutsDocentes();
-      setRutsDocentes(docentes);
-    } catch (error) {
-      console.error('Error al obtener RUTs de docentes:', error);
-    }
-  };
-
-  const fetchNombreAsignatura = async (id_asignatura) => {
-    try {
-      const nombreAsignatura = await getNombreAsignaturaById(id_asignatura);
-      return nombreAsignatura;
-    } catch (error) {
-      console.error("Error al obtener el nombre de la asignatura: ", error);
-      return id_asignatura; 
-    }
-  };
-
-  const fetchNombreCurso = async (id_curso) => {
-    try {
-      const nombreCurso = await getCurso(id_curso);
-      return nombreCurso;
-    } catch (error) {
-      console.error("Error al obtener el nombre del curso: ", error);
-      return id_curso; 
-    }
-  };
-
-  const mapReservasConNombre = async () => {
-    const reservasMapeadas = await Promise.all(reservas.map(async reserva => {
-      const nombreCurso = reserva.id_curso ? await fetchNombreCurso(reserva.id_curso) : reserva.id_curso;
-      const nombreAsignatura = reserva.id_asignatura ? await fetchNombreAsignatura(reserva.id_asignatura) : reserva.id_asignatura;
-      const nombreLab = laboratorios.find(lab => lab.id_lab === reserva.id_lab)?.nombre || reserva.id_lab;
-      const reservaConNombre = { 
-        ...reserva, 
-        nombreCurso: nombreCurso ? nombreCurso.nombre : reserva.id_curso, // Asegúrate de que nombreCurso.nombre esté asignado correctamente
-        nombre_asignatura: nombreAsignatura,
-        nombre_lab: nombreLab
-      };
-      return reservaConNombre;
-    }));
-    setReservasConNombre(reservasMapeadas);
-  };
-
   const handleFilterChange = (e) => setFilterText(e.target.value);
-
   const handleFilterSelectChange = (e) => setSelectedFilter(e.target.value); 
-
   const handleShowPreviousReservationsChange = (e) => setShowPreviousReservations(e.target.checked); // Maneja el cambio del checkbox
-
   const handleMonthChange = (e) => setSelectedMonth(e.target.value); // Maneja el cambio del mes
   const handleYearChange = (e) => setSelectedYear(e.target.value); // Maneja el cambio del año
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-
   const handleEditOpen = async (reserva) => {
     setCurrentReserva({
       ...reserva,
       usuario: reserva.rut,
       id_horario: reserva.id_horario
     });
-  
     try {
-      const asignaturas = await getAsignaturasByProfesor(reserva.rut);
-      setAsignaturas(asignaturas);
-  
-      const cursos = await getCursosByProfesor(reserva.rut);
-      setCursos(cursos);
+      await fetchAsignaturasByProfesor(reserva.rut);
+      await fetchCursosByProfesor(reserva.rut);
     } catch (error) {
       console.error('Error al obtener asignaturas y cursos:', error);
     }
@@ -143,27 +74,15 @@ const Reservas = () => {
     });
     setDeleteOpen(true);
   };
-
   const handleDeleteClose = () => setDeleteOpen(false);
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setNewReserva({ ...newReserva, [name]: value });
-  };
 
   const handleEditInputChange = async (e) => {
     const { name, value } = e.target;
-    console.log(`Changing ${name} to ${value}`);
     setCurrentReserva({ ...currentReserva, [name]: value });
-
     if (name === 'rut' && value) {
       try {
-        const asignaturas = await getAsignaturasByProfesor(value);
-        setAsignaturas(asignaturas);
-
-        const cursos = await getCursosByProfesor(value);
-        setCursos(cursos);
-
+        await fetchAsignaturasByProfesor(value);
+        await fetchCursosByProfesor(value);
         setCurrentReserva((prevState) => ({
           ...prevState,
           usuario: value,
@@ -176,47 +95,20 @@ const Reservas = () => {
     }
   };
 
-  const handleSubmit = async () => {
-    const today = new Date();
-    const maxDate = addDays(today, 31);
-    const reservaDate = new Date(newReserva.fecha);
-  
-    if (!isAfter(reservaDate, today)) {
-      setValidationError("La fecha de la reserva debe ser posterior a la fecha actual.");
-      return;
-    }
-  
-    if (!isWithinInterval(reservaDate, { start: today, end: maxDate })) {
-      setValidationError("La fecha de la reserva debe estar dentro del próximo mes.");
-      return;
-    }
-  
-    try {
-      await addReserva(newReserva);
-      handleClose();
-      fetchReservas();
-      setCreateSuccess(true); 
-    } catch (error) {
-      console.error("Error al crear la reserva: ", error);
-      setValidationError("Los valores ingresados no son válidos");
-    }
-  };
-
   const handleEditSubmit = async () => {
     const today = new Date();
     const maxDate = addDays(today, 31);
     const reservaDate = new Date(currentReserva.fecha);
   
+    if (reservaDate.getDay() === 5 || reservaDate.getDay() === 6) {
+      setValidationError("No se pueden hacer reservas los días sábados y domingos.");
+      return;}
     if (!isAfter(reservaDate, today)) {
       setValidationError("La fecha de la reserva debe ser posterior a la fecha actual.");
-      return;
-    }
-  
+      return;}
     if (!isWithinInterval(reservaDate, { start: today, end: maxDate })) {
       setValidationError("La fecha de la reserva debe estar dentro del próximo mes.");
-      return;
-    }
-  
+      return;}
     try {
       await editReserva(currentReserva.id_reserva, currentReserva);
       handleEditClose();
@@ -244,21 +136,23 @@ const Reservas = () => {
     const today = new Date();
     today.setHours(0, 0, 0, 0); 
   
+    if (!reserva.fecha) {
+      return false;
+    }
+  
     const reservaDate = parseISO(reserva.fecha);
     reservaDate.setHours(0, 0, 0, 0); 
     
-    console.log('Comparing dates:', { today, reservaDate, reservaFecha: reserva.fecha, isSameDay: isSameDay(reservaDate, today) });
-  
     if (!showPreviousReservations && reservaDate < today && !isSameDay(reservaDate, today)) {
       return false;
     }
-
+  
     if (selectedFilter === 'option5') {
       return reservaDate.getMonth() + 1 === parseInt(selectedMonth) && reservaDate.getFullYear() === parseInt(selectedYear);
     }
   
     if (selectedFilter === 'option1') {
-      return reserva.usuario.toLowerCase().includes(filterText.toLowerCase());
+      return reserva.usuario && reserva.usuario.toLowerCase().includes(filterText.toLowerCase());
     } else if (selectedFilter === 'option2') {
       return reserva.nombre_lab && reserva.nombre_lab.toLowerCase().includes(filterText.toLowerCase());
     } else if (selectedFilter === 'option3') {
