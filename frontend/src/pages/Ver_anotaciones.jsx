@@ -75,14 +75,17 @@ const Ver_anotaciones = () => {
   };
 
   const handleAlumnoSearchChange = (e) => {
-    const query = e.target.value.toLowerCase();
-    setSearchTerm(query);
+    const query = e.target.value;
+    const validQuery = query.replace(/[^a-zA-Z\s]/g, '');
+    setSearchTerm(validQuery);
+  
     const filtered = alumnos.filter((alumno) =>
-      `${alumno.nombre} ${alumno.apellido}`.toLowerCase().includes(query)
+      `${alumno.nombre} ${alumno.apellido}`.toLowerCase().includes(validQuery.toLowerCase())
     );
     setFilteredAlumnos(filtered.slice(0, 5));
     setIsListVisible(filtered.length > 0);
   };
+  
 
   const handleAlumnoSelect = (alumno) => {
     setNewAnotacion({ ...newAnotacion, rut: alumno.rut });

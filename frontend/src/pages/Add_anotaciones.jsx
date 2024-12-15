@@ -1,5 +1,3 @@
-// src/components/Add_anotaciones.jsx
-import React from "react";
 import { AnimatePresence } from "framer-motion";
 import useAlert from "../hooks/anotaciones/useAlerts.jsx";
 import useAlumnos from "../hooks/anotaciones/useAlumnos.jsx";
@@ -32,6 +30,12 @@ function Add_anotaciones() {
 
   const maxDescripcionLength = 280;
   const isMaxReached = newAnotacion.descripcion.length > maxDescripcionLength;
+
+  const handleLetterOnlyChange = (e) => {
+    const { value } = e.target;
+    const lettersOnly = value.replace(/[^a-zA-Z\s]/g, "");
+    handleSearchChange({ target: { value: lettersOnly } });
+  };
 
   return (
     <div className="flex py-10 justify-center bg-gray-50 dark:bg-gray-800">
@@ -70,7 +74,7 @@ function Add_anotaciones() {
               type="text"
               id="alumno"
               value={searchTerm}
-              onChange={handleSearchChange}
+              onChange={handleLetterOnlyChange} // Usa el nuevo manejador
               placeholder="Buscar Alumno"
               className="mt-2 block w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300"
             />
