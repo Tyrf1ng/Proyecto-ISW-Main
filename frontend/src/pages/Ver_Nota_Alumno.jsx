@@ -9,7 +9,6 @@ const VerNotaAlumno = () => {
   const { usuario } = useUsuario();
   const { notas, loading, error } = useNotasAsignatura([]);
 
-  console.log("notas", notas);
 
   // Filtrado de las notas
   const filteredNotas = filterType

@@ -1,45 +1,11 @@
-import { useContext, useEffect, useState } from 'react';
-import { CursoContext } from '../context/CursoContext';
-import { AsignaturaContext } from '../context/AsignaturaContext';
-import { getCursos } from '../services/cursos.service';
+
+import useUsuario from '../hooks/useUsuario';
+import useCursoAsig from '../hooks/UseCursoAsig';
 import { Outlet } from 'react-router-dom';
-import { UsuarioContext } from '../context/UsuarioContext';
 
 function Notas() {
-    const { curso } = useContext(CursoContext);
-    const { asignatura } = useContext(AsignaturaContext);
-    const { usuario } = useContext(UsuarioContext);
-    const [nombreCurso, setNombreCurso] = useState('');
-    const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const cargarNombreCurso = async () => {
-      if (!curso || !curso.idCurso) {
-        setNombreCurso('Curso no seleccionado');
-        setLoading(false);
-        return;
-      }
-
-      try {
-        setLoading(true);
-        const cursos = await getCursos();
-        const cursoSeleccionado = cursos.find((cursoItem) => cursoItem.id_curso === curso.idCurso);
-        
-        if (cursoSeleccionado) {
-          setNombreCurso(cursoSeleccionado.nombre);
-        } else {
-          setNombreCurso('Curso no encontrado');
-        }
-      } catch (error) {
-        console.error("Error al obtener el nombre del curso:", error);
-        setNombreCurso('Error al cargar curso');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    cargarNombreCurso();
-  }, [curso]);
+  const { usuario } = useUsuario();
+  const { nombreCurso, nombreAsignatura, loading } = useCursoAsig();
 
   const getTitulo = () => {
     if (loading) {
@@ -53,7 +19,7 @@ function Notas() {
     if (usuario.rol === "Docente") {
       return `Notas para el curso ${nombreCurso}`;
     } else if (usuario.rol === "Alumno") {
-      return `Notas en ${asignatura.nombre}`;
+      return `Notas en ${nombreAsignatura}`;
     } else {
       return 'Notas';
     }
