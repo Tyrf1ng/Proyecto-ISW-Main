@@ -1,26 +1,15 @@
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect } from 'react';
 import Box from '@mui/material/Box';
 import TableComponent from '@components/TableNotas';
 import useNotasAsignatura from '@hooks/notas/useNotasAsignatura';
-import { UsuarioContext } from '@context/UsuarioContext';
+import useUsuario from '@hooks/useUsuario';
 
 const VerNotaAlumno = () => {
   const [filterType, setFilterType] = useState('');
-  const { usuario, cargarUsuario } = useContext(UsuarioContext);
+  const { usuario } = useUsuario();
   const { notas, loading, error } = useNotasAsignatura([]);
 
   console.log("notas", notas);
-
-  // Validación inicial del usuario
-  useEffect(() => {
-    if (!usuario) {
-      cargarUsuario();
-    }
-  }, [usuario, cargarUsuario]);
-
-  if (!usuario) {
-    return <div>Cargando usuario...</div>;
-  }
 
   // Filtrado de las notas
   const filteredNotas = filterType
