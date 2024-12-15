@@ -136,7 +136,7 @@ const VerNotas = () => {
             <h2 className="text-lg font-bold mb-4">Editar Nota</h2>
             <form onSubmit={handleUpdate}>
               <div className="mb-4">
-                <label htmlFor="tipo" className="block text-sm font-medium">
+                <label htmlFor="tipo" className="block text-sm text-gray-500 dark:text-gray-300">
                   Tipo
                 </label>
                 <select
@@ -145,7 +145,7 @@ const VerNotas = () => {
                   onChange={(e) =>
                     setNotaToEdit((prevState) => ({ ...prevState, tipo: e.target.value }))
                   }
-                  className="w-full p-2 border rounded"
+                  className="mt-2 block w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300"
                 >
                   <option value="Prueba">Prueba</option>
                   <option value="Presentacion">Presentación</option>
@@ -168,7 +168,7 @@ const VerNotas = () => {
                   min="2.0"
                   max="7.0"
                   step="0.1"
-                  className="w-full p-2 border rounded"
+                  className="mt-2 block w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300"
                 />
               </div>
 
@@ -178,7 +178,7 @@ const VerNotas = () => {
               <button
                 type="button"
                 onClick={() => setNotaToEdit(null)}
-                className="w-full px-6 py-3 bg-gray-300 rounded-lg mt-4"
+                className="w-full px-6 py-3 bg-gray-400 rounded-lg mt-4"
               >
                 Cancelar
               </button>
