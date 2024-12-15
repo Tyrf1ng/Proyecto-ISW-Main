@@ -1,5 +1,5 @@
 import { AnimatePresence } from "framer-motion";
-import useAlert from "../hooks/anotaciones/useAlerts.jsx";
+import useAlert from "../hooks/useAlerts.jsx";
 import useAlumnos from "../hooks/anotaciones/useAlumnos.jsx";
 import useAnotacionForm from "../hooks/anotaciones/useAnotacionForm.jsx";
 import WarningAlert from "../components/WarningAlert.jsx";

@@ -1,155 +1,74 @@
-import { useContext, useEffect, useState } from "react";
-import { CursoContext } from "../context/CursoContext";
-import { getSoloAlumnosByCurso } from '@services/cursos.service';
+import { useContext, useState } from "react";
 import { createNota } from "../services/notas.service";
+import useAlumnos from "../hooks/notas/useAlumnos.jsx";
 import { AsignaturaContext } from "../context/AsignaturaContext";
 import SuccessAlert from '../components/SuccessAlert';
 import ErrorAlert from '../components/ErrorAlert';
 import WarningAlert from '../components/WarningAlert';
+import useAlert from "../hooks/useAlerts.jsx";
+import { AnimatePresence } from "framer-motion";
 
 function Add_Notas() {
-  const { curso } = useContext(CursoContext);
+  const [alert, showAlert] = useAlert();
   const { asignatura } = useContext(AsignaturaContext);
+  const {
+    filteredAlumnos,
+    searchTerm,
+    isListVisible,
+    handleSearchChange,
+    handleAlumnoSelectHook,
+    resetAlumnos,
+  } = useAlumnos();
+
   const [newNota, setNewNota] = useState({
     tipo: '',
     valor: '',
     rut: '',
-    id_asignatura: asignatura.idAsignatura || '',
+    id_asignatura: asignatura?.idAsignatura || '',
   });
-  const [message, setMessage] = useState("");
-  const [messageType, setMessageType] = useState("");
-  const [alumnos, setAlumnos] = useState([]);
-  const [filteredAlumnos, setFilteredAlumnos] = useState([]);
-  const [selectedAlumno, setSelectedAlumno] = useState(null);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [isListVisible, setIsListVisible] = useState(false);
-  const [cargando, setCargando] = useState(true);
-
-  //Cargar alumnos del curso con el id del curso
-  useEffect(() => {
-    const cargarDatos = async () => {
-      if (!curso.idCurso) {  
-        console.error("ID del curso no válido:", curso.idCurso);
-        return;
-      }
-      try {
-        setCargando(true);
-        const alumnosData = await getSoloAlumnosByCurso(curso.idCurso);
-
-        if (Array.isArray(alumnosData)) {
-          setAlumnos(alumnosData);
-          setFilteredAlumnos(alumnosData.slice(0, 5));
-
-        } else {
-          console.error("Formato inesperado de datos:", alumnosData);
-        }
-
-      } catch (error) {
-        console.error("Error al cargar datos:", error);
-      } finally {
-        setCargando(false); 
-      }
-    };
-
-    cargarDatos();
-  }, [curso.idCurso]);
 
 
-  const handleSearchChange = (e) => {
-    const query = e.target.value.toLowerCase();
-    setSearchTerm(query);
-
-    const filtered = alumnos.filter((alumno) =>
-      `${alumno.nombre} ${alumno.apellido}`.toLowerCase().includes(query)
-    );
-    setFilteredAlumnos(filtered.slice(0, 5));
-    setIsListVisible(filtered.length > 0);
+  const handleAlumnoSelect = (alumno) => {
+    setNewNota((prevNota) => ({ ...prevNota, rut: alumno.rut }));
+    handleAlumnoSelectHook(alumno); 
   };
-
+  
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setNewNota({ ...newNota, [name]: value });
   };
 
-  const handleAlumnoSelect = (alumno) => {
-    setSelectedAlumno(alumno);
-    setNewNota((prev) => ({
-      ...prev,
-      rut: alumno.rut,
-    }));
-    setSearchTerm(`${alumno.nombre} ${alumno.apellido}`);
-    setIsListVisible(false);
-  };
-
   const handleSubmit = async () => {
-    setMessage("");
-    setMessageType("");
-
     if (!newNota.rut || !newNota.tipo || !newNota.valor || !newNota.id_asignatura) {
-      setMessage("Debe completar todos los campos.");
-      setMessageType("warning");
+      showAlert("Debe completar todos los campos.", "warning");
       return;
     }
 
     const valorNumerico = parseFloat(newNota.valor);
     const decimalPart = newNota.valor.split('.')[1];
-    
+
     if (isNaN(valorNumerico) || valorNumerico < 2.0 || valorNumerico > 7.0 || (decimalPart && decimalPart.length > 1)) {
-      setMessage("El valor de la nota debe estar entre 2.0 y 7.0 y tener como máximo un decimal.");
-      setMessageType("error");
+      showAlert("El valor de la nota debe estar entre 2.0 y 7.0 y tener como máximo un decimal.", "error");
       return;
     }
 
     try {
       await createNota({ ...newNota, valor: valorNumerico });
-      setMessage("Nota creada exitosamente.");
-      setMessageType("success");
-
+      showAlert("Nota creada exitosamente.", "success");
+      
       setNewNota({
         tipo: "",
         valor: "",
         rut: "",
-        id_asignatura: asignatura.idAsignatura || ''   
-         });
+        id_asignatura: asignatura?.idAsignatura || '',
+      });
 
-      setSelectedAlumno(null);
-      setSearchTerm("");
-      setIsListVisible(false);
+      resetAlumnos();
     } catch (error) {
       console.error("Error al crear la nota:", error);
-      setMessage("Hubo un error al crear la nota.");
-      setMessageType("error");
+      showAlert("Hubo un error al crear la nota.", "error");
     }
   };
-
-  const renderMessage = () => {
-    if (messageType === 'success') {
-      return <SuccessAlert message={message} />;
-    }
-
-    if (messageType === 'error') {
-      return <ErrorAlert message={message} />;
-    }
-
-    if (messageType === 'warning') {
-      return <WarningAlert message={message} />;
-    }
-
-    return null;
-  };
-
-  useEffect(() => {
-    if (messageType === 'success' || messageType === 'error'|| messageType === 'warning') {
-      const timer = setTimeout(() => {
-        setMessageType("");
-        setMessage("");
-      }, 3000); 
-  
-      return () => clearTimeout(timer); 
-    }
-  }, [messageType, message]);
-
-  if (cargando) return <p>Cargando...</p>;
 
   return (
     <div className="p-6 max-w-3xl mx-auto bg-white dark:bg-gray-900 rounded-lg shadow-md">
@@ -163,7 +82,7 @@ function Add_Notas() {
           id="tipo"
           value={newNota.tipo}
           onChange={handleInputChange}
-          className="mt-2 block w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300"
+          className="mt-2 block w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300"
         >
           <option value="" disabled={newNota.tipo !== ""}>Seleccione tipo</option>
           <option value="Prueba">Prueba</option>
@@ -182,7 +101,7 @@ function Add_Notas() {
           value={searchTerm}
           onChange={handleSearchChange}
           placeholder="Buscar alumno"
-          className="mt-2 block w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300"
+          className="mt-2 block w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300"
         />
         {isListVisible && (
           <ul className="list-none border border-gray-300 dark:border-gray-600 rounded-md mt-2 bg-white dark:bg-gray-900 shadow-lg max-h-40 overflow-auto">
@@ -208,15 +127,25 @@ function Add_Notas() {
           value={newNota.valor}
           onChange={handleInputChange}
           placeholder="Ingrese la nota"
-          className="mt-2 block w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300"
-          max={7}
-          min={2}
-          step={0.1}
+          className="mt-2 block w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300"
+          max="7.0"
+          min="2.0"
+          step="0.1"
         />
       </div>
 
-      {/* Mensaje de error/success */}
-      {renderMessage()}
+      {/* Manejar las alertas con AnimatePresence */}
+      <AnimatePresence>
+        {alert.type === "warning" && (
+          <WarningAlert message={alert.message} key="warning" />
+        )}
+        {alert.type === "success" && (
+          <SuccessAlert message={alert.message} key="success" />
+        )}
+        {alert.type === "error" && (
+          <ErrorAlert message={alert.message} key="error" />
+        )}
+      </AnimatePresence>
 
       {/* Botón de enviar */}
       <button
