@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Box from '@mui/material/Box';
 import TableComponent from '@components/TableNotas';
 import useNotasAsignatura from '@hooks/notas/useNotasAsignatura';
