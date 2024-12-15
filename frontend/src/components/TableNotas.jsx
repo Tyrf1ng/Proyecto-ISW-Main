@@ -3,27 +3,26 @@ import { IconButton } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { getUsuarioByRut } from '@services/usuarios.service';
+import { prettifyRut } from "react-rut-formatter"; // Formatear RUT
 
 const TableComponent = ({ notas, onEdit, onDelete, role }) => {
-  const [sortOrder, setSortOrder] = useState('asc'); // Estado para el orden
+  const [sortOrder, setSortOrder] = useState('asc');
   const [usuarios, setUsuarios] = useState({});
   const [sortedNotas, setSortedNotas] = useState(notas);
 
-  // Función para ordenar las notas por el nombre completo del usuario
   const sortNotasByNombre = () => {
     const sorted = [...sortedNotas].sort((a, b) => {
-      const nombreA = usuarios[a.rut]?.nombre || ''; // Obtener el nombre del usuario A
-      const nombreB = usuarios[b.rut]?.nombre || ''; // Obtener el nombre del usuario B
+      const nombreA = usuarios[a.rut]?.nombre || '';
+      const nombreB = usuarios[b.rut]?.nombre || '';
       if (nombreA > nombreB) return sortOrder === 'asc' ? 1 : -1;
       if (nombreA < nombreB) return sortOrder === 'asc' ? -1 : 1;
       return 0;
     });
 
     setSortedNotas(sorted);
-    setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc'); // Cambiar el orden después de cada clic
+    setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
   };
 
-  // Función para ordenar las notas por el parámetro tipo
   const sortNotasByTipo = () => {
     const sorted = [...sortedNotas].sort((a, b) => {
       if (a.tipo > b.tipo) return sortOrder === 'asc' ? 1 : -1;
@@ -32,10 +31,9 @@ const TableComponent = ({ notas, onEdit, onDelete, role }) => {
     });
 
     setSortedNotas(sorted);
-    setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc'); // Cambiar el orden después de cada clic
+    setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
   };
 
-  // Efecto para obtener usuarios por RUT
   useEffect(() => {
     const fetchUsuarios = async () => {
       const usuariosByRut = {};
@@ -43,7 +41,7 @@ const TableComponent = ({ notas, onEdit, onDelete, role }) => {
         if (!usuariosByRut[nota.rut]) {
           try {
             const usuario = await getUsuarioByRut(nota.rut);
-            usuariosByRut[nota.rut] = { nombre: usuario.nombre, apellido: usuario.apellido }; // Asignar nombre y apellido
+            usuariosByRut[nota.rut] = { nombre: usuario.nombre, apellido: usuario.apellido };
           } catch (error) {
             console.error('Error al obtener el usuario por rut', error);
           }
@@ -56,7 +54,6 @@ const TableComponent = ({ notas, onEdit, onDelete, role }) => {
       fetchUsuarios();
     }
 
-    // Inicializar notas ordenadas
     setSortedNotas(notas);
   }, [notas]);
 
@@ -109,21 +106,21 @@ const TableComponent = ({ notas, onEdit, onDelete, role }) => {
                         {nota.valor}
                       </div>
                     </td>
-                 
+
                     {role === 'Docente' && (
                       <>
                         <td className="p-4 text-sm whitespace-nowrap">
-                        <div className="text-gray-800 dark:text-white">
-                        {`${usuarios[nota.rut]?.nombre || 'Cargando...'} ${
-                          usuarios[nota.rut]?.apellido || ''
-                        }`} 
-                        </div>
+                          <div className="text-gray-800 dark:text-white">
+                            {`${usuarios[nota.rut]?.nombre || 'Cargando...'} ${
+                              usuarios[nota.rut]?.apellido || ''
+                            }`}
+                          </div>
                         </td>
                         <td className="p-4 text-sm whitespace-nowrap">
-                    
-                        <div className="text-gray-800 dark:text-white">{nota.rut}</div>
-
-                    </td>
+                          <div className="text-gray-800 dark:text-white">
+                            {prettifyRut(nota.rut)} 
+                          </div>
+                        </td>
                         <td className="p-4 text-sm whitespace-nowrap">
                           <IconButton color="primary" onClick={() => onEdit(nota)}>
                             <EditIcon />

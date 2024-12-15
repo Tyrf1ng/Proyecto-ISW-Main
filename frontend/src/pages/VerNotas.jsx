@@ -81,8 +81,11 @@ const VerNotas = () => {
         return;
       }
   
-      if (valor < 2.0 || valor > 7.0) {
-        setErrorMessage("El valor de la nota debe estar entre 2.0 y 7.0");
+      const valorNumerico = parseFloat(valor);
+      const decimalPart = valor.toString().split('.')[1];
+  
+      if (isNaN(valorNumerico) || valorNumerico < 2.0 || valorNumerico > 7.0 || (decimalPart && decimalPart.length > 1)) {
+        setErrorMessage("El valor de la nota debe estar entre 2.0 y 7.0 y tener como máximo un decimal.");
         return;
       }
   

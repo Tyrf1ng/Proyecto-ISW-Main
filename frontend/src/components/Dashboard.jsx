@@ -56,8 +56,9 @@ const NAVIGATION_BY_ROLE = {
       title: 'Notas',
       icon: <HistoryEduRoundedIcon />,
       children: [
-        { segment: 'ver_notas', title: 'Ver Notas', icon: <ManageSearchIcon /> },
         { segment: "add", title: "Añadir Notas", icon: <AddIcon /> },
+        { segment: 'ver_notas', title: 'Ver Notas', icon: <ManageSearchIcon /> },
+       
       ],
     },
     {

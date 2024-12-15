@@ -25,28 +25,29 @@ function Add_Notas() {
   const [isListVisible, setIsListVisible] = useState(false);
   const [cargando, setCargando] = useState(true);
 
+  //Cargar alumnos del curso con el id del curso
   useEffect(() => {
     const cargarDatos = async () => {
-      if (!curso.idCurso) {  // Comprobar si el curso tiene un idCurso válido
+      if (!curso.idCurso) {  
         console.error("ID del curso no válido:", curso.idCurso);
         return;
       }
       try {
-        // Mostrar mensaje de carga
         setCargando(true);
-
-        // Obtener alumnos según curso.idCurso
         const alumnosData = await getSoloAlumnosByCurso(curso.idCurso);
+
         if (Array.isArray(alumnosData)) {
           setAlumnos(alumnosData);
           setFilteredAlumnos(alumnosData.slice(0, 5));
+
         } else {
           console.error("Formato inesperado de datos:", alumnosData);
         }
+
       } catch (error) {
         console.error("Error al cargar datos:", error);
       } finally {
-        setCargando(false); // Cambiar el estado de carga a false siempre que termine la operación
+        setCargando(false); 
       }
     };
 
@@ -91,14 +92,15 @@ function Add_Notas() {
     }
 
     const valorNumerico = parseFloat(newNota.valor);
-    if (isNaN(valorNumerico) || valorNumerico < 2.0 || valorNumerico > 7.0) {
-      setMessage("El valor de la nota debe estar entre 2.0 y 7.0.");
+    const decimalPart = newNota.valor.split('.')[1];
+    
+    if (isNaN(valorNumerico) || valorNumerico < 2.0 || valorNumerico > 7.0 || (decimalPart && decimalPart.length > 1)) {
+      setMessage("El valor de la nota debe estar entre 2.0 y 7.0 y tener como máximo un decimal.");
       setMessageType("error");
       return;
     }
 
     try {
-      console.log("Creando nota:", newNota);
       await createNota({ ...newNota, valor: valorNumerico });
       setMessage("Nota creada exitosamente.");
       setMessageType("success");
@@ -150,7 +152,7 @@ function Add_Notas() {
   if (cargando) return <p>Cargando...</p>;
 
   return (
-    <div className="p-6 max-w-3xl mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-md">
+    <div className="p-6 max-w-3xl mx-auto bg-white dark:bg-gray-900 rounded-lg shadow-md">
       <h2 className="text-2xl font-semibold text-gray-800 dark:text-white mb-6">Añadir Notas</h2>
 
       {/* Tipo de Nota */}
@@ -163,7 +165,7 @@ function Add_Notas() {
           onChange={handleInputChange}
           className="mt-2 block w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300"
         >
-          <option value="">Seleccione tipo</option>
+          <option value="" disabled={newNota.tipo !== ""}>Seleccione tipo</option>
           <option value="Prueba">Prueba</option>
           <option value="Tarea">Tarea</option>
           <option value="Test">Test</option>
@@ -207,6 +209,9 @@ function Add_Notas() {
           onChange={handleInputChange}
           placeholder="Ingrese la nota"
           className="mt-2 block w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300"
+          max={7}
+          min={2}
+          step={0.1}
         />
       </div>
 
