@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext } from 'react';
-import { CursoContext } from '../../context/CursoContext';
+import { CursoContext } from '../context/CursoContext';
 import { getSoloAlumnosByCurso } from '@services/cursos.service';
 
 const useAlumnos = () => {
