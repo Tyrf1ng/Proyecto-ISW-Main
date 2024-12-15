@@ -25,9 +25,10 @@ function Add_Notas() {
   const [isListVisible, setIsListVisible] = useState(false);
   const [cargando, setCargando] = useState(true);
 
+  //Cargar alumnos del curso con el id del curso
   useEffect(() => {
     const cargarDatos = async () => {
-      if (!curso.idCurso) {  // Comprobar si el curso tiene un idCurso válido
+      if (!curso.idCurso) {  
         console.error("ID del curso no válido:", curso.idCurso);
         return;
       }
@@ -100,7 +101,6 @@ function Add_Notas() {
     }
 
     try {
-      console.log("Creando nota:", newNota);
       await createNota({ ...newNota, valor: valorNumerico });
       setMessage("Nota creada exitosamente.");
       setMessageType("success");
