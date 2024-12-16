@@ -3,7 +3,7 @@ import { IconButton } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 
-const TableReservas = ({ reservas = [], handleOpen, handleDelete }) => {
+const TableReservas = ({ reservas = [], handleOpen, handleDelete, showActions = true }) => {
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
 
   const formatDate = (date) => {
@@ -74,9 +74,11 @@ const TableReservas = ({ reservas = [], handleOpen, handleDelete }) => {
                 <th className="px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400">
                   Curso
                 </th>
-                <th className="relative py-3.5 px-4">
-                  <span className="sr-only">Acciones</span>
-                </th>
+                {showActions && (
+                  <th className="relative py-3.5 px-4">
+                    <span className="sr-only">Acciones</span>
+                  </th>
+                )}
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200 dark:divide-gray-700 dark:bg-gray-900">
@@ -101,16 +103,18 @@ const TableReservas = ({ reservas = [], handleOpen, handleDelete }) => {
                     <td className="px-4 py-4 text-sm whitespace-nowrap">
                       <div className="text-gray-800 dark:text-white">{reserva.nombreCurso}</div>
                     </td>
-                    <td className="px-4 py-4 text-sm whitespace-nowrap">
-                      <div className="flex space-x-2">
-                        <IconButton color="primary" onClick={() => handleOpen(reserva)}>
-                          <EditIcon />
-                        </IconButton>
-                        <IconButton color="primary" onClick={() => handleDelete(reserva)}>
-                          <DeleteIcon className="text-red-500" />
-                        </IconButton>
-                      </div>
-                    </td>
+                    {showActions && (
+                      <td className="px-4 py-4 text-sm whitespace-nowrap">
+                        <div className="flex space-x-2">
+                          <IconButton color="primary" onClick={() => handleOpen(reserva)}>
+                            <EditIcon />
+                          </IconButton>
+                          <IconButton color="primary" onClick={() => handleDelete(reserva)}>
+                            <DeleteIcon className="text-red-500" />
+                          </IconButton>
+                        </div>
+                      </td>
+                    )}
                   </tr>
                 ))
               ) : (

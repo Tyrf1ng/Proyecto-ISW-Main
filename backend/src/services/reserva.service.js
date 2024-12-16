@@ -1,5 +1,6 @@
 import { AppDataSource } from "../config/configDb.js"; 
 import Reserva from "../entity/reserva.entity.js"; 
+import { Not } from 'typeorm';
 
 export async function getReservasService() {
     try {
@@ -91,10 +92,15 @@ export async function updateReservaService(id_reserva, data) {
         const reservaRepository = AppDataSource.getRepository(Reserva);
 
         const existingReservaLab = await reservaRepository.findOne({
-            where: { id_lab: data.id_lab, fecha: data.fecha, id_horario: data.id_horario },
+            where: { 
+                id_lab: data.id_lab, 
+                fecha: data.fecha, 
+                id_horario: data.id_horario,
+                id_reserva: Not(id_reserva) // Ignorar la reserva que se está editando
+            },
         });
 
-        if (existingReservaLab && existingReservaLab.id_reserva !== id_reserva) {
+        if (existingReservaLab) {
             return [null, "El laboratorio ya está reservado en la misma fecha y horario"];
         }
 
