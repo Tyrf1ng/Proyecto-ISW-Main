@@ -19,7 +19,7 @@ router
   .use(authenticateJwt);
 
 router
-  .get("/", authorize(["Directivo"]), getUsuarios) 
+  .get("/", authorize(["Directivo","Docente"]), getUsuarios) 
   .get("/rut/:rut", authorize(["Directivo", "Docente", "Encargado de Laboratorio", "Alumno"]), getUsuarioByRut) 
   .get("/alumnoscurso/:id_Curso", authorize(["Directivo", "Docente"]), getAlumnosPorCurso) 
   .get("/buscar", authorize(["Directivo"]), getUsuariosByNombre) 

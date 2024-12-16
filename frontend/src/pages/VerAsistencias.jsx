@@ -1,13 +1,18 @@
+// src/pages/VerAsistencias.jsx
+
 import { useState, useEffect, useContext } from "react";
 import { CursoContext } from "../context/CursoContext";
 import { AsignaturaContext } from "../context/AsignaturaContext";
+import { UsuarioContext } from "../context/UsuarioContext"; 
+
 import {
-  getAsistenciasAsignatura,
   deleteAsistencia,
   updateAsistencia,
+  getAsistenciasPorCursoYAsignatura
 } from "../services/Asistencias.service";
+import { getUsuarios } from "../services/Usuarios.service"; 
 import TableComponentAsistencias from "../components/TableComponentAsistencias";
-import { format as formatTempo } from "@formkit/tempo"; 
+import { format as formatDate } from "@formkit/tempo";
 import SuccessAlert from "../components/SuccessAlert";
 import ErrorAlert from "../components/ErrorAlert";
 
@@ -16,6 +21,9 @@ const VerAsistencias = () => {
   const { idCurso } = curso;
   const { asignatura } = useContext(AsignaturaContext);
   const { idAsignatura } = asignatura;
+  const { usuario } = useContext(UsuarioContext); 
+
+  const [usuariosList, setUsuariosList] = useState([]); 
 
   const [asistencias, setAsistencias] = useState([]);
   const [filterText, setFilterText] = useState("");
@@ -31,6 +39,27 @@ const VerAsistencias = () => {
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("");
 
+  const nombreAsignatura = asignatura.nombre || "la asignatura";
+
+  // Agregar estado para el contador de caracteres
+  const [charCount, setCharCount] = useState(0);
+
+  // useEffect para obtener la lista completa de usuarios
+  useEffect(() => {
+    const fetchUsuarios = async () => {
+      try {
+        const dataUsuarios = await getUsuarios();
+        setUsuariosList(dataUsuarios || []);
+      } catch (error) {
+        console.error("Error al cargar los usuarios:", error);
+        setMessage("Error al cargar los usuarios");
+        setMessageType("error");
+      }
+    };
+    fetchUsuarios();
+  }, []);
+
+  // useEffect para obtener las asistencias una vez que se tienen los usuarios
   useEffect(() => {
     const cargarAsistencias = async () => {
       // Validar que tengamos idCurso e idAsignatura
@@ -39,33 +68,58 @@ const VerAsistencias = () => {
         setCargando(false);
         return;
       }
+
+      // Esperar a que la lista de usuarios esté cargada
+      if (usuariosList.length === 0) {
+        return;
+      }
+
       try {
-        // Ahora obtenemos solo las asistencias de la asignatura que imparte el profesor
-        const datosAsistencias = await getAsistenciasAsignatura(idAsignatura, idCurso);
-        setAsistencias(datosAsistencias || []);
+        // Obtener las asistencias de la asignatura en el curso
+        const datosAsistencias = await getAsistenciasPorCursoYAsignatura(idCurso, idAsignatura);
+        
+        // Mapear las asistencias con los nombres y apellidos de los usuarios
+        const asistenciasConNombres = datosAsistencias.map((asistencia) => {
+          const usuario = usuariosList.find((u) => u.rut === asistencia.rut);
+          return {
+            ...asistencia,
+            nombre: usuario ? usuario.nombre : "Nombre no encontrado",
+            apellido: usuario ? usuario.apellido : "Apellido no encontrado"
+          };
+        });
+        
+        setAsistencias(asistenciasConNombres || []);
       } catch (error) {
         console.error("Error al cargar las asistencias:", error);
+        setMessage("Error al cargar las asistencias");
+        setMessageType("error");
       } finally {
         setCargando(false);
       }
     };
     cargarAsistencias();
-  }, [idCurso, idAsignatura]);
+  }, [idCurso, idAsignatura, usuariosList]); // Dependencias: idCurso, idAsignatura y usuariosList
 
-  const handleFilterChange = (e) => setFilterText(e.target.value);
+  const handleFilterChange = (e) => {
+    const sanitizedValue = e.target.value.replace(/[0-9]/g, ""); // Eliminar números
+    setFilterText(sanitizedValue);
+  };
 
   const handleFilterDateChange = (e) => {
     const date = e.target.value;
-    if (!Date.parse(date)) {
-      console.error("Invalid date format:", date);
+    if (date && !Date.parse(date)) { // Permitir cadena vacía
+      console.error("Formato de fecha inválido:", date);
       return;
     }
     setFilterDate(date);
   };
+  
 
   const handleEdit = (asistencia) => {
     setAsistenciaSeleccionada(asistencia);
     setIsModalOpen(true);
+    // Inicializar el contador de caracteres
+    setCharCount(asistencia.observacion ? asistencia.observacion.length : 0);
   };
 
   const handleDeleteRequest = (id_asistencia) => {
@@ -98,26 +152,27 @@ const VerAsistencias = () => {
     }
   };
 
+
   const handleSave = async () => {
     try {
       if (!asistenciaSeleccionada || !asistenciaSeleccionada.id_asistencia) {
         console.error("ID de asistencia no válido", asistenciaSeleccionada);
         throw new Error("ID de asistencia no válido");
       }
-
+  
       const asistenciaOriginal = asistencias.find(
         (a) => a.id_asistencia === asistenciaSeleccionada.id_asistencia
       );
-
+  
       const tipoNoCambio = asistenciaOriginal && asistenciaOriginal.tipo === asistenciaSeleccionada.tipo;
       const observacionNoCambio = asistenciaOriginal && asistenciaOriginal.observacion === asistenciaSeleccionada.observacion;
-
+  
       if (tipoNoCambio && observacionNoCambio) {
         setMessage("No se han realizado cambios en la asistencia");
         setMessageType("error");
         return;
       }
-
+  
       if (
         asistenciaSeleccionada.tipo === "Justificado" &&
         (!asistenciaSeleccionada.observacion || asistenciaSeleccionada.observacion.trim() === "")
@@ -126,27 +181,26 @@ const VerAsistencias = () => {
         setMessageType("error");
         return;
       }
-
+  
       const updatedAsistencia = {
         ...asistenciaSeleccionada,
         tipo: asistenciaSeleccionada.tipo,
         observacion: asistenciaSeleccionada.tipo === "Justificado" ? asistenciaSeleccionada.observacion : null
       };
-
+  
+      // Pasar un único objeto
       const response = await updateAsistencia(updatedAsistencia);
-
+  
       setIsModalOpen(false);
-
-      const newAsistencia = {
-        ...updatedAsistencia,
-        ...response, 
-        usuario: updatedAsistencia.usuario 
-      };
-
+  
+      // Si la respuesta tiene los datos anidados en 'data'
+      const updatedData = response.data || response; // Ajustar según la estructura real
+  
+      // Actualizar asistencias sin alterar nombre y apellido
       setAsistencias(
         asistencias.map((asistencia) =>
           asistencia.id_asistencia === updatedAsistencia.id_asistencia
-            ? newAsistencia
+            ? { ...asistencia, tipo: updatedData.tipo, observacion: updatedData.observacion }
             : asistencia
         )
       );
@@ -158,49 +212,59 @@ const VerAsistencias = () => {
       setMessageType("error");
     }
   };
+  
 
   const handleModalChange = (e) => {
     const { name, value } = e.target;
-    setAsistenciaSeleccionada({
-      ...asistenciaSeleccionada,
-      [name]: value,
-    });
+    if (name === 'observacion') {
+      if (value.length <= 60) { // Limitar a 60 caracteres
+        setAsistenciaSeleccionada({
+          ...asistenciaSeleccionada,
+          [name]: value,
+        });
+        setCharCount(value.length); // Actualizar el contador
+      }
+    } else {
+      setAsistenciaSeleccionada({
+        ...asistenciaSeleccionada,
+        [name]: value,
+      });
+    }
   };
 
   const normalizeText = (text) =>
     text.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
   const filteredAsistencias = asistencias.filter((asistencia) => {
-    const usuario = asistencia.usuario || { nombre: "", apellido: "" };
     const sanitizedFilterText = normalizeText(filterText)
       .replace(/[^a-zA-Z\s]/g, "")
       .toLowerCase();
     
     const matchesText = normalizeText(
-      `${usuario.nombre} ${usuario.apellido}`
+      `${asistencia.nombre} ${asistencia.apellido}`
     )
       .toLowerCase()
       .includes(sanitizedFilterText);
   
-    const formattedCreatedAt = formatTempo(
-      new Date(asistencia.createdAt).toISOString(),
-      "DD-MM-YYYY"
-    );
-    const formattedFilterDate = filterDate
-      ? formatTempo(new Date(filterDate).toISOString(), "DD-MM-YYYY")
-      : "";
+    // Formatear fechas a 'yyyy-MM-dd' para comparación
+    const createdAtDate = asistencia.createdAt ? new Date(asistencia.createdAt) : null;
+    const filterDateObj = filterDate ? new Date(filterDate) : null;
   
-    const matchesDate = filterDate ? formattedCreatedAt === formattedFilterDate : true;
+    const matchesDate = filterDateObj 
+      ? createdAtDate.getFullYear() === filterDateObj.getFullYear() &&
+        createdAtDate.getMonth() === filterDateObj.getMonth() &&
+        createdAtDate.getDate() === filterDateObj.getDate()
+      : true;  
     return matchesText && matchesDate;
   });
-  
+
 
   useEffect(() => {
     if (message) {
       const timer = setTimeout(() => {
         setMessage("");
         setMessageType("");
-      }, 2000);
+      }, 3500);
       return () => clearTimeout(timer);
     }
   }, [message]);
@@ -226,8 +290,11 @@ const VerAsistencias = () => {
   }
 
   return (
-    <div className="p-4 bg-gray-50 dark:bg-gray-800">
+    <div className="p-4 bg-gray-10 dark:bg-gray-800 mt-7 rounded-lg">
       {renderMessage()}
+      <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-300 mb-8 text-center">
+        Asistencias para {nombreAsignatura || "la asignatura"}
+      </h1>
       <div className="mb-4 flex space-x-4">
         <input
           type="text"
@@ -251,8 +318,8 @@ const VerAsistencias = () => {
       />
 
       {isModalOpen && asistenciaSeleccionada && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white dark:bg-gray-900 p-8 rounded-lg shadow-xl max-w-sm w-full">
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50" onClick={() => setIsModalOpen(false)}>
+          <div className="bg-white dark:bg-gray-900 p-8 rounded-lg shadow-xl max-w-sm w-full" onClick={(e) => e.stopPropagation()}>
             <h2 className="text-2xl font-bold mb-4 text-white">
               Editar Asistencia
             </h2>
@@ -304,8 +371,13 @@ const VerAsistencias = () => {
                   value={asistenciaSeleccionada.observacion || ""}
                   onChange={handleModalChange}
                   rows={4}
+                  maxLength={60} // Agregar restricción de 60 caracteres
                   className="mt-2 block w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300 resize-none"
                 ></textarea>
+                {/* Agregar el contador de caracteres */}
+                <div className="mt-1 text-sm text-gray-500 dark:text-gray-300">
+                  {60 - charCount} caracteres restantes
+                </div>
               </div>
             )}
             <div className="flex justify-between">

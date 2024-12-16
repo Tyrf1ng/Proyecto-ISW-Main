@@ -1,5 +1,37 @@
 import axios from './root.service.js';
 
+export async function getAsistenciasProfesor(id_profesor, id_curso, id_asignatura) {
+  try {
+    const response = await axios.get(`/asistencias/profesor/${id_profesor}/curso/${id_curso}/asignatura/${id_asignatura}`);
+    return response.data; 
+  } catch (error) {
+    console.error("Error al obtener asistencias del profesor:", error);
+    throw error;
+  }
+}
+
+export async function getAsistenciasEstudiante(rutEstudiante) {
+  try {
+    const response = await axios.get(`/asistencias/estudiante/${rutEstudiante}`); // Asegúrate de que la ruta coincide con la del backend
+    return response.data; // Retorna los datos directamente
+  } catch (error) {
+    console.error("Error al obtener asistencias del estudiante:", error);
+    throw error;
+  }
+}
+
+
+
+export async function getAsistencia(idAsistencia) {
+  try {
+    const { data } = await axios.get(`/asistencias/${idAsistencia}`);
+    return data.data; 
+  } catch (error) {
+    console.error("Error al obtener la asistencia:", error);
+    throw error;
+  }
+}
+
 // Obtener las asistencias de una asignatura específica en un curso específico
 export async function getAsistenciasAsignatura(id_asignatura, id_curso) {
   try {
@@ -53,10 +85,11 @@ export async function updateAsistencia(asistencia) {
     if (!asistencia.id_asistencia) {
       throw new Error("ID de asistencia es requerido");
     }
-    const response = await axios.patch(`/asistencias/actualizar/${asistencia.id_asistencia}`, asistencia);
+    const { tipo, observacion } = asistencia;
+    const response = await axios.patch(`/asistencias/actualizar/${asistencia.id_asistencia}`, { tipo, observacion });
     return response.data;
   } catch (error) {
-    console.error("Error al actualizar la asistencia:", error);
+    console.error("Error al actualizar la asistencia:", error.response ? error.response.data : error.message);
     throw error;
   }
 }
@@ -86,14 +119,27 @@ export const getAsistenciasAlumnoFecha = async (rutAlumno, fecha, idAsignatura) 
   }
 };
 
-// Obtener las asistencias de un alumno para una asignatura específica
-export const getAsistenciasAlumnoAsignatura = async (rut, id_asignatura ) => {
+
+//Nuevas funciones para obtener asistencias de un curso
+
+export const getAsistenciasPorCursoYAsignatura = async (idCurso, idAsignatura) => {
   try {
-    const response = await axios.get(`/asistencias/alumno/${rut}/asignatura/${id_asignatura}`);
-    return response.data?.data || [];
+    const response = await axios.get(`/asistencias/curso/${idCurso}/asignatura/${idAsignatura}`);
+    return response.data.data;
+
   } catch (error) {
-    console.error("Error al obtener las asistencias del alumno para la asignatura:", error);
-    throw error;
+    console.error("Error al obtener las asistencias por curso y asignatura:", error);
+    throw new Error('No se puedieron cargar las asistencias');
   }
 };
 
+// Obtener asistencias por RUT y Asignatura
+export const getAsistenciasPorRutyAsignatura = async (rut, idAsignatura) => {
+  try {
+    const response = await axios.get(`/asistencias/rut/${rut}/asignatura/${idAsignatura}`);
+    return response.data; // { message, data: [asistencias] }
+  } catch (error) {
+    const message = error.response?.data?.message || 'No se pudieron cargar las asistencias';
+    throw new Error(message);
+  }
+};

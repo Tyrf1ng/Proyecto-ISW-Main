@@ -147,45 +147,6 @@ export async function getAsistenciasEstudiante(rut) {
     }
 }
 
-
-export async function createAsistencia(data) {
-    try {
-        const { rut, id_curso, id_asignatura, tipo, observacion, createdAt } = data;
-
-        // Verificar que el alumno pertenece al curso
-        const conexion = await conectUsuarioCursoRepository.findOne({
-            where: { rut, id_curso }
-        });
-        if (!conexion) {
-            return [null, "El alumno no pertenece al curso especificado"];
-        }
-
-        // Verificar que la asignatura está asociada al curso
-        const asignaturaCurso = await asignaturaCursoRepository.findOne({
-            where: { id_asignatura, id_curso }
-        });
-        if (!asignaturaCurso) {
-            return [null, "La asignatura no está asignada al curso especificado"];
-        }
-
-        // Crear la asistencia
-        const asistencia = asistenciaRepository.create({
-            rut,
-            id_asignatura,
-            tipo,
-            observacion: tipo === "Justificado" ? observacion : null,
-            createdAt: createdAt ? new Date(createdAt) : new Date(),
-            updatedAt: new Date(),
-        });
-
-        const savedAsistencia = await asistenciaRepository.save(asistencia);
-        return [savedAsistencia, null];
-    } catch (error) {
-        console.error("Error al crear la asistencia:", error);
-        return [null, "Error interno del servidor"];
-    }
-}
-
 export async function getAsistenciasCurso(id_curso) {
     try {
         const conexiones = await conectUsuarioCursoRepository.find({
@@ -443,3 +404,110 @@ export async function getAsistenciasAlumnoAsignatura(rut, id_asignatura) {
     }
   }
   
+
+// Nuevas funciones 
+export async function getAsistenciasPorCursoYAsignaturaService(id_curso, id_asignatura){
+    try {
+        const AsistenciasRepository = AppDataSource.getRepository(Asistencia);
+        const ConectUsuarioCursoRepository = AppDataSource.getRepository(Conect_Usuario_Curso);
+
+        //obtener los alumnos del curso
+        const alumnos = await ConectUsuarioCursoRepository.find({
+            where: {id_curso},
+        });
+
+        if(!alumnos || alumnos.length === 0){
+            return [null, "No hay alumnos en el curso"];
+        }
+
+        //Extraer los ruts de los alumnos relacionados al curso
+        const rutsAlumnos = alumnos.map(alumno => alumno.rut);
+
+        //buscar las asistencias relacionadas con estos ruts y la asignatura especifica
+        const asistencias = await AsistenciasRepository.find({
+            where:{
+                rut: In(rutsAlumnos),
+                id_asignatura
+            }
+        });
+
+        if(!asistencias || asistencias.length === 0){
+            return [null, "No hay asistencias para este curso y asignatura"];
+        }
+
+        return [asistencias, null];
+
+    }catch (error) {
+        console.error("Error al obtener las asistencias por curso y asignatura:", error);
+        return [null, "Error interno del servidor"];
+    }
+}
+
+
+export async function getAsistenciasPorRutYAsignaturaService(rut, id_asignatura){
+    try{
+        //Validar que el RUT y la asignatura estan proporcionados
+        if(!rut || !id_asignatura){
+            return [null, "El RUT y la asignatura son obligatorios"];
+        }
+
+        //Verificar que el RUT pertenece a un usuario con rol 3
+        const UsuarioRepository = AppDataSource.getRepository(Usuario);
+        const alumno = await UsuarioRepository.findOne({
+            where: {rut: rut, id_roles: 3},
+        });
+
+        if(!alumno){
+            console.error(`Usuario con RUT ${rut} no encontrado o no tiene el rol 3`);
+            return [null, "El RUT proporcionado no corresponde a un alumno"];
+        }
+
+        //Obtener las asistencias filtradas por rut y asignatura
+        const AsistenciaRepository = AppDataSource.getRepository(Asistencia);
+        const asistencias = await AsistenciaRepository.find({
+           where: {
+            rut: rut,
+            id_asignatura: id_asignatura
+           },
+        });
+
+        if (!asistencias || asistencias.length === 0){
+            return [null, "No hay asistencias para este alumno y asignatura"];
+        }
+        return [asistencias, null];
+
+    }catch (error){
+        console.error("Error al obtener las asistencias por rut y asignatura:", error);
+        return [null, "Error interno del servidor"];
+    }
+}
+
+export async function createAsistenciasService(data){
+    try {
+        const { rut , id_asignatura, tipo, observacion, createdAt } = data;
+        const UsuarioRepository = AppDataSource.getRepository(Usuario);
+
+        const alumno = await UsuarioRepository.findOne({
+            where: {rut, id_roles: 3},
+        });
+
+        if(!alumno){
+            return [null, "El RUT proporcionado no corresponde a un alumno o no existe"];
+        }
+
+        const AsistenciaRepository = AppDataSource.getRepository(Asistencia);
+        const NewAsistencia = AsistenciaRepository.create({
+            rut,
+            id_asignatura,
+            tipo,
+            observacion,
+            createdAt,
+        });
+        await AsistenciaRepository.save(NewAsistencia);
+        return [NewAsistencia, null];
+    } catch (error) {
+        console.error("Error al crear la asistencia:", error);
+        return [null, "Error interno del servidor"];
+    }
+}
+

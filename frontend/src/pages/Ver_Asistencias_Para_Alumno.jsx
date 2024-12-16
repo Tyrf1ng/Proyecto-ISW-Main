@@ -1,107 +1,173 @@
-import { useState, useEffect } from "react";
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
-import CircularProgress from "@mui/material/CircularProgress";
-import TextField from "@mui/material/TextField";
-import { getAsistenciasPorAlumno } from "../services/Asistencias.service"; 
+// pages/Ver_Asistencias_Para_Alumno.js
+
+import React, { useState, useContext, useEffect } from "react";
+import { UsuarioContext } from "../context/UsuarioContext";
+import { AsignaturaContext } from "../context/AsignaturaContext";
+import { getAsistenciasPorRutyAsignatura } from "../services/Asistencias.service"; 
+import TableComponentAsistencias from "../components/TableComponentAsistencias";
+import SuccessAlert from "../components/SuccessAlert";
+import ErrorAlert from "../components/ErrorAlert";
 
 const Ver_Asistencias_Para_Alumno = () => {
+  const { usuario, cargarUsuario } = useContext(UsuarioContext);
+  const { asignatura } = useContext(AsignaturaContext); // Obtener la asignatura seleccionada
+
+  const rut = usuario ? usuario.rut : "";
+
+  const idAsignatura = asignatura ? asignatura.idAsignatura : null;
+  const nombreAsignatura = asignatura ? asignatura.nombre : "";
+
   const [asistencias, setAsistencias] = useState([]);
   const [filterText, setFilterText] = useState("");
-  const [cargando, setCargando] = useState(true);
-  const [rut, setRut] = useState("");
+  const [filterDate, setFilterDate] = useState(""); // Nuevo estado para la fecha
+  const [cargando, setCargando] = useState(false);
 
-  useEffect(() => {
-    const usuarioGuardado = JSON.parse(sessionStorage.getItem("usuario"));
-    if (usuarioGuardado && usuarioGuardado.rut) {
-      setRut(usuarioGuardado.rut);
-      cargarAsistencias(usuarioGuardado.rut);
-    }
-  }, []);
+  const [message, setMessage] = useState("");
+  const [messageType, setMessageType] = useState("");
 
-  const cargarAsistencias = async (rutAlumno) => {
+  // Función para normalizar texto (elimina acentos y diacríticos)
+  const normalizeText = (text) =>
+    text.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+  const cargarAsistencias = async (rutAlumno, idAsignatura) => {
     try {
-      const datosAsistencias = await getAsistenciasPorAlumno(rutAlumno);
-      setAsistencias(datosAsistencias || []); // Asegurarse de que los datos se asignen correctamente
+      setCargando(true);
+      const response = await getAsistenciasPorRutyAsignatura(rutAlumno, idAsignatura);
+      
+      if (response && response.data && Array.isArray(response.data)) {
+        setAsistencias(response.data);
+      } else {
+        setAsistencias([]);
+        console.warn("La respuesta no tiene la estructura esperada:", response);
+      }
     } catch (error) {
       console.error("Error al cargar las asistencias:", error);
+      setMessage(error.message || "Error al cargar las asistencias.");
+      setMessageType("error");
+      setAsistencias([]);
     } finally {
       setCargando(false);
     }
   };
 
-  // Filtrar asistencias según el texto ingresado
-  const filteredAsistencias = asistencias.filter((asistencia) =>
-    asistencia.tipo.toLowerCase().includes(filterText.toLowerCase())
-  );
+  // useEffect para cargar asistencias cuando cambie el usuario o la asignatura
+  useEffect(() => {
+    if (usuario) {
+      if (idAsignatura) {
+        cargarAsistencias(rut, idAsignatura);
+      } else {
+        setAsistencias([]);
+        setMessage("No se ha seleccionado una asignatura.");
+        setMessageType("error");
+      }
+    } else {
+      cargarUsuario();
+    }
+  }, [usuario, cargarUsuario, asignatura]);
 
+  // Función para manejar el filtro por estado con validación
   const handleFilterChange = (e) => {
-    setFilterText(e.target.value);
+    const text = e.target.value;
+    setFilterText(text);
   };
 
+  // Función para manejar el filtro por fecha
+  const handleFilterDateChange = (e) => {
+    const date = e.target.value;
+    setFilterDate(date);
+  };
+
+  // Filtrar las asistencias basadas en el filtro de texto y fecha
+  const filteredAsistencias = asistencias.filter((asistencia) => {
+    // Filtrado por estado
+    const matchesText = !filterText || normalizeText(asistencia.tipo).toLowerCase().includes(filterText);
+
+   // Formatear fechas a 'yyyy-MM-dd' para comparación
+   const createdAtDate = asistencia.createdAt ? new Date(asistencia.createdAt) : null;
+   const filterDateObj = filterDate ? new Date(filterDate) : null;
+ 
+   const matchesDate = filterDateObj 
+     ? createdAtDate.getFullYear() === filterDateObj.getFullYear() &&
+       createdAtDate.getMonth() === filterDateObj.getMonth() &&
+       createdAtDate.getDate() === filterDateObj.getDate()
+     : true;  
+   return matchesText && matchesDate;
+  });
+
+  // Limpiar mensajes después de 2 segundos
+  useEffect(() => {
+    if (message) {
+      const timer = setTimeout(() => {
+        setMessage("");
+        setMessageType("");
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [message]);
+
+  // Renderizar mensajes de éxito o error
+  const renderMessage = () => {
+    if (messageType === "success") {
+      return <SuccessAlert message={message} />;
+    }
+    if (messageType === "error") {
+      return <ErrorAlert message={message} />;
+    }
+    return null;
+  };
+
+  // Mostrar spinner mientras carga
   if (cargando) {
-    return <CircularProgress />;
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-12 w-12"></div>
+      </div>
+    );
+  }
+
+  // Mostrar mensaje de carga del usuario
+  if (!usuario) {
+    return <div className="text-center mt-8">Cargando usuario...</div>;
   }
 
   return (
-    <Box sx={{ padding: 4 }}>
-      <Typography variant="h4" gutterBottom>
-        Asistencias del Alumno
-      </Typography>
-      <Typography variant="h6" gutterBottom>
-        RUT: {rut}
-      </Typography>
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: 2,
-        }}
-      >
-        <TextField
-          label="Filtrar por estado"
-          variant="outlined"
+    <div className="p-4 bg-gray-50 dark:bg-gray-800 min-h-screen">
+      {renderMessage()}
+      <h1 className="text-2xl font-bold mb-4 text-gray-800 dark:text-white text-center">Mis Asistencias</h1>
+      <h2 className="text-lg mb-2 text-gray-600 dark:text-gray-300"></h2>
+      <h2 className="text-lg mb-4 text-gray-600 dark:text-gray-300 font-bold">Asignatura: {nombreAsignatura || "No seleccionada"}</h2>
+      
+      <div className="mb-4 flex space-x-4">
+        <select
           value={filterText}
           onChange={handleFilterChange}
+          className="w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300"
+        >
+          <option value="">Filtrar por estado...</option>
+          <option value="presente">Presente</option>
+          <option value="ausente">Ausente</option>
+          <option value="justificado">Justificado</option>
+        </select>
+        <input
+          type="date"
+          value={filterDate}
+          onChange={handleFilterDateChange}
+          onKeyDown={(e) => e.preventDefault()} // Prevenir escritura manual
+          className="rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300"
         />
-      </Box>
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Fecha</TableCell>
-              <TableCell>Estado</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {filteredAsistencias.length > 0 ? (
-              filteredAsistencias.map((asistencia, index) => (
-                <TableRow key={index}>
-                  <TableCell>
-                    {new Date(asistencia.createdAt).toLocaleString()}
-                  </TableCell>
-                  <TableCell>{asistencia.tipo}</TableCell>
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={2} align="center">
-                  No hay asistencias registradas.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </Box>
+      </div>
+
+      <TableComponentAsistencias
+        asistencias={filteredAsistencias}
+        handleEdit={null} // No acciones para alumno
+        handleDelete={null}
+        showActions={false} // Ocultar acciones de editar y eliminar
+      />
+
+      {filteredAsistencias.length === 0 && (
+        <p className="text-center mt-4 text-gray-500 dark:text-gray-400">No hay asistencias registradas.</p>
+      )}
+    </div>
   );
 };
 

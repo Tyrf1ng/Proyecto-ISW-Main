@@ -11,7 +11,9 @@ import {
     getAsistenciasAlumnoFechaController,
     getAsistenciasAlumnoAsignaturaController,
     obtenerAsistenciasProfesor,
-    obtenerAsistenciasEstudiante
+    obtenerAsistenciasEstudiante,
+    getAsistenciasPorCursoYAsignatura,
+    getAsistenciasPorRutYAsignatura,
 } from "../controllers/asistencia.controller.js";
 import { authenticateJwt } from "../middlewares/authentication.middleware.js";
 import authorize from "../middlewares/authorization.middleware.js";
@@ -35,6 +37,9 @@ router
     .get("/curso/:id_curso", authorize(["Docente", "Directivo","Alumno"]), getAsistenciasCursoController)
     .patch("/actualizar/:id_asistencia", authorize(["Docente"]), updateAsistenciaController)
     .delete("/borrar/:id_asistencia", authorize(["Docente", "Directivo"]), deleteAsistenciaController)
-    .post("/crear", authorize(["Docente", "Directivo"]), createAsistenciaController);
+    .post("/crear", authorize(["Docente", "Directivo"]), createAsistenciaController)
+    //nuevas rutas
+    .get("/rut/:rut/asignatura/:id_asignatura", authorize(["Docente", "Directivo", "Alumno"]), getAsistenciasPorRutYAsignatura)
+    .get("/curso/:id_curso/asignatura/:id_asignatura", authorize(["Docente", "Directivo"]), getAsistenciasPorCursoYAsignatura);
 
 export default router;
