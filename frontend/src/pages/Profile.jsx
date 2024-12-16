@@ -1,56 +1,42 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import useUsuarioInfo from '@hooks/useUsuario';
+import { updateUsuario } from '../services/usuarios.service';
 
 function Profile() {
   const navigate = useNavigate();
-  const [usuario, setUsuario] = useState({
-    nombre: '',
-    apellido: '',
-    email: '',
-    rut: ''
-  });
-
+  const { usuario } = useUsuarioInfo();
   const [updatedUser, setUpdatedUser] = useState({
-    nombre: '',
-    apellido: '',
-    email: ''
+    nombre: usuario.nombre || '',
+    apellido: usuario.apellido || '',
+    email: usuario.email || '',
+    direccion: usuario.direccion || '',
+    comuna: usuario.comuna || '',
+    telefono: usuario.telefono || '',
   });
 
-  useEffect(() => {
-    const usuarioGuardado = JSON.parse(sessionStorage.getItem('usuario'));
-    if (usuarioGuardado) {
-      setUsuario({
-        nombre: usuarioGuardado.nombre,
-        apellido: usuarioGuardado.apellido,
-        email: usuarioGuardado.email,
-        rut: usuarioGuardado.rut,
-      });
-      setUpdatedUser({
-        nombre: usuarioGuardado.nombre,
-        apellido: usuarioGuardado.apellido,
-        email: usuarioGuardado.email,
-      });
-    }
-  }, []);
+  console.log(usuario);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setUpdatedUser(prevState => ({
+    setUpdatedUser((prevState) => ({
       ...prevState,
       [name]: value,
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    sessionStorage.setItem('usuario', JSON.stringify({
-      ...usuario,
-      ...updatedUser,
-    }));
-    alert('Perfil actualizado correctamente');
-    navigate('/inicio');
+    try {
+      await updateUsuario(usuario.rut); // `usuario.rut` es el identificador
+      alert('Perfil actualizado correctamente');
+      navigate('/inicio');
+    } catch (error) {
+      console.error('Error al actualizar el perfil:', error);
+      alert('Hubo un error al actualizar el perfil. Por favor, intenta de nuevo.');
+    }
   };
-
+  
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-800">
       <div className="overflow-hidden justify-center bg-white dark:bg-gray-900 lg:mx-8 lg:flex lg:max-w-6xl lg:w-full lg:shadow-md lg:rounded-xl">
@@ -63,39 +49,21 @@ function Profile() {
           </p>
           <form onSubmit={handleSubmit} className="mt-8">
             <div className="space-y-4">
-              <div>
-                <label htmlFor="nombre" className="text-gray-700 dark:text-gray-200">Nombre</label>
-                <input
-                  id="nombre"
-                  name="nombre"
-                  type="text"
-                  value={updatedUser.nombre}
-                  onChange={handleInputChange}
-                  className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40 dark:focus:border-blue-300 focus:outline-none focus:ring"
-                />
-              </div>
-              <div>
-                <label htmlFor="apellido" className="text-gray-700 dark:text-gray-200">Apellido</label>
-                <input
-                  id="apellido"
-                  name="apellido"
-                  type="text"
-                  value={updatedUser.apellido}
-                  onChange={handleInputChange}
-                  className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40 dark:focus:border-blue-300 focus:outline-none focus:ring"
-                />
-              </div>
-              <div>
-                <label htmlFor="email" className="text-gray-700 dark:text-gray-200">Correo electrónico</label>
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  value={updatedUser.email}
-                  onChange={handleInputChange}
-                  className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40 dark:focus:border-blue-300 focus:outline-none focus:ring"
-                />
-              </div>
+              {['nombre', 'apellido', 'email', 'direccion', 'comuna', 'telefono'].map((field) => (
+                <div key={field}>
+                  <label htmlFor={field} className="text-gray-700 dark:text-gray-200 capitalize">
+                    {field}
+                  </label>
+                  <input
+                    id={field}
+                    name={field}
+                    type={field === 'email' ? 'email' : 'text'}
+                    value={updatedUser[field]}
+                    onChange={handleInputChange}
+                    className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border border-gray-200 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 focus:ring-blue-300 focus:ring-opacity-40 dark:focus:border-blue-300 focus:outline-none focus:ring"
+                  />
+                </div>
+              ))}
             </div>
             <div className="flex justify-end mt-6">
               <button

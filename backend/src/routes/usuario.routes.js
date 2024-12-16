@@ -25,7 +25,7 @@ router
   .get("/buscar", authorize(["Directivo"]), getUsuariosByNombre) 
   .get("/docentes/ruts", authorize(["Directivo", "Docente", "Encargado de Laboratorio"]), getRutsDocentes) 
   .post("/crear", authorize(["Directivo"]), createUsuario) 
-  .put("/actualizar/:rut", authorize(["Directivo"]), updateUsuario)
+  .patch("/actualizar/:rut", authorize(["Directivo","Alumno","Docente","Encargado de Laboratorio"]), updateUsuario)
   .delete("/borrar/:rut", authorize(["Directivo"]), deleteUsuario);
 
 export default router;
