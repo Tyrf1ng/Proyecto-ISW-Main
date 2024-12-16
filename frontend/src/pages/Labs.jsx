@@ -25,6 +25,7 @@ const Labs = () => {
   const handleFilterChange = (e) => setFilterText(e.target.value);
   const handleOpen = () => {
     setValidationError(null);
+    setNewLab({ nombre: '', capacidad: '' }); // Reiniciar los datos del formulario
     setOpen(true);
   };
   const handleClose = () => {
@@ -109,7 +110,7 @@ const Labs = () => {
   const handleDelete = async () => {
     try {
       const response = await removeLab(currentLab.id_lab);
-      if (response.error) {
+      if (response && response.error) {
         throw new Error(response.error);
       }
       handleDeleteClose();
@@ -243,7 +244,10 @@ const Labs = () => {
               className="w-full p-2 mb-4 border rounded bg-gray-50 dark:bg-gray-700 dark:text-white"
               placeholder="Capacidad"
             />
-            <button onClick={handleEditSubmit} className="w-full px-4 py-2 bg-blue-600 text-white rounded">Guardar</button>
+            <div className="flex justify-between mt-4">
+              <button onClick={handleEditSubmit} className="px-10 py-2 bg-blue-600 text-white rounded">Guardar</button>
+              <button onClick={handleEditClose} className="px-10 py-2 bg-gray-400 text-white rounded">Cancelar</button>
+            </div>
           </div>
         </div>
       )}

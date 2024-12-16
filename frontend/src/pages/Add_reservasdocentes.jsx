@@ -1,12 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { useAddReservasDocentes } from '../hooks/reservas/useAddReservasDocentes';
 import { createReserva } from '@services/reservas.service';
 import SuccessAlert from '../components/SuccessAlert';
 import WarningAlert from '../components/WarningAlert';
 import ErrorAlert from '../components/ErrorAlert';
 import { isAfter, isWithinInterval, addMonths } from 'date-fns';
+import { UsuarioContext } from '../context/UsuarioContext';
 
 const AddReservasDocentes = () => {
+  const { usuario } = useContext(UsuarioContext);
   const {
     laboratorios,
     horarios,
@@ -20,7 +22,6 @@ const AddReservasDocentes = () => {
     handleFechaChange,
     asignatura,
     curso,
-    usuario,
     setSelectedLab,
     setSelectedHorario,
     setFecha,
@@ -39,29 +40,36 @@ const AddReservasDocentes = () => {
     }
   }, [localMessage]);
 
+  useEffect(() => {
+    console.log("Asignatura:", asignatura);
+    console.log("Curso:", curso);
+  }, [asignatura, curso]);
+
   const handleSubmit = async () => {
     const today = new Date();
     const reservaDate = new Date(fecha);
     const maxDate = addMonths(today, 1);
 
-    if (!selectedLab || !selectedHorario || !fecha) {
+    if (!selectedLab || !selectedHorario || !fecha || !asignatura || !curso) {
       setLocalMessage('Todos los campos son obligatorios.');
       setLocalMessageType('warning');
       return;
     }
-
+    if (reservaDate.getMonth() === 0 || reservaDate.getMonth() === 1) {
+      setLocalMessage("No se pueden hacer reservas para los meses de enero y febrero.");
+      setLocalMessageType("error");
+      return;
+    }
     if (reservaDate.getDay() === 5 || reservaDate.getDay() === 6) {
       setLocalMessage("No se pueden hacer reservas los días sábados y domingos.");
       setLocalMessageType("error");
       return;
     }
-
     if (!isAfter(reservaDate, today)) {
       setLocalMessage("La fecha de la reserva debe ser posterior a la fecha actual.");
       setLocalMessageType("error");
       return;
     }
-
     if (!isWithinInterval(reservaDate, { start: today, end: maxDate })) {
       setLocalMessage("La fecha de la reserva debe estar dentro del próximo mes.");
       setLocalMessageType("error");
@@ -85,6 +93,7 @@ const AddReservasDocentes = () => {
       setSelectedHorario('');
       setFecha('');
     } catch (error) {
+      console.error("Error al crear la reserva: ", error);
       setLocalMessage('Error al crear la reserva.');
       setLocalMessageType('error');
     }

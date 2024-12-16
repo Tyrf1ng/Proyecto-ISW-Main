@@ -4,6 +4,10 @@ import useLabs from '../hooks/labs/useLabs';
 import { useHorarios } from '../hooks/horarios/useHorarios'; 
 import TableReservas from '../components/TableReservas'; 
 import { addDays, isWithinInterval, isAfter, isSameDay, parseISO } from 'date-fns';
+import SuccessAlert from '../components/SuccessAlert';
+import WarningAlert from '../components/WarningAlert';
+import ErrorAlert from '../components/ErrorAlert';
+import { AnimatePresence } from "framer-motion";
 
 const Reservas = () => {
   const { reservas, reservasConNombre, rutsDocentes, asignaturas, cursos, fetchReservas, editReserva, 
@@ -23,6 +27,8 @@ const Reservas = () => {
   const [editSuccess, setEditSuccess] = useState(false);
   const [deleteSuccess, setDeleteSuccess] = useState(false);
   const [validationError, setValidationError] = useState(null);
+  const [localMessage, setLocalMessage] = useState('');
+  const [localMessageType, setLocalMessageType] = useState('');
 
   useEffect(() => {
     fetchReservas();
@@ -35,6 +41,16 @@ const Reservas = () => {
       mapReservasConNombre(laboratorios);
     }
   }, [reservas, laboratorios]);
+
+  useEffect(() => {
+    if (localMessage) {
+      const timer = setTimeout(() => {
+        setLocalMessage("");
+        setLocalMessageType("");
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [localMessage]);
 
   const handleFilterChange = (e) => setFilterText(e.target.value);
   const handleFilterSelectChange = (e) => setSelectedFilter(e.target.value); 
@@ -99,24 +115,44 @@ const Reservas = () => {
     const today = new Date();
     const maxDate = addDays(today, 31);
     const reservaDate = new Date(currentReserva.fecha);
-  
+
+    if (!currentReserva.id_lab || !currentReserva.id_horario || !currentReserva.fecha || !currentReserva.id_asignatura || !currentReserva.id_curso) {
+      setValidationError('Todos los campos son obligatorios.');
+      return;
+    }
+
+    if (reservaDate.getMonth() === 0 || reservaDate.getMonth() === 1) {
+      setValidationError("No se pueden hacer reservas para los meses de enero y febrero.");
+      return;
+    }
+
     if (reservaDate.getDay() === 5 || reservaDate.getDay() === 6) {
       setValidationError("No se pueden hacer reservas los días sábados y domingos.");
-      return;}
+      return;
+    }
+
     if (!isAfter(reservaDate, today)) {
       setValidationError("La fecha de la reserva debe ser posterior a la fecha actual.");
-      return;}
+      return;
+    }
+
     if (!isWithinInterval(reservaDate, { start: today, end: maxDate })) {
       setValidationError("La fecha de la reserva debe estar dentro del próximo mes.");
-      return;}
+      return;
+    }
+
     try {
       await editReserva(currentReserva.id_reserva, currentReserva);
       handleEditClose();
       fetchReservas();
       setEditSuccess(true);
+      setLocalMessage("Reserva actualizada exitosamente.");
+      setLocalMessageType("success");
     } catch (error) {
       console.error("Error al actualizar la reserva: ", error);
       setValidationError("Los valores ingresados no son válidos");
+      setLocalMessage("Error al actualizar la reserva.");
+      setLocalMessageType("error");
     }
   };
 
@@ -125,10 +161,14 @@ const Reservas = () => {
       await removeReserva(currentReserva.id_reserva);
       handleDeleteClose();
       fetchReservas();
-      setDeleteSuccess(true); 
+      setDeleteSuccess(true);
+      setLocalMessage("Reserva eliminada exitosamente.");
+      setLocalMessageType("success");
     } catch (error) {
       setDeleteError("No se puede borrar la reserva.");
       console.error("Error al eliminar la reserva: ", error);
+      setLocalMessage("Error al eliminar la reserva.");
+      setLocalMessageType("error");
     }
   };
 
@@ -143,8 +183,12 @@ const Reservas = () => {
     const reservaDate = parseISO(reserva.fecha);
     reservaDate.setHours(0, 0, 0, 0); 
     
-    if (!showPreviousReservations && reservaDate < today && !isSameDay(reservaDate, today)) {
-      return false;
+    if (showPreviousReservations) {
+      return reservaDate < today;
+    } else {
+      if (reservaDate < today && !isSameDay(reservaDate, today)) {
+        return false;
+      }
     }
   
     if (selectedFilter === 'option5') {
@@ -215,8 +259,6 @@ const Reservas = () => {
                 onChange={handleMonthChange}
                 className="block rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300"
               >
-                <option value="1">Enero</option>
-                <option value="2">Febrero</option>
                 <option value="3">Marzo</option>
                 <option value="4">Abril</option>
                 <option value="5">Mayo</option>
@@ -248,11 +290,11 @@ const Reservas = () => {
               onChange={handleFilterSelectChange}
               className="mt-1 block w-64 h-10 rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-400 px-4 py-2 focus:ring focus:ring-blue-300"
             >
-              <option value="option1">Filtrar por Docente</option>
-              <option value="option2">Filtrar por Laboratorio</option>
-              <option value="option3">Filtrar por Asignatura</option>
-              <option value="option4">Filtrar por Curso</option>
-              <option value="option5">Filtrar por Mes</option>
+              <option value="option1">Por Docente</option>
+              <option value="option2">Por Laboratorio</option>
+              <option value="option3">Por Asignatura</option>
+              <option value="option4">Por Curso</option>
+              <option value="option5">Por Mes</option>
             </select>
           </div>
           <div className="flex items-right ml-auto mt-8">
@@ -272,7 +314,20 @@ const Reservas = () => {
             reservas={filteredReservas} 
             handleOpen={handleEditOpen}
             handleDelete={handleDeleteOpen}
+            showActions={!showPreviousReservations} // Pasar la prop showActions
         />
+
+        <AnimatePresence>
+          {localMessageType === "warning" && (
+            <WarningAlert message={localMessage} key="warning" />
+          )}
+          {localMessageType === "success" && (
+            <SuccessAlert message={localMessage} key="success" />
+          )}
+          {localMessageType === "error" && (
+            <ErrorAlert message={localMessage} key="error" />
+          )}
+        </AnimatePresence>
 
         {editOpen && (
             <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50" onClick={handleEditClose}>
@@ -370,7 +425,10 @@ const Reservas = () => {
                             className="mt-2 block w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-600 text-gray-700 dark:text-gray-100 px-4 py-2 focus:ring focus:ring-blue-300"
                         />
                     </div>
-                    <button onClick={handleEditSubmit} className="w-full px-4 py-2 bg-blue-600 text-white rounded">Guardar</button>
+                    <div className="flex justify-between mt-4">
+                      <button onClick={handleEditSubmit} className="px-10 py-2 bg-blue-600 text-white rounded">Guardar</button>
+                      <button onClick={handleEditClose} className="px-10 py-2 bg-gray-400 text-white rounded">Cancelar</button>
+                    </div>
                 </div>
             </div>
         )}

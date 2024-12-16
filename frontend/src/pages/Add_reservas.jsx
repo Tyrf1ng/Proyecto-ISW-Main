@@ -5,6 +5,7 @@ import SuccessAlert from "../components/SuccessAlert";
 import WarningAlert from "../components/WarningAlert"; 
 import ErrorAlert from "../components/ErrorAlert"; 
 import { isAfter, isWithinInterval, addMonths } from 'date-fns';
+import { AnimatePresence } from "framer-motion";
 
 function Add_Reserva() {
   const [newReserva, setNewReserva] = useState({
@@ -37,21 +38,27 @@ function Add_Reserva() {
       return;
     }
 
+    if (reservaDate.getMonth() === 0 || reservaDate.getMonth() === 1) {
+      setMessage("No se pueden hacer reservas para los meses de enero y febrero.");
+      setMessageType("error");
+      return;
+    }
+
     if (reservaDate.getDay() === 5 || reservaDate.getDay() === 6) {
       setMessage("No se pueden hacer reservas los días sábados y domingos.");
-      setMessageType("warning");
+      setMessageType("error");
       return;
     }
 
     if (!isAfter(reservaDate, today)) {
       setMessage("La fecha de la reserva debe ser posterior a la fecha actual.");
-      setMessageType("warning");
+      setMessageType("error");
       return;
     }
 
     if (!isWithinInterval(reservaDate, { start: today, end: maxDate })) {
       setMessage("La fecha de la reserva debe estar dentro del próximo mes.");
-      setMessageType("warning");
+      setMessageType("error");
       return;
     }
 
@@ -85,22 +92,26 @@ function Add_Reserva() {
     }
   }, [newReserva.rut]);
 
+  useEffect(() => {
+    if (message) {
+      const timer = setTimeout(() => {
+        setMessage("");
+        setMessageType("");
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [message]);
+
   if (cargando) return <p>Cargando...</p>;
 
   const renderMessage = () => {
-    if (messageType === 'success') {
-      return <SuccessAlert message={message} />;
-    }
-
-    if (messageType === 'warning') {
-      return <WarningAlert message={message} />;
-    }
-
-    if (messageType === 'error') {
-      return <ErrorAlert message={message} />;
-    }
-
-    return null;
+    return (
+      <AnimatePresence>
+        {messageType === 'success' && <SuccessAlert message={message} key="success" />}
+        {messageType === 'warning' && <WarningAlert message={message} key="warning" />}
+        {messageType === 'error' && <ErrorAlert message={message} key="error" />}
+      </AnimatePresence>
+    );
   };
 
   return (
