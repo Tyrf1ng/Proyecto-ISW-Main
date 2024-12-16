@@ -9,6 +9,11 @@ import WarningAlert from '../components/WarningAlert';
 import ErrorAlert from '../components/ErrorAlert';
 import { AnimatePresence } from "framer-motion";
 
+// Definir la función normalizeText
+const normalizeText = (text) => {
+  return text.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+};
+
 const Reservas = () => {
   const { reservas, reservasConNombre, rutsDocentes, asignaturas, cursos, fetchReservas, editReserva, 
     removeReserva, fetchAsignaturasByProfesor, fetchCursosByProfesor, mapReservasConNombre, error } = useReservas();
@@ -182,28 +187,31 @@ const Reservas = () => {
   
     const reservaDate = parseISO(reserva.fecha);
     reservaDate.setHours(0, 0, 0, 0); 
-    
+  
     if (showPreviousReservations) {
-      return reservaDate < today;
+      if (reservaDate >= today) {
+        return false;
+      }
     } else {
       if (reservaDate < today && !isSameDay(reservaDate, today)) {
         return false;
       }
     }
   
-    if (selectedFilter === 'option5') {
+    const normalizedFilterText = normalizeText(filterText);
+  
+    if (selectedFilter === 'option1') {
+      return reserva.usuario && normalizeText(reserva.usuario).includes(normalizedFilterText);
+    } else if (selectedFilter === 'option2') {
+      return reserva.nombre_lab && normalizeText(reserva.nombre_lab).includes(normalizedFilterText);
+    } else if (selectedFilter === 'option3') {
+      return reserva.nombre_asignatura && normalizeText(reserva.nombre_asignatura).includes(normalizedFilterText);
+    } else if (selectedFilter === 'option4') {
+      return reserva.nombreCurso && normalizeText(reserva.nombreCurso).includes(normalizedFilterText);
+    } else if (selectedFilter === 'option5') {
       return reservaDate.getMonth() + 1 === parseInt(selectedMonth) && reservaDate.getFullYear() === parseInt(selectedYear);
     }
   
-    if (selectedFilter === 'option1') {
-      return reserva.usuario && reserva.usuario.toLowerCase().includes(filterText.toLowerCase());
-    } else if (selectedFilter === 'option2') {
-      return reserva.nombre_lab && reserva.nombre_lab.toLowerCase().includes(filterText.toLowerCase());
-    } else if (selectedFilter === 'option3') {
-      return reserva.nombre_asignatura && reserva.nombre_asignatura.toLowerCase().includes(filterText.toLowerCase());
-    } else if (selectedFilter === 'option4') {
-      return reserva.nombreCurso && reserva.nombreCurso.toLowerCase().includes(filterText.toLowerCase());
-    }
     return true;
   });
 
@@ -275,7 +283,7 @@ const Reservas = () => {
                 onChange={handleYearChange}
                 className="ml-4 block rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300"
               >
-                {Array.from({ length: 3 }, (_, i) => new Date().getFullYear() + 1 - i).map(year => (
+                {Array.from({ length: new Date().getFullYear() - 2022 }, (_, i) => new Date().getFullYear() - i).map(year => (
                   <option key={year} value={year}>{year}</option>
                 ))}
               </select>

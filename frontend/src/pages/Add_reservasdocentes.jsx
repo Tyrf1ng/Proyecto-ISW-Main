@@ -40,11 +40,6 @@ const AddReservasDocentes = () => {
     }
   }, [localMessage]);
 
-  useEffect(() => {
-    console.log("Asignatura:", asignatura);
-    console.log("Curso:", curso);
-  }, [asignatura, curso]);
-
   const handleSubmit = async () => {
     const today = new Date();
     const reservaDate = new Date(fecha);

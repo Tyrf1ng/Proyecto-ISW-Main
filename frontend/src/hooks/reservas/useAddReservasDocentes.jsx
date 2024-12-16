@@ -23,11 +23,6 @@ export const useAddReservasDocentes = () => {
     }
   }, [usuario, cargarUsuario]);
 
-  useEffect(() => {
-    console.log("Curso en useAddReservasDocentes:", curso);
-    console.log("Asignatura en useAddReservasDocentes:", asignatura);
-  }, [curso, asignatura]);
-
   const cargarLaboratorios = async () => {
     setCargando(true);
     try {
@@ -81,7 +76,7 @@ export const useAddReservasDocentes = () => {
     handleSeleccionarHorario,
     handleFechaChange,
     asignatura,
-    curso, // No convertir a array vacío
+    curso,
     usuario,
     setSelectedLab,
     setSelectedHorario,
