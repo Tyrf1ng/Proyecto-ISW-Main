@@ -1,16 +1,16 @@
-// components/TableComponentAsistencias.js
-
 import { IconButton } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { format as formatTempo } from "@formkit/tempo";
-import { checkRut, prettifyRut, formatRut } from "react-rut-formatter";
 
 const TableComponentAsistencias = ({
   asistencias,
   handleEdit,
   handleDelete,
   showActions = true,
+  formatFecha,
+  renderEstado,
+  renderObservacion,
+  prettifyRut
 }) => {
   return (
     <div className="overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -51,12 +51,7 @@ const TableComponentAsistencias = ({
                   <td className="px-4 py-4 text-sm whitespace-nowrap">
                     <div className="text-gray-800 dark:text-white">
                       {asistencia.createdAt
-                        ? formatTempo(
-                            new Date(asistencia.createdAt)
-                              .toISOString()
-                              .split("T")[0],
-                            "DD-MM-YYYY"
-                          )
+                        ? formatFecha(asistencia.createdAt)
                         : "Sin Fecha"}
                     </div>
                   </td>
@@ -75,22 +70,10 @@ const TableComponentAsistencias = ({
                     </>
                   ) : null}
                   <td className="px-4 py-4 text-sm whitespace-nowrap">
-                    <div
-                      className={`inline px-3 py-1 text-sm font-normal rounded-full ${
-                        asistencia.tipo === "Presente"
-                          ? "bg-green-500 text-white"
-                          : asistencia.tipo === "Ausente"
-                            ? "bg-red-500 text-white"
-                            : "bg-orange-500 text-white"
-                      }`}
-                    >
-                      {asistencia.tipo}
-                    </div>
+                    {renderEstado(asistencia.tipo)}
                   </td>
                   <td className="px-4 py-4 text-sm whitespace-nowrap">
-                    <div className="text-gray-800 dark:text-white">
-                      {asistencia.observacion || "Sin Observación"}
-                    </div>
+                    {renderObservacion(asistencia.observacion)}
                   </td>
                   {showActions && (
                     <td className="px-4 py-4 text-sm whitespace-nowrap ">
