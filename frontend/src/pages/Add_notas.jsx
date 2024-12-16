@@ -1,6 +1,5 @@
 import { useContext, useState } from "react";
 import { createNota } from "../services/notas.service";
-import useAlumnos from "@hooks/useAlumnos.jsx";
 import useAlumnos from "../hooks/useAlumnos.jsx";
 import { AsignaturaContext } from "../context/AsignaturaContext";
 import SuccessAlert from '../components/SuccessAlert';
