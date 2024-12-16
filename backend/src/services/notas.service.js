@@ -106,7 +106,6 @@ export async function deleteNota(id_nota) {
 export async function getNotasAlumnoAsignatura(rut, id_asignatura) {
     try {
         const notasRepository = AppDataSource.getRepository(Notas);
-        const ConectUsuarioCursoRepository = AppDataSource.getRepository(Conect_Usuario_CursoSchema);
 
         if (!rut || !id_asignatura) {
             return [null, "RUT y ID de asignatura son requeridos"];

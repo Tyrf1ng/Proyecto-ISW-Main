@@ -1,4 +1,4 @@
-// src/hooks/anotaciones/useAlerts.jsx
+
 import { useState } from "react";
 
 const useAlert = () => {

@@ -1,15 +1,6 @@
 import axios from "./root.service.js";
 
-export const NotasCurso = async (idCurso) => {
-    try {
-      const response = await axios.get(`/notas/curso/${idCurso}`);
-      return response.data; 
-    } catch (error) {
-      console.error('Error al obtener las notas del Curso', error);
-      return error.response.data;
-    }
-  };
-
+//Funcion para crear una nota
 export const createNota = async (nota) => {
     try {
         const response = await axios.post('/notas/crear/', nota);
@@ -18,6 +9,8 @@ export const createNota = async (nota) => {
         return error.response;
     }
 }
+
+//Funcion para borrar nota
 export const deleteNota = async (id) => {
     try {
         const response = await axios.delete(`/notas/borrar/${id}`);
@@ -26,6 +19,8 @@ export const deleteNota = async (id) => {
         return error.response;
     }
 }
+
+//Funcion para editar algun dato de la nota
 export const updateNota = async (id, data) => {
     try {
       const payload = {
@@ -41,31 +36,24 @@ export const updateNota = async (id, data) => {
     }
   };
 
-
-export const getNotasPorRUT = async (rut) => {
-    try {
-        const response = await axios.get(`/notas/alumno/${rut}`);
-        return response.data; // Devuelve las notas del alumno
-    } catch (error) {
-        console.error('Error al obtener las notas por RUT:', error);
-        return error.response.data;
-    }
-};
-
+//Funcion para traer Notas en base a la asignatura 
+// VISTA ALUMNO
 export const getNotasPorAsignatura = async (rut,idAsignatura) => {
     try {
         const response = await axios.get(`/notas/asignatura/${idAsignatura}/alumno/${rut}`);
-        return response.data; // Devuelve las notas del alumno
+        return response.data; 
     } catch (error) {
         console.error('Error al obtener las notas por asignatura:', error);
         return error.response.data;
     }
 }
 
+//Funcion para traer Notas en base a la asignatura 
+// VISTA PROFESOR
 export const getNotasPorCursoYAsignatura = async (idCurso, idAsignatura) => {
     try {
         const response = await axios.get(`/notas/curso/${idCurso}/asignatura/${idAsignatura}`);
-        return response.data.data; // Devuelve las notas del alumno
+        return response.data.data; 
     } catch (error) {
         console.error('Error al obtener las notas por curso y asignatura:', error);
         throw new Error('No se pudieron cargar las Notas');

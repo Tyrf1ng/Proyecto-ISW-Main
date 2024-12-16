@@ -20,6 +20,7 @@ function Add_Notas() {
     resetAlumnos,
   } = useAlumnos();
 
+  //Variable para guardar la nueva nota
   const [newNota, setNewNota] = useState({
     tipo: '',
     valor: '',
@@ -27,17 +28,19 @@ function Add_Notas() {
     id_asignatura: asignatura?.idAsignatura || '',
   });
 
-
+//Seleccionar alumnos y guardar rut para nueva nota
   const handleAlumnoSelect = (alumno) => {
     setNewNota((prevNota) => ({ ...prevNota, rut: alumno.rut }));
     handleAlumnoSelectHook(alumno); 
   };
   
+//Manejar cambios en los inputs
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setNewNota({ ...newNota, [name]: value });
   };
 
+//Validar y enviar la nota y soltar alerta en cada parametro necesario
   const handleSubmit = async () => {
     if (!newNota.rut || !newNota.tipo || !newNota.valor || !newNota.id_asignatura) {
       showAlert("Debe completar todos los campos.", "warning");
@@ -53,6 +56,7 @@ function Add_Notas() {
     }
 
     try {
+      // Crear la nota por el services
       await createNota({ ...newNota, valor: valorNumerico });
       showAlert("Nota creada exitosamente.", "success");
       
@@ -134,7 +138,7 @@ function Add_Notas() {
         />
       </div>
 
-      {/* Manejar las alertas con AnimatePresence */}
+      {/* Manejar las alertas con su animacion*/}
       <AnimatePresence>
         {alert.type === "warning" && (
           <WarningAlert message={alert.message} key="warning" />
