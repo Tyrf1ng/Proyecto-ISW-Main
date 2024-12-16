@@ -156,14 +156,26 @@ const ReservasDocentes = () => {
     if (!reserva.fecha) return false;
     const reservaDate = parseISO(reserva.fecha);
     reservaDate.setHours(0, 0, 0, 0); 
+    const currentYear = today.getFullYear();
+  
     if (showPreviousReservations) {
-      return reservaDate < today;
+      if (reservaDate >= today || reservaDate.getFullYear() !== currentYear) {
+        return false;
+      }
     } else {
-      if (reservaDate < today && !isSameDay(reservaDate, today)) return false;
+      if (reservaDate < today && !isSameDay(reservaDate, today)) {
+        return false;
+      }
     }
-    if (selectedFilter === 'option5') return reservaDate.getMonth() + 1 === parseInt(selectedMonth) && reservaDate.getFullYear() === parseInt(selectedYear);
-    if (selectedFilter === 'option2') return reserva.nombre_lab && normalizeString(reserva.nombre_lab).includes(normalizeString(filterText));
-    if (selectedFilter === 'option4') return reserva.nombreCurso && normalizeString(reserva.nombreCurso).includes(normalizeString(filterText));
+  
+    const normalizedFilterText = normalizeString(filterText);
+    if (selectedFilter === 'option2') {
+      return reserva.nombre_lab && normalizeString(reserva.nombre_lab).includes(normalizedFilterText);
+    } else if (selectedFilter === 'option4') {
+      return reserva.nombreCurso && normalizeString(reserva.nombreCurso).includes(normalizedFilterText);
+    } else if (selectedFilter === 'option5') {
+      return reservaDate.getMonth() + 1 === parseInt(selectedMonth) && reservaDate.getFullYear() === parseInt(selectedYear);
+    }
     return true;
   });
 
@@ -215,7 +227,7 @@ const ReservasDocentes = () => {
               onChange={handleYearChange}
               className="ml-4 block rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300"
             >
-              {Array.from({ length: 3 }, (_, i) => new Date().getFullYear() + 1 - i).map(year => (
+              {Array.from({ length: new Date().getFullYear() - 2022 }, (_, i) => new Date().getFullYear() - i).map(year => (
                 <option key={year} value={year}>{year}</option>
               ))}
             </select>
