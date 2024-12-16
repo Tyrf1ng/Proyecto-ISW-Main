@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext } from 'react';
-import { CursoContext } from '../../context/CursoContext';
+import { CursoContext } from '../context/CursoContext';
 import { getSoloAlumnosByCurso } from '@services/cursos.service';
 
 const useAlumnos = () => {
@@ -42,7 +42,7 @@ const useAlumnos = () => {
     setIsListVisible(filtered.length > 0);
   };
 
-  const handleAlumnoSelect = (alumno) => {
+  const handleAlumnoSelectHook = (alumno) => {
     setSelectedAlumno(alumno);
     setSearchTerm(`${alumno.nombre} ${alumno.apellido}`);
     setIsListVisible(false);
@@ -62,7 +62,7 @@ const useAlumnos = () => {
     searchTerm,
     isListVisible,
     handleSearchChange,
-    handleAlumnoSelect,
+    handleAlumnoSelectHook,
     resetAlumnos,
   };
 };

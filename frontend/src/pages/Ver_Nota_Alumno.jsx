@@ -1,34 +1,22 @@
-import { useState, useEffect, useContext } from 'react';
+import { useState } from 'react';
 import Box from '@mui/material/Box';
 import TableComponent from '@components/TableNotas';
 import useNotasAsignatura from '@hooks/notas/useNotasAsignatura';
-import { UsuarioContext } from '@context/UsuarioContext';
+import useUsuario from '@hooks/useUsuario';
 
 const VerNotaAlumno = () => {
-
-  const [filterText, setFilterText] = useState('');
-  const { usuario,cargarUsuario } = useContext(UsuarioContext);
+  const [filterType, setFilterType] = useState('');
+  const { usuario } = useUsuario();
   const { notas, loading, error } = useNotasAsignatura([]);
 
-console.log("notas",notas)
-  // Validación inicial del usuario
-  useEffect(() => {
-    if (!usuario) {
-      cargarUsuario();
-    }
-  }, [usuario, cargarUsuario]);
-
-  if (!usuario) {
-    return <div>Cargando usuario...</div>;
-  }
 
   // Filtrado de las notas
-  const filteredNotas = notas?.filter((nota) =>
-    nota.tipo.toLowerCase().includes(filterText.toLowerCase())
-  ) || [];
+  const filteredNotas = filterType
+    ? notas?.filter((nota) => nota.tipo.toLowerCase() === filterType.toLowerCase()) || []
+    : notas || [];
 
   const handleFilterChange = (e) => {
-    setFilterText(e.target.value);
+    setFilterType(e.target.value);
   };
 
   return (
@@ -47,13 +35,27 @@ console.log("notas",notas)
               marginBottom: 4,
             }}
           >
-            <input
-              type="text"
-              value={filterText}
-              onChange={handleFilterChange}
-              placeholder="Filtrar por Tipo de Evaluación..."
-              className="w-96 p-2 border rounded dark:text-gray-300 dark:bg-gray-900"
-            />
+            <div className="mb-0">
+              <label
+                htmlFor="tipo"
+                className="block text-sm text-gray-500 dark:text-gray-300"
+              >
+                Tipo de Nota
+              </label>
+              <select
+                name="tipo"
+                id="tipo"
+                value={filterType}
+                onChange={handleFilterChange}
+                className=" mb-0 mt-2 block w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300"
+              >
+                <option value="">Todos los tipos</option>
+                <option value="Prueba">Prueba</option>
+                <option value="Tarea">Tarea</option>
+                <option value="Test">Test</option>
+                <option value="Presentacion">Presentación</option>
+              </select>
+            </div>
           </Box>
 
           {/* Contenido dinámico */}
@@ -62,10 +64,7 @@ console.log("notas",notas)
           ) : error ? (
             <p>Error: {error}</p>
           ) : (
-            <TableComponent 
-              notas={filteredNotas} 
-              role={usuario?.rol}
-            />
+            <TableComponent notas={filteredNotas} role={usuario?.rol} />
           )}
         </>
       )}
@@ -74,4 +73,3 @@ console.log("notas",notas)
 };
 
 export default VerNotaAlumno;
-

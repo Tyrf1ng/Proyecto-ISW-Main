@@ -56,8 +56,9 @@ const NAVIGATION_BY_ROLE = {
       title: 'Notas',
       icon: <HistoryEduRoundedIcon />,
       children: [
-        { segment: 'ver_notas', title: 'Ver Notas', icon: <ManageSearchIcon /> },
         { segment: "add", title: "Añadir Notas", icon: <AddIcon /> },
+        { segment: 'ver_notas', title: 'Ver Notas', icon: <ManageSearchIcon /> },
+       
       ],
     },
     {
@@ -66,7 +67,7 @@ const NAVIGATION_BY_ROLE = {
       icon: <SchoolIcon />,
       children: [
         { segment: 'add_reservadocente', title: 'Añadir Reservas', icon: <AddIcon /> },
-        { segment: 'ver_reservas', title: 'Ver Reservas', icon: <EventIcon /> },
+        { segment: 'ver_reservasdocentes', title: 'Mis Reservas', icon: <EventIcon /> }, // Actualizar para apuntar a ReservasDocentes
         { segment: 'labsdocente', title: 'Laboratorios', icon: <BiotechIcon /> },
       ],
     },

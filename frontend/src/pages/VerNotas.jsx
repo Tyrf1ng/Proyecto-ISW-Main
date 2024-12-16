@@ -1,43 +1,29 @@
-import { useState, useEffect, useContext } from 'react';
+import { useState } from 'react';
 import useNotasCurso from '@hooks/notas/useNotas';
 import { deleteNota, updateNota } from '@services/notas.service';
 import TableComponent from '../components/TableNotas';
-import { UsuarioContext } from '@context/UsuarioContext';
+import useUsuario from '@hooks/useUsuario';
 import SuccessAlert from '@components/SuccessAlert';
 import ErrorAlert from '@components/ErrorAlert';
+import useAlert from '@hooks/useAlerts';
+
 
 const VerNotas = () => {
-  const { usuario, cargarUsuario } = useContext(UsuarioContext);
+  const [alert, showAlert] = useAlert();
   const { notas, fetchNotas } = useNotasCurso([]);
+  const { usuario } = useUsuario();
   const [filterText, setFilterText] = useState('');
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [notaToDelete, setNotaToDelete] = useState(null);
   const [notaToEdit, setNotaToEdit] = useState(null);
-  const [successMessage, setSuccessMessage] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
 
-  useEffect(() => {
-    if (successMessage || errorMessage) {
-      const timer = setTimeout(() => {
-        setSuccessMessage("");
-        setErrorMessage("");
-      }, 3000); 
-  
-      return () => clearTimeout(timer); 
+  const handleFilterChange = (e) => {
+    const inputText = e.target.value;
+    if (/[^a-zA-Z\s]/.test(inputText) || inputText.length > 30) {
+      return;
     }
-  }, [successMessage, errorMessage]);
-
-  useEffect(() => {
-    if (!usuario) {
-      cargarUsuario();
-    }
-  }, [usuario, cargarUsuario]);
-
-  if (!usuario) {
-    return <div>Cargando usuario...</div>;
-  }
-
-  const handleFilterChange = (e) => setFilterText(e.target.value);
+    setFilterText(inputText);
+  };
 
   const handleDelete = (id) => {
     setNotaToDelete(id);
@@ -45,15 +31,15 @@ const VerNotas = () => {
   };
 
   const handleConfirmDelete = async () => {
-    setSuccessMessage("");
     try {
       if (notaToDelete) {
         await deleteNota(notaToDelete);
-        setSuccessMessage("Nota borrada correctamente");
+        showAlert('success', 'Nota borrada correctamente');
         fetchNotas();
       }
     } catch (error) {
       console.error('Error al eliminar la nota:', error);
+      showAlert('error', 'Error al eliminar la nota');
     } finally {
       setConfirmDialogOpen(false);
     }
@@ -63,77 +49,57 @@ const VerNotas = () => {
     setNotaToEdit({
       id_nota: nota.id_nota,
       valor: nota.valor || 0,
-      tipo: nota.tipo || "Prueba",
-      originalTipo: nota.tipo || "Prueba",
+      tipo: nota.tipo || 'Prueba',
     });
   };
 
   const handleUpdate = async (e) => {
     e.preventDefault();
-    setErrorMessage(""); 
-    setSuccessMessage("");
-  
     try {
       const { id_nota, valor, tipo } = notaToEdit;
-  
-      if (!id_nota || typeof valor !== "number" || isNaN(valor)) {
-        setErrorMessage("Los datos de la nota no son válidos.");
+      if (!id_nota || valor < 2.0 || valor > 7.0) {
+        showAlert('error', 'El valor de la nota debe estar entre 2.0 y 7.0.');
         return;
       }
-  
-      if (valor < 2.0 || valor > 7.0) {
-        setErrorMessage("El valor de la nota debe estar entre 2.0 y 7.0");
-        return;
-      }
-  
       await updateNota(id_nota, { valor, tipo });
-      setSuccessMessage("Nota actualizada correctamente");
-      fetchNotas(); // Actualiza las notas
-      setNotaToEdit(null); // Cierra el modal
+      showAlert('success', 'Nota actualizada correctamente');
+      fetchNotas();
+      setNotaToEdit(null);
     } catch (error) {
-      console.error("Error al actualizar la nota:", error);
-      setErrorMessage("Hubo un problema al actualizar la nota");
+      console.error('Error al actualizar la nota:', error);
+      showAlert('error', 'Hubo un problema al actualizar la nota.');
     }
   };
 
-  //Filtrado de  de notas por nombre o apellido del alumno considerando tildes y mayúsculas
   const normalizeText = (text) =>
-    text.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    text.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase();
 
   const filteredNotas = notas.filter((nota) => {
-    const usuario = nota.usuario || { nombre: "", apellido: "" };
-    const sanitizedFilterText = normalizeText(filterText)
-      .replace(/[^a-zA-Z\s]/g, "")
-      .toLowerCase();
-    
-    const matchesText = normalizeText(
-      `${usuario.nombre} ${usuario.apellido}`
-    )
-      .toLowerCase()
-      .includes(sanitizedFilterText);
-      return matchesText
+    const usuario = nota.usuario || { nombre: '', apellido: '' };
+    const sanitizedFilterText = normalizeText(filterText);
+    return normalizeText(`${usuario.nombre} ${usuario.apellido}`).includes(sanitizedFilterText);
   });
-  
+
   return (
     <div className="p-4 bg-gray-50 dark:bg-gray-800">
       <input
         type="text"
         value={filterText}
         onChange={handleFilterChange}
-        placeholder="Filtrar por nombre o apellido del alumno..."
-        className="w-full p-2 mb-4 border rounded dark:text-gray-300 dark:bg-gray-900"
+        placeholder="Filtrar por nombre o apellido del alumno"
+        className="w-96 p-2 mb-4 border rounded dark:text-gray-300 dark:bg-gray-900"
       />
-  
-      {successMessage && <SuccessAlert message={successMessage} />}
-      {errorMessage && <ErrorAlert message={errorMessage} />}
-  
+
+      {alert.type === 'success' && <SuccessAlert message={alert.message} />}
+      {alert.type === 'error' && <ErrorAlert message={alert.message} />}
+
       <TableComponent
         notas={filteredNotas}
         onEdit={handleEdit}
         onDelete={handleDelete}
         role={usuario?.rol}
       />
-  
+
       {confirmDialogOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="p-8 rounded-lg shadow-xl bg-white text-black dark:bg-[#111827] dark:text-white w-96">
@@ -156,30 +122,30 @@ const VerNotas = () => {
           </div>
         </div>
       )}
-  
+
       {notaToEdit && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+        <div
+          className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              setNotaToEdit(null);
+            }
+          }}
+        >
           <div className="p-8 rounded-lg shadow-xl bg-white text-black dark:bg-[#111827] dark:text-white w-96">
             <h2 className="text-lg font-bold mb-4">Editar Nota</h2>
-            {errorMessage && <ErrorAlert message={errorMessage} />}
             <form onSubmit={handleUpdate}>
               <div className="mb-4">
-                <label
-                  htmlFor="tipo"
-                  className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-                >
+                <label htmlFor="tipo" className="block text-sm text-gray-500 dark:text-gray-300">
                   Tipo
                 </label>
                 <select
                   id="tipo"
-                  value={notaToEdit?.tipo || ''}
+                  value={notaToEdit.tipo}
                   onChange={(e) =>
-                    setNotaToEdit((prevState) => ({
-                      ...prevState,
-                      tipo: e.target.value,
-                    }))
+                    setNotaToEdit((prevState) => ({ ...prevState, tipo: e.target.value }))
                   }
-                  className="w-full p-2 border rounded dark:text-gray-300 dark:bg-gray-900"
+                  className="mt-2 block w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300"
                 >
                   <option value="Prueba">Prueba</option>
                   <option value="Presentacion">Presentación</option>
@@ -187,40 +153,32 @@ const VerNotas = () => {
                   <option value="Tarea">Tarea</option>
                 </select>
               </div>
-  
+
               <div className="mb-4">
-                <label
-                  htmlFor="valor"
-                  className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-                >
+                <label htmlFor="valor" className="block text-sm font-medium">
                   Valor
                 </label>
                 <input
                   type="number"
                   id="valor"
-                  value={notaToEdit?.valor || ''}
+                  value={notaToEdit.valor}
                   onChange={(e) =>
-                    setNotaToEdit((prevState) => ({
-                      ...prevState,
-                      valor: parseFloat(e.target.value) || 0,
-                    }))
+                    setNotaToEdit((prevState) => ({ ...prevState, valor: parseFloat(e.target.value) || 0 }))
                   }
                   min="2.0"
                   max="7.0"
                   step="0.1"
-                  className="w-full p-2 border rounded dark:text-gray-300 dark:bg-gray-900"
+                  className="mt-2 block w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300"
                 />
               </div>
-              <button
-                type="submit"
-                className="w-full px-6 py-3 bg-blue-600 text-white rounded-lg"
-              >
+
+              <button type="submit" className="w-full px-6 py-3 bg-blue-600 text-white rounded-lg">
                 Actualizar
               </button>
               <button
                 type="button"
                 onClick={() => setNotaToEdit(null)}
-                className="w-full px-6 py-3 bg-red-500 text-white rounded-lg mt-4"
+                className="w-full px-6 py-3 bg-gray-400 rounded-lg mt-4"
               >
                 Cancelar
               </button>
@@ -230,7 +188,6 @@ const VerNotas = () => {
       )}
     </div>
   );
-  
 };
 
 export default VerNotas;

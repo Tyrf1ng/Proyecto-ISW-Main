@@ -52,19 +52,19 @@ const AddReservasDocentes = () => {
 
     if (reservaDate.getDay() === 5 || reservaDate.getDay() === 6) {
       setLocalMessage("No se pueden hacer reservas los días sábados y domingos.");
-      setLocalMessageType("warning");
+      setLocalMessageType("error");
       return;
     }
 
     if (!isAfter(reservaDate, today)) {
       setLocalMessage("La fecha de la reserva debe ser posterior a la fecha actual.");
-      setLocalMessageType("warning");
+      setLocalMessageType("error");
       return;
     }
 
     if (!isWithinInterval(reservaDate, { start: today, end: maxDate })) {
       setLocalMessage("La fecha de la reserva debe estar dentro del próximo mes.");
-      setLocalMessageType("warning");
+      setLocalMessageType("error");
       return;
     }
 

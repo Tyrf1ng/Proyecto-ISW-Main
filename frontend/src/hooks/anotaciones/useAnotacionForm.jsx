@@ -1,4 +1,3 @@
-// src/hooks/anotaciones/useAnotacionForm.jsx
 import { useState, useContext, useEffect } from "react";
 import { AsignaturaContext } from "../../context/AsignaturaContext";
 import { createAnotacion } from "../../services/anotaciones.service.js";
@@ -43,7 +42,6 @@ const useAnotacionForm = (selectedAlumno, resetAlumnos, showAlert) => {
       await createAnotacion(newAnotacion);
       showAlert("Anotación creada exitosamente", "success");
 
-      // Resetear el formulario y selección
       setNewAnotacion({
         tipo: "Positiva",
         rut: "",
