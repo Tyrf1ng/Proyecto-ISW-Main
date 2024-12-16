@@ -144,16 +144,6 @@ export const usuarioEditValidation = Joi.object({
         "El correo electrónico debe tener como máximo 35 caracteres.",
     })
     .custom(domainEmailValidator, "Validación dominio email"),
-  password: Joi.string()
-    .min(5)
-    .max(20)
-    .optional()
-    .messages({
-      "string.empty": "La contraseña no puede estar vacía.",
-      "string.base": "La contraseña debe ser de tipo string.",
-      "string.min": "La contraseña debe tener como mínimo 5 caracteres.",
-      "string.max": "La contraseña debe tener como máximo 20 caracteres.",
-    }),
    direccion: Joi.string()
     .min(10)
     .max(50)
