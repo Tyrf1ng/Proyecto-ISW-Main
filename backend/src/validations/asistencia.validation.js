@@ -1,6 +1,7 @@
 import Joi from "joi";
 
 export const asistenciaQueryValidation = Joi.object({
+    // Validar el id de la asignatura
     id_asignatura: Joi.number()
         .integer()
         .positive()
@@ -11,6 +12,7 @@ export const asistenciaQueryValidation = Joi.object({
             "number.positive": "El id de la asignatura debe ser un número positivo.",
             "number.empty": "El id de la asignatura no puede estar vacío."
         }),
+    // Validar el id de la asistencia    
     id_asistencia: Joi.number()
         .integer()
         .positive()
@@ -20,11 +22,13 @@ export const asistenciaQueryValidation = Joi.object({
             "number.positive": "El id de la asistencia debe ser un número positivo.",
             "number.empty": "El id de la asistencia no puede estar vacío."
         }),
+    // Validar el rut del alumno    
     rut: Joi.string()
         .optional()
         .messages({
             "string.empty": "El rut no debe estar vacio",
         }),
+    // Validar el tipo de asistencia    
     tipo: Joi.string()
         .optional()
         .valid("Presente", "Ausente", "Justificado")
@@ -34,6 +38,7 @@ export const asistenciaQueryValidation = Joi.object({
             "string.empty": "El tipo de asistencia no debe estar vacío.",
             "string.base": "El tipo de asistencia debe ser un string."
         }),
+    // Validar la observación de la asistencia    
     observacion: Joi.string().allow(null).when("tipo", {
         is: "Justificado",
         then: Joi.required().messages({
