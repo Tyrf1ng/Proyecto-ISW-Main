@@ -9,6 +9,8 @@ const TableAnotacionComponent = ({ anotaciones, handleOpen, handleDelete, role }
   const [sortOrder, setSortOrder] = useState('asc');
   const [sortOrderNombre, setSortOrderNombre] = useState('asc');
   const [sortedAnotaciones, setSortedAnotaciones] = useState(anotaciones);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 7;
 
   const sortAnotacionesByType = () => {
     const sorted = [...anotaciones].sort((a, b) => {
@@ -19,6 +21,7 @@ const TableAnotacionComponent = ({ anotaciones, handleOpen, handleDelete, role }
 
     setSortedAnotaciones(sorted);
     setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+    setCurrentPage(1);
   };
 
   const sortAnotacionesByNombre = () => {
@@ -32,6 +35,7 @@ const TableAnotacionComponent = ({ anotaciones, handleOpen, handleDelete, role }
 
     setSortedAnotaciones(sorted);
     setSortOrderNombre(sortOrderNombre === 'asc' ? 'desc' : 'asc');
+    setCurrentPage(1);
   };
 
   useEffect(() => {
@@ -41,7 +45,7 @@ const TableAnotacionComponent = ({ anotaciones, handleOpen, handleDelete, role }
         if (!usuariosByRut[anotacion.rut]) {
           try {
             const usuario = await getUsuarioByRut(anotacion.rut);
-            usuariosByRut[anotacion.rut] = usuario; // Guardamos tanto nombre como apellido
+            usuariosByRut[anotacion.rut] = usuario;
           } catch (error) {
             console.error('Error al obtener el usuario por rut', error);
           }
@@ -55,7 +59,23 @@ const TableAnotacionComponent = ({ anotaciones, handleOpen, handleDelete, role }
     }
 
     setSortedAnotaciones(anotaciones);
+    setCurrentPage(1);
   }, [anotaciones]);
+
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentAnotaciones = sortedAnotaciones.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(sortedAnotaciones.length / itemsPerPage);
+
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+  const nextPage = () => {
+    if (currentPage < totalPages) setCurrentPage(prev => prev + 1);
+  };
+
+  const prevPage = () => {
+    if (currentPage > 1) setCurrentPage(prev => prev - 1);
+  };
 
   return (
     <div className="overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -96,8 +116,8 @@ const TableAnotacionComponent = ({ anotaciones, handleOpen, handleDelete, role }
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200 dark:divide-gray-700 dark:bg-gray-900">
-              {sortedAnotaciones.length > 0 ? (
-                sortedAnotaciones.map((anotacion) => (
+              {currentAnotaciones.length > 0 ? (
+                currentAnotaciones.map((anotacion) => (
                   <tr key={anotacion.id_anotacion}>
                     {role === 'Docente' && (
                       <td className="px-4 py-4 text-sm whitespace-nowrap">
@@ -156,6 +176,74 @@ const TableAnotacionComponent = ({ anotaciones, handleOpen, handleDelete, role }
           </table>
         </div>
       </div>
+
+      {sortedAnotaciones.length > itemsPerPage && (
+        <div className="flex items-center justify-between mt-6 mx-8">
+          <button
+            onClick={prevPage}
+            disabled={currentPage === 1}
+            className={`flex items-center px-5 py-2 text-sm text-gray-700 capitalize transition-colors duration-200 bg-white border rounded-md gap-x-2 hover:bg-gray-100 dark:bg-gray-900 dark:text-gray-200 dark:border-gray-700 dark:hover:bg-gray-800 ${
+              currentPage === 1 ? 'cursor-not-allowed opacity-50' : ''
+            }`}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth="1.5"
+              stroke="currentColor"
+              className="w-5 h-5 rtl:-scale-x-100"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M6.75 15.75L3 12m0 0l3.75-3.75M3 12h18"
+              />
+            </svg>
+            <span>Anterior</span>
+          </button>
+
+          <div className="items-center hidden md:flex gap-x-3">
+            {Array.from({ length: totalPages }, (_, index) => index + 1).map((number) => (
+              <button
+                key={number}
+                onClick={() => paginate(number)}
+                className={`px-2 py-1 text-sm rounded-md ${
+                  currentPage === number
+                    ? 'text-blue-500 bg-blue-100/60 dark:bg-gray-800'
+                    : 'text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 dark:text-gray-300'
+                }`}
+              >
+                {number}
+              </button>
+            ))}
+          </div>
+
+          <button
+            onClick={nextPage}
+            disabled={currentPage === totalPages}
+            className={`flex items-center px-5 py-2 text-sm text-gray-700 capitalize transition-colors duration-200 bg-white border rounded-md gap-x-2 hover:bg-gray-100 dark:bg-gray-900 dark:text-gray-200 dark:border-gray-700 dark:hover:bg-gray-800 ${
+              currentPage === totalPages ? 'cursor-not-allowed opacity-50' : ''
+            }`}
+          >
+            <span>Siguiente</span>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth="1.5"
+              stroke="currentColor"
+              className="w-5 h-5 rtl:-scale-x-100"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M17.25 8.25L21 12m0 0l-3.75 3.75M21 12H3"
+              />
+            </svg>
+          </button>
+        </div>
+      )}
     </div>
   );
 };
