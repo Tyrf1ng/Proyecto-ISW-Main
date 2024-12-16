@@ -2,16 +2,12 @@
 import { asistenciaQueryValidation } from "../validations/asistencia.validation.js"
 
 import {
-    createAsistenciasService,
-    deleteAsistencia,
-    getAsistencia,
-    getAsistenciasAlumno,
-    getAsistenciasAsignatura,
-    getAsistenciasCurso,
-    updateAsistencia,
     getAsistenciasAlumnoFecha,
-    getAsistenciasPorRutYAsignaturaService,
+    createAsistenciasService,
+    updateAsistencia,
+    deleteAsistencia,
     getAsistenciasPorCursoYAsignaturaService,
+    getAsistenciasPorRutYAsignaturaService,
 } from "../services/asistencia.service.js";
 import {
     handleErrorClient,
@@ -19,32 +15,7 @@ import {
     handleSuccess,
 } from "../handlers/responseHandlers.js";
 
-/**
- * Controlador para obtener asistencias del profesor
- */
-export async function obtenerAsistenciasProfesor(req, res) {
-    const { id_profesor, id_curso, id_asignatura } = req.params;
-
-    const [data, error] = await asistenciaService.getAsistenciasProfesor(id_profesor, id_curso, id_asignatura);
-    if (error) {
-        return res.status(400).json({ message: error });
-    }
-    res.json(data);
-}
-
-/**
- * Controlador para obtener asistencias del estudiante
- */
-export async function obtenerAsistenciasEstudiante(req, res) {
-    const { rut } = req.params;
-
-    const [data, error] = await asistenciaService.getAsistenciasEstudiante(rut);
-    if (error) {
-        return res.status(400).json({ message: error });
-    }
-    res.json(data);
-}
-
+// Obtener las asistencias de un alumno para una fecha, se utiliza al momento de crear una asistencia para verificar si ya existe una asistencia para ese alumno en esa fecha
 export async function getAsistenciasAlumnoFechaController(req, res) {
     try {
         const { rut, fecha, id_asignatura } = req.params;
@@ -61,122 +32,7 @@ export async function getAsistenciasAlumnoFechaController(req, res) {
     }
 }
 
-
-
-export async function getAsistenciasCursoController(req, res) {
-    try {
-        const { id_curso } = req.params;
-
-        const [asistencias, errorAsistencias] = await getAsistenciasCurso(id_curso);
-
-        if (errorAsistencias) return handleErrorClient(res, 404, errorAsistencias);
-
-        asistencias.length === 0
-            ? handleSuccess(res, 204)
-            : handleSuccess(res, 200, "Asistencias encontradas", asistencias);
-    } catch (error) {
-        handleErrorServer(res, 500, error.message);
-    }
-}
-
-export async function getAsistenciasAlumnoController(req, res) {
-    try {
-        const { rut } = req.params;
-
-        const [asistencias, errorAsistencias] = await getAsistenciasAlumno(rut);
-
-        if (errorAsistencias) return handleErrorClient(res, 404, errorAsistencias);
-
-        asistencias.length === 0
-            ? handleSuccess(res, 204)
-            : handleSuccess(res, 200, "Asistencias encontradas", asistencias);
-    } catch (error) {
-        handleErrorServer(res, 500, error.message);
-    }
-}
-
-export async function getAsistenciasAsignaturaController(req, res) {
-    try {
-        const { id_asignatura, id_curso } = req.params;
-        const [asistencias, errorAsistencias] = await getAsistenciasAsignatura(id_asignatura, id_curso);
-        if (errorAsistencias) return handleErrorClient(res, 404, errorAsistencias);
-        asistencias.length === 0
-            ? handleSuccess(res, 204)
-            : handleSuccess(res, 200, "Asistencias encontradas", asistencias);
-    } catch (error) {
-        handleErrorServer(res, 500, error.message);
-    }
-}
-
-export async function getAsistenciaController(req, res) {
-    try {
-        const { id_asistencia } = req.params;
-
-        const [asistencia, errorAsistencia] = await getAsistencia(id_asistencia);
-
-        if (errorAsistencia) return handleErrorClient(res, 404, errorAsistencia);
-
-        handleSuccess(res, 200, "Asistencia encontrada", asistencia);
-    } catch (error) {
-        handleErrorServer(res, 500, error.message);
-    }
-}
-
-export const updateAsistenciaController = async (req, res) => {
-    try {
-        const { id_asistencia } = req.params;
-        const { tipo, observacion } = req.body;
-
-        const updatedObservacion = (tipo === "Presente" || tipo === "Ausente") ? null : observacion;
-
-        const { error: validationError } = asistenciaQueryValidation.validate({ tipo, observacion: updatedObservacion });
-        if (validationError) {
-            return handleErrorClient(res, 400, "Datos de entrada no válidos", validationError.details[0].message);
-        }
-
-        const [asistenciaActualizada, error] = await updateAsistencia(id_asistencia, tipo, updatedObservacion);
-        if (error) {
-            return handleErrorClient(res, 404, error);
-        }
-
-        handleSuccess(res, 200, "Asistencia actualizada", asistenciaActualizada);
-    } catch (error) {
-        handleErrorServer(res, 500, error.message);
-    }
-};
-
-
-export async function deleteAsistenciaController(req, res) {
-    try {
-        const { id_asistencia } = req.params;
-
-        const [asistencia, errorAsistencia] = await deleteAsistencia(id_asistencia);
-
-        if (errorAsistencia) return handleErrorClient(res, 404, errorAsistencia);
-
-        handleSuccess(res, 200, "Asistencia eliminada", asistencia);
-    } catch (error) {
-        handleErrorServer(res, 500, error.message);
-    }
-}
-
-export async function getAsistenciasAlumnoAsignaturaController(req, res) {
-    try {
-        const { rut, id_asignatura } = req.params;
-        const [asistencias, errorAsistencias] = await getAsistenciasAlumnoAsignatura(rut, id_asignatura);
-
-        if (errorAsistencias) return handleErrorClient(res, 404, errorAsistencias);
-
-        asistencias.length === 0
-            ? handleSuccess(res, 204)
-            : handleSuccess(res, 200, "Asistencias encontradas", asistencias);
-    } catch (error) {
-        handleErrorServer(res, 500, error.message);
-    }
-}
-
-//Nuevas funciones
-
+// Funcion para crear una asistencia
 export async function createAsistenciaController(req, res) {
     try {
 
@@ -219,7 +75,71 @@ export async function createAsistenciaController(req, res) {
     }
 }
 
+// Funcion para actualizar una asistencia
+export const updateAsistenciaController = async (req, res) => {
+    try {
+        const { id_asistencia } = req.params;
+        const { tipo, observacion } = req.body;
 
+        const updatedObservacion = (tipo === "Presente" || tipo === "Ausente") ? null : observacion;
+
+        const { error: validationError } = asistenciaQueryValidation.validate({ tipo, observacion: updatedObservacion });
+        if (validationError) {
+            return handleErrorClient(res, 400, "Datos de entrada no válidos", validationError.details[0].message);
+        }
+
+        const [asistenciaActualizada, error] = await updateAsistencia(id_asistencia, tipo, updatedObservacion);
+        if (error) {
+            return handleErrorClient(res, 404, error);
+        }
+
+        handleSuccess(res, 200, "Asistencia actualizada", asistenciaActualizada);
+    } catch (error) {
+        handleErrorServer(res, 500, error.message);
+    }
+};
+
+// Funcion para eliminar una asistencia
+export async function deleteAsistenciaController(req, res) {
+    try {
+        const { id_asistencia } = req.params;
+
+        const [asistencia, errorAsistencia] = await deleteAsistencia(id_asistencia);
+
+        if (errorAsistencia) return handleErrorClient(res, 404, errorAsistencia);
+
+        handleSuccess(res, 200, "Asistencia eliminada", asistencia);
+    } catch (error) {
+        handleErrorServer(res, 500, error.message);
+    }
+}
+
+// Funcion para obtener las asistencias de un alumno por asignatura sirve para las asistencias desde la vista del alumno
+export async function getAsistenciasPorCursoYAsignatura(req, res) {
+    try {
+
+        const { id_curso, id_asignatura } = req.params;
+
+        //validar parametros
+        if (!id_curso || !id_asignatura) {
+            return handleErrorClient(res, 400,
+                "Los parametros 'id_curso' e 'id_asignatura' son requeridos"
+            );
+        }
+
+        //llamar al servicio
+        const [asistencias, error] = await getAsistenciasPorCursoYAsignaturaService(id_curso, id_asignatura);
+
+        if (error) return handleErrorClient(res, 404, error);
+
+        handleSuccess(res, 200, "Asistencias encontradas", asistencias);
+    } catch (error) {
+        console.error("Error en el controller de obtener asistencias por curso y asignatura:", error);
+        handleErrorServer(res, 500, error.message);
+    }
+}
+
+// Funcion para obtener las asistencias de un alumno por asignatura sirve para las asistencias desde la vista del profesor
 export async function getAsistenciasPorRutYAsignatura(req, res) {
     try {
 
@@ -252,30 +172,5 @@ export async function getAsistenciasPorRutYAsignatura(req, res) {
     } catch (error) {
         console.error("Error en el controller de obtener asistencias por rut y asignatura:", error);
         handleErrorServer(res, 500, "Error interno en el servidor");
-    }
-}
-
-
-export async function getAsistenciasPorCursoYAsignatura(req, res) {
-    try {
-
-        const { id_curso, id_asignatura } = req.params;
-
-        //validar parametros
-        if (!id_curso || !id_asignatura) {
-            return handleErrorClient(res, 400,
-                "Los parametros 'id_curso' e 'id_asignatura' son requeridos"
-            );
-        }
-
-        //llamar al servicio
-        const [asistencias, error] = await getAsistenciasPorCursoYAsignaturaService(id_curso, id_asignatura);
-
-        if (error) return handleErrorClient(res, 404, error);
-
-        handleSuccess(res, 200, "Asistencias encontradas", asistencias);
-    } catch (error) {
-        console.error("Error en el controller de obtener asistencias por curso y asignatura:", error);
-        handleErrorServer(res, 500, error.message);
     }
 }
