@@ -58,7 +58,7 @@ const VerNotaAlumno = () => {
             </div>
           </Box>
 
-          {/* Contenido dinámico */}
+          {/* Contenido Tablas*/}
           {loading ? (
             <p>Cargando notas...</p>
           ) : error ? (

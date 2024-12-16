@@ -17,19 +17,22 @@ const VerNotas = () => {
   const [notaToDelete, setNotaToDelete] = useState(null);
   const [notaToEdit, setNotaToEdit] = useState(null);
 
+//Funcion De filtrado MAX 30 caracteres y solo letras
   const handleFilterChange = (e) => {
     const inputText = e.target.value;
-    if (/[^a-zA-Z\s]/.test(inputText) || inputText.length > 30) {
+    if (/[^a-zA-ZñÑ\s]/.test(inputText) || inputText.length > 30) {
       return;
     }
     setFilterText(inputText);
   };
 
+  //Funcion de eliminar nota
   const handleDelete = (id) => {
     setNotaToDelete(id);
     setConfirmDialogOpen(true);
   };
 
+//Funcion de confirmar eliminacion y mostrar alertas
   const handleConfirmDelete = async () => {
     try {
       if (notaToDelete) {
@@ -45,6 +48,7 @@ const VerNotas = () => {
     }
   };
 
+//Funcion de editar nota
   const handleEdit = (nota) => {
     setNotaToEdit({
       id_nota: nota.id_nota,
@@ -53,6 +57,7 @@ const VerNotas = () => {
     });
   };
 
+  //Funcion de actualizar nota
   const handleUpdate = async (e) => {
     e.preventDefault();
     try {
@@ -71,10 +76,11 @@ const VerNotas = () => {
     }
   };
 
-  const normalizeText = (text) =>
+  //Funcion de normalizar texto para busqueda de Alumnos por nombre o apellido
+    const normalizeText = (text) =>
     text.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase();
 
-  const filteredNotas = notas.filter((nota) => {
+    const filteredNotas = notas.filter((nota) => {
     const usuario = nota.usuario || { nombre: '', apellido: '' };
     const sanitizedFilterText = normalizeText(filterText);
     return normalizeText(`${usuario.nombre} ${usuario.apellido}`).includes(sanitizedFilterText);
@@ -82,6 +88,8 @@ const VerNotas = () => {
 
   return (
     <div className="p-4 bg-gray-50 dark:bg-gray-800">
+
+      {/*Barra de busqueda*/}
       <input
         type="text"
         value={filterText}
@@ -93,6 +101,7 @@ const VerNotas = () => {
       {alert.type === 'success' && <SuccessAlert message={alert.message} />}
       {alert.type === 'error' && <ErrorAlert message={alert.message} />}
 
+  {/*Validacion de usuario y mostrar tabla*/}
       <TableComponent
         notas={filteredNotas}
         onEdit={handleEdit}
@@ -100,8 +109,15 @@ const VerNotas = () => {
         role={usuario?.rol}
       />
 
+    {/*Dialogo de confirmacion de eliminacion*/}
       {confirmDialogOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              setConfirmDialogOpen(null);
+            }
+          }}
+        >
           <div className="p-8 rounded-lg shadow-xl bg-white text-black dark:bg-[#111827] dark:text-white w-96">
             <h2 className="text-lg font-bold mb-4">Confirmar Eliminación</h2>
             <p>¿Estás seguro de que deseas eliminar esta nota?</p>
@@ -123,6 +139,7 @@ const VerNotas = () => {
         </div>
       )}
 
+    {/*Dialogo de edicion de nota*/}
       {notaToEdit && (
         <div
           className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50"
@@ -136,6 +153,8 @@ const VerNotas = () => {
             <h2 className="text-lg font-bold mb-4">Editar Nota</h2>
             <form onSubmit={handleUpdate}>
               <div className="mb-4">
+                
+                {/*Campo de tipo de nota*/}
                 <label htmlFor="tipo" className="block text-sm text-gray-500 dark:text-gray-300">
                   Tipo
                 </label>
@@ -154,6 +173,7 @@ const VerNotas = () => {
                 </select>
               </div>
 
+              {/*Campo de valor de la nota*/}
               <div className="mb-4">
                 <label htmlFor="valor" className="block text-sm font-medium">
                   Valor
@@ -172,6 +192,7 @@ const VerNotas = () => {
                 />
               </div>
 
+            {/*Botones de confirmacion y cancelacion*/}
               <button type="submit" className="w-full px-6 py-3 bg-blue-600 text-white rounded-lg">
                 Actualizar
               </button>
