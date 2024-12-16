@@ -1,55 +1,43 @@
-import { useEffect, useState } from 'react';
+import React from 'react';
+import { prettifyRut } from 'react-rut-formatter';
+import useTablaRegisterAsistencia from '../hooks/Asistencias/useTableRegisterAsistencias';
 
 const TableRegisterAsistencias = ({ students, handleRegister }) => {
-  const [attendance, setAttendance] = useState([]);
-
-  useEffect(() => {
-    setAttendance(
-      students.map((student) => ({
-        rut: student.rut,
-        nombre: `${student.nombre} ${student.apellido}`,
-        presente: false,
-        ausente: false,
-        justificado: false,
-        observacion: ''
-      }))
-    );
-  }, [students]);
-
-  const handleCheckboxChange = (rut, type) => {
-    setAttendance((prevAttendance) =>
-      prevAttendance.map((record) => {
-        if (record.rut === rut) {
-          return {
-            ...record,
-            presente: type === 'presente' ? !record.presente : false,
-            ausente: type === 'ausente' ? !record.ausente : false,
-            justificado: type === 'justificado' ? !record.justificado : false,
-            observacion: type === 'justificado' && !record.justificado ? record.observacion : ''
-          };
-        }
-        return record;
-      })
-    );
-  };
-
-  const handleObservationChange = (rut, value) => {
-    setAttendance((prevAttendance) =>
-      prevAttendance.map((record) => {
-        if (record.rut === rut) {
-          return { ...record, observacion: value };
-        }
-        return record;
-      })
-    );
-  };
-
-  const handleSave = () => {
-    handleRegister(attendance);
-  };
+  const {
+    attendance,
+    allPresent,
+    setAllPresent,
+    allAbsent,
+    setAllAbsent,
+    handleCheckboxChange,
+    handleObservationChange,
+    handleSave
+  } = useTablaRegisterAsistencia(students, handleRegister);
 
   return (
     <div className="overflow-x-auto sm:-mx-6 lg:-mx-8">
+      <div className="flex justify-between p-4 ml-3">
+        <div>
+          <label className="mr-4 text-gray-100 text-xs ml-2">
+            <input
+              type="checkbox"
+              checked={allPresent}
+              onChange={() => setAllPresent(!allPresent)}
+              className="mr-2"
+            />
+            Todos Presentes
+          </label>
+          <label className="mr-4 text-gray-100 text-xs ml-2">
+            <input
+              type="checkbox"
+              checked={allAbsent}
+              onChange={() => setAllAbsent(!allAbsent)}
+              className="mr-2"
+            />
+            Todos Ausentes
+          </label>
+        </div>
+      </div>
       <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
         <div className="overflow-hidden border border-gray-200 dark:border-gray-700 md:rounded-lg">
           <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
@@ -77,7 +65,7 @@ const TableRegisterAsistencias = ({ students, handleRegister }) => {
                 <tr key={student.rut}>
                   <td className="px-4 py-4 text-sm whitespace-nowrap">
                     <div className="text-gray-800 dark:text-white">
-                      {student.rut}
+                      {prettifyRut(student.rut)}
                     </div>
                   </td>
                   <td className="px-4 py-4 text-sm whitespace-nowrap">
@@ -90,6 +78,7 @@ const TableRegisterAsistencias = ({ students, handleRegister }) => {
                       type="checkbox"
                       checked={student.presente}
                       onChange={() => handleCheckboxChange(student.rut, 'presente')}
+                      className="mr-2"
                     />
                   </td>
                   <td className="px-4 py-4 text-sm whitespace-nowrap">
@@ -97,6 +86,7 @@ const TableRegisterAsistencias = ({ students, handleRegister }) => {
                       type="checkbox"
                       checked={student.ausente}
                       onChange={() => handleCheckboxChange(student.rut, 'ausente')}
+                      className="mr-2"
                     />
                   </td>
                   <td className="px-4 py-4 text-sm whitespace-nowrap">
@@ -104,16 +94,21 @@ const TableRegisterAsistencias = ({ students, handleRegister }) => {
                       type="checkbox"
                       checked={student.justificado}
                       onChange={() => handleCheckboxChange(student.rut, 'justificado')}
+                      className="mr-2"
                     />
                     {student.justificado && (
                       <div className="mt-2">
                         <textarea
-                          className="w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300"
+                          className="w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 mt-2"
                           rows="2"
-                          placeholder="Escribe una observación..."
+                          placeholder="Escribe una observación... (máx. 60 caracteres)"
                           value={student.observacion}
                           onChange={(e) => handleObservationChange(student.rut, e.target.value)}
+                          maxLength={60} // Garantizar límite en el campo
                         />
+                        <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                          {60 - student.observacion.length} caracteres restantes
+                        </div>
                       </div>
                     )}
                   </td>
@@ -123,7 +118,7 @@ const TableRegisterAsistencias = ({ students, handleRegister }) => {
           </table>
         </div>
       </div>
-      <button onClick={handleSave} className="mt-4 px-6 py-3 bg-blue-600 text-white rounded-lg text-lg">
+      <button onClick={handleSave} className="mt-4 px-6 py-3 bg-blue-600 text-white rounded-lg text-lg ml-8">
         Guardar Asistencias
       </button>
     </div>

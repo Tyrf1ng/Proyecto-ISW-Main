@@ -211,7 +211,6 @@ export async function getAnotacionesPorCursoYAsignaturaService(id_curso, id_asig
         const AnotacionRepository = AppDataSource.getRepository(Anotaciones);
         const ConectUsuarioCursoRepository = AppDataSource.getRepository(Conect_Usuario_CursoSchema);
         
-        // Obtener los alumnos relacionados con el curso
         const relacionesCurso = await ConectUsuarioCursoRepository.find({
             where: { id_curso },
         });
@@ -220,10 +219,8 @@ export async function getAnotacionesPorCursoYAsignaturaService(id_curso, id_asig
             return [null, "No hay alumnos asociados a este curso"];
         }
 
-        // Extraer los ruts de los alumnos relacionados con el curso
         const rutsAlumnos = relacionesCurso.map(relacion => relacion.rut);
 
-        // Buscar las anotaciones relacionadas con estos ruts y la asignatura específica
         const anotaciones = await AnotacionRepository.find({
             where: {
                 rut: In(rutsAlumnos),
@@ -244,12 +241,10 @@ export async function getAnotacionesPorCursoYAsignaturaService(id_curso, id_asig
 
 export async function getAnotacionesPorRutYAsignaturaService(rut, id_asignatura) {
     try {
-        // Validar que el RUT y la asignatura están proporcionados
         if (!rut || !id_asignatura) {
-            return [null, "RUT y ID de asignatura son requeridos"];
+            return [[], "RUT y ID de asignatura son requeridos"];
         }
 
-        // Verificar que el RUT pertenece a un usuario con rol 3
         const UsuarioRepository = AppDataSource.getRepository(Usuario);
         const alumno = await UsuarioRepository.findOne({
             where: { rut: rut, id_roles: 3 },
@@ -257,28 +252,22 @@ export async function getAnotacionesPorRutYAsignaturaService(rut, id_asignatura)
 
         if (!alumno) {
             console.error(`Usuario con RUT ${rut} no encontrado o no tiene el rol 3`);
-            return [null, "Usuario no es un alumno válido"];
+            return [[], "Usuario no es un alumno válido"];
         }
 
-        // Obtener las anotaciones filtradas por rut y asignatura
         const AnotacionRepository = AppDataSource.getRepository(Anotaciones);
         const anotaciones = await AnotacionRepository.find({
-            where: {
-                rut: rut,
-                id_asignatura: id_asignatura,
-            },
-            order: {
-                createdAt: "DESC", // Opcional: ordenar por fecha de creación descendente
-            },
+            where: { rut, id_asignatura },
+            order: { createdAt: "DESC" },
         });
 
         if (!anotaciones || anotaciones.length === 0) {
-            return [null, "No hay anotaciones para este alumno y asignatura"];
+            return [[], null];
         }
 
         return [anotaciones, null];
     } catch (error) {
         console.error("Error al obtener las anotaciones por RUT y asignatura:", error);
-        return [null, "Error interno del servidor"];
+        return [[], "Error interno del servidor"];
     }
 }

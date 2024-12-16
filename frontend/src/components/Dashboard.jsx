@@ -77,7 +77,7 @@ const NAVIGATION_BY_ROLE = {
       title: 'Asistencias',
       icon: <PeopleAltIcon />,
       children: [
-        { segment: 'ver_asistencias', title: 'Ver Asistencias', icon: <ManageSearchIcon /> },
+        { segment: 'alumno', title: 'Ver Asistencias', icon: <ManageSearchIcon /> },
       ],
     },
     {

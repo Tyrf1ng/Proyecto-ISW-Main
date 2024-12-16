@@ -7,12 +7,12 @@ import {
     getAnotacionesPorRutYAsignaturaService,
     getAnotacionesAsignaturaService,
     getAnotacionesCursoService,
-    getAnotacionesService, 
+    getAnotacionesService,
     getAnotacionService,
     updateAnotacionService
 } from "../services/anotaciones.service.js";
 import { handleErrorClient, handleErrorServer, handleSuccess } from "../handlers/responseHandlers.js";
-import { anotacionQueryValidation } from "../validations/anotaciones.validation.js";
+import { anotacionCreateQueryValidation, anotacionEditQueryValidation } from "../validations/anotaciones.validation.js";
 
 export async function getAnotacion(req, res) {
     const { id_anotacion } = req.params;
@@ -77,7 +77,7 @@ export async function getAnotacionesCurso(req, res) {
 export async function createAnotacion(req, res) {
     try {
         const { descripcion, tipo, id_asignatura, rut } = req.body;
-        const { error } = anotacionQueryValidation.validate({ descripcion, tipo, id_asignatura, rut });
+        const { error } = anotacionCreateQueryValidation.validate({ descripcion, tipo, id_asignatura, rut });
         if (error) {
             return handleErrorClient(res, 400, "Datos inválidos en el cuerpo de la solicitud", error.message);
         }
@@ -97,13 +97,11 @@ export async function createAnotacion(req, res) {
 export async function updateAnotacion(req, res) {
     try {
         const { id_anotacion } = req.params;
-        const { descripcion, tipo, id_asignatura, rut } = req.body;
-        const { error } = anotacionQueryValidation.validate({
+        const { descripcion, tipo } = req.body;
+        const { error } = anotacionEditQueryValidation.validate({
             id_anotacion,
             descripcion,
             tipo,
-            id_asignatura,
-            rut,
         });
         if (error) {
             return handleErrorClient(res, 400, "Datos inválidos para actualizar la anotación", error.message);
@@ -111,8 +109,6 @@ export async function updateAnotacion(req, res) {
         const datosActualizados = {
             descripcion,
             tipo,
-            id_asignatura: id_asignatura ? parseInt(id_asignatura, 10) : null,
-            rut,
         };
         const [anotacion, errorAnotacion] = await updateAnotacionService(
             parseInt(id_anotacion, 10),
@@ -139,8 +135,6 @@ export async function deleteAnotacion(req, res) {
 export async function getAnotacionesPorCursoYAsignatura(req, res) {
     try {
         const { id_curso, id_asignatura } = req.params;
-
-        // Validar parámetros
         if (!id_curso || !id_asignatura) {
             return handleErrorClient(
                 res,
@@ -148,54 +142,32 @@ export async function getAnotacionesPorCursoYAsignatura(req, res) {
                 "Los parámetros 'id_curso' e 'id_asignatura' son obligatorios"
             );
         }
-
-        // Llamar al servicio
         const [anotaciones, error] = await getAnotacionesPorCursoYAsignaturaService(id_curso, id_asignatura);
-
         if (error) return handleErrorClient(res, 404, error);
-
         handleSuccess(res, 200, "Anotaciones encontradas", anotaciones);
     } catch (error) {
         console.error("Error en el controller de obtener anotaciones por curso y asignatura:", error);
         handleErrorServer(res, 500, error.message);
     }
 }
+
 export async function getAnotacionesPorRutYAsignatura(req, res) {
     try {
-        const { rut, id_asignatura } = req.params; // Cambiado de req.query a req.params
-
-        // Validar que ambos parámetros estén presentes
+        const { rut, id_asignatura } = req.params;
         if (!rut || !id_asignatura) {
-            return handleErrorClient(
-                res,
-                400,
-                "Los parámetros 'rut' e 'id_asignatura' son obligatorios"
-            );
+            return handleErrorClient(res, 400, "Los parámetros 'rut' e 'id_asignatura' son obligatorios");
         }
-
-        // Validar que id_asignatura sea un número válido
         const idAsignatura = parseInt(id_asignatura, 10);
         if (isNaN(idAsignatura)) {
-            return handleErrorClient(
-                res,
-                400,
-                "'id_asignatura' debe ser un número válido"
-            );
+            return handleErrorClient(res, 400, "'id_asignatura' debe ser un número válido");
         }
-
-        // Llamar al servicio
         const [anotaciones, error] = await getAnotacionesPorRutYAsignaturaService(rut, idAsignatura);
-
         if (error) {
-            // Dependiendo del error, podrías querer cambiar el código de estado
-            // Aquí asumo que si el usuario no es válido o no hay anotaciones, se retorna 404
             return handleErrorClient(res, 404, error);
         }
-
-        // Retornar las anotaciones encontradas
-        handleSuccess(res, 200, "Anotaciones encontradas", anotaciones);
+        handleSuccess(res, 200, anotaciones.length === 0 ? "No hay anotaciones disponibles" : "Anotaciones encontradas", anotaciones);
     } catch (error) {
-        console.error("Error en el controller de obtener anotaciones por RUT y asignatura:", error);
+        console.error("Error en el controlador de obtener anotaciones por RUT y asignatura:", error);
         handleErrorServer(res, 500, "Error interno del servidor");
     }
 }
