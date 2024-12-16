@@ -21,7 +21,7 @@ El proyecto, denominado **"Smebook"**, tiene como principal objetivo desarrollar
 
 **Server:** Node, Express
 
- **Data Base** Postgres
+ **Data Base**: Postgres
 
 ## Documentation
 
