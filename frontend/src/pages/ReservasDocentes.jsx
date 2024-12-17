@@ -130,8 +130,7 @@ const ReservasDocentes = () => {
       showAlert("Reserva actualizada exitosamente.", "success");
     } catch (error) {
       console.error("Error al actualizar la reserva: ", error);
-      setValidationError("Los valores ingresados no son válidos");
-      showAlert("Hubo un error al actualizar la reserva.", "error");
+      showAlert(error.message || "Hubo un error al actualizar la reserva.", "error");
     }
   };
 
@@ -182,7 +181,6 @@ const ReservasDocentes = () => {
   return (
     <div className="p-4 bg-gray-50 dark:bg-gray-800 min-h-screen">
       <h1 className="text-4xl text-center font-semibold text-blue-100 mb-14">Mis Reservas</h1>
-      {error && <div className="text-red-500">{error}</div>}
       <div className="flex items-center mb-1">
         {selectedFilter === 'option2' && (
           <input
@@ -227,7 +225,7 @@ const ReservasDocentes = () => {
               onChange={handleYearChange}
               className="ml-4 block rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300"
             >
-              {Array.from({ length: new Date().getFullYear() - 2022 }, (_, i) => new Date().getFullYear() - i).map(year => (
+              {Array.from({ length: new Date().getFullYear() - 2023 }, (_, i) => new Date().getFullYear() - i).map(year => (
                 <option key={year} value={year}>{year}</option>
               ))}
             </select>
@@ -351,7 +349,7 @@ const ReservasDocentes = () => {
           <div className="bg-white dark:bg-[#111827] dark:text-white p-8 rounded-lg shadow-xl w-96" onClick={(e) => e.stopPropagation()}>
             <h2 className="text-lg font-bold mb-4">Confirmar eliminación</h2>
             <p className="mb-4">
-              ¿Estás seguro de que deseas eliminar la reserva del día "{currentReserva?.fecha ? format(parseISO(currentReserva.fecha), 'dd') : ''}" del mes "{currentReserva?.fecha ? new Date(currentReserva.fecha).toLocaleString('es-ES', { month: 'long' }) : ''}" en el horario "{currentReserva?.horario}"?
+              ¿Estás seguro de que deseas eliminar la reserva del día "{currentReserva?.fecha ? format(parseISO(currentReserva.fecha), 'dd') : ''}" del mes de "{currentReserva?.fecha ? new Date(currentReserva.fecha).toLocaleString('es-ES', { month: 'long' }) : ''}" en el horario "{currentReserva?.horario}"?
             </p>
             <div className="flex justify-around">
               <button onClick={handleDelete} className="px-4 py-2 bg-red-600 text-white rounded">Confirmar</button>

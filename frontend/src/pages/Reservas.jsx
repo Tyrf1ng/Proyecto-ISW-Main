@@ -1,12 +1,12 @@
-import { useEffect, useState } from 'react';
-import useReservas from '../hooks/reservas/useReservas';
-import useLabs from '../hooks/labs/useLabs'; 
-import { useHorarios } from '../hooks/horarios/useHorarios'; 
-import TableReservas from '../components/TableReservas'; 
-import { addDays, isWithinInterval, isAfter, isSameDay, parseISO } from 'date-fns';
-import SuccessAlert from '../components/SuccessAlert';
-import WarningAlert from '../components/WarningAlert';
-import ErrorAlert from '../components/ErrorAlert';
+import { useState, useEffect } from "react";
+import useReservas from "../hooks/reservas/useReservas";
+import useLabs from "../hooks/labs/useLabs";
+import { useHorarios } from "../hooks/horarios/useHorarios";
+import SuccessAlert from "../components/SuccessAlert";
+import WarningAlert from "../components/WarningAlert";
+import ErrorAlert from "../components/ErrorAlert";
+import TableReservas from "../components/TableReservas";
+import { isAfter, isWithinInterval, addDays, parseISO, isSameDay, format } from 'date-fns';
 import { AnimatePresence } from "framer-motion";
 
 const normalizeText = (text) => {
@@ -74,7 +74,7 @@ const Reservas = () => {
       await fetchAsignaturasByProfesor(reserva.rut);
       await fetchCursosByProfesor(reserva.rut);
     } catch (error) {
-      console.error('Error al obtener asignaturas y cursos:', error);
+      console.error('Error al cargar asignaturas y cursos:', error);
     }
   
     setEditOpen(true);
@@ -100,18 +100,8 @@ const Reservas = () => {
     const { name, value } = e.target;
     setCurrentReserva({ ...currentReserva, [name]: value });
     if (name === 'rut' && value) {
-      try {
-        await fetchAsignaturasByProfesor(value);
-        await fetchCursosByProfesor(value);
-        setCurrentReserva((prevState) => ({
-          ...prevState,
-          usuario: value,
-          id_asignatura: asignaturas.length > 0 ? asignaturas[0].id_asignatura : '',
-          id_curso: cursos.length > 0 ? cursos[0].id_curso : ''
-        }));
-      } catch (error) {
-        console.error('Error al obtener asignaturas y cursos:', error);
-      }
+      await fetchAsignaturasByProfesor(value);
+      await fetchCursosByProfesor(value);
     }
   };
 
@@ -119,60 +109,56 @@ const Reservas = () => {
     const today = new Date();
     const maxDate = addDays(today, 31);
     const reservaDate = new Date(currentReserva.fecha);
-
+  
     if (!currentReserva.id_lab || !currentReserva.id_horario || !currentReserva.fecha || !currentReserva.id_asignatura || !currentReserva.id_curso) {
       setValidationError('Todos los campos son obligatorios.');
       return;
     }
-
+  
     if (reservaDate.getMonth() === 0 || reservaDate.getMonth() === 1) {
       setValidationError("No se pueden hacer reservas para los meses de enero y febrero.");
       return;
     }
-
+  
     if (reservaDate.getDay() === 5 || reservaDate.getDay() === 6) {
       setValidationError("No se pueden hacer reservas los días sábados y domingos.");
       return;
     }
-
+  
     if (!isAfter(reservaDate, today)) {
       setValidationError("La fecha de la reserva debe ser posterior a la fecha actual.");
       return;
     }
-
+  
     if (!isWithinInterval(reservaDate, { start: today, end: maxDate })) {
       setValidationError("La fecha de la reserva debe estar dentro del próximo mes.");
       return;
     }
-
+  
     try {
       await editReserva(currentReserva.id_reserva, currentReserva);
-      handleEditClose();
-      fetchReservas();
-      setEditSuccess(true);
-      setLocalMessage("Reserva actualizada exitosamente.");
-      setLocalMessageType("success");
+      setLocalMessage('Reserva actualizada exitosamente');
+      setLocalMessageType('success');
+      setEditOpen(false);
+      fetchReservas(); // Asegúrate de volver a cargar las reservas después de editar
     } catch (error) {
-      console.error("Error al actualizar la reserva: ", error);
-      setValidationError("Los valores ingresados no son válidos");
-      setLocalMessage("Error al actualizar la reserva.");
-      setLocalMessageType("error");
+      console.error('Error al actualizar la reserva:', error);
+      setLocalMessage(error.message || 'Hubo un error al actualizar la reserva');
+      setLocalMessageType('error');
     }
   };
 
   const handleDelete = async () => {
     try {
       await removeReserva(currentReserva.id_reserva);
-      handleDeleteClose();
-      fetchReservas();
-      setDeleteSuccess(true);
-      setLocalMessage("Reserva eliminada exitosamente.");
-      setLocalMessageType("success");
+      setLocalMessage('Reserva eliminada exitosamente');
+      setLocalMessageType('success');
+      setDeleteOpen(false);
+      fetchReservas(); // Asegúrate de volver a cargar las reservas después de eliminar
     } catch (error) {
-      setDeleteError("No se puede borrar la reserva.");
-      console.error("Error al eliminar la reserva: ", error);
-      setLocalMessage("Error al eliminar la reserva.");
-      setLocalMessageType("error");
+      console.error('Error al eliminar la reserva:', error);
+      setLocalMessage(error.message || 'Hubo un error al eliminar la reserva');
+      setLocalMessageType('error');
     }
   };
 
@@ -183,12 +169,11 @@ const Reservas = () => {
     if (!reserva.fecha) {
       return false;
     }
-  
     const reservaDate = parseISO(reserva.fecha);
     reservaDate.setHours(0, 0, 0, 0); 
   
     if (showPreviousReservations) {
-      if (reservaDate >= today) {
+      if (reservaDate >= today || reservaDate.getFullYear() !== today.getFullYear()) {
         return false;
       }
     } else {
@@ -200,13 +185,13 @@ const Reservas = () => {
     const normalizedFilterText = normalizeText(filterText);
   
     if (selectedFilter === 'option1') {
-      return reserva.usuario && normalizeText(reserva.usuario).includes(normalizedFilterText);
+      return normalizeText(reserva.usuario).includes(normalizedFilterText);
     } else if (selectedFilter === 'option2') {
-      return reserva.nombre_lab && normalizeText(reserva.nombre_lab).includes(normalizedFilterText);
+      return normalizeText(reserva.nombre_lab).includes(normalizedFilterText);
     } else if (selectedFilter === 'option3') {
-      return reserva.nombre_asignatura && normalizeText(reserva.nombre_asignatura).includes(normalizedFilterText);
+      return normalizeText(reserva.nombre_asignatura).includes(normalizedFilterText);
     } else if (selectedFilter === 'option4') {
-      return reserva.nombreCurso && normalizeText(reserva.nombreCurso).includes(normalizedFilterText);
+      return normalizeText(reserva.nombreCurso).includes(normalizedFilterText);
     } else if (selectedFilter === 'option5') {
       return reservaDate.getMonth() + 1 === parseInt(selectedMonth) && reservaDate.getFullYear() === parseInt(selectedYear);
     }
@@ -217,7 +202,6 @@ const Reservas = () => {
   return (
     <div className="p-4 bg-gray-50 dark:bg-gray-800 min-h-screen">
         <h1 className="text-4xl text-center font-semibold text-blue-100 mb-4">Reservas</h1>
-        {error && <div className="text-red-500">{error}</div>}
         <div className="flex items-center mb-1">
           {selectedFilter === 'option1' && (
             <input
@@ -280,9 +264,9 @@ const Reservas = () => {
               <select
                 value={selectedYear}
                 onChange={handleYearChange}
-                className="ml-4 block rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300"
+                className="block ml-2 rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300"
               >
-                {Array.from({ length: new Date().getFullYear() - 2022 }, (_, i) => new Date().getFullYear() - i).map(year => (
+                {Array.from({ length: new Date().getFullYear() - 2023 }, (_, i) => new Date().getFullYear() - i).map(year => (
                   <option key={year} value={year}>{year}</option>
                 ))}
               </select>
@@ -352,7 +336,7 @@ const Reservas = () => {
                       >
                         {rutsDocentes.map((docente) => (
                           <option key={docente.rut} value={docente.rut}>
-                            {`${docente.nombre} ${docente.apellido} (${docente.rut})`}
+                            {`${docente.nombre} ${docente.apellido}`}
                           </option>
                         ))}
                       </select>
@@ -421,17 +405,6 @@ const Reservas = () => {
                         ))}
                       </select>
                     </div>
-                    <div className="mb-4">
-                        <label htmlFor="fecha" className="block text-sm text-gray-500 dark:text-gray-300">Fecha</label>
-                        <input
-                            name="fecha"
-                            type="date"
-                            value={currentReserva?.fecha || ''}
-                            onChange={handleEditInputChange}
-                            placeholder="Fecha"
-                            className="mt-2 block w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-600 text-gray-700 dark:text-gray-100 px-4 py-2 focus:ring focus:ring-blue-300"
-                        />
-                    </div>
                     <div className="flex justify-between mt-4">
                       <button onClick={handleEditSubmit} className="px-10 py-2 bg-blue-600 text-white rounded">Guardar</button>
                       <button onClick={handleEditClose} className="px-10 py-2 bg-gray-400 text-white rounded">Cancelar</button>
@@ -445,9 +418,9 @@ const Reservas = () => {
                 <div className="bg-white dark:bg-[#111827] dark:text-white p-8 rounded-lg shadow-xl w-96" onClick={(e) => e.stopPropagation()}>
                     <h2 className="text-lg font-bold mb-4">Confirmar eliminación</h2>
                     <p className="mb-4">
-                      ¿Estás seguro de que deseas eliminar la reserva del profesor "{currentReserva?.usuario}" con
-                      fecha "{currentReserva?.fecha}" en el horario "{currentReserva?.horario}"?
-                    </p>
+  ¿Estás seguro de que deseas eliminar la reserva del profesor "{currentReserva?.usuario}" con
+  fecha "{currentReserva?.fecha ? format(parseISO(currentReserva.fecha), 'dd-MM-yyyy') : ''}" en el horario "{currentReserva?.horario}"?
+</p>
                     <div className="flex justify-around">
                         <button onClick={handleDelete} className="px-4 py-2 bg-red-600 text-white rounded">Confirmar</button>
                         <button onClick={handleDeleteClose} className="px-4 py-2 bg-gray-400 text-white rounded">Cancelar</button>

@@ -33,10 +33,10 @@ export async function createReserva(reserva) {
       return response.data;
     } catch (error) {
         console.error("Error al crear la reserva: ", error.response ? error.response.data : error.message);
-        alert(error.response.data.message);
         throw error.response ? error.response.data : { error: error.message };
     }
   }
+
 export async function updateReserva(id_reserva, reserva) {
     try {
         const response = await axios.patch(`/reserva/update/${id_reserva}`, {
@@ -50,8 +50,7 @@ export async function updateReserva(id_reserva, reserva) {
         return response.data;
     } catch (error) {
         console.error("Error al actualizar la reserva: ", error.response ? error.response.data : error.message);
-        alert(error.response.data.message);
-        return error.response ? error.response.data : { error: error.message };
+        throw error.response ? error.response.data : { error: error.message };
     }
 }
 

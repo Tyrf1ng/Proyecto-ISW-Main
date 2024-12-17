@@ -17,6 +17,13 @@ const LabsDocente = () => {
     setSortConfig({ key, direction });
   };
 
+  const normalizeText = (text) => {
+    return text
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '');
+  };
+
   const sortedLabs = [...labs].sort((a, b) => {
     if (a[sortConfig.key] < b[sortConfig.key]) {
       return sortConfig.direction === 'asc' ? -1 : 1;
@@ -28,7 +35,7 @@ const LabsDocente = () => {
   });
 
   const filteredLabs = sortedLabs.filter((lab) =>
-    lab.nombre.toLowerCase().includes(filterText.toLowerCase())
+    normalizeText(lab.nombre).includes(normalizeText(filterText))
   );
 
   if (loading) return <div>Cargando...</div>;
