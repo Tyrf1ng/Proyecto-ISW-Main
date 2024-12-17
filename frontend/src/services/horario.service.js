@@ -22,7 +22,7 @@ export async function createHorario(horario) {
 
 export async function updateHorario(horario) {
     try {
-        const { id_horario, createdAt, updatedAt, ...data } = horario; // Excluir id_horario, createdAt y updatedAt del cuerpo de la solicitud
+        const { id_horario, createdAt, updatedAt, ...data } = horario; 
         const response = await axios.patch(`/horarios/update/${id_horario}`, data);
         return response.data;
     } catch (error) {

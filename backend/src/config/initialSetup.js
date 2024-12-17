@@ -299,6 +299,18 @@ async function createLabs() {
           capacidad: 50
         }),
       ),
+      laboratoriosRepository.save(
+        laboratoriosRepository.create({
+          nombre: "Laboratorio de Computación",
+          capacidad: 15
+        }),
+      ),
+      laboratoriosRepository.save(
+        laboratoriosRepository.create({
+          nombre: "Laboratorio de Computación 2",
+          capacidad: 20
+        }),
+      ),
     ]);
     console.log("* => Labs creados exitosamente");
   } catch (error) {
@@ -383,7 +395,7 @@ async function createReserva() {
           rut: "211517735",
           id_lab: 1,
           id_asignatura: 2,
-          id_curso: 2,
+          id_curso: 3,
         }),
       ),
     ]);

@@ -32,6 +32,7 @@ import Add_docente from './pages/Add_docente';
 import Ver_docentes from './pages/Ver_docentes';
 import Add_enc_lab from './pages/Add_enc_lab';
 import Add_reservasDocentes from '@pages/Add_reservasdocentes';
+import ProtectedRoute from './components/ProtectedRoute';
 
 const router = createBrowserRouter([
   {
@@ -44,47 +45,143 @@ const router = createBrowserRouter([
       { path: 'asignaturas', element: <Asignaturas /> },
       {
         path: 'asistencias',
-        element: <Outlet />,
+        element: <ProtectedRoute allowedRoles={['docente', 'directivo', 'alumno']} />,
         children: [
-          { path: 'RegisterAsistencias', element: <RegisterAsistencia /> },
-          { path: 'ver_asistencias', element: <VerAsistencias /> },
-          { path: 'alumno', element: <Ver_Asistencias_Para_Alumno /> },
-        ]
+          {
+            path: 'RegisterAsistencias',
+            element: <ProtectedRoute allowedRoles={['docente']} />,
+            children: [
+              { path: '', element: <RegisterAsistencia /> },
+            ],
+          },
+          {
+            path: 'ver_asistencias',
+            element: <ProtectedRoute allowedRoles={['docente']} />,
+            children: [
+              { path: '', element: <VerAsistencias /> },
+            ],
+          },
+          {
+            path: 'alumno',
+            element: <ProtectedRoute allowedRoles={['alumno']} />,
+            children: [
+              { path: '', element: <Ver_Asistencias_Para_Alumno /> },
+            ],
+          },
+        ],
       },
       {
         path: 'anotaciones',
-        element: <Anotaciones />,
+        element: <ProtectedRoute allowedRoles={['docente', 'directivo', 'alumno']} />,
         children: [
-          { path: 'add_anotaciones', element: <Add_anotaciones /> },
-          { path: 'ver_anotaciones', element: <Ver_anotaciones /> },
-          { path: 'alumno', element: <Ver_Anotaciones_Para_Alumno /> },
+          {
+            path: 'add_anotaciones',
+            element: <ProtectedRoute allowedRoles={['docente']} />,
+            children: [
+              { path: '', element: <Add_anotaciones /> },
+            ],
+          },
+          {
+            path: 'ver_anotaciones',
+            element: <ProtectedRoute allowedRoles={['docente']} />,
+            children: [
+              { path: '', element: <Ver_anotaciones /> },
+            ],
+          },
+          {
+            path: 'alumno',
+            element: <ProtectedRoute allowedRoles={['alumno']} />,
+            children: [
+              { path: '', element: <Ver_Anotaciones_Para_Alumno /> },
+            ],
+          },
         ],
       },
       {
         path: 'Notas',
-        element: <Notas />,
+        element: <ProtectedRoute allowedRoles={['docente', 'directivo', 'alumno']} />,
         children: [
-          { path: 'add', element: <Add_notas /> },
-          { path: 'ver_notas', element: <VerNotas /> },
-          { path: 'Ver_Nota_Alumno', element: <Ver_Nota_Alumno /> },
+          {
+            path: 'add',
+            element: <ProtectedRoute allowedRoles={['docente']} />,
+            children: [
+              { path: '', element: <Add_notas /> },
+            ],
+          },
+          {
+            path: 'ver_notas',
+            element: <ProtectedRoute allowedRoles={['docente']} />,
+            children: [
+              { path: '', element: <VerNotas /> },
+            ],
+          },
+          {
+            path: 'Ver_Nota_Alumno',
+            element: <ProtectedRoute allowedRoles={['alumno']} />,
+            children: [
+              { path: '', element: <Ver_Nota_Alumno /> },
+            ],
+          },
         ],
       },
       {
         path: 'gestion_reservas',
-        element: <Outlet />,
+        element: <ProtectedRoute allowedRoles={['docente', 'directivo', 'encargado de laboratorio']} />,
         children: [
-          { path: 'labs', element: <Labs /> },
-          { path: 'labsdocente', element: <LabsDocente /> },
-          { path: 'horarios', element: <Horarios /> },
-          { path: 'ver_reservas', element: <Reservas /> }, 
-          { path: 'add_reserva', element: <Add_Reserva /> }, 
-          { path: 'add_reservadocente', element: <Add_reservasDocentes /> },
-          { path: 'ver_reservasdocentes', element: <ReservasDocentes /> }, 
+          {
+            path: 'labs',
+            element: <ProtectedRoute allowedRoles={['encargado de laboratorio']} />,
+            children: [
+              { path: '', element: <Labs /> },
+            ],
+          },
+          {
+            path: 'horarios',
+            element: <ProtectedRoute allowedRoles={['encargado de laboratorio']} />,
+            children: [
+              { path: '', element: <Horarios /> },
+            ],
+          },
+          {
+            path: 'ver_reservas',
+            element: <ProtectedRoute allowedRoles={['encargado de laboratorio']} />,
+            children: [
+              { path: '', element: <Reservas /> },
+            ],
+          },
+          {
+            path: 'add_reserva',
+            element: <ProtectedRoute allowedRoles={['encargado de laboratorio']} />,
+            children: [
+              { path: '', element: <Add_Reserva /> },
+            ],
+          },
+          {
+            path: 'labsdocente',
+            element: <ProtectedRoute allowedRoles={['docente']} />,
+            children: [
+              { path: '', element: <LabsDocente /> },
+            ],
+          },
+          {
+            path: 'add_reservadocente',
+            element: <ProtectedRoute allowedRoles={['docente']} />,
+            children: [
+              { path: '', element: <Add_reservasDocentes /> },
+            ],
+          },
+          {
+            path: 'ver_reservasdocentes',
+            element: <ProtectedRoute allowedRoles={['docente']} />,
+            children: [
+              { path: '', element: <ReservasDocentes /> },
+            ],
+          },
         ],
       },
       {
         path: 'gestionusuario',
-        element: <Outlet />,
+        element: <ProtectedRoute allowedRoles={['directivo']} />,
         children: [
           { path: 'add_usuario', element: <Add_usuario /> },
           { path: 'add_docente', element: <Add_docente /> },
