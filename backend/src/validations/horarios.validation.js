@@ -4,14 +4,14 @@ import { isHorarioValid } from "../services/horarios.service.js";
 
 export const horarioBodyValidation = Joi.object({
     hora_inicio: Joi.string().required().custom((value, helpers) => {
-        if (value < "08:00" || value > "22:00") {
-            return helpers.message("La hora de inicio debe estar entre las 08:00 y las 22:00");
+        if (value < "08:00" || value > "18:00") {
+            return helpers.message("La hora de inicio debe estar entre las 08:00 y las 18:00");
         }
         return value;
     }),
     hora_fin: Joi.string().required().custom((value, helpers) => {
-        if (value < "08:00" || value > "22:00") {
-            return helpers.message("La hora de fin debe estar entre las 08:00 y las 22:00");
+        if (value < "08:00" || value > "18:00") {
+            return helpers.message("La hora de fin debe estar entre las 08:00 y las 18:00");
         }
         return value;
     }),
