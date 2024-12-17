@@ -101,7 +101,7 @@ export async function getAnotacionesPorCursoYAsignaturaService(id_curso, id_asig
         });
 
         if (!relacionesCurso || relacionesCurso.length === 0) {
-            return [null, "No hay alumnos asociados a este curso"];
+            return [[], "No hay alumnos asociados a este curso"];
         }
 
         const rutsAlumnos = relacionesCurso.map(relacion => relacion.rut);
@@ -112,17 +112,13 @@ export async function getAnotacionesPorCursoYAsignaturaService(id_curso, id_asig
                 id_asignatura,
             },
         });
-
-        if (!anotaciones || anotaciones.length === 0) {
-            return [null, "No hay anotaciones para este curso y asignatura"];
-        }
-
         return [anotaciones, null];
     } catch (error) {
         console.error("Error al obtener las anotaciones por curso y asignatura:", error);
         return [null, "Error interno del servidor"];
     }
 }
+
 
 export async function getAnotacionesPorRutYAsignaturaService(rut, id_asignatura) {
     try {
