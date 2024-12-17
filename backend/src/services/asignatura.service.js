@@ -112,7 +112,6 @@ export async function getAsignaturasByProfesor(rut) {
 
 //Asignatura pora Alumno
 
-
 export async function getAsignaturasByAlumno(rut) {
     try {
         const usuarioRepository = AppDataSource.getRepository(Usuario);
