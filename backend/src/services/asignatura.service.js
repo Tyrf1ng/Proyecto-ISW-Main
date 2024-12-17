@@ -111,16 +111,18 @@ export async function getAsignaturasByProfesor(rut) {
 }
 
 //Asignatura pora Alumno
+
+
 export async function getAsignaturasByAlumno(rut) {
     try {
-       
         const usuarioRepository = AppDataSource.getRepository(Usuario);
         const conectUsuarioCursoRepository = AppDataSource.getRepository(conect_usuario_curso);
         const asignaturaCursoRepository = AppDataSource.getRepository(AsignaturaCursoSchema);
         const asignaturaRepository = AppDataSource.getRepository(Asignaturas);
 
+        //Alumnos
         const usuario = await usuarioRepository.findOne({
-            where: { rut: rut, id_roles: 3 },
+            where: { rut: rut, id_roles: 3 }, 
         });
 
         if (!usuario) {
@@ -147,19 +149,38 @@ export async function getAsignaturasByAlumno(rut) {
         const idsAsignaturas = asignaturasCurso.map((asignatura) => asignatura.id_asignatura);
         const asignaturas = await asignaturaRepository.find({
             where: { id_asignatura: In(idsAsignaturas) },
-            select: ["id_asignatura", "nombre"],
+            select: ["id_asignatura", "nombre", "rut"],
         });
 
         if (!asignaturas || asignaturas.length === 0) {
             return [null, "No se encontraron detalles para las asignaturas de este alumno"];
         }
-
-        return [asignaturas, null];
+        
+    //Obtener nombre de los profesores de cada asignatura
+        const rutsProfesores = asignaturas.map((asignatura) => asignatura.rut);
+        const profesores = await usuarioRepository.find({
+            where: { rut: In(rutsProfesores), id_roles: 2 },
+            select: ["rut", "nombre", "apellido"],
+        });
+        
+        const result = asignaturas.map((asignatura) => {
+            const profesor = profesores.find((prof) => prof.rut === asignatura.rut);
+            return {
+                id_asignatura: asignatura.id_asignatura,
+                nombre: asignatura.nombre,
+                profesor: profesor
+                    ? `${profesor.nombre} ${profesor.apellido}`
+                    : "Profesor no asignado",
+            };
+        });
+        
+        return [result, null];
     } catch (error) {
         console.error("Error al obtener las asignaturas:", error);
         return [null, "Error interno del servidor"];
     }
 }
+
 
 export async function getNombreAsignaturaById(id_asignatura) {
     try {
