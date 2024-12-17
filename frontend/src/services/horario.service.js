@@ -34,8 +34,9 @@ export async function updateHorario(horario) {
 export async function deleteHorario(id_horario) {
     try {
         const response = await axios.delete(`/horarios/delete/${id_horario}`);
-        return response.data;
+        return { success: true, data: response.data };
     } catch (error) {
-        alert(error.response.data.message);
+        console.error("Error al eliminar el horario: ", error.response ? error.response.data : error.message);
+        return { success: false, error: error.response ? error.response.data.message : error.message };
     }
 }
