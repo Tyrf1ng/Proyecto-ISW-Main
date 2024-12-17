@@ -107,14 +107,14 @@ export async function deleteCursoController(req, res) {
 
 export async function getCursosByProfesorController(req, res) {
     try {
-        const { rut_docente } = req.params;
-        if (!rut_docente) {
+        const { rut } = req.params;
+        if (!rut) {
             return res.status(400).json({
                 status: "Error",
                 message: "El parámetro 'rut_docente' es obligatorio"
             });
         }
-        const [cursos, mensaje] = await getCursosByProfesor(rut_docente);
+        const [cursos, mensaje] = await getCursosByProfesor(rut);
 
         if (!cursos) {
             return res.status(404).json({

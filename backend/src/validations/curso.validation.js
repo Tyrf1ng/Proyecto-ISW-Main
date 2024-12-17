@@ -2,6 +2,7 @@
 import Joi from "joi";
 
 export const cursoCreateValidation = Joi.object({
+
   nombre: Joi.string()
     .min(5)
     .max(30)
