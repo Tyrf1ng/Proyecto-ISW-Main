@@ -21,8 +21,8 @@ router
     .get("/:id_curso", getCursoController)
     .get("/", getCursosController)
     .get("/alumnos/:id_curso", authorize(["Docente","Directivo"]), getAlumnosPorCursoController)
-    .get("/profesor/:rut_docente", authorize(["Docente","Directivo", "Encargado de Laboratorio"]), getCursosByProfesorController)
-    .post("/crear/", authorize(["Administrador","Directivo"]), createCursoController)
+    .get("/profesor/:rut", authorize(["Docente","Directivo", "Encargado de Laboratorio"]), getCursosByProfesorController)
+    .post("/crear/", authorize(["Directivo"]), createCursoController)
     .patch("/actualizar/:id_curso", authorize(["Directivo"]), updateCursoController)
     .delete("/borrar/:id_curso", authorize(["Directivo"]), deleteCursoController)
     // Nueva ruta para crear la relación conect_usuario_curso
