@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import useAnotacionesAlumno from '../hooks/anotaciones/useAnotacionesAlumno';
 import TableAnotacionComponent from '../components/Table';
 
