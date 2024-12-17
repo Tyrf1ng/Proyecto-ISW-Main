@@ -41,8 +41,8 @@ async function setupServer() {
           callback(new Error("No permitido por CORS"));
         }
       },
-      methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'], // Métodos HTTP permitidos
-      allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'], // Cabeceras permitidas
+      methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'], 
+      allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'], 
     };
 
     app.use(cors(corsOptions));

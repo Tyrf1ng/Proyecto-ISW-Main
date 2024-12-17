@@ -15,7 +15,6 @@ router
     .get("/profesor/:rut", authorize(["Docente", "Directivo", "Encargado de Laboratorio"]), getAsignaturasByProfesorController)
     .get("/alumno/:rut", authorize(["Alumno"]), getAsignaturasByAlumnoController)
     .get("/nombre/:id_asignatura", authorize(["Docente", "Directivo", "Encargado de Laboratorio"]), getNombreAsignaturaByIdController)
-    // Nueva ruta para crear asignatura
     .post("/crear", authorize(["Directivo"]), createAsignaturaController);
 
 export default router;

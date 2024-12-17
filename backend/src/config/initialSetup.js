@@ -592,8 +592,8 @@ async function createUsuario() {
         usuarioRepository.save(
           usuarioRepository.create({
             rut: "221234567",
-            nombre: "anita",
-            apellido: "aroca",
+            nombre: "Anita",
+            apellido: "Aroca",
             email: "anita@gmail.cl",
             telefono: 123456789,
             password: await encryptPassword("anita123"),
@@ -618,7 +618,7 @@ async function createUsuario() {
         usuarioRepository.save(
           usuarioRepository.create({
             rut: "201234567",
-            nombre: "daniel",
+            nombre: "Daniel",
             apellido: "Monsalve",
             email: "daniel@gmail.cl",
             telefono: 123456789,
@@ -631,8 +631,8 @@ async function createUsuario() {
         usuarioRepository.save(
           usuarioRepository.create({
             rut: "201134567",
-            nombre: "javier",
-            apellido: "Gonsalez",
+            nombre: "Javier",
+            apellido: "Gonzalez",
             email: "javier@gmail.cl",
             telefono: 123456789,
             password: await encryptPassword("javier123"),
@@ -644,8 +644,8 @@ async function createUsuario() {
         usuarioRepository.save(
           usuarioRepository.create({
             rut: "201034362",
-            nombre: "anais",
-            apellido: "saldias",
+            nombre: "Anais",
+            apellido: "Saldias",
             email: "anais@gmail.cl",
             telefono: 123456789,
             password: await encryptPassword("anais123"),
@@ -657,8 +657,8 @@ async function createUsuario() {
         usuarioRepository.save(
           usuarioRepository.create({
             rut: "201034102",
-            nombre: "pablo",
-            apellido: "sanchez",
+            nombre: "Pablo",
+            apellido: "Sanchez",
             email: "pablo@gmail.cl",
             telefono: 123456789,
             password: await encryptPassword("pablo123"),
@@ -670,8 +670,8 @@ async function createUsuario() {
         usuarioRepository.save(
           usuarioRepository.create({
             rut: "201034105",
-            nombre: "sam",
-            apellido: "fuentes",
+            nombre: "Sam",
+            apellido: "Fuentes",
             email: "sam@gmail.cl",
             telefono: 123456789,
             password: await encryptPassword("sam123"),

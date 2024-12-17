@@ -79,7 +79,7 @@ const router = createBrowserRouter([
           { path: 'ver_reservas', element: <Reservas /> }, 
           { path: 'add_reserva', element: <Add_Reserva /> }, 
           { path: 'add_reservadocente', element: <Add_reservasDocentes /> },
-          { path: 'ver_reservasdocentes', element: <ReservasDocentes /> }, // Añadir ruta para ReservasDocentes
+          { path: 'ver_reservasdocentes', element: <ReservasDocentes /> }, 
         ],
       },
       {

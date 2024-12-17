@@ -10,7 +10,7 @@ import {
     getRutsDocentesService
 } from "../services/usuario.service.js";
 import { handleErrorClient, handleErrorServer, handleSuccess } from "../handlers/responseHandlers.js";
-import { usuarioCreateValidation, usuarioEditValidation } from "../validations/usuario.validation.js";
+import { usuarioCreateValidation } from "../validations/usuario.validation.js";
 
 export async function getUsuarios(req, res) {
     try {

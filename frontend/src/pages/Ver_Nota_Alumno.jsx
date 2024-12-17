@@ -10,7 +10,6 @@ const VerNotaAlumno = () => {
   const { notas, loading, error } = useNotasAsignatura([]);
 
 
-  // Filtrado de las notas
   const filteredNotas = filterType
     ? notas?.filter((nota) => nota.tipo.toLowerCase() === filterType.toLowerCase()) || []
     : notas || [];
@@ -21,12 +20,10 @@ const VerNotaAlumno = () => {
 
   return (
     <Box sx={{ padding: 4 }}>
-      {/* Validación del usuario */}
       {!usuario || !usuario.rut ? (
         <p>Error: No se encontró información del usuario</p>
       ) : (
         <>
-          {/* Barra de filtro */}
           <Box
             sx={{
               display: 'flex',
@@ -58,7 +55,6 @@ const VerNotaAlumno = () => {
             </div>
           </Box>
 
-          {/* Contenido Tablas*/}
           {loading ? (
             <p>Cargando notas...</p>
           ) : error ? (

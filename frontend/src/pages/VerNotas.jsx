@@ -18,7 +18,6 @@ const VerNotas = () => {
   const [notaToDelete, setNotaToDelete] = useState(null);
   const [notaToEdit, setNotaToEdit] = useState(null);
 
-//Funcion De filtrado MAX 30 caracteres y solo letras
   const handleFilterChange = (e) => {
     const inputText = e.target.value;
     if (/[^a-zA-ZñÑ\s]/.test(inputText) || inputText.length > 30) {
@@ -27,13 +26,11 @@ const VerNotas = () => {
     setFilterText(inputText);
   };
 
-  //Funcion de eliminar nota
   const handleDelete = (id) => {
     setNotaToDelete(id);
     setConfirmDialogOpen(true);
   };
 
-//Funcion de confirmar eliminacion y mostrar alertas
   const handleConfirmDelete = async () => {
     try {
       if (notaToDelete) {
@@ -49,7 +46,6 @@ const VerNotas = () => {
     }
   };
 
-//Funcion de editar nota
   const handleEdit = (nota) => {
     setNotaToEdit({
       id_nota: nota.id_nota,
@@ -58,7 +54,6 @@ const VerNotas = () => {
     });
   };
 
-  //Funcion de actualizar nota
   const handleUpdate = async (e) => {
     e.preventDefault();
     try {
@@ -77,7 +72,6 @@ const VerNotas = () => {
     }
   };
 
-  //Funcion de normalizar texto para busqueda de Alumnos por nombre o apellido
     const normalizeText = (text) =>
     text.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase();
 
@@ -90,7 +84,6 @@ const VerNotas = () => {
 
   return (
     <div className="p-4 bg-gray-50 dark:bg-gray-800">
-      {/* Animaciones de alerta fuera de los modales */}
       <AnimatePresence>
         {alert.type === "success" && (
           <SuccessAlert message={alert.message} key="success" />
@@ -100,7 +93,6 @@ const VerNotas = () => {
         )}
       </AnimatePresence>
   
-      {/* Barra de búsqueda */}
       <input
         type="text"
         value={filterText}
@@ -109,7 +101,6 @@ const VerNotas = () => {
         className="w-96 p-2 mb-4 border rounded dark:text-gray-300 dark:bg-gray-900"
       />
   
-      {/* Validación de usuario y mostrar tabla */}
       <TableComponent
         notas={filteredNotas}
         onEdit={handleEdit}
@@ -117,7 +108,6 @@ const VerNotas = () => {
         role={usuario?.rol}
       />
   
-      {/* Diálogo de confirmación de eliminación */}
       {confirmDialogOpen && (
         <div
           className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50"
@@ -148,7 +138,6 @@ const VerNotas = () => {
         </div>
       )}
   
-      {/* Diálogo de edición de nota */}
       {notaToEdit && (
         <div
           className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50"
@@ -162,7 +151,6 @@ const VerNotas = () => {
             <h2 className="text-lg font-bold mb-4">Editar Nota</h2>
             <form onSubmit={handleUpdate}>
               <div className="mb-4">
-                {/* Campo de tipo de nota */}
                 <label
                   htmlFor="tipo"
                   className="block text-sm text-gray-500 dark:text-gray-300"
@@ -187,7 +175,6 @@ const VerNotas = () => {
                 </select>
               </div>
   
-              {/* Campo de valor de la nota */}
               <div className="mb-4">
                 <label htmlFor="valor" className="block text-sm font-medium">
                   Valor
@@ -209,7 +196,6 @@ const VerNotas = () => {
                 />
               </div>
   
-              {/* Botones de confirmación y cancelación */}
               <button
                 type="submit"
                 className="w-full px-6 py-3 bg-blue-600 text-white rounded-lg"

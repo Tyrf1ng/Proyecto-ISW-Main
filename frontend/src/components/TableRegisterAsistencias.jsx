@@ -99,7 +99,7 @@ const TableRegisterAsistencias = ({ students, handleRegister }) => {
                     {student.justificado && (
                       <div className="mt-2">
                         <textarea
-                          className="w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 mt-2"
+                          className="w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 mt-2 resize-none"
                           rows="2"
                           placeholder="Escribe una observación... (máx. 60 caracteres)"
                           value={student.observacion}

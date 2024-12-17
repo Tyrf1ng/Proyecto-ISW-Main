@@ -10,9 +10,8 @@ function Ver_Usuarios() {
   const [searchTerm, setSearchTerm] = useState('');
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState('');
-  const [id_roles, setId_roles] = useState('Admin'); // Definir el rol de usuario, por ejemplo 'Admin'
+  const [id_roles, setId_roles] = useState('Admin'); 
 
-  // Mapeo de id_roles a nombres legibles
   const rolMapping = {
     1: 'Directivo',
     2: 'Docente',
@@ -20,7 +19,6 @@ function Ver_Usuarios() {
     4: 'Enc. de Lab',
   };
 
-  // Cargar usuarios al iniciar el componente
   useEffect(() => {
     const cargarUsuarios = async () => {
       try {
@@ -33,12 +31,10 @@ function Ver_Usuarios() {
     cargarUsuarios();
   }, []);
 
-  // Filtrar los usuarios en función del término de búsqueda
   const filteredUsuarios = usuarios.filter(usuario =>
     `${usuario.nombre} ${usuario.apellido}`.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Contar usuarios por rol
   const countUsuariosPorRol = () => {
     const counts = { Directivo: 0, Docente: 0, Alumno: 0, 'Enc. de Lab': 0 };
     usuarios.forEach(usuario => {
@@ -48,7 +44,6 @@ function Ver_Usuarios() {
     return counts;
   };
 
-  // Datos para el gráfico de distribución por rol
   const { Directivo, Docente, Alumno, 'Enc. de Lab': EncLab } = countUsuariosPorRol();
   const data = [
     { name: 'Directivo', value: Directivo },
@@ -65,7 +60,7 @@ function Ver_Usuarios() {
   const handleDelete = async (rut) => {
     try {
       await deleteUsuario(rut);
-      setUsuarios(usuarios.filter((usuario) => usuario.rut !== rut)); // Filtramos por RUT
+      setUsuarios(usuarios.filter((usuario) => usuario.rut !== rut)); 
       setMessage('Usuario eliminado exitosamente.');
       setMessageType('success');
     } catch (error) {
@@ -79,15 +74,11 @@ function Ver_Usuarios() {
       <h2 className="text-2xl font-semibold text-gray-800 dark:text-white mb-6">Gestión de Usuarios</h2>
 
 
-      {/* Contenedor principal con Flexbox */}
       <div className="flex flex-wrap gap-6">
         
-        {/* Card de usuarios (ocupa la mayor parte del espacio) */}
         <div className="flex-1 min-w-0 bg-white dark:bg-gray-900 p-6 rounded-xl shadow-lg mb-6">
-          {/* Tabla de Usuarios */}
           <div className="overflow-x-auto sm:-mx-6 lg:-mx-8">
             <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
-              {/* Filtros */}
       <div className="mb-4">
         <label htmlFor="search" className="block text-sm text-gray-500 dark:text-gray-300">Buscar Usuario</label>
         <input
@@ -111,7 +102,7 @@ function Ver_Usuarios() {
                   <tbody className="bg-white divide-y divide-gray-200 dark:divide-gray-700 dark:bg-gray-900">
                     {filteredUsuarios.length > 0 ? (
                       filteredUsuarios.map((usuario) => (
-                        <tr key={usuario.rut}> {/* Usamos el RUT como key */}
+                        <tr key={usuario.rut}> 
                           <td className="px-4 py-4 text-sm font-medium whitespace-normal max-w-xs break-words">
                             <div>
                               <h2 className="font-medium text-gray-800 dark:text-white">{usuario.nombre} {usuario.apellido}</h2>
@@ -151,7 +142,6 @@ function Ver_Usuarios() {
           </div>
         </div>
 
-        {/* Card para el gráfico de usuarios por rol (ocupa 1/3 del espacio) */}
         <div className="w-full md:w-1/5 bg-white dark:bg-gray-900 p-6 rounded-xl shadow-lg mb-6">
           <h2 className="text-2xl font-semibold text-gray-800 dark:text-white mb-4">Distribución por Rol</h2>
           <ResponsiveContainer width="100%" height={300}>
@@ -166,7 +156,6 @@ function Ver_Usuarios() {
         </div>
       </div>
 
-      {/* Aquí iría el mensaje de notificación */}
       {message && (
         <div className="fixed top-5 right-5 w-full max-w-sm overflow-hidden bg-[#111827] rounded-lg shadow-md z-50 animate-bounce-slow">
           <div className="px-4 py-2 -mx-3">

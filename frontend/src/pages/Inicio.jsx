@@ -113,8 +113,9 @@ function Inicio() {
               </>
             ) : usuario.rol === 'Directivo' ? (
               <span>
-                Bienvenido a la página de administración del liceo{' '}
-                <span className="text-[#3B82F6]">XXXXXXXXX</span>. <br />
+                Bienvenido a la página de administración del liceo.
+                <br/>
+                <br/>
                 Desde aquí puedes gestionar los recursos educativos y coordinar con los profesores y alumnos.
               </span>
             ) : usuario.rol === 'Encargado de Laboratorio' ? (

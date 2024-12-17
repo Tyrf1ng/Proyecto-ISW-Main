@@ -63,6 +63,10 @@ export async function createAsistenciaController(req, res) {
             return handleErrorClient(res, 400, "Máximo 30 días de diferencia con la fecha actual.");
         }
 
+        if (tipo === "Justificado" && (!observacion || observacion.trim() === "")) {
+            return handleErrorClient(res, 400, "La observación no puede estar vacía");
+        }
+
         const [asistenciaCreada, errorAsistencia] = await createAsistenciasService({
             id_asignatura,
             rut,
