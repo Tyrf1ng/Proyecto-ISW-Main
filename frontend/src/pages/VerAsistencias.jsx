@@ -84,7 +84,7 @@ const VerAsistencias = () => {
             className="bg-white dark:bg-gray-900 p-8 rounded-lg shadow-xl max-w-sm w-full"
             onClick={(e) => e.stopPropagation()}
           >
-            <h2 className="text-2xl font-bold mb-4 text-white">
+            <h2 className="text-2xl font-bold mb-4 text-gray-800 dark:text-gray-100">
               Editar Asistencia
             </h2>
             <div className="mb-4">
