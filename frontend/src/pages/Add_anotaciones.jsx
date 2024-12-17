@@ -10,7 +10,6 @@ function Add_anotaciones() {
   const [alert, showAlert] = useAlert();
 
   const {
-    alumnos,
     filteredAlumnos,
     selectedAlumno,
     searchTerm,
@@ -18,7 +17,6 @@ function Add_anotaciones() {
     handleSearchChange,
     handleAlumnoSelectHook,
     resetAlumnos,
-    loading: alumnosLoading,
   } = useAlumnos();
 
   const {
@@ -26,11 +24,13 @@ function Add_anotaciones() {
     handleInputChange,
     handleSelectChange,
     handleSubmit,
-    resetForm,
   } = useAnotacionForm(selectedAlumno, resetAlumnos, showAlert);
 
   const maxDescripcionLength = 280;
-  const isMaxReached = newAnotacion.descripcion.length > maxDescripcionLength;
+  const minDescripcionLength = 5;
+  const descripcionLength = newAnotacion.descripcion.length;
+  const isMaxReached = descripcionLength > maxDescripcionLength;
+  const isMinNotReached = descripcionLength < minDescripcionLength;
 
   const handleLetterOnlyChange = (e) => {
     const { value } = e.target;
@@ -42,8 +42,15 @@ function Add_anotaciones() {
     handleAlumnoSelectHook(alumno);
   };
 
+  const isFormValid =
+    !isMaxReached &&
+    !isMinNotReached &&
+    newAnotacion.tipo &&
+    selectedAlumno &&
+    descripcionLength >= minDescripcionLength;
+
   return (
-    <div className="flex py-10 justify-center bg-gray-50 dark:bg-gray-800">
+    <div className="flex py-10 justify-center dark:bg-gray-800">
       <div className="w-full max-w-2xl bg-white dark:bg-gray-900 p-8 rounded-xl shadow-lg mb-6">
         <h2 className="text-2xl font-semibold text-center text-gray-800 dark:text-white mb-6">
           Añadir Anotación
@@ -63,7 +70,11 @@ function Add_anotaciones() {
               value={newAnotacion.tipo}
               onChange={handleSelectChange}
               className="mt-2 block w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300"
+              required
             >
+              <option value="" disabled>
+                Selecciona una opción
+              </option>
               <option value="Positiva">Positiva</option>
               <option value="Negativa">Negativa</option>
             </select>
@@ -82,6 +93,7 @@ function Add_anotaciones() {
               onChange={handleLetterOnlyChange}
               placeholder="Buscar Alumno"
               className="mt-2 block w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300"
+              required
             />
           </div>
         </div>
@@ -117,14 +129,27 @@ function Add_anotaciones() {
             maxLength={maxDescripcionLength}
             placeholder="Escribe la descripción"
             rows="4"
-            className="mt-2 block w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300 resize-none"
+            className={`mt-2 block w-full rounded-lg border ${
+              isMaxReached
+                ? "border-red-500"
+                : "border-gray-300 dark:border-gray-600"
+            } bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300 resize-none`}
+            required
           />
           <small
-            className={`text-sm ${
-              isMaxReached ? "text-red-500" : "text-gray-500"
-            }`}
+            className={`text-sm`}
           >
-            {newAnotacion.descripcion.length}/{maxDescripcionLength} caracteres
+            
+            {isMinNotReached && (
+              <span className="block text-red-500">
+                *5/280 caracteres
+              </span>
+            )}
+            {!isMinNotReached && (
+              <span className="block text-gray-500">
+                {descripcionLength}/{maxDescripcionLength} caracteres
+              </span>
+            )}
           </small>
         </div>
 
@@ -132,9 +157,9 @@ function Add_anotaciones() {
           <button
             onClick={handleSubmit}
             className={`bg-blue-500 hover:bg-blue-600 text-white py-2 px-6 rounded-md ${
-              isMaxReached ? "opacity-50 cursor-not-allowed" : ""
+              !isFormValid ? "opacity-50 cursor-not-allowed" : ""
             }`}
-            disabled={isMaxReached}
+            disabled={!isFormValid}
           >
             Crear Anotación
           </button>
