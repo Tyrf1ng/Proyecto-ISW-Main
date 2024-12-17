@@ -14,7 +14,7 @@ import ErrorAlert from "../../components/ErrorAlert";
 
 const useVerAsistenciasProfesor = () => {
   const { curso } = useContext(CursoContext);
-  const { idCurso } = curso;
+  const { idCurso, nombre: nombreCurso } = curso;
   const { asignatura } = useContext(AsignaturaContext);
   const { idAsignatura } = asignatura;
   const { usuario } = useContext(UsuarioContext); 
@@ -36,10 +36,10 @@ const useVerAsistenciasProfesor = () => {
 
   const nombreAsignatura = asignatura.nombre || "la asignatura";
 
-  // Agregar estado para el contador de caracteres
   const [charCount, setCharCount] = useState(0);
 
-  // Fetch usuarios
+  const handleCancelDelete = () => setConfirmDialogOpen(false);
+
   useEffect(() => {
     const fetchUsuarios = async () => {
       try {
@@ -54,7 +54,6 @@ const useVerAsistenciasProfesor = () => {
     fetchUsuarios();
   }, []);
 
-  // Fetch asistencias
   useEffect(() => {
     const cargarAsistencias = async () => {
       if (!idCurso || !idAsignatura) {
@@ -92,13 +91,13 @@ const useVerAsistenciasProfesor = () => {
   }, [idCurso, idAsignatura, usuariosList]);
 
   const handleFilterChange = (e) => {
-    const sanitizedValue = e.target.value.replace(/[0-9]/g, ""); // Eliminar números
+    const sanitizedValue = e.target.value.replace(/[0-9]/g, ""); 
     setFilterText(sanitizedValue);
   };
 
   const handleFilterDateChange = (e) => {
     const date = e.target.value;
-    if (date && !Date.parse(date)) { // Permitir cadena vacía
+    if (date && !Date.parse(date)) { 
       console.error("Formato de fecha inválido:", date);
       return;
     }
@@ -180,7 +179,7 @@ const useVerAsistenciasProfesor = () => {
   
       setIsModalOpen(false);
   
-      const updatedData = response.data || response; // Ajustar según la estructura real
+      const updatedData = response.data || response; 
   
       setAsistencias(
         asistencias.map((asistencia) =>
@@ -201,12 +200,12 @@ const useVerAsistenciasProfesor = () => {
   const handleModalChange = (e) => {
     const { name, value } = e.target;
     if (name === 'observacion') {
-      if (value.length <= 60) { // Limitar a 60 caracteres
+      if (value.length <= 60) { 
         setAsistenciaSeleccionada({
           ...asistenciaSeleccionada,
           [name]: value,
         });
-        setCharCount(value.length); // Actualizar el contador
+        setCharCount(value.length); 
       }
     } else {
       setAsistenciaSeleccionada({
@@ -230,7 +229,6 @@ const useVerAsistenciasProfesor = () => {
       .toLowerCase()
       .includes(sanitizedFilterText);
   
-    // Formatear fechas a 'yyyy-MM-dd' para comparación
     const createdAtDate = asistencia.createdAt ? new Date(asistencia.createdAt) : null;
     const filterDateObj = filterDate ? new Date(filterDate) : null;
   
@@ -242,7 +240,6 @@ const useVerAsistenciasProfesor = () => {
     return matchesText && matchesDate;
   });
 
-  // Limpiar mensajes después de 3.5 segundos
   useEffect(() => {
     if (message) {
       const timer = setTimeout(() => {
@@ -279,8 +276,6 @@ const useVerAsistenciasProfesor = () => {
     messageType,
     charCount,
     nombreAsignatura,
-
-    // Handlers
     handleFilterChange,
     handleFilterDateChange,
     handleEdit,
@@ -288,10 +283,11 @@ const useVerAsistenciasProfesor = () => {
     handleConfirmDelete,
     handleSave,
     handleModalChange,
-
-    // Data
+    handleCancelDelete,
     filteredAsistencias,
-    renderMessage
+    renderMessage,
+    setIsModalOpen,
+    nombreCurso
   };
 };
 
