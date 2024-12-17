@@ -20,7 +20,7 @@ const VerNotaAlumno = () => {
   };
 
   return (
-    <>
+    <div className="p-4 bg-gray-50 dark:bg-gray-800 min-h-screen">
       <TituloNotas />
       <Box sx={{ padding: 4 }}>
         {/* Verificación de usuario */}
@@ -71,7 +71,7 @@ const VerNotaAlumno = () => {
           </>
         )}
       </Box>
-    </>
+    </div>
   );
 };
 
