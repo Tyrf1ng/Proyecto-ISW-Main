@@ -5,7 +5,7 @@ import SuccessAlert from '../components/SuccessAlert';
 import ErrorAlert from '../components/ErrorAlert';
 
 const Labs = () => {
-  const { labs = [], fetchLabs, addLab, editLab, removeLab, error } = useLabs();
+  const { labs = [], fetchLabs, addLab, editLab, removeLab } = useLabs();
   const [filterText, setFilterText] = useState('');
   const [open, setOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
@@ -123,8 +123,8 @@ const Labs = () => {
   const handleDelete = async () => {
     try {
       const response = await removeLab(currentLab.id_lab);
-      if (response && response.error) {
-        throw new Error(response.error);
+      if (!response.success) {
+        throw new Error(response.error || "Hubo un error al eliminar el laboratorio");
       }
       handleDeleteClose();
       fetchLabs();
@@ -133,7 +133,7 @@ const Labs = () => {
       setMessageType('success');
     } catch (error) {
       console.error("Error al eliminar el laboratorio: ", error);
-      setMessage('Hubo un error al eliminar el laboratorio');
+      setMessage(error.message || 'Hubo un error al eliminar el laboratorio');
       setMessageType('error');
       setDeleteOpen(false);
       fetchLabs();
@@ -187,7 +187,6 @@ const Labs = () => {
   return (
     <div className="p-4 bg-gray-50 dark:bg-gray-800 min-h-screen">
       <h1 className="text-4xl text-center font-semibold text-blue-100 mb-4">Laboratorios</h1>
-      {error && <div className="text-red-500">{error}</div>}
       <div className="flex justify-between items-center mb-2 mt-6">
         <input
           type="text"
