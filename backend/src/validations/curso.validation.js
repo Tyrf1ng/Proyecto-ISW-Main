@@ -1,74 +1,59 @@
 "use strict";
 import Joi from "joi";
 
-export const cursoQueryValidation = Joi.object({
-  id: Joi.number()
-    .integer()
-    .positive()
-    .messages({
-      "number.base": "El id del curso debe ser un número.",
-      "number.integer": "El id del curso debe ser un número entero.",
-      "number.positive": "El id del curso debe ser un número positivo.",
-    }),
-  usuarioId: Joi.number()
-    .integer()
-    .positive()
-    .messages({
-      "number.base": "El id del usuario debe ser un número.",
-      "number.integer": "El id del usuario debe ser un número entero.",
-      "number.positive": "El id del usuario debe ser un número positivo.",
-    }),
-  nombre: Joi.string()
-    .min(5)
-    .max(255)
-    .messages({
-      "string.empty": "El nombre del curso no puede estar vacío.",
-      "string.base": "El nombre del curso debe ser de tipo string.",
-      "string.min": "El nombre del curso debe tener como mínimo 5 caracteres.",
-      "string.max": "El nombre del curso debe tener como máximo 255 caracteres.",
-    }),
-})
-  .or("id", "usuarioId", "nombre")
-  .unknown(false)
-  .messages({
-    "object.unknown": "No se permiten propiedades adicionales.",
-    "object.missing": "Debes proporcionar al menos un parámetro: id, usuarioId o nombre.",
-  });
+export const cursoCreateValidation = Joi.object({
 
-export const cursoBodyValidation = Joi.object({
   nombre: Joi.string()
     .min(5)
-    .max(255)
-    .required()
+    .max(30)
     .messages({
       "string.empty": "El nombre del curso no puede estar vacío.",
       "string.base": "El nombre del curso debe ser de tipo string.",
       "string.min": "El nombre del curso debe tener como mínimo 5 caracteres.",
       "string.max": "El nombre del curso debe tener como máximo 255 caracteres.",
     }),
-  año: Joi.number()
+  nivel: Joi.number()
     .integer()
-    .min(1900)
-    .max(new Date().getFullYear())
+    .positive()
+    .messages({
+      "number.base": "El nivel del curso debe ser un número.",
+      "number.integer": "El nivel del curso debe ser un número entero.",
+      "number.positive": "El nivel del curso debe ser un número positivo.",
+    }),
+    año: Joi.date()
     .required()
     .messages({
       "number.base": "El año del curso debe ser un número.",
-      "number.integer": "El año del curso debe ser un número entero.",
-      "number.min": "El año del curso debe ser mayor o igual a 1900.",
-      "number.max": "El año del curso no puede ser mayor que el año actual.",
+      "any.required": "El año del curso es obligatorio.",
     }),
-  usuarioId: Joi.number()
+  });
+
+export const cursoEditValidation = Joi.object({
+  nombre: Joi.string()
+    .min(5)
+    .max(255)
+    .optional()
+    .messages({
+      "string.base": "El nombre del curso debe ser de tipo string.",
+      "string.min": "El nombre del curso debe tener como mínimo 5 caracteres.",
+      "string.max": "El nombre del curso debe tener como máximo 255 caracteres.",
+    }),
+  año: Joi.date()
+    .min(new Date(new Date().getFullYear(), 0, 1)) 
+    .max(new Date(new Date().getFullYear() + 1, 11, 31)) 
+    .optional()
+    .messages({
+      "date.base": "El año del curso debe ser una fecha.",
+      "date.min": `El año del curso no puede ser anterior al ${new Date().getFullYear()}.`,
+      "date.max": `El año del curso no puede ser posterior al ${new Date().getFullYear() + 1}.`,
+    }),
+  nivel: Joi.number()
     .integer()
     .positive()
-    .required()
+    .optional()
     .messages({
-      "number.base": "El id del usuario debe ser un número.",
-      "number.integer": "El id del usuario debe ser un número entero.",
-      "number.positive": "El id del usuario debe ser un número positivo.",
-      "any.required": "El id del usuario es obligatorio.",
+      "number.base": "El nivel del curso debe ser un número.",
+      "number.integer": "El nivel del curso debe ser un número entero.",
+      "number.positive": "El nivel del curso debe ser un número positivo.",
     }),
 })
-  .unknown(false)
-  .messages({
-    "object.unknown": "No se permiten propiedades adicionales.",
-  });

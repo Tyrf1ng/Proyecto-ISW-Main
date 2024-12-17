@@ -5,13 +5,14 @@ import { AppDataSource } from "../config/configDb.js";
 import { comparePassword } from "../helpers/bcrypt.helper.js";
 import { ACCESS_TOKEN_SECRET } from "../config/configEnv.js";
 
-// Mapa de roles según el id_roles
+// Roles según el id_roles
 const ROLES_MAP = {
   1: "Directivo",
   2: "Docente",
   3: "Alumno",
   4: "Encargado de Laboratorio",
 };
+
 
 export async function loginService(user) {
   try {
@@ -25,7 +26,7 @@ export async function loginService(user) {
 
     for (const { repo } of repositories) {
       userFound = await repo.findOne({ where: { email } });
-      if (userFound) break; // Detiene la búsqueda si encuentra al usuario
+      if (userFound) break; 
     }
 
     if (!userFound) {
@@ -37,7 +38,7 @@ export async function loginService(user) {
       return [null, { message: "Contraseña incorrecta", field: "password" }];
     }
 
-    // Determina el nombre del rol basado en id_roles
+    
     const rolNombre = ROLES_MAP[userFound.id_roles] || "Usuario Desconocido";
 
     const payload = {
@@ -45,7 +46,7 @@ export async function loginService(user) {
       apellido: userFound.apellido,
       email: userFound.email,
       rut: userFound.rut,
-      rol: rolNombre, // Asigna el nombre del rol al token
+      rol: rolNombre, 
     };
 
     const accessToken = jwt.sign(payload, ACCESS_TOKEN_SECRET, {
@@ -59,49 +60,3 @@ export async function loginService(user) {
   }
 }
 
-
-export async function registerService(user) {
-  try {
-    const userRepository = AppDataSource.getRepository(User);
-
-    const { nombreCompleto, rut, email } = user;
-
-    const createErrorMessage = (dataInfo, message) => ({
-      dataInfo,
-      message
-    });
-
-    const existingEmailUser = await userRepository.findOne({
-      where: {
-        email,
-      },
-    });
-    
-    if (existingEmailUser) return [null, createErrorMessage("email", "Correo electrónico en uso")];
-
-    const existingRutUser = await userRepository.findOne({
-      where: {
-        rut,
-      },
-    });
-
-    if (existingRutUser) return [null, createErrorMessage("rut", "Rut ya asociado a una cuenta")];
-
-    const newUser = userRepository.create({
-      nombreCompleto,
-      email,
-      rut,
-      password: await encryptPassword(user.password),
-      rol: "usuario",
-    });
-
-    await userRepository.save(newUser);
-
-    const { password, ...dataUser } = newUser;
-
-    return [dataUser, null];
-  } catch (error) {
-    console.error("Error al registrar un usuario", error);
-    return [null, "Error interno del servidor"];
-  }
-}

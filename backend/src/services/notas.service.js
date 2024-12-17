@@ -36,7 +36,7 @@ export async function getNotasAsignatura(id_asignatura) {
 //FUNCIONA NO TOCAR
 export async function updateNota(id_nota, nuevoValor, nuevoTipo) {
     try {
-        // Validar el valor
+
         const parsedValor = parseFloat(nuevoValor);
         if (isNaN(parsedValor)) {
             return [null, "El valor debe ser un número válido"];
@@ -48,7 +48,6 @@ export async function updateNota(id_nota, nuevoValor, nuevoTipo) {
 
         const notasRepository = AppDataSource.getRepository(Notas);
 
-        // Verificar si la nota existe
         const notaExistente = await notasRepository.findOneBy({ id_nota });
         if (!notaExistente) {
             return [null, "No se encontró la nota"];
@@ -101,8 +100,8 @@ export async function deleteNota(id_nota) {
         return [null, "Error interno del servidor"];
     }
 }
-//Funcion para notas de una asigantura para un alumno
 
+//Funcion para notas de una asigantura para un alumno
 export async function getNotasAlumnoAsignatura(rut, id_asignatura) {
     try {
         const notasRepository = AppDataSource.getRepository(Notas);
@@ -143,12 +142,13 @@ export async function getNotasAlumnoAsignatura(rut, id_asignatura) {
         return [null, "Error interno del servidor"];
     }
 }
+
+//Funcion para notas de un curso y asignatura PARA PROFE
 export async function getNotasPorCursoYAsignatura(id_curso, id_asignatura) {
     try {
         const NotasRepository = AppDataSource.getRepository(Notas);
         const ConectUsuarioCursoRepository = AppDataSource.getRepository(Conect_Usuario_CursoSchema);
-        
-        // Obtener los alumnos relacionados con el curso
+     
         const relacionesCurso = await ConectUsuarioCursoRepository.find({
             where: { id_curso },
         });
@@ -157,10 +157,9 @@ export async function getNotasPorCursoYAsignatura(id_curso, id_asignatura) {
             return [null, "No hay alumnos asociados a este curso"];
         }
 
-        // Extraer los ruts de los alumnos relacionados con el curso
         const rutsAlumnos = relacionesCurso.map(relacion => relacion.rut);
 
-        // Buscar las anotaciones relacionadas con estos ruts y la asignatura específica
+        
         const notas = await NotasRepository.find({
             where: {
                 rut: In(rutsAlumnos),

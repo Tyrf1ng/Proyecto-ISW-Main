@@ -66,7 +66,7 @@ const NAVIGATION_BY_ROLE = {
       icon: <SchoolIcon />,
       children: [
         { segment: 'add_reservadocente', title: 'Añadir Reservas', icon: <AddIcon /> },
-        { segment: 'ver_reservasdocentes', title: 'Mis Reservas', icon: <EventIcon /> }, // Actualizar para apuntar a ReservasDocentes
+        { segment: 'ver_reservasdocentes', title: 'Mis Reservas', icon: <EventIcon /> }, 
         { segment: 'labsdocente', title: 'Laboratorios', icon: <BiotechIcon /> },
       ],
     },
