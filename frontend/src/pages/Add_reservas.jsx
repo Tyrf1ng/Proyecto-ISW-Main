@@ -199,7 +199,7 @@ function Add_Reserva() {
             className="mt-2 block w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300"
           >
             <option value="">Seleccione laboratorio</option>
-            {laboratorios.map((lab) => (
+            {laboratorios?.map((lab) => (
               <option key={lab.id_lab} value={lab.id_lab}>
                 {lab.nombre}
               </option>
@@ -218,7 +218,7 @@ function Add_Reserva() {
           >
             <option value="">Seleccione horario</option>
             {horarios
-              .sort((a, b) => a.hora_inicio.localeCompare(b.hora_inicio))
+              ?.sort((a, b) => a.hora_inicio.localeCompare(b.hora_inicio))
               .map((horario) => (
                 <option key={horario.id_horario} value={horario.id_horario}>
                   {`${horario.hora_inicio} - ${horario.hora_fin}`}

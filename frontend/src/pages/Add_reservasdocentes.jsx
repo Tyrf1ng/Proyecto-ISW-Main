@@ -124,7 +124,7 @@ const AddReservasDocentes = () => {
             className="mt-2 block w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300"
           >
             <option value="">Seleccione laboratorio</option>
-            {laboratorios.map((lab) => (
+            {laboratorios?.map((lab) => (
               <option key={lab.id_lab} value={lab.id_lab}>
                 {lab.nombre}
               </option>
@@ -141,7 +141,7 @@ const AddReservasDocentes = () => {
             className="mt-2 block w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300"
           >
             <option value="">Seleccione horario</option>
-            {horarios.map((horario) => (
+            {horarios?.map((horario) => (
               <option key={horario.id_horario} value={horario.id_horario}>
                 {`${horario.hora_inicio} - ${horario.hora_fin}`}
               </option>
