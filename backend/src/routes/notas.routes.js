@@ -20,9 +20,9 @@ router
   
 router
     .get("/asignatura/:id_asignatura/alumno/:rut",authorize(["Alumno"]), getNotasAlumnoAsignaturaController)
-    .get("/asignatura/:id_asignatura",authorize(["Directivo","Docente"]), getNotasAsignaturaController)
+    .get("/asignatura/:id_asignatura",authorize([,"Docente"]), getNotasAsignaturaController)
     .get("/curso/:id_curso/asignatura/:id_asignatura",
-        authorize(["Directivo","Docente"]), getNotasPorCursoYAsignaturaController)
+        authorize(["Docente"]), getNotasPorCursoYAsignaturaController)
     .patch("/actualizar/:id_nota",authorize(["Docente"]), updateNotaController)
     .delete("/borrar/:id_nota",authorize(["Docente"]), deleteNotasController)
     .post("/crear/",authorize(["Docente"]), createNotaController);

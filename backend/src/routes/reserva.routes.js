@@ -18,11 +18,11 @@ router
     .use(authenticateJwt)
 
 router
-    .get("/", authorize(["Directivo", "Docente", "Encargado de Laboratorio"]), getReservas)
-    .get("/:id_reserva", authorize(["Directivo", "Docente", "Encargado de Laboratorio"]), getReserva)
-    .get("/usuario/:rut", authorize(["Directivo", "Docente", "Encargado de Laboratorio"]), getReservasByUsuario)
-    .patch("/update/:id_reserva", authorize(["Directivo", "Docente", "Encargado de Laboratorio"]), updateReserva)
-    .delete("/delete/:id_reserva", authorize(["Directivo", "Docente", "Encargado de Laboratorio"]), deleteReserva)
-    .post("/create", authorize(["Directivo", "Docente", "Encargado de Laboratorio"]), createReserva);
+    .get("/", authorize([ "Docente", "Encargado de Laboratorio"]), getReservas)
+    .get("/:id_reserva", authorize([ "Docente", "Encargado de Laboratorio"]), getReserva)
+    .get("/usuario/:rut", authorize([ "Docente", "Encargado de Laboratorio"]), getReservasByUsuario)
+    .patch("/update/:id_reserva", authorize([ "Docente", "Encargado de Laboratorio"]), updateReserva)
+    .delete("/delete/:id_reserva", authorize([ "Docente", "Encargado de Laboratorio"]), deleteReserva)
+    .post("/create", authorize(["Docente", "Encargado de Laboratorio"]), createReserva);
 
 export default router;

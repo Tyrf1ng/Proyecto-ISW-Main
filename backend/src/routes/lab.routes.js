@@ -16,9 +16,9 @@ router
     .use(authenticateJwt)
 
 router
-    .get("/",authorize(["Directivo","Encargado de Laboratorio","Docente"]), getLabs)         
-    .get("/:id_lab",authorize(["Directivo","Encargado de Laboratorio","Docente"]), getLab)
-    .patch("/update/:id_lab",authorize(["Directivo","Encargado de Laboratorio"]), updateLab)
-    .delete("/delete/:id_lab",authorize(["Directivo","Encargado de Laboratorio"]), deleteLab) 
-    .post("/create",authorize(["Directivo","Encargado de Laboratorio"]), createLab);
+    .get("/",authorize(["Encargado de Laboratorio","Docente"]), getLabs)         
+    .get("/:id_lab",authorize(["Encargado de Laboratorio","Docente"]), getLab)
+    .patch("/update/:id_lab",authorize(["Encargado de Laboratorio"]), updateLab)
+    .delete("/delete/:id_lab",authorize(["Encargado de Laboratorio"]), deleteLab) 
+    .post("/create",authorize(["Encargado de Laboratorio"]), createLab);
 export default router;

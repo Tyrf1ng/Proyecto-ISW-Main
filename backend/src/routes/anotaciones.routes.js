@@ -21,19 +21,19 @@ router
   .use(authenticateJwt)
 
 router
-  .get("/", authorize(["Docente", "Directivo"]), getAnotaciones) 
-  .get("/anotacion/:id_anotacion", authorize(["Docente", "Directivo"]), getAnotacion) 
-  .get("/asignatura/:id_asignatura", authorize(["Docente", "Directivo"]), getAnotacionesAsignatura) 
-  .get("/alumno/:rut", authorize(["Alumno", "Directivo", "Docente"]), getAnotacionesAlumno) 
-  .get("/curso/:id_curso", authorize(["Docente", "Directivo"]), getAnotacionesCurso) 
-  .post("/crear/", authorize(["Docente", "Directivo"]), createAnotacion) 
-  .put("/actualizar/:id_anotacion", authorize(["Docente", "Directivo"]), updateAnotacion) 
-  .delete("/borrar/:id_anotacion", authorize(["Docente", "Directivo"]), deleteAnotacion) 
+  .get("/", authorize(["Docente", ]), getAnotaciones) 
+  .get("/anotacion/:id_anotacion", authorize(["Docente"]), getAnotacion) 
+  .get("/asignatura/:id_asignatura", authorize(["Docente"]), getAnotacionesAsignatura) 
+  .get("/alumno/:rut", authorize(["Alumno", "Docente"]), getAnotacionesAlumno) 
+  .get("/curso/:id_curso", authorize(["Docente"]), getAnotacionesCurso) 
+  .post("/crear/", authorize(["Docente"]), createAnotacion) 
+  .put("/actualizar/:id_anotacion", authorize(["Docente"]), updateAnotacion) 
+  .delete("/borrar/:id_anotacion", authorize(["Docente"]), deleteAnotacion) 
   .get(
     "/curso/:id_curso/asignatura/:id_asignatura",
-    authorize(["Docente", "Directivo"]),
+    authorize(["Docente"]),
     getAnotacionesPorCursoYAsignatura
 )
-  .get("/rut/:rut/asignatura/:id_asignatura", authorize(["Docente", "Directivo", "Alumno"]), getAnotacionesPorRutYAsignatura);
+  .get("/rut/:rut/asignatura/:id_asignatura", authorize(["Docente", "Alumno"]), getAnotacionesPorRutYAsignatura);
 
 export default router;

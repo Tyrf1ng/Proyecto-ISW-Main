@@ -16,19 +16,18 @@ const router = Router();
 router
   .use(authenticateJwt);
 
-router
 router 
     // Ruta para acceder a las asistencias de un alumno en una fecha determinada
-    .get("/alumno/:rut/asignatura/:id_asignatura/fecha/:fecha", authorize(["Docente", "Alumno", "Directivo"]), getAsistenciasAlumnoFechaController)
+    .get("/alumno/:rut/asignatura/:id_asignatura/fecha/:fecha", authorize(["Docente", "Alumno"]), getAsistenciasAlumnoFechaController)
     // Ruta para crear una asistencia
-    .post("/crear", authorize(["Docente", "Directivo"]), createAsistenciaController)
+    .post("/crear", authorize(["Docente"]), createAsistenciaController)
     // Ruta para actualizar una asistencia
     .patch("/actualizar/:id_asistencia", authorize(["Docente"]), updateAsistenciaController)
     // Ruta para eliminar una asistencia
-    .delete("/borrar/:id_asistencia", authorize(["Docente", "Directivo"]), deleteAsistenciaController)
+    .delete("/borrar/:id_asistencia", authorize(["Docente"]), deleteAsistenciaController)
     // Ruta para obtener las asistencias de un curso y asignatura se utiliza para las asistencias desde la vista del profesor
-    .get("/curso/:id_curso/asignatura/:id_asignatura", authorize(["Docente", "Directivo"]), getAsistenciasPorCursoYAsignatura)
+    .get("/curso/:id_curso/asignatura/:id_asignatura", authorize(["Docente"]), getAsistenciasPorCursoYAsignatura)
     // Ruta para obtener las asistencias de un alumno por asignatura se utiliza para las asistencias desde la vista del alumno
-    .get("/rut/:rut/asignatura/:id_asignatura", authorize(["Docente", "Directivo", "Alumno"]), getAsistenciasPorRutYAsignatura);
+    .get("/rut/:rut/asignatura/:id_asignatura", authorize(["Docente", "Alumno"]), getAsistenciasPorRutYAsignatura);
 
 export default router;

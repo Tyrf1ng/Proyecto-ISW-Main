@@ -19,7 +19,6 @@ router
     .use("/asistencias", asistenciaRoutes)
     .use("/anotaciones", anotacionRoutes)
     .use("/notas", notasRoutes)
-    .use("/asistencias", asistenciaRoutes)
     .use("/labs", labRoutes)
     .use("/horarios", horariosRoutes)
     .use("/reserva", reservaRoutes)
