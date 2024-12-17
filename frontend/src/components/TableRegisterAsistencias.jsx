@@ -104,7 +104,7 @@ const TableRegisterAsistencias = ({ students, handleRegister }) => {
                           placeholder="Escribe una observación... (máx. 60 caracteres)"
                           value={student.observacion}
                           onChange={(e) => handleObservationChange(student.rut, e.target.value)}
-                          maxLength={60} // Garantizar límite en el campo
+                          maxLength={60}
                         />
                         <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                           {60 - student.observacion.length} caracteres restantes

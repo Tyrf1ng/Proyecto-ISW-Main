@@ -2,24 +2,19 @@ import React from "react";
 import useVerAsistenciasProfesor from "../hooks/Asistencias/useVerAsistenciasProfesor";
 import useTablaVistas from "../hooks/Asistencias/useTablaVistas";
 import TableComponentAsistencias from "../components/TableComponentAsistencias";
-import SuccessAlert from "../components/SuccessAlert";
-import ErrorAlert from "../components/ErrorAlert";
 
 const VerAsistencias = () => {
   const {
-    usuariosList,
-    asistencias,
+
     filterText,
     filterDate,
     cargando,
     isModalOpen,
     asistenciaSeleccionada,
     confirmDialogOpen,
-    asistenciaToDelete,
-    message,
-    messageType,
+
     charCount,
-    nombreAsignatura,
+    nombreCurso,
 
     handleFilterChange,
     handleFilterDateChange,
@@ -30,7 +25,10 @@ const VerAsistencias = () => {
     handleModalChange,
 
     filteredAsistencias,
-    renderMessage
+    renderMessage,
+
+    setIsModalOpen,
+    handleCancelDelete 
   } = useVerAsistenciasProfesor();
 
   const { formatFecha, renderEstado, renderObservacion, prettifyRut } = useTablaVistas();
@@ -46,8 +44,8 @@ const VerAsistencias = () => {
   return (
     <div className="p-4 bg-gray-10 dark:bg-gray-800 mt-7 rounded-lg">
       {renderMessage()}
-      <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-300 mb-8 text-center">
-        Asistencias para {nombreAsignatura || "la asignatura"}
+      <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-100 mb-8 text-center">
+        Asistencias para {nombreCurso || "el curso"}
       </h1>
       <div className="mb-4 flex space-x-4">
         <input
@@ -78,8 +76,14 @@ const VerAsistencias = () => {
       />
 
       {isModalOpen && asistenciaSeleccionada && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50" onClick={() => setIsModalOpen(false)}>
-          <div className="bg-white dark:bg-gray-900 p-8 rounded-lg shadow-xl max-w-sm w-full" onClick={(e) => e.stopPropagation()}>
+        <div
+          className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50"
+          onClick={() => setIsModalOpen(false)} 
+        >
+          <div
+            className="bg-white dark:bg-gray-900 p-8 rounded-lg shadow-xl max-w-sm w-full"
+            onClick={(e) => e.stopPropagation()}
+          >
             <h2 className="text-2xl font-bold mb-4 text-white">
               Editar Asistencia
             </h2>
@@ -131,10 +135,9 @@ const VerAsistencias = () => {
                   value={asistenciaSeleccionada.observacion || ""}
                   onChange={handleModalChange}
                   rows={4}
-                  maxLength={60} // Agregar restricción de 60 caracteres
+                  maxLength={60} 
                   className="mt-2 block w-full rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300 resize-none"
                 ></textarea>
-                {/* Agregar el contador de caracteres */}
                 <div className="mt-1 text-sm text-gray-500 dark:text-gray-300">
                   {60 - charCount} caracteres restantes
                 </div>
@@ -172,7 +175,7 @@ const VerAsistencias = () => {
                 Eliminar
               </button>
               <button
-                onClick={() => setConfirmDialogOpen(false)}
+                onClick={handleCancelDelete} 
                 className="px-6 py-3 bg-gray-400 text-white rounded-lg text-lg"
               >
                 Cancelar

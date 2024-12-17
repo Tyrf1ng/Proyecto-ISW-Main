@@ -1,15 +1,12 @@
-import { useState } from 'react';
 import { format as formatTempo } from "@formkit/tempo";
 import { prettifyRut } from "react-rut-formatter";
 
 const useTablaVistas = () => {
-  // Función para formatear fechas
   const formatFecha = (fechaISO) => {
     if (!fechaISO) return "Sin Fecha";
     return formatTempo(new Date(fechaISO).toISOString().split("T")[0], "DD-MM-YYYY");
   };
 
-  // Función para renderizar estado con estilos
   const renderEstado = (tipo) => {
     return (
       <div
@@ -26,7 +23,6 @@ const useTablaVistas = () => {
     );
   };
 
-  // Función para renderizar observación
   const renderObservacion = (observacion) => {
     return (
       <div className="text-gray-800 dark:text-white">
