@@ -32,9 +32,9 @@ const Login = () => {
       if (response.status === "Success") {
         const usuario = JSON.parse(sessionStorage.getItem('usuario'));
         if (usuario && usuario.rol === "Alumno") {
-          navigate("/asignaturas"); // Redirect students to the assignment selection page
+          navigate("/asignaturas");
         } else {
-          navigate("/cursos"); // Redirect other users to the courses page
+          navigate("/cursos"); 
         }
       } else if (response.status === "Client error") {
         setLoginError("Correo o contraseña incorrectos");

@@ -20,7 +20,6 @@ function Add_Notas() {
     resetAlumnos,
   } = useAlumnos();
 
-  //Variable para guardar la nueva nota
   const [newNota, setNewNota] = useState({
     tipo: '',
     valor: '',
@@ -28,19 +27,16 @@ function Add_Notas() {
     id_asignatura: asignatura?.idAsignatura || '',
   });
 
-//Seleccionar alumnos y guardar rut para nueva nota
   const handleAlumnoSelect = (alumno) => {
     setNewNota((prevNota) => ({ ...prevNota, rut: alumno.rut }));
     handleAlumnoSelectHook(alumno); 
   };
   
-//Manejar cambios en los inputs
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setNewNota({ ...newNota, [name]: value });
   };
 
-//Validar y enviar la nota y soltar alerta en cada parametro necesario
   const handleSubmit = async () => {
     if (!newNota.rut || !newNota.tipo || !newNota.valor || !newNota.id_asignatura) {
       showAlert("Debe completar todos los campos.", "warning");
@@ -56,7 +52,6 @@ function Add_Notas() {
     }
 
     try {
-      // Crear la nota por el services
       await createNota({ ...newNota, valor: valorNumerico });
       showAlert("Nota creada exitosamente.", "success");
       
@@ -78,7 +73,6 @@ function Add_Notas() {
     <div className="p-6 max-w-3xl mx-auto bg-white dark:bg-gray-900 rounded-lg shadow-md">
       <h2 className="text-2xl font-semibold text-gray-800 dark:text-white mb-6">Añadir Notas</h2>
 
-      {/* Tipo de Nota */}
       <div className="mb-4">
         <label htmlFor="tipo" className="block text-sm text-gray-500 dark:text-gray-300">Tipo de Nota</label>
         <select
@@ -96,7 +90,6 @@ function Add_Notas() {
         </select>
       </div>
 
-      {/* Búsqueda de alumno */}
       <div className="mb-4">
         <label htmlFor="alumno" className="block text-sm text-gray-500 dark:text-gray-300">Alumno</label>
         <input
@@ -122,7 +115,6 @@ function Add_Notas() {
         )}
       </div>
 
-      {/* Nota */}
       <div className="mb-4">
         <label htmlFor="valor" className="block text-sm text-gray-500 dark:text-gray-300">Nota</label>
         <input
@@ -138,7 +130,6 @@ function Add_Notas() {
         />
       </div>
 
-      {/* Manejar las alertas con su animacion*/}
       <AnimatePresence>
         {alert.type === "warning" && (
           <WarningAlert message={alert.message} key="warning" />
@@ -151,7 +142,6 @@ function Add_Notas() {
         )}
       </AnimatePresence>
 
-      {/* Botón de enviar */}
       <button
         onClick={handleSubmit}
         className="mt-6 w-full py-2 px-4 text-white bg-blue-600 dark:bg-blue-700 hover:bg-blue-700 dark:hover:bg-blue-800 focus:outline-none focus:ring focus:ring-blue-300"

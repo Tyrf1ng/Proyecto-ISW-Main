@@ -29,7 +29,7 @@ const Labs = () => {
   const handleFilterChange = (e) => setFilterText(e.target.value);
   const handleOpen = () => {
     setValidationError(null);
-    setNewLab({ nombre: '', capacidad: '' }); // Reiniciar los datos del formulario
+    setNewLab({ nombre: '', capacidad: '' });
     setOpen(true);
   };
   const handleClose = () => {

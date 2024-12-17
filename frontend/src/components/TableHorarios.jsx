@@ -25,7 +25,7 @@ const TableHorarios = ({ horarios = [], handleOpen, handleDelete }) => {
   });
 
   const formatTime = (time) => {
-    return time.slice(0, 5); // Asumiendo que el formato es "HH:MM:SS"
+    return time.slice(0, 5); 
   };
 
   return (

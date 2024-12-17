@@ -13,7 +13,6 @@ const Asignaturas = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Validar si el usuario tiene rol correcto antes de cargar las asignaturas
     if (!user ||user.rol !== "Alumno") {
       navigate("/inicio"); 
       return;
@@ -61,9 +60,9 @@ const Asignaturas = () => {
             key={asignatura.id_asignatura}
             className="w-11/12 sm:w-11/12 md:w-7/10 bg-[#111827] dark:bg-[#111827] p-6 rounded-lg shadow-lg cursor-pointer"
             onClick={() => seleccionarAsignatura(asignatura.id_asignatura,asignatura.nombre)}
-            whileHover={{ scale: 1.05 }} // Aumentar tamaño al pasar el ratón
-            whileTap={{ scale: 0.95 }}  // Reducir tamaño al hacer clic
-            transition={{ type: "spring", stiffness: 400, damping: 20 }} // Transición fluida
+            whileHover={{ scale: 1.05 }} 
+            whileTap={{ scale: 0.95 }}  
+            transition={{ type: "spring", stiffness: 400, damping: 20 }} 
           >
             <h2 className="text-xl font-semibold text-white">{asignatura.nombre}</h2>
             <p className="text-md text-gray-400 mt-2">Profesor: {asignatura.profesor || "N/A"}</p>

@@ -9,7 +9,6 @@ import WarningAlert from '../components/WarningAlert';
 import ErrorAlert from '../components/ErrorAlert';
 import { AnimatePresence } from "framer-motion";
 
-// Definir la función normalizeText
 const normalizeText = (text) => {
   return text.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 };
@@ -21,9 +20,9 @@ const Reservas = () => {
   const { horarios, fetchHorarios } = useHorarios(); 
   const [filterText, setFilterText] = useState('');
   const [selectedFilter, setSelectedFilter] = useState('option1'); 
-  const [showPreviousReservations, setShowPreviousReservations] = useState(false); // Estado para mostrar reservas anteriores
-  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1); // Estado para el mes seleccionado
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear()); // Estado para el año seleccionado
+  const [showPreviousReservations, setShowPreviousReservations] = useState(false); 
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1); 
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear()); 
   const [open, setOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
@@ -59,9 +58,9 @@ const Reservas = () => {
 
   const handleFilterChange = (e) => setFilterText(e.target.value);
   const handleFilterSelectChange = (e) => setSelectedFilter(e.target.value); 
-  const handleShowPreviousReservationsChange = (e) => setShowPreviousReservations(e.target.checked); // Maneja el cambio del checkbox
-  const handleMonthChange = (e) => setSelectedMonth(e.target.value); // Maneja el cambio del mes
-  const handleYearChange = (e) => setSelectedYear(e.target.value); // Maneja el cambio del año
+  const handleShowPreviousReservationsChange = (e) => setShowPreviousReservations(e.target.checked); 
+  const handleMonthChange = (e) => setSelectedMonth(e.target.value); 
+  const handleYearChange = (e) => setSelectedYear(e.target.value); 
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -83,7 +82,7 @@ const Reservas = () => {
 
   const handleEditClose = () => {
     setEditOpen(false);
-    setValidationError(null); // Restablece el mensaje de error
+    setValidationError(null); 
   };
 
   const handleDeleteOpen = (reserva) => {
@@ -322,7 +321,7 @@ const Reservas = () => {
             reservas={filteredReservas} 
             handleOpen={handleEditOpen}
             handleDelete={handleDeleteOpen}
-            showActions={!showPreviousReservations} // Pasar la prop showActions
+            showActions={!showPreviousReservations} 
         />
 
         <AnimatePresence>
