@@ -3,76 +3,12 @@ import {
     createAnotacionService,
     deleteAnotacionService,
     getAnotacionesPorCursoYAsignaturaService,
-    getAnotacionesAlumnoService,
     getAnotacionesPorRutYAsignaturaService,
-    getAnotacionesAsignaturaService,
-    getAnotacionesCursoService,
-    getAnotacionesService,
-    getAnotacionService,
     updateAnotacionService
 } from "../services/anotaciones.service.js";
 import { handleErrorClient, handleErrorServer, handleSuccess } from "../handlers/responseHandlers.js";
 import { anotacionCreateQueryValidation, anotacionEditQueryValidation } from "../validations/anotaciones.validation.js";
 
-export async function getAnotacion(req, res) {
-    const { id_anotacion } = req.params;
-    const [anotacion, error] = await getAnotacionService(id_anotacion);
-    if (error) {
-        return res.status(404).json({ status: "Client error", message: error });
-    }
-    return res.json(anotacion);
-}
-
-export async function getAnotaciones(req, res) {
-    try {
-        const [anotaciones, errorAnotaciones] = await getAnotacionesService();
-        if (errorAnotaciones) return handleErrorClient(res, 404, errorAnotaciones);
-        anotaciones.length === 0
-            ? handleSuccess(res, 204)
-            : handleSuccess(res, 200, "Anotaciones encontradas", anotaciones);
-    } catch (error) {
-        handleErrorServer(res, 500, error.message);
-    }
-}
-
-export async function getAnotacionesAsignatura(req, res) {
-    try {
-        const { id_asignatura } = req.params;
-        const [anotaciones, errorAnotaciones] = await getAnotacionesAsignaturaService(id_asignatura);
-        if (errorAnotaciones) return handleErrorClient(res, 404, errorAnotaciones);
-        anotaciones.length === 0
-            ? handleSuccess(res, 204)
-            : handleSuccess(res, 200, "Anotaciones encontradas", anotaciones);
-    } catch (error) {
-        handleErrorServer(res, 500, error.message);
-    }
-}
-
-export async function getAnotacionesAlumno(req, res) {
-    try {
-        const { rut } = req.params;
-        const [anotaciones, errorAnotaciones] = await getAnotacionesAlumnoService(rut);
-        if (errorAnotaciones) return handleErrorClient(res, 404, errorAnotaciones);
-        anotaciones.length === 0
-            ? handleSuccess(res, 204)
-            : handleSuccess(res, 200, "Anotaciones encontradas", anotaciones);
-    } catch (error) {
-        handleErrorServer(res, 500, error.message);
-    }
-}
-
-export async function getAnotacionesCurso(req, res) {
-    try {
-        const { id_curso } = req.params;
-        const [anotaciones, errorAnotaciones] = await getAnotacionesCursoService(id_curso);
-        if (errorAnotaciones) return handleErrorClient(res, 404, errorAnotaciones);
-        anotaciones.length === 0
-            ? handleSuccess(res, 204)
-            : handleSuccess(res, 200, "Anotaciones encontradas", anotaciones);
-    } catch (error) {
-        handleErrorServer(res, 500, error.message);
-    }
-}
 
 export async function createAnotacion(req, res) {
     try {
@@ -165,7 +101,8 @@ export async function getAnotacionesPorRutYAsignatura(req, res) {
         if (error) {
             return handleErrorClient(res, 404, error);
         }
-        handleSuccess(res, 200, anotaciones.length === 0 ? "No hay anotaciones disponibles" : "Anotaciones encontradas", anotaciones);
+        handleSuccess(res,
+             200, anotaciones.length === 0 ? "No hay anotaciones disponibles" : "Anotaciones encontradas", anotaciones);
     } catch (error) {
         console.error("Error en el controlador de obtener anotaciones por RUT y asignatura:", error);
         handleErrorServer(res, 500, "Error interno del servidor");
