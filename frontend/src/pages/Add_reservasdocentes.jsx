@@ -6,6 +6,7 @@ import WarningAlert from '../components/WarningAlert';
 import ErrorAlert from '../components/ErrorAlert';
 import { isAfter, isWithinInterval, addMonths } from 'date-fns';
 import { UsuarioContext } from '../context/UsuarioContext';
+import { AnimatePresence } from 'framer-motion';
 
 const AddReservasDocentes = () => {
   const { usuario } = useContext(UsuarioContext);
@@ -89,25 +90,19 @@ const AddReservasDocentes = () => {
       setFecha('');
     } catch (error) {
       console.error("Error al crear la reserva: ", error);
-      setLocalMessage('Error al crear la reserva.');
+      setLocalMessage(error.message || 'Hubo un error al crear la reserva');
       setLocalMessageType('error');
     }
   };
 
   const renderMessage = () => {
-    if (localMessageType === 'success') {
-      return <SuccessAlert message={localMessage} />;
-    }
-
-    if (localMessageType === 'warning') {
-      return <WarningAlert message={localMessage} />;
-    }
-
-    if (localMessageType === 'error') {
-      return <ErrorAlert message={localMessage} />;
-    }
-
-    return null;
+    return (
+      <AnimatePresence>
+        {localMessageType === 'success' && <SuccessAlert message={localMessage} key="success" />}
+        {localMessageType === 'warning' && <WarningAlert message={localMessage} key="warning" />}
+        {localMessageType === 'error' && <ErrorAlert message={localMessage} key="error" />}
+      </AnimatePresence>
+    );
   };
 
   if (cargando) return <p>Cargando...</p>;
