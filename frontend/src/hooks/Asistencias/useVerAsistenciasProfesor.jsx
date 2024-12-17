@@ -8,7 +8,7 @@ import {
   updateAsistencia,
   getAsistenciasPorCursoYAsignatura
 } from "../../services/Asistencias.service";
-import { getUsuarios } from "../../services/Usuarios.service"; 
+import { getUsuarios } from "../../services/usuarios.service"; 
 import SuccessAlert from "../../components/SuccessAlert";
 import ErrorAlert from "../../components/ErrorAlert";
 

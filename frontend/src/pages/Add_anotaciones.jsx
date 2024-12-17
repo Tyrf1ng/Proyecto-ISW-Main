@@ -117,7 +117,7 @@ function Add_anotaciones() {
             maxLength={maxDescripcionLength}
             placeholder="Escribe la descripción"
             rows="4"
-            className="mt-2 block w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300"
+            className="mt-2 block w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300 resize-none"
           />
           <small
             className={`text-sm ${
