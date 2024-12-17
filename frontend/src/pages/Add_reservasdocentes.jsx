@@ -114,7 +114,7 @@ const AddReservasDocentes = () => {
 
   return (
     <div>
-      <h1 className="text-4xl font-semibold text-center text-blue-100 mb-14 mt-4">Añadir Reserva</h1>
+      <h1 className="text-4xl font-semibold text-center text-gray-800 mb-14 mt-4">Añadir Reserva</h1>
       <div className="p-6 max-w-3xl mx-auto bg-white dark:bg-gray-900 rounded-lg shadow-md">
         <h3 className="text-xl font-semibold text-gray-800 dark:text-white mb-6">
           Reserva para {asignatura ? asignatura.nombre : 'Asignatura'} del {curso ? curso.nombre : 'Curso'}

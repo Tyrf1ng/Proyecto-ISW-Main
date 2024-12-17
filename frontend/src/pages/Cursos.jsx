@@ -58,22 +58,22 @@ const Cursos = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#1F2937] dark:bg-[#1F2937] p-4">
-      <h1 className="text-4xl text-center font-semibold text-white mb-8">
+    <div className="min-h-screen bg-white dark:bg-[#1F2937] p-4 ">
+      <h1 className="text-4xl text-center font-semibold text-black dark:text-white mb-12">
         Mis Cursos
       </h1>
       <div className="flex flex-col items-center gap-6">
         {cursos.map((curso) => (
           <motion.div
             key={curso.id_curso}
-            className="w-11/12 sm:w-11/12 md:w-7/10 bg-[#111827] dark:bg-[#111827] p-6 rounded-lg shadow-lg cursor-pointer"
+            className="w-11/12 sm:w-11/12 md:w-7/10  bg-gray-300 dark:bg-[#111827] p-6 rounded-lg shadow-lg cursor-pointer"
             onClick={() => seleccionarCurso(curso.id_curso, curso.nombre)}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             transition={{ type: "spring", stiffness: 400, damping: 20 }}
           >
-            <h2 className="text-xl font-semibold text-white">{curso.nombre}</h2>
-            <p className="text-sm text-gray-300 mt-2">
+            <h2 className="text-xl font-semibold text-black dark:text-white">{curso.nombre}</h2>
+            <p className="text-sm text-gray-700 dark:text-gray-300 mt-2">
               <span className="font-semibold">Nivel:</span> {curso.nivel}<br />
               <span className="font-semibold">Año:</span> {curso.año && curso.año.split("-")[0]}
             </p>

@@ -52,20 +52,21 @@ const Asignaturas = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#1F2937] dark:bg-[#1F2937] p-4">
-      <h1 className="text-4xl text-center font-semibold text-white mb-8">Mis Asignaturas</h1>
+    <div className="min-h-screen bg-white dark:bg-[#1F2937] p-4">
+      <h1 className="text-4xl text-center font-semibold text-black dark:text-white mb-12">
+        Mis Asignaturas</h1>
       <div className="flex flex-col items-center gap-6">
         {asignaturas.map((asignatura) => (
           <motion.div
             key={asignatura.id_asignatura}
-            className="w-11/12 sm:w-11/12 md:w-7/10 bg-[#111827] dark:bg-[#111827] p-6 rounded-lg shadow-lg cursor-pointer"
+            className="w-11/12 sm:w-11/12 md:w-7/10  bg-gray-300 dark:bg-[#111827] p-6 rounded-lg shadow-lg cursor-pointer"
             onClick={() => seleccionarAsignatura(asignatura.id_asignatura,asignatura.nombre)}
             whileHover={{ scale: 1.05 }} 
             whileTap={{ scale: 0.95 }}  
             transition={{ type: "spring", stiffness: 400, damping: 20 }} 
           >
-            <h2 className="text-xl font-semibold text-white">{asignatura.nombre}</h2>
-            <p className="text-md text-gray-400 mt-2">Profesor: {asignatura.profesor || "N/A"}</p>
+            <h2 className="text-xl font-semibold text-black dark:text-white">{asignatura.nombre}</h2>
+            <p className="text-sm text-gray-700 dark:text-gray-300 mt-2">Profesor: {asignatura.profesor || "N/A"}</p>
             <p className="text-sm text-gray-300 mt-2">
             </p>
           </motion.div>

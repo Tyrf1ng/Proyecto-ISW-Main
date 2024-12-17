@@ -34,6 +34,7 @@ const RegisterAsistencia = () => {
             value={selectedDate}
             onChange={(e) => setSelectedDate(e.target.value)}
             className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300"
+            style={{ colorScheme: "dark" }}
           />
         </div>
         <TableRegisterAsistencias
