@@ -35,9 +35,6 @@ const TableHorarios = ({ horarios = [], handleOpen, handleDelete }) => {
           <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
             <thead className="bg-gray-50 dark:bg-gray-800">
               <tr>
-                <th className="py-3.5 px-4 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                  N° Horario
-                </th>
                 <th className="px-12 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400 cursor-pointer" onClick={() => handleSort('hora_inicio')}>
                   <div className="flex items-center">
                     Hora inicio
@@ -64,20 +61,15 @@ const TableHorarios = ({ horarios = [], handleOpen, handleDelete }) => {
                     )}
                   </div>
                 </th>
-                <th className="relative py-3.5 px-4">
-                  <span className="sr-only">Acciones</span>
+                <th className="px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                  Acciones
                 </th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200 dark:divide-gray-700 dark:bg-gray-900">
               {sortedHorarios.length > 0 ? (
-                sortedHorarios.map((horario, index) => (
+                sortedHorarios.map((horario) => (
                   <tr key={horario.id_horario}>
-                    <td className="px-4 py-4 text-sm font-medium whitespace-nowrap">
-                      <div>
-                        <h2 className="font-medium text-gray-800 dark:text-white">{index + 1}</h2>
-                      </div>
-                    </td>
                     <td className="px-12 py-4 text-sm font-medium whitespace-nowrap">
                       <div className="text-gray-800 dark:text-white">{formatTime(horario.hora_inicio)}</div>
                     </td>
@@ -98,7 +90,7 @@ const TableHorarios = ({ horarios = [], handleOpen, handleDelete }) => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan="4" className="text-center py-4 text-gray-500">No hay horarios disponibles</td>
+                  <td colSpan="3" className="text-center py-4 text-gray-500">No hay horarios disponibles</td>
                 </tr>
               )}
             </tbody>

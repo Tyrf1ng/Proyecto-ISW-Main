@@ -59,12 +59,15 @@ const useLabs = () => {
       const response = await deleteLab(id_lab);
       if (response.error) {
         setError(response.error);
+        return { success: false, error: response.error };
       } else {
         setLabs(labs.filter((lab) => lab.id_lab !== id_lab));
+        return { success: true, data: response.data };
       }
     } catch (error) {
       setError(error.message);
       console.error("Error al eliminar el laboratorio: ", error);
+      return { success: false, error: { message: error.message } };
     } finally {
       setLoading(false);
     }
