@@ -144,6 +144,17 @@ export async function createAnotacionService(data) {
             return [null, "El usuario no es un alumno o no existe"];
         }
 
+        const currentDate = new Date();
+        const day = currentDate.getDay(); 
+        const hour = currentDate.getHours(); 
+
+        if (day === 0 || day === 6) {
+            return [null, "No se puede crear una anotación en sábado o domingo."];
+        }
+        if (hour < 8 || hour >= 20) {
+            return [null, "La hora para crear una anotación debe estar entre las 8 AM y las 8 PM."];
+        }
+
         const AnotacionRepository = AppDataSource.getRepository(Anotaciones);
         const newAnotacion = AnotacionRepository.create({
             descripcion,

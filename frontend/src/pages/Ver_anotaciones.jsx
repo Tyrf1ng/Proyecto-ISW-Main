@@ -29,7 +29,7 @@ const Ver_anotaciones = () => {
     tipo: 'Positiva',
     descripcion: '',
     idAsignatura: '',
-    createdAt: new Date().toISOString(),
+    createdAt: new Date().toLocaleDateString('en-CA'),
   });
   const [filterText, setFilterText] = useState('');
   const [filterDate, setFilterDate] = useState('');
@@ -64,14 +64,14 @@ const Ver_anotaciones = () => {
         tipo: anotacion.tipo,
         descripcion: anotacion.descripcion,
         idAsignatura: anotacion.idAsignatura,
-        createdAt: anotacion.createdAt,
+        createdAt: anotacion.createdAt, 
       });
     } else {
       setNewAnotacion({
         tipo: 'Positiva',
         descripcion: '',
         idAsignatura: '',
-        createdAt: new Date().toISOString(),
+        createdAt: new Date().toLocaleDateString('en-CA'),
       });
     }
 
@@ -86,7 +86,7 @@ const Ver_anotaciones = () => {
       tipo: 'Positiva',
       descripcion: '',
       idAsignatura: '',
-      createdAt: new Date().toISOString(),
+      createdAt: new Date().toLocaleDateString('en-CA'), // Formato YYYY-MM-DD
     });
   };
 
@@ -115,7 +115,7 @@ const Ver_anotaciones = () => {
   };
 
   const filterAnotaciones = (anotaciones) => {
-    const filterDateFormatted = filterDate ? new Date(filterDate).toISOString().split('T')[0] : null;
+    const filterDateFormatted = filterDate || null;
 
     return anotaciones.filter((anotacion) => {
       const anotacionDate = anotacion.createdAt ? new Date(anotacion.createdAt) : null;
@@ -125,7 +125,9 @@ const Ver_anotaciones = () => {
         return false;
       }
 
-      const anotacionDateFormatted = anotacionDate ? anotacionDate.toISOString().split('T')[0] : null;
+      const anotacionDateFormatted = anotacionDate
+        ? anotacionDate.toLocaleDateString('en-CA') // Formato YYYY-MM-DD
+        : null;
       const descriptionMatch = anotacion.descripcion.toLowerCase().includes(filterText.toLowerCase());
       const dateMatch = filterDateFormatted ? anotacionDateFormatted === filterDateFormatted : true;
 
@@ -222,7 +224,7 @@ const Ver_anotaciones = () => {
         </div>
       </div>
       {isModalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50" onClick={handleCloseModal}>
           <div
             className="p-6 rounded-lg shadow-xl w-96 bg-[#1F2937] text-black dark:bg-[#1F2937] dark:text-white"
             onClick={(e) => e.stopPropagation()}
