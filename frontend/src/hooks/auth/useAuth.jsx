@@ -1,18 +1,16 @@
 import { useState, useEffect } from 'react';
-import * as jwt_decode from 'jwt-decode'; // Importación de jwt-decode
-
+import * as jwt_decode from 'jwt-decode';
 const useAuth = () => {
-    const [user, setUser] = useState(null); // Estado para almacenar los datos del usuario
-    const [error, setError] = useState(''); // Para manejar errores globales
-    const [loading, setLoading] = useState(true); // Estado de carga
+    const [user, setUser] = useState(null); 
+    const [error, setError] = useState(''); 
+    const [loading, setLoading] = useState(true);
 
-    // Hook que se ejecuta al cargar el componente o cuando el token cambia
+    
     useEffect(() => {
-        const token = localStorage.getItem('accessToken'); // Suponiendo que guardas el token en localStorage
-
+        const token = localStorage.getItem('accessToken'); 
         if (token) {
             try {
-                const decoded = jwt_decode(token); // Decodificamos el token
+                const decoded = jwt_decode(token); 
                 setUser({
                     nombre: decoded.nombre,
                     apellido: decoded.apellido,
@@ -28,12 +26,12 @@ const useAuth = () => {
             setError('No hay token de autenticación.');
         }
 
-        setLoading(false); // Seteamos loading a false una vez que se haya realizado el chequeo
+        setLoading(false); 
     }, []);
 
-    // Función para manejar el login, guardando el token y el usuario en el estado
+   
     const login = (token) => {
-        localStorage.setItem('accessToken', token); // Guardamos el token en localStorage
+        localStorage.setItem('accessToken', token);
         const decoded = jwt_decode(token);
         setUser({
             nombre: decoded.nombre,
@@ -42,17 +40,17 @@ const useAuth = () => {
             rol: decoded.rol,
             rut: decoded.rut,
         });
-        setError(''); // Limpiar cualquier error anterior
+        setError(''); 
     };
 
     // Función para manejar el logout
     const logout = () => {
-        localStorage.removeItem('accessToken'); // Eliminamos el token del localStorage
-        setUser(null); // Limpiamos el estado del usuario
-        setError(''); // Limpiamos cualquier error
+        localStorage.removeItem('accessToken');
+        setUser(null); 
+        setError(''); 
     };
 
-    // Función para actualizar el perfil del usuario
+   
     const updateUserProfile = (updatedData) => {
         if (!user) {
             setError('No hay usuario autenticado.');
@@ -61,9 +59,9 @@ const useAuth = () => {
 
         setUser(prevUser => ({
             ...prevUser,
-            ...updatedData, // Actualizamos los datos del usuario con los nuevos valores
+            ...updatedData, 
         }));
-        setError(''); // Limpiamos cualquier error al actualizar el perfil
+        setError(''); 
     };
 
     return {
