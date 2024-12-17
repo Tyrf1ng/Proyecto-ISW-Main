@@ -18,7 +18,7 @@ const Ver_anotaciones = () => {
     alert,
     usuario,
     usuarioLoading,
-    setAlert, // Asegúrate de tener esta función en tu hook
+    setAlert,
   } = useAnotaciones();
 
   const { isModalOpen, openModal, closeModal } = useModal();
@@ -34,7 +34,7 @@ const Ver_anotaciones = () => {
   });
   const [filterText, setFilterText] = useState('');
   const [filterDate, setFilterDate] = useState('');
-  const [descripcionError, setDescripcionError] = useState(''); // Estado para manejar errores de descripción
+  const [descripcionError, setDescripcionError] = useState('');
 
   const currentYear = new Date().getFullYear();
   const minDate = `${currentYear}-03-01`;
@@ -60,7 +60,7 @@ const Ver_anotaciones = () => {
   const handleOpenModal = (anotacion = null) => {
     setIsEditMode(!!anotacion);
     setCurrentAnotacion(anotacion);
-    setDescripcionError(''); // Resetear error al abrir el modal
+    setDescripcionError('');
 
     if (anotacion) {
       setNewAnotacion({
@@ -91,11 +91,10 @@ const Ver_anotaciones = () => {
       idAsignatura: '',
       createdAt: new Date().toLocaleDateString('en-CA'),
     });
-    setDescripcionError(''); // Resetear error al cerrar el modal
+    setDescripcionError('');
   };
 
   const handleSubmit = async () => {
-    // Validación de la descripción
     if (newAnotacion.descripcion.trim().length < 5) {
       setDescripcionError('La descripción debe tener al menos 5 caracteres.');
       return;
@@ -202,6 +201,7 @@ const Ver_anotaciones = () => {
                 onChange={handleDateFilterChange}
                 min={minDate}
                 max={maxDate}
+                onKeyDown={(e) => e.preventDefault()}
                 className="w-full rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring-2 focus:ring-blue-300 focus:border-blue-500"
               />
             </div>
@@ -252,7 +252,7 @@ const Ver_anotaciones = () => {
                 id="tipo"
                 value={newAnotacion.tipo}
                 onChange={(e) => setNewAnotacion({ ...newAnotacion, tipo: e.target.value })}
-                className={`mt-2 block w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-[#111827] dark:bg-[#111827] text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300`}
+                className="mt-2 block w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-[#111827] dark:bg-[#111827] text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300"
               >
                 <option value="Positiva">Positiva</option>
                 <option value="Negativa">Negativa</option>
@@ -269,7 +269,7 @@ const Ver_anotaciones = () => {
                 onChange={(e) => setNewAnotacion({ ...newAnotacion, descripcion: e.target.value })}
                 placeholder="Ingrese la descripción"
                 rows="4"
-                maxLength={280} 
+                maxLength={280}
                 className={`mt-2 block w-full rounded-lg border ${
                   newAnotacion.descripcion.trim().length < 5 ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
                 } bg-[#111827] dark:bg-[#111827] text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300 resize-none`}
