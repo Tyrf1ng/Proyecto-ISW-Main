@@ -14,7 +14,7 @@ export function useHorarios() {
         if (data.error) {
             setError(data.error);
         } else {
-            setHorarios(data.data);
+            setHorarios(data.data || []);
         }
     };
 
@@ -48,6 +48,7 @@ export function useHorarios() {
     };
 
     const isHorarioValid = (hora_inicio, hora_fin, id_horario = null) => {
+        if (!Array.isArray(horarios)) return true;
         for (let horario of horarios) {
             if (horario.id_horario !== id_horario) {
                 if (

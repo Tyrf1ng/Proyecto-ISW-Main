@@ -28,6 +28,7 @@ const Horarios = () => {
     const handleFilterChange = (e) => setFilterText(e.target.value);
     const handleOpen = () => {
         setValidationError(null);
+        setNewHorario({ hora_inicio: '', hora_fin: '' }); // Reiniciar los valores del formulario
         setOpen(true);
     };
     const handleClose = () => {
