@@ -15,6 +15,7 @@ import {
     handleErrorServer,
     handleSuccess,
 } from "../handlers/responseHandlers.js";
+import { cursoCreateValidation } from "../validations/curso.validation.js";
 
 export async function getAlumnosPorCursoController(req, res) {
     try {
@@ -52,12 +53,34 @@ export async function getCursoController(req, res) {
 
 export async function createCursoController(req, res) {
     try {
-        const [curso, errorCurso] = await createCurso(req.body);
-        if (errorCurso) return handleErrorClient(res, 400, errorCurso);
-        handleSuccess(res, 201, "Curso creado", curso);
+        const  { nombre, nivel, año } = req.body;
+        const selectedDate = new Date(año);
+        const currentYear = new Date().getFullYear();
+        if (selectedDate.getFullYear() !== currentYear) {
+            return handleErrorClient(res, 400, "La fecha seleccionada no es del aÃ±o actual.");
+        }
+        
+        const { error } = cursoCreateValidation.validate({ nombre, nivel, año });
+        if (error) {
+            return res.status(400).json({
+                status: "Error",
+                message: "Datos inválidos en la solicitud",
+                error: error.message,
+            });
+        }
+
+        const [cursoCreado] = await createCurso(req.body);
+        if (!cursoCreado) {
+            return res.status(400).json({
+                status: "Error",
+                message: "No se pudo crear el curso",
+            });
+        }
+        handleSuccess(res, 201, "Curso creado", cursoCreado);
     } catch (error) {
         handleErrorServer(res, 500, error.message);
     }
+
 }
 
 export async function updateCursoController(req, res) {
