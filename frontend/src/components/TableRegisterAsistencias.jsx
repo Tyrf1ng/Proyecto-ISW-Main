@@ -18,7 +18,7 @@ const TableRegisterAsistencias = ({ students, handleRegister }) => {
     <div className="overflow-x-auto sm:-mx-6 lg:-mx-8">
       <div className="flex justify-between p-4 ml-3">
         <div>
-          <label className="mr-4 text-gray-800 text-xs ml-2">
+          <label className="mr-4 text-gray-800 text-xs ml-2 dark:text-white">
             <input
               type="checkbox"
               checked={allPresent}
@@ -27,7 +27,7 @@ const TableRegisterAsistencias = ({ students, handleRegister }) => {
             />
             Todos Presentes
           </label>
-          <label className="mr-4 text-gray-800 text-xs ml-2">
+          <label className="mr-4 text-gray-800 text-xs ml-2 dark:text-white">
             <input
               type="checkbox"
               checked={allAbsent}
