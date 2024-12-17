@@ -14,7 +14,6 @@ import VerNotas from '@pages/VerNotas';
 import Ver_Nota_Alumno from '@pages/Ver_Nota_Alumno';
 import Ver_Asistencias_Para_Alumno from '@pages/Ver_Asistencias_Para_Alumno';
 import Ver_Anotaciones_Para_Alumno from '@pages/Ver_Anotaciones_Para_Alumno';
-import Notas from '@pages/Notas';
 import Add_notas from '@pages/Add_notas';
 import Add_anotaciones from '@pages/Add_anotaciones';
 import Ver_anotaciones from '@pages/Ver_anotaciones';

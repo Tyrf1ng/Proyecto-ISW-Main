@@ -7,6 +7,7 @@ import SuccessAlert from '@components/SuccessAlert';
 import ErrorAlert from '@components/ErrorAlert';
 import useAlert from '../hooks/useAlerts';
 import { AnimatePresence } from "framer-motion";
+import TituloNotas from '../components/TituloNotas';
 
 
 const VerNotas = () => {
@@ -83,7 +84,9 @@ const VerNotas = () => {
 
 
   return (
-    <div className="p-4 bg-gray-50 dark:bg-gray-800">
+    <div className="p-4 bg-gray-50 dark:bg-gray-800 min-h-screen">
+      <TituloNotas />
+
       <AnimatePresence>
         {alert.type === "success" && (
           <SuccessAlert message={alert.message} key="success" />
