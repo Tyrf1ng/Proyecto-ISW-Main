@@ -142,6 +142,7 @@ export async function getNotasAlumnoAsignatura(rut, id_asignatura) {
         return [null, "Error interno del servidor"];
     }
 }
+
 //Funcion para notas de un curso y asignatura PARA PROFE
 export async function getNotasPorCursoYAsignatura(id_curso, id_asignatura) {
     try {

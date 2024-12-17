@@ -25,7 +25,6 @@ router
     .post("/crear/", authorize(["Directivo"]), createCursoController)
     .patch("/actualizar/:id_curso", authorize(["Directivo"]), updateCursoController)
     .delete("/borrar/:id_curso", authorize(["Directivo"]), deleteCursoController)
-    // Nueva ruta para crear la relación conect_usuario_curso
     .post("/conectar", authorize(["Directivo"]), createConectUsuarioCursoController);
 
 export default router;
