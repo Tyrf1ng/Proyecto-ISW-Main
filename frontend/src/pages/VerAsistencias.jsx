@@ -1,4 +1,3 @@
-import React from "react";
 import useVerAsistenciasProfesor from "../hooks/Asistencias/useVerAsistenciasProfesor";
 import useTablaVistas from "../hooks/Asistencias/useTablaVistas";
 import TableComponentAsistencias from "../components/TableComponentAsistencias";
