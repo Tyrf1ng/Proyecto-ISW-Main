@@ -40,8 +40,10 @@ export function useHorarios() {
         const data = await deleteHorario(id_horario);
         if (data.error) {
             setError(data.error);
+            return { success: false, error: data.error };
         } else {
             setHorarios(horarios.filter(h => h.id_horario !== id_horario));
+            return { success: true, data: data.data };
         }
     };
 

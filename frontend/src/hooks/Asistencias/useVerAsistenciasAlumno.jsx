@@ -7,7 +7,7 @@ import ErrorAlert from "../../components/ErrorAlert";
 
 const useVerAsistenciasAlumno = () => {
   const { usuario, cargarUsuario } = useContext(UsuarioContext);
-  const { asignatura } = useContext(AsignaturaContext); // Obtener la asignatura seleccionada
+  const { asignatura } = useContext(AsignaturaContext); 
 
   const rut = usuario ? usuario.rut : "";
 
@@ -16,13 +16,12 @@ const useVerAsistenciasAlumno = () => {
 
   const [asistencias, setAsistencias] = useState([]);
   const [filterText, setFilterText] = useState("");
-  const [filterDate, setFilterDate] = useState(""); // Nuevo estado para la fecha
+  const [filterDate, setFilterDate] = useState(""); 
   const [cargando, setCargando] = useState(false);
 
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("");
 
-  // Función para normalizar texto (elimina acentos y diacríticos)
   const normalizeText = (text) =>
     text.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
@@ -47,7 +46,6 @@ const useVerAsistenciasAlumno = () => {
     }
   };
 
-  // Cargar asistencias cuando cambie el usuario o la asignatura
   useEffect(() => {
     if (usuario) {
       if (idAsignatura) {
@@ -73,10 +71,8 @@ const useVerAsistenciasAlumno = () => {
   };
 
   const filteredAsistencias = asistencias.filter((asistencia) => {
-    // Filtrado por estado
     const matchesText = !filterText || normalizeText(asistencia.tipo).toLowerCase().includes(filterText.toLowerCase());
 
-    // Formatear fechas a 'yyyy-MM-dd' para comparación
     const createdAtDate = asistencia.createdAt ? new Date(asistencia.createdAt) : null;
     const filterDateObj = filterDate ? new Date(filterDate) : null;
   
@@ -88,7 +84,6 @@ const useVerAsistenciasAlumno = () => {
     return matchesText && matchesDate;
   });
 
-  // Limpiar mensajes después de 2 segundos
   useEffect(() => {
     if (message) {
       const timer = setTimeout(() => {
@@ -119,12 +114,8 @@ const useVerAsistenciasAlumno = () => {
     cargando,
     message,
     messageType,
-
-    // Handlers
     handleFilterChange,
     handleFilterDateChange,
-
-    // Data
     filteredAsistencias,
     renderMessage
   };

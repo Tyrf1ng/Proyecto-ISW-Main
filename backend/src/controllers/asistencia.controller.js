@@ -48,15 +48,19 @@ export async function createAsistenciaController(req, res) {
             return handleErrorClient(res, 400, "La fecha seleccionada no es del año actual.");
         }
 
-        if (new Date(selectedDate) > new Date()) {
-            setMensaje("No se puede registrar asistencia en fechas futuras.");
-            setMessageType("error");
-            return;
+        const today = new Date();
+        if (selectedDate > today) {
+            return handleErrorClient(res, 400, "No se puede registrar asistencia en una fecha futura.");
         }
 
         const dayOfWeek = selectedDate.getUTCDay();
         if (dayOfWeek === 0 || dayOfWeek === 6) {
             return handleErrorClient(res, 400, "No se puede registrar asistencia en fines de semana (sábado o domingo).");
+        }
+
+        const differenceInDays = Math.floor((today - selectedDate) / (1000 * 60 * 60 * 24));
+        if (differenceInDays > 30) {
+            return handleErrorClient(res, 400, "Máximo 30 días de diferencia con la fecha actual.");
         }
 
         const [asistenciaCreada, errorAsistencia] = await createAsistenciasService({

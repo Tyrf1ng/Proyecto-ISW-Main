@@ -9,7 +9,7 @@ import WarningAlert from '../../components/WarningAlert';
 
 const useRegisterAsistencia = () => {
   const { curso } = useContext(CursoContext);
-  const { idCurso } = curso;
+  const { idCurso, nombre: nombreCurso } = curso;
   const { asignatura } = useContext(AsignaturaContext);
   const { idAsignatura } = asignatura;
 
@@ -162,7 +162,8 @@ const useRegisterAsistencia = () => {
     setSelectedDate,
     handleRegister,
     renderMessage,
-    nombreAsignatura
+    nombreAsignatura,
+    nombreCurso
   };
 };
 

@@ -22,7 +22,7 @@ passport.use(
         user = await repository.findOne({
           where: { email: jwt_payload.email },
         });
-        if (user) break; // Sale del bucle si encuentra al usuario
+        if (user) break; 
       }
 
       if (user) {

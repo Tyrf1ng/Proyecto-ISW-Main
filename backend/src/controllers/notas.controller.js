@@ -16,6 +16,7 @@ import {
 
 import { notasCreateValidation, notasEditValidation } from "../validations/notas.validation.js";
 
+//funcion para traer todas las notas de un asignatura por alumno
  export async function getNotasAsignaturaController(req, res) { 
     try { 
         const { id_asignatura } = req.params; 
@@ -26,6 +27,9 @@ import { notasCreateValidation, notasEditValidation } from "../validations/notas
         handleErrorServer(res, 500, error.message); 
     }
 }
+
+//funcion para actualizar una nota
+//FUNCIONA NO TOCAR
 
 export const updateNotaController = async (req, res) => {
     try {
@@ -62,13 +66,15 @@ export const updateNotaController = async (req, res) => {
     }
 };
 
+//funcion para crear una nota
+//FUNCIONA NO TOCAR
 export async function createNotaController(req, res) {
     try {
         const { id_asignatura, rut, valor, tipo } = req.body;
         const { error } = notasCreateValidation.validate(req.body);
 
         if (error) {
-            return handleErrorClient(res, 400, "Datos inválidos", error.message); // Mensaje más descriptivo
+            return handleErrorClient(res, 400, "Datos inválidos", error.message); 
         }
         const [notaCreada] = await createNota({
             id_asignatura,
@@ -81,11 +87,12 @@ export async function createNotaController(req, res) {
         }
         handleSuccess(res, 201, "Nota creada exitosamente", notaCreada);
     } catch (error) {
-        // Manejar errores del servidor
         handleErrorServer(res, 500, "Error interno del servidor", error.message);
     }
 }
 
+//funcion para eliminar una nota
+//FUNCIONA NO TOCAR
 export async function deleteNotasController(req, res) {
     try {
         const { id_nota } = req.params;
@@ -100,6 +107,7 @@ export async function deleteNotasController(req, res) {
     }
 }
 
+//Funcion para notas de una asigantura para un alumno
 export async function getNotasAlumnoAsignaturaController(req, res) {
     try {
         const { rut, id_asignatura } = req.params;
@@ -133,11 +141,11 @@ export async function getNotasAlumnoAsignaturaController(req, res) {
     
 }   
 
+//Funcion para notas de un curso y asignatura PARA PROFE
 export async function getNotasPorCursoYAsignaturaController(req, res) {
     try {
         const { id_curso, id_asignatura } = req.params;
 
-        // Validar parámetros
         if (!id_curso || !id_asignatura) {
             return handleErrorClient(
                 res,
@@ -146,7 +154,6 @@ export async function getNotasPorCursoYAsignaturaController(req, res) {
             );
         }
 
-        // Llamar al servicio
         const [notas, error] = await getNotasPorCursoYAsignatura(id_curso, id_asignatura);
 
         if (error) return handleErrorClient(res, 404, error);

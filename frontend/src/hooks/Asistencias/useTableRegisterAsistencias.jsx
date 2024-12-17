@@ -67,7 +67,7 @@ const useTablaRegisterAsistencia = (students, handleRegister) => {
 
   const handleObservationChange = (rut, value) => {
     if (value.length > 60) {
-      return; // Limitar la longitud a 60 caracteres
+      return; 
     }
     setAttendance((prevAttendance) =>
       prevAttendance.map((record) => {

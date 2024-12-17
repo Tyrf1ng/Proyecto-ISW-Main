@@ -114,14 +114,17 @@ const Horarios = () => {
             return;
         }
         try {
-            await removeHorario(currentHorario.id_horario);
+            const response = await removeHorario(currentHorario.id_horario);
+            if (!response.success) {
+                throw new Error(response.error || "Hubo un error al eliminar el horario");
+            }
             setDeleteSuccess(true);
             setDeleteOpen(false);
             fetchHorarios();
             showAlert("Horario eliminado con éxito", "success");
         } catch (error) {
             console.error('Error al eliminar el horario:', error);
-            showAlert("Hubo un error al eliminar el horario", "error");
+            showAlert(error.message || "Hubo un error al eliminar el horario", "error");
             setDeleteOpen(false);
             fetchHorarios(); 
         }
@@ -134,7 +137,6 @@ const Horarios = () => {
     return (
         <div className="p-4 bg-gray-50 dark:bg-gray-800 min-h-screen">
             <h1 className="text-4xl text-center font-semibold text-blue-100 mb-4">Horarios</h1>
-            {error && <div className="text-red-500">{error}</div>}
             <div className="flex justify-between items-center mb-4">
                 <button onClick={handleOpen} className="ml-auto px-4 py-2 bg-blue-600 text-white rounded">Crear Horario</button>
             </div>
@@ -178,7 +180,10 @@ const Horarios = () => {
                             onChange={handleInputChange}
                             className="w-full p-2 mb-4 border rounded dark:bg-gray-700 dark:text-white"
                         />
-                        <button onClick={handleSubmit} className="w-full px-4 py-2 bg-blue-600 text-white rounded">Guardar</button>
+                        <div className="flex justify-between mt-4">
+                            <button onClick={handleSubmit} className="px-10 py-2 bg-blue-600 text-white rounded">Guardar</button>
+                            <button onClick={handleClose} className="px-10 py-2 bg-gray-400 text-white rounded">Cancelar</button>
+                        </div>
                     </div>
                 </div>
             )}

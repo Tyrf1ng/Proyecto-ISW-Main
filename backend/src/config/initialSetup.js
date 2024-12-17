@@ -65,14 +65,21 @@ async function createCursos() {
       cursoRepository.save(
         cursoRepository.create({
           nombre: "1ero medio A",
-          nivel: 2,
+          nivel: 1,
           año: new Date(2024, 1, 1),
         }),
       ),
       cursoRepository.save(
         cursoRepository.create({
-          nombre: "2do medio A",
-          nivel: 4,
+          nombre: "2do medio C",
+          nivel: 2,
+          año:new Date(2024, 1, 1),
+        }),
+      ),
+      cursoRepository.save(
+        cursoRepository.create({
+          nombre: "3ero medio B",
+          nivel: 3,
           año:new Date(2024, 1, 1),
         }),
       ),
@@ -95,13 +102,25 @@ async function createAsignaturas() {
       AsignaturasRepository.save(
         AsignaturasRepository.create({
           nombre: "Química",
-          rut: "20.960.538-4",
+          rut: "209605384",
         }),
       ),
       AsignaturasRepository.save(
         AsignaturasRepository.create({
           nombre: "Historia",
-          rut: "21.151.773-5",
+          rut: "211517735",
+        }),
+      ),
+      AsignaturasRepository.save(
+        AsignaturasRepository.create({
+          nombre: "Matemáticas",
+          rut: "221234567",
+        }),
+      ),
+      AsignaturasRepository.save(
+        AsignaturasRepository.create({
+          nombre: "Lenguaje",
+          rut: "201134567",
         }),
       ),
     ]);
@@ -145,6 +164,55 @@ async function createAsignaturaCurso() {
           id_asignatura: 2,
         }),
       ),
+      AsignaturaCursoRepository.save(
+        AsignaturaCursoRepository.create({
+          id_curso: 1,
+          id_asignatura: 3,
+        }),
+      ),
+      AsignaturaCursoRepository.save(
+        AsignaturaCursoRepository.create({
+          id_curso: 2,
+          id_asignatura: 3,
+        }),
+      ),
+      AsignaturaCursoRepository.save(
+        AsignaturaCursoRepository.create({
+          id_curso: 1,
+          id_asignatura: 4,
+        }),
+      ),
+      AsignaturaCursoRepository.save(
+        AsignaturaCursoRepository.create({
+          id_curso: 2,
+          id_asignatura: 4,
+        }),
+      ),
+      AsignaturaCursoRepository.save(
+        AsignaturaCursoRepository.create({
+          id_curso: 3,
+          id_asignatura: 1,
+        })
+      ),
+      AsignaturaCursoRepository.save(
+        AsignaturaCursoRepository.create({
+          id_curso: 3,
+          id_asignatura: 2,
+        })
+      ),
+      AsignaturaCursoRepository.save(
+        AsignaturaCursoRepository.create({
+          id_curso: 3,
+          id_asignatura: 3,
+        })
+      ),
+      AsignaturaCursoRepository.save(
+        AsignaturaCursoRepository.create({
+          id_curso: 3,
+          id_asignatura: 4,
+        })
+      ),
+
     ]);
     console.log("* => Anotaciones_Curso creadas exitosamente");
   } catch (error) {
@@ -163,7 +231,7 @@ async function createAnotaciones() {
       AnotacionesRepository.save(
         AnotacionesRepository.create({
           descripcion: "Alumno asume como presidente del curso con mucha responsabilidad y entrega",
-          rut: "21.070.073-0",
+          rut: "210700730",
           tipo: "Positiva",
           id_asignatura: 1,
         }),
@@ -171,7 +239,7 @@ async function createAnotaciones() {
       AnotacionesRepository.save(
         AnotacionesRepository.create({
           descripcion: "Alumno constantemente interrumpe la clase intentando convencer a sus compañeros de unirse al partido comunista",
-          rut: "21.070.073-0",
+          rut: "210700730",
           tipo: "Negativa",
           id_asignatura: 1,
         }),
@@ -182,30 +250,6 @@ async function createAnotaciones() {
     console.error("Error al crear anotaciones:", error);
   }
 }
-async function createAsistencia() {
-  try {
-    const AsistenciaRepository = AppDataSource.getRepository(Asistencia);
-
-    const count = await AsistenciaRepository.count();
-    if (count > 0) return;
-
-    await Promise.all([
-      AsistenciaRepository.save(
-        AsistenciaRepository.create({
-          fecha: "2021-09-01",
-          tipo: "Presente",
-          rut: "21.070.073-0",
-          id_asignatura: 1,
-          createdAt: new Date(),
-        }),
-      ),
-    ]);
-    console.log("* => Asistencias creadas exitosamente");
-  } catch (error) {
-    console.error("Error al crear asistencia:", error);
-  }
-}
-
 async function createNotas() {
   try {
     const NotasRepository = AppDataSource.getRepository(Notas);
@@ -218,7 +262,7 @@ async function createNotas() {
         NotasRepository.create({
           tipo: "Prueba",
           valor: 2.3,
-          rut: "21.070.073-0",
+          rut: "210700730",
           id_asignatura: 1,
         }),
       ),
@@ -272,7 +316,7 @@ async function createHorarios() {
     await Promise.all([
       horariosRepository.save(
         horariosRepository.create({
-          hora_inicio: "08:00",
+          hora_inicio: "08:10",
           hora_fin: "09:30",
         }),
       ),
@@ -306,7 +350,7 @@ async function createReserva() {
         reservaRepository.create({
           fecha:"2024-12-20",
           id_horario: 1,
-          rut: "20.960.538-4",
+          rut: "209605384",
           id_lab: 1,
           id_asignatura: 1,
           id_curso: 1,
@@ -316,7 +360,7 @@ async function createReserva() {
         reservaRepository.create({
           fecha:"2024-12-12",
           id_horario: 2,
-          rut: "20.960.538-4",
+          rut: "209605384",
           id_lab: 2,
           id_asignatura: 1,
           id_curso: 2,
@@ -326,7 +370,7 @@ async function createReserva() {
         reservaRepository.create({
           fecha:"2024-12-22",
           id_horario: 3,
-          rut: "21.151.773-5",
+          rut: "211517735",
           id_lab: 3,
           id_asignatura: 2,
           id_curso: 1,
@@ -336,7 +380,7 @@ async function createReserva() {
         reservaRepository.create({
           fecha:"2024-12-02",
           id_horario: 1,
-          rut: "21.151.773-5",
+          rut: "211517735",
           id_lab: 1,
           id_asignatura: 2,
           id_curso: 2,
@@ -359,26 +403,56 @@ async function createConectUsuarioCurso() {
     await Promise.all([
       conectUsuarioCursoRepository.save(
         conectUsuarioCursoRepository.create({
-          rut: "21.070.073-0",
+          rut: "210700730",
           id_curso: 1,
         }),
       ),
       conectUsuarioCursoRepository.save(
         conectUsuarioCursoRepository.create({
-          rut: "21.123.456-7",
+          rut: "211234567",
           id_curso: 2,
         }),
       ),
       conectUsuarioCursoRepository.save(
         conectUsuarioCursoRepository.create({
-          rut: "21.765.432-1",
+          rut: "217654321",
           id_curso: 2,
         }),
       ),
       conectUsuarioCursoRepository.save(
         conectUsuarioCursoRepository.create({
-          rut: "21.987.654-3",
+          rut: "219876543",
           id_curso: 1,
+        }),
+      ),
+      conectUsuarioCursoRepository.save(
+        conectUsuarioCursoRepository.create({
+          rut: "201234567",
+          id_curso: 3,
+        }),
+      ),
+      conectUsuarioCursoRepository.save(
+        conectUsuarioCursoRepository.create({
+          rut: "221234367",
+          id_curso: 3,
+        }),
+      ),
+      conectUsuarioCursoRepository.save(
+        conectUsuarioCursoRepository.create({
+          rut: "201034102",
+          id_curso: 1,
+        }),
+      ),
+      conectUsuarioCursoRepository.save(
+        conectUsuarioCursoRepository.create({
+          rut: "201034362",
+          id_curso: 2,
+        }),
+      ),
+      conectUsuarioCursoRepository.save(
+        conectUsuarioCursoRepository.create({
+          rut: "201034105",
+          id_curso: 3,
         }),
       ),
     ]);
@@ -400,7 +474,7 @@ async function createUsuario() {
     await Promise.all([
       usuarioRepository.save(
         usuarioRepository.create({
-          rut: "21.282.977-3",
+          rut: "212829773",
           nombre: "Benjamin",
           apellido: "Ortiz",
           email: "benjamin@gmail.cl",
@@ -413,7 +487,7 @@ async function createUsuario() {
       ),
       usuarioRepository.save(
         usuarioRepository.create({
-          rut: "20.960.538-4",
+          rut: "209605384",
           nombre: "Jonathan",
           apellido: "Olivares",
           email: "jonypirinoli@gmail.cl",
@@ -426,7 +500,7 @@ async function createUsuario() {
       ),
       usuarioRepository.save(
         usuarioRepository.create({
-          rut: "21.070.073-0",
+          rut: "210700730",
           nombre: "Joaquin",
           apellido: "Perez",
           email: "mochap@gmail.cl",
@@ -439,7 +513,7 @@ async function createUsuario() {
       ),
       usuarioRepository.save(
         usuarioRepository.create({
-          rut: "21.151.773-5",
+          rut: "211517735",
           nombre: "Alvaro",
           apellido: "Loyola",
           email: "alvaro@gmail.cl",
@@ -452,7 +526,7 @@ async function createUsuario() {
       ),
       usuarioRepository.save(
         usuarioRepository.create({
-          rut: "21.137.508-6",
+          rut: "211375086",
           nombre: "Nicolas",
           apellido: "Ibieta",
           email: "nicoflenn@gmail.cl",
@@ -465,7 +539,7 @@ async function createUsuario() {
       ),
       usuarioRepository.save(
         usuarioRepository.create({
-          rut: "21.019.643-9",
+          rut: "210196439",
           nombre: "Cristobal",
           apellido: "Betancurt",
           email: "cristox@gmail.cl",
@@ -477,7 +551,7 @@ async function createUsuario() {
         }),
         usuarioRepository.save(
           usuarioRepository.create({
-            rut: "21.123.456-7",
+            rut: "211234567",
             nombre: "Rocio",
             apellido: "Rivas",
             email: "rocio@gmail.cl",
@@ -490,7 +564,7 @@ async function createUsuario() {
         ),
         usuarioRepository.save(
           usuarioRepository.create({
-            rut: "21.765.432-1",
+            rut: "217654321",
             nombre: "Alejandro",
             apellido: "Yañez",
             email: "alejandro@gmail.cl",
@@ -504,7 +578,7 @@ async function createUsuario() {
         usuarioRepository.save(
           usuarioRepository.create({
             
-            rut: "21.987.654-3",
+            rut: "219876543",
             nombre: "Kevin",
             apellido: "Miranda",
             email: "kevin@gmail.cl",
@@ -514,6 +588,97 @@ async function createUsuario() {
             comuna: "Comuna3",
             direccion: "Direccion3",
           })
+        ),
+        usuarioRepository.save(
+          usuarioRepository.create({
+            rut: "221234567",
+            nombre: "anita",
+            apellido: "aroca",
+            email: "anita@gmail.cl",
+            telefono: 123456789,
+            password: await encryptPassword("anita123"),
+            id_roles: 2,
+            comuna: "Comuna1",
+            direccion: "Direccion1",
+          }), 
+        ),
+        usuarioRepository.save(
+          usuarioRepository.create({
+            rut: "221234367",
+            nombre: "Cristobal",
+            apellido: "Fritz",
+            email: "cristobalfritz@gmail.cl",
+            telefono: 123456789,
+            password: await encryptPassword("cristobal123"),
+            id_roles: 3,
+            comuna: "Comuna1",
+            direccion: "Direccion1",
+          }), 
+        ),
+        usuarioRepository.save(
+          usuarioRepository.create({
+            rut: "201234567",
+            nombre: "daniel",
+            apellido: "Monsalve",
+            email: "daniel@gmail.cl",
+            telefono: 123456789,
+            password: await encryptPassword("daniel123"),
+            id_roles: 3,
+            comuna: "Comuna1",
+            direccion: "Direccion1",
+          }), 
+        ),
+        usuarioRepository.save(
+          usuarioRepository.create({
+            rut: "201134567",
+            nombre: "javier",
+            apellido: "Gonsalez",
+            email: "javier@gmail.cl",
+            telefono: 123456789,
+            password: await encryptPassword("javier123"),
+            id_roles: 2,
+            comuna: "Comuna1",
+            direccion: "Direccion1",
+          }), 
+        ),
+        usuarioRepository.save(
+          usuarioRepository.create({
+            rut: "201034362",
+            nombre: "anais",
+            apellido: "saldias",
+            email: "anais@gmail.cl",
+            telefono: 123456789,
+            password: await encryptPassword("anais123"),
+            id_roles: 3,
+            comuna: "Comuna1",
+            direccion: "Direccion1",
+          }), 
+        ),
+        usuarioRepository.save(
+          usuarioRepository.create({
+            rut: "201034102",
+            nombre: "pablo",
+            apellido: "sanchez",
+            email: "pablo@gmail.cl",
+            telefono: 123456789,
+            password: await encryptPassword("pablo123"),
+            id_roles: 3,
+            comuna: "Comuna1",
+            direccion: "Direccion1",
+          }), 
+        ),
+        usuarioRepository.save(
+          usuarioRepository.create({
+            rut: "201034105",
+            nombre: "sam",
+            apellido: "fuentes",
+            email: "sam@gmail.cl",
+            telefono: 123456789,
+            password: await encryptPassword("sam123"),
+            id_roles: 3,
+            comuna: "Comuna1",
+            direccion: "Direccion1",
+          }), 
         ),
       ),
     ]);
@@ -531,7 +696,6 @@ export { createConectUsuarioCurso
   , createAsignaturas
   , createAsignaturaCurso
   , createAnotaciones
-  , createAsistencia
   , createNotas
   , createLabs
   , createHorarios

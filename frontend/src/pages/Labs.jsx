@@ -3,9 +3,12 @@ import useLabs from '../hooks/labs/useLabs';
 import TableLabs from '../components/TableLabs';
 import SuccessAlert from '../components/SuccessAlert';
 import ErrorAlert from '../components/ErrorAlert';
+import WarningAlert from '../components/WarningAlert';
+import useAlert from "../hooks/useAlerts.jsx";
+import { AnimatePresence } from "framer-motion";
 
 const Labs = () => {
-  const { labs = [], fetchLabs, addLab, editLab, removeLab, error } = useLabs();
+  const { labs = [], fetchLabs, addLab, editLab, removeLab } = useLabs();
   const [filterText, setFilterText] = useState('');
   const [open, setOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
@@ -15,12 +18,12 @@ const Labs = () => {
     capacidad: '',
   });
   const [currentLab, setCurrentLab] = useState(null);
+  const [deleteError, setDeleteError] = useState(null);
   const [editSuccess, setEditSuccess] = useState(false);
   const [deleteSuccess, setDeleteSuccess] = useState(false);
   const [createSuccess, setCreateSuccess] = useState(false);
   const [validationError, setValidationError] = useState(null);
-  const [message, setMessage] = useState('');
-  const [messageType, setMessageType] = useState('');
+  const [alert, showAlert] = useAlert();
   const [sortConfig, setSortConfig] = useState({ key: 'nombre', direction: 'asc' });
 
   const handleFilterChange = (e) => setFilterText(e.target.value);
@@ -68,12 +71,16 @@ const Labs = () => {
 
   const handleSubmit = async () => {
     const normalizedNombre = normalizeName(newLab.nombre);
+    if (!newLab.nombre || !newLab.capacidad) {
+      setValidationError('Todos los campos son obligatorios');
+      return;
+    }
     if (normalizedNombre.length < 10 || normalizedNombre.length > 40) {
       setValidationError('El nombre debe tener entre 10 y 40 caracteres');
       return;
     }
-    if (!Number.isInteger(Number(newLab.capacidad)) || newLab.capacidad <= 0 || newLab.capacidad >= 100) {
-      setValidationError('Capacidad debe ser un número entero mayor a 0 y menor a 100');
+    if (!Number.isInteger(Number(newLab.capacidad)) || newLab.capacidad <= 4 || newLab.capacidad >= 100) {
+      setValidationError('Capacidad debe ser un número entero mayor a 4 y menor a 100');
       return;
     }
     if (labs.some(lab => normalizeName(lab.nombre).toLowerCase() === normalizedNombre.toLowerCase())) {
@@ -85,8 +92,7 @@ const Labs = () => {
       handleClose();
       fetchLabs();
       setCreateSuccess(true);
-      setMessage('Laboratorio creado con éxito');
-      setMessageType('success');
+      showAlert('Laboratorio creado con éxito', 'success');
     } catch (error) {
       console.error("Error al crear el laboratorio: ", error);
       setValidationError(error.message || "Los valores ingresados no son válidos");
@@ -95,12 +101,16 @@ const Labs = () => {
 
   const handleEditSubmit = async () => {
     const normalizedNombre = normalizeName(currentLab.nombre);
+    if (!currentLab.nombre || !currentLab.capacidad) {
+      setValidationError('Todos los campos son obligatorios');
+      return;
+    }
     if (normalizedNombre.length < 10 || normalizedNombre.length > 40) {
       setValidationError('El nombre debe tener entre 10 y 40 caracteres');
       return;
     }
-    if (!Number.isInteger(Number(currentLab.capacidad)) || currentLab.capacidad <= 0 || currentLab.capacidad >= 100) {
-      setValidationError('Capacidad debe ser un número entero mayor a 0 y menor a 100');
+    if (!Number.isInteger(Number(currentLab.capacidad)) || currentLab.capacidad <= 4 || currentLab.capacidad >= 100) {
+      setValidationError('Capacidad debe ser un número entero mayor a 4 y menor a 100');
       return;
     }
     if (labs.some(lab => normalizeName(lab.nombre).toLowerCase() === normalizedNombre.toLowerCase() && lab.id_lab !== currentLab.id_lab)) {
@@ -112,8 +122,7 @@ const Labs = () => {
       handleEditClose();
       fetchLabs();
       setEditSuccess(true);
-      setMessage('Laboratorio editado con éxito');
-      setMessageType('success');
+      showAlert('Laboratorio editado con éxito', 'success');
     } catch (error) {
       console.error("Error al actualizar el laboratorio: ", error);
       setValidationError(error.message || "Los valores ingresados no son válidos");
@@ -123,18 +132,16 @@ const Labs = () => {
   const handleDelete = async () => {
     try {
       const response = await removeLab(currentLab.id_lab);
-      if (response && response.error) {
-        throw new Error(response.error);
+      if (!response.success) {
+        throw new Error(response.error || "Hubo un error al eliminar el laboratorio");
       }
       handleDeleteClose();
       fetchLabs();
       setDeleteSuccess(true);
-      setMessage('Laboratorio eliminado con éxito');
-      setMessageType('success');
+      showAlert('Laboratorio eliminado con éxito', 'success');
     } catch (error) {
       console.error("Error al eliminar el laboratorio: ", error);
-      setMessage('Hubo un error al eliminar el laboratorio');
-      setMessageType('error');
+      showAlert(error.message || 'Hubo un error al eliminar el laboratorio', 'error');
       setDeleteOpen(false);
       fetchLabs();
     }
@@ -162,32 +169,9 @@ const Labs = () => {
     return 0;
   });
 
-  useEffect(() => {
-    if (message) {
-      const timer = setTimeout(() => {
-        setMessage("");
-        setMessageType("");
-      }, 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [message]);
-
-  const renderMessage = () => {
-    if (messageType === 'success') {
-      return <SuccessAlert message={message} />;
-    }
-
-    if (messageType === 'error') {
-      return <ErrorAlert message={message} />;
-    }
-
-    return null;
-  };
-
   return (
     <div className="p-4 bg-gray-50 dark:bg-gray-800 min-h-screen">
       <h1 className="text-4xl text-center font-semibold text-blue-100 mb-4">Laboratorios</h1>
-      {error && <div className="text-red-500">{error}</div>}
       <div className="flex justify-between items-center mb-2 mt-6">
         <input
           type="text"
@@ -209,6 +193,18 @@ const Labs = () => {
         handleSort={handleSort}
         sortConfig={sortConfig}
       />
+
+      <AnimatePresence>
+        {alert.type === "warning" && (
+          <WarningAlert message={alert.message} key="warning" />
+        )}
+        {alert.type === "success" && (
+          <SuccessAlert message={alert.message} key="success" />
+        )}
+        {alert.type === "error" && (
+          <ErrorAlert message={alert.message} key="error" />
+        )}
+      </AnimatePresence>
 
       {open && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50" onClick={handleClose}>
@@ -233,7 +229,10 @@ const Labs = () => {
               className="w-full p-2 mb-4 border rounded bg-gray-50 dark:bg-gray-700 dark:text-white"
               placeholder="Capacidad"
             />
-            <button onClick={handleSubmit} className="w-full px-4 py-2 bg-blue-600 text-white rounded">Guardar</button>
+            <div className="flex justify-between mt-4">
+              <button onClick={handleSubmit} className="px-10 py-2 bg-blue-600 text-white rounded">Guardar</button>
+              <button onClick={handleClose} className="px-10 py-2 bg-gray-400 text-white rounded">Cancelar</button>
+            </div>
           </div>
         </div>
       )}
@@ -281,8 +280,6 @@ const Labs = () => {
           </div>
         </div>
       )}
-
-      {renderMessage()}
     </div>
   );
 };
