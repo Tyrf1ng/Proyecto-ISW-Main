@@ -29,6 +29,23 @@ const TableReservasDocentes = ({ reservas = [], handleOpen, handleDelete, showAc
     return 0;
   });
 
+  const isToday = (date) => {
+    const today = new Date().toISOString().split('T')[0];
+    return date.split('T')[0] === today;
+  };
+
+  const handleEditClick = (reserva) => {
+    if (!isToday(reserva.fecha)) {
+      handleOpen(reserva);
+    }
+  };
+
+  const handleDeleteClick = (reserva) => {
+    if (!isToday(reserva.fecha)) {
+      handleDelete(reserva);
+    }
+  };
+
   return (
     <div className="overflow-x-auto sm:-mx-6 lg:-mx-8">
       <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
@@ -100,11 +117,19 @@ const TableReservasDocentes = ({ reservas = [], handleOpen, handleDelete, showAc
                     {showActions && (
                       <td className="px-4 py-4 text-sm whitespace-nowrap">
                         <div className="flex space-x-2">
-                          <IconButton color="primary" onClick={() => handleOpen(reserva)}>
+                          <IconButton
+                            color="primary"
+                            onClick={() => handleEditClick(reserva)}
+                            style={{ color: isToday(reserva.fecha) ? 'gray' : '#1976D2' }}
+                          >
                             <EditIcon />
                           </IconButton>
-                          <IconButton color="primary" onClick={() => handleDelete(reserva)}>
-                            <DeleteIcon className="text-red-500" />
+                          <IconButton
+                            color="primary"
+                            onClick={() => handleDeleteClick(reserva)}
+                            style={{ color: isToday(reserva.fecha) ? 'gray' : '#EF4444' }}
+                          >
+                            <DeleteIcon />
                           </IconButton>
                         </div>
                       </td>
