@@ -1,4 +1,3 @@
-// src/components/TituloAnotaciones.jsx
 import useUsuario from '../hooks/useUsuario';
 import useCursoAsig from '../hooks/UseCursoAsig';
 
