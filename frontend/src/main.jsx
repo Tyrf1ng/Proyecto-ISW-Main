@@ -7,7 +7,6 @@ import Inicio from '@pages/Inicio';
 import Cursos from '@pages/Cursos';
 import Login from '@pages/Login';
 import Error404 from '@pages/Error404';
-import Anotaciones from '@pages/Anotaciones';
 import Labs from '@pages/Labs';
 import Horarios from '@pages/Horarios';
 import Ver_usuarios from '@pages/Ver_usuarios';

@@ -1,3 +1,4 @@
+// src/pages/Ver_anotaciones.jsx
 import { useState } from 'react';
 import useAnotaciones from '../hooks/anotaciones/useAnotaciones';
 import useModal from '../hooks/anotaciones/useModal';
@@ -7,6 +8,7 @@ import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 import SuccessAlert from '../components/SuccessAlert';
 import ErrorAlert from '../components/ErrorAlert';
 import WarningAlert from '../components/WarningAlert';
+import TituloAnotaciones from '../components/TituloAnotaciones';
 
 const Ver_anotaciones = () => {
   const {
@@ -177,12 +179,17 @@ const Ver_anotaciones = () => {
   }
 
   return (
-    <div className="p-4 bg-gray-50 dark:bg-gray-800">
+    <div className="p-4 bg-gray-50 dark:bg-gray-800 min-h-screen">
+      {/* Título Dinámico Independiente */}
+      <TituloAnotaciones />
+
+      {/* Alertas */}
       {alert.message && alert.type === 'success' && <SuccessAlert message={alert.message} />}
       {alert.message && alert.type === 'error' && <ErrorAlert message={alert.message} />}
       {alert.message && alert.type === 'warning' && <WarningAlert message={alert.message} />}
 
       <div className="flex flex-wrap gap-6">
+        {/* Tabla de Anotaciones */}
         <div className="flex-1 min-w-0 bg-white dark:bg-gray-900 p-6 rounded-xl shadow-lg mb-6">
           <div className="flex mb-4 justify-between">
             <div className="w-1/2">
@@ -213,6 +220,8 @@ const Ver_anotaciones = () => {
             role={usuario?.rol}
           />
         </div>
+
+        {/* Gráfico de Anotaciones Totales */}
         <div className="w-full md:w-1/5 bg-white dark:bg-gray-900 p-6 rounded-xl shadow-lg mb-6">
           <h2 className="text-2xl font-semibold text-gray-800 dark:text-white mb-4">Anotaciones totales</h2>
           <div className="flex flex-row items-center text-gray-600 mb-4">
@@ -236,13 +245,20 @@ const Ver_anotaciones = () => {
           </ResponsiveContainer>
         </div>
       </div>
+
+      {/* Modal para Añadir/Editar Anotaciones */}
       {isModalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50" onClick={handleCloseModal}>
+        <div
+          className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50"
+          onClick={handleCloseModal}
+        >
           <div
             className="p-6 rounded-lg shadow-xl w-96 bg-[#1F2937] text-black dark:bg-[#1F2937] dark:text-white"
             onClick={(e) => e.stopPropagation()}
           >
-            <h2 className="text-2xl font-bold mb-4">{isEditMode ? 'Editar Anotación' : 'Nueva Anotación'}</h2>
+            <h2 className="text-2xl font-bold mb-4">
+              {isEditMode ? 'Editar Anotación' : 'Nueva Anotación'}
+            </h2>
             <div className="mb-4">
               <label htmlFor="tipo" className="block text-sm text-gray-500 dark:text-gray-300">
                 Tipo de Anotación
@@ -309,6 +325,8 @@ const Ver_anotaciones = () => {
           </div>
         </div>
       )}
+
+      {/* Confirmar Eliminación */}
       {isConfirmOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="p-8 rounded-lg shadow-xl bg-white text-black dark:bg-[#111827] dark:text-white w-96">

@@ -27,7 +27,37 @@ const useAnotacionForm = (selectedAlumno, resetAlumnos, showAlert) => {
     setNewAnotacion({ ...newAnotacion, tipo: e.target.value });
   };
 
-  const handleSubmit = async () => {
+  const isWithinAllowedHours = () => {
+    const currentDate = new Date();
+    const day = currentDate.getDay();
+    const hour = currentDate.getHours();
+
+    if (day === 0 || day === 6) {
+      showAlert(
+        "No se puede crear una anotación en sábado o domingo.",
+        "warning"
+      );
+      return false;
+    }
+
+    if (hour < 8 || hour >= 18) {
+      showAlert(
+        "La hora para crear una anotación debe estar entre las 8 AM y las 6 PM.",
+        "warning"
+      );
+      return false;
+    }
+
+    return true;
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!isWithinAllowedHours()) {
+      return;
+    }
+
     if (!newAnotacion.rut) {
       showAlert("Debe seleccionar un alumno.", "warning");
       return;
