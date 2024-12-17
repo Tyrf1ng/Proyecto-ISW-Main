@@ -115,12 +115,16 @@ const useReservas = () => {
       const data = await updateReserva(id_reserva, reserva);
       if (data.error) {
         setError(data.error);
+        throw new Error(data.error);
       } else {
-        setReservas(reservas.map((r) => (r.id_reserva === id_reserva ? data : r)));
+        setReservas((prevReservas) =>
+          prevReservas.map((r) => (r.id_reserva === id_reserva ? data : r))
+        );
       }
     } catch (error) {
       setError(error.message);
       console.error("Error al actualizar la reserva: ", error);
+      throw error;
     } finally {
       setLoading(false);
     }

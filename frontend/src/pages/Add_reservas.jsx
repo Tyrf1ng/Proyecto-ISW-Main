@@ -20,12 +20,26 @@ function Add_Reserva() {
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState('');
 
-  const handleInputChange = (e) => {
+  const handleInputChange = async (e) => {
     const { name, value } = e.target;
     setNewReserva({ ...newReserva, [name]: value });
     setMessage('');
     setMessageType('');
+
+    if (name === 'rut') {
+      await cargarAsignaturas(value);
+      await cargarCursos(value);
+    }
   };
+
+  useEffect(() => {
+    if (asignaturas.length === 1) {
+      setNewReserva((prevState) => ({
+        ...prevState,
+        id_asignatura: asignaturas[0].id_asignatura,
+      }));
+    }
+  }, [asignaturas]);
 
   const handleSubmit = async () => {
     const today = new Date();
@@ -80,7 +94,7 @@ function Add_Reserva() {
       }, 3000); 
     } catch (error) {
       console.error('Error al crear la reserva:', error);
-      setMessage('Hubo un error al crear la reserva');
+      setMessage(error.message || 'Hubo un error al crear la reserva');
       setMessageType('error');
     }
   };
@@ -132,7 +146,7 @@ function Add_Reserva() {
             <option value="">Seleccione docente</option>
             {rutsDocentes.map((docente) => (
               <option key={docente.rut} value={docente.rut}>
-                {`${docente.nombre} ${docente.apellido} (${docente.rut})`}
+                {`${docente.nombre} ${docente.apellido}`}
               </option>
             ))}
           </select>
@@ -146,6 +160,7 @@ function Add_Reserva() {
             value={newReserva.id_asignatura}
             onChange={handleInputChange}
             className="mt-2 block w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300"
+            disabled={asignaturas.length === 1}
           >
             <option value="">Seleccione asignatura</option>
             {asignaturas.map((asignatura) => (
@@ -202,11 +217,13 @@ function Add_Reserva() {
             className="mt-2 block w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300"
           >
             <option value="">Seleccione horario</option>
-            {horarios.map((horario) => (
-              <option key={horario.id_horario} value={horario.id_horario}>
-                {`${horario.hora_inicio} - ${horario.hora_fin}`}
-              </option>
-            ))}
+            {horarios
+              .sort((a, b) => a.hora_inicio.localeCompare(b.hora_inicio))
+              .map((horario) => (
+                <option key={horario.id_horario} value={horario.id_horario}>
+                  {`${horario.hora_inicio} - ${horario.hora_fin}`}
+                </option>
+              ))}
           </select>
         </div>
 
