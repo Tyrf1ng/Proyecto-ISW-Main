@@ -61,7 +61,8 @@ const VerAsistencias = () => {
           onChange={handleFilterDateChange}
           onKeyDown={(e) => e.preventDefault()}
           className="rounded-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300"
-        />
+          style={{colorScheme: "dark" }}
+          />
       </div>
 
       <TableComponentAsistencias
