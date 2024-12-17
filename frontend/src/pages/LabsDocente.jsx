@@ -43,7 +43,7 @@ const LabsDocente = () => {
 
   return (
     <div className="p-4 bg-gray-50 dark:bg-gray-800 min-h-screen">
-      <h1 className="text-4xl text-center font-semibold text-blue-100 mb-4">Laboratorios</h1>
+      <h1 className="text-4xl text-center font-semibold mb-4 text-gray-800 dark:text-white">Laboratorios</h1>
       <div className="flex justify-between items-center mb-4">
         <input
           type="text"

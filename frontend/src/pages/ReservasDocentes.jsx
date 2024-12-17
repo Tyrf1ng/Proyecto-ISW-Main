@@ -180,7 +180,7 @@ const ReservasDocentes = () => {
 
   return (
     <div className="p-4 bg-gray-50 dark:bg-gray-800 min-h-screen">
-      <h1 className="text-4xl text-center font-semibold text-blue-100 mb-14">Mis Reservas</h1>
+      <h1 className="text-4xl text-center font-semibold mb-10 text-gray-800 dark:text-white">Mis Reservas</h1>
       <div className="flex items-center mb-1">
         {selectedFilter === 'option2' && (
           <input
