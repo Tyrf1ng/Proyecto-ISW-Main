@@ -7,6 +7,7 @@ import ErrorAlert from '../components/ErrorAlert';
 import WarningAlert from '../components/WarningAlert';
 import useAlert from "../hooks/useAlerts.jsx";
 import { AnimatePresence } from "framer-motion";
+import TituloNotas from "../components/TituloNotas.jsx";
 
 function Add_Notas() {
   const [alert, showAlert] = useAlert();
@@ -70,84 +71,105 @@ function Add_Notas() {
   };
 
   return (
-    <div className="p-6 max-w-3xl mx-auto bg-white dark:bg-gray-900 rounded-lg shadow-md">
-      <h2 className="text-2xl font-semibold text-gray-800 dark:text-white mb-6">Añadir Notas</h2>
-
-      <div className="mb-4">
-        <label htmlFor="tipo" className="block text-sm text-gray-500 dark:text-gray-300">Tipo de Nota</label>
-        <select
-          name="tipo"
-          id="tipo"
-          value={newNota.tipo}
-          onChange={handleInputChange}
-          className="mt-2 block w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300"
-        >
-          <option value="" disabled={newNota.tipo !== ""}>Seleccione tipo</option>
-          <option value="Prueba">Prueba</option>
-          <option value="Tarea">Tarea</option>
-          <option value="Test">Test</option>
-          <option value="Presentacion">Presentación</option>
-        </select>
+    <div className="dark:bg-gray-800 min-h-screen p-4">
+      <TituloNotas />
+  
+      <div className="flex justify-center">
+        <div className="w-full max-w-2xl bg-white dark:bg-gray-900 p-8 rounded-xl shadow-lg">
+          <h2 className="text-2xl font-semibold text-center text-gray-800 dark:text-white mb-6">
+            Añadir Nota
+          </h2>
+  
+          {/* Selección de Tipo de Nota */}
+          <div className="mb-4">
+            <label htmlFor="tipo" className="block text-sm text-gray-500 dark:text-gray-300">
+              Tipo de Nota
+            </label>
+            <select
+              name="tipo"
+              id="tipo"
+              value={newNota.tipo}
+              onChange={handleInputChange}
+              className="mt-2 block w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300"
+            >
+              <option value="" disabled={newNota.tipo !== ""}>
+                Seleccione tipo
+              </option>
+              <option value="Prueba">Prueba</option>
+              <option value="Tarea">Tarea</option>
+              <option value="Test">Test</option>
+              <option value="Presentacion">Presentación</option>
+            </select>
+          </div>
+  
+          {/* Campo de búsqueda de alumno */}
+          <div className="mb-4">
+            <label htmlFor="alumno" className="block text-sm text-gray-500 dark:text-gray-300">
+              Alumno
+            </label>
+            <input
+              type="text"
+              name="alumno"
+              value={searchTerm}
+              onChange={handleSearchChange}
+              placeholder="Buscar alumno"
+              className="mt-2 block w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300"
+            />
+            {isListVisible && (
+              <ul className="list-none border border-gray-300 dark:border-gray-600 rounded-md mt-2 bg-white dark:bg-gray-900 shadow-lg max-h-40 overflow-auto">
+                {filteredAlumnos.map((alumno) => (
+                  <li
+                    key={alumno.rut}
+                    className="px-4 py-2 cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-700 text-gray-800 dark:text-white"
+                    onClick={() => handleAlumnoSelect(alumno)}
+                  >
+                    {alumno.nombre} {alumno.apellido}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+  
+          {/* Campo de ingreso de valor de la nota */}
+          <div className="mb-4">
+            <label htmlFor="valor" className="block text-sm text-gray-500 dark:text-gray-300">
+              Nota
+            </label>
+            <input
+              type="number"
+              name="valor"
+              value={newNota.valor}
+              onChange={handleInputChange}
+              placeholder="Ingrese la nota"
+              className="mt-2 block w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300"
+              max="7.0"
+              min="2.0"
+              step="0.1"
+            />
+          </div>
+  
+          {/* Alertas */}
+          <AnimatePresence>
+            {alert.type === "warning" && (
+              <WarningAlert message={alert.message} key="warning" />
+            )}
+            {alert.type === "success" && (
+              <SuccessAlert message={alert.message} key="success" />
+            )}
+            {alert.type === "error" && (
+              <ErrorAlert message={alert.message} key="error" />
+            )}
+          </AnimatePresence>
+  
+          {/* Botón de Crear Nota */}
+          <button
+            onClick={handleSubmit}
+            className="mt-6 w-full py-2 px-4 text-white bg-blue-600 dark:bg-blue-700 hover:bg-blue-700 dark:hover:bg-blue-800 focus:outline-none focus:ring focus:ring-blue-300"
+          >
+            Crear Nota
+          </button>
+        </div>
       </div>
-
-      <div className="mb-4">
-        <label htmlFor="alumno" className="block text-sm text-gray-500 dark:text-gray-300">Alumno</label>
-        <input
-          type="text"
-          name="alumno"
-          value={searchTerm}
-          onChange={handleSearchChange}
-          placeholder="Buscar alumno"
-          className="mt-2 block w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300"
-        />
-        {isListVisible && (
-          <ul className="list-none border border-gray-300 dark:border-gray-600 rounded-md mt-2 bg-white dark:bg-gray-900 shadow-lg max-h-40 overflow-auto">
-            {filteredAlumnos.map((alumno) => (
-              <li
-                key={alumno.rut}
-                className="px-4 py-2 cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-700 text-gray-800 dark:text-white"
-                onClick={() => handleAlumnoSelect(alumno)}
-              >
-                {alumno.nombre} {alumno.apellido}
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
-
-      <div className="mb-4">
-        <label htmlFor="valor" className="block text-sm text-gray-500 dark:text-gray-300">Nota</label>
-        <input
-          type="number"
-          name="valor"
-          value={newNota.valor}
-          onChange={handleInputChange}
-          placeholder="Ingrese la nota"
-          className="mt-2 block w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300"
-          max="7.0"
-          min="2.0"
-          step="0.1"
-        />
-      </div>
-
-      <AnimatePresence>
-        {alert.type === "warning" && (
-          <WarningAlert message={alert.message} key="warning" />
-        )}
-        {alert.type === "success" && (
-          <SuccessAlert message={alert.message} key="success" />
-        )}
-        {alert.type === "error" && (
-          <ErrorAlert message={alert.message} key="error" />
-        )}
-      </AnimatePresence>
-
-      <button
-        onClick={handleSubmit}
-        className="mt-6 w-full py-2 px-4 text-white bg-blue-600 dark:bg-blue-700 hover:bg-blue-700 dark:hover:bg-blue-800 focus:outline-none focus:ring focus:ring-blue-300"
-      >
-        Crear Nota
-      </button>
     </div>
   );
 }
