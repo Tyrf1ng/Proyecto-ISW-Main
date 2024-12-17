@@ -100,7 +100,7 @@ const useReservas = () => {
       const nombreLab = laboratorios.find(lab => lab.id_lab === reserva.id_lab)?.nombre || reserva.id_lab;
       const reservaConNombre = { 
         ...reserva, 
-        nombreCurso: nombreCurso ? nombreCurso.nombre : reserva.id_curso, // Asegúrate de que nombreCurso.nombre esté asignado correctamente
+        nombreCurso: nombreCurso ? nombreCurso.nombre : reserva.id_curso, 
         nombre_asignatura: nombreAsignatura,
         nombre_lab: nombreLab
       };

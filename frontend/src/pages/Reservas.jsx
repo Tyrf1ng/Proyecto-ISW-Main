@@ -140,7 +140,7 @@ const Reservas = () => {
       setLocalMessage('Reserva actualizada exitosamente');
       setLocalMessageType('success');
       setEditOpen(false);
-      fetchReservas(); // Asegúrate de volver a cargar las reservas después de editar
+      fetchReservas(); 
     } catch (error) {
       console.error('Error al actualizar la reserva:', error);
       setLocalMessage(error.message || 'Hubo un error al actualizar la reserva');
@@ -154,7 +154,7 @@ const Reservas = () => {
       setLocalMessage('Reserva eliminada exitosamente');
       setLocalMessageType('success');
       setDeleteOpen(false);
-      fetchReservas(); // Asegúrate de volver a cargar las reservas después de eliminar
+      fetchReservas(); 
     } catch (error) {
       console.error('Error al eliminar la reserva:', error);
       setLocalMessage(error.message || 'Hubo un error al eliminar la reserva');

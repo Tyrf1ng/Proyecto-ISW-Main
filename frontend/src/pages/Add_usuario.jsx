@@ -92,13 +92,13 @@ function Add_alumno() {
     }
 
     try {
-      // Normaliza el RUT y encripta la contraseña
+
       const cleanRut = removeSeparators(rut.raw);
       const encryptedPassword = await encryptPassword(newAlumno.password);
 
       const alumnoConDatosProcesados = {
         ...newAlumno,
-        rut: cleanRut, // RUT sin separadores
+        rut: cleanRut, 
         password: encryptedPassword,
       };
 
@@ -111,7 +111,7 @@ function Add_alumno() {
         setAlert({ message: 'Alumno creado, pero hubo un error al conectarlo al curso.', type: 'warning' });
       }
 
-      // Resetea los campos del formulario
+
       setNewAlumno({
         nombre: '',
         apellido: '',
@@ -213,9 +213,9 @@ function Add_alumno() {
               type='text'
               name='rut'
               placeholder='12345678-9'
-              value={rut.formatted} // Presentación
+              value={rut.formatted} 
               onChange={(e) => {
-                updateRut(e.target.value); // Actualización visual
+                updateRut(e.target.value);
               }}
               className={inputClass}
             />

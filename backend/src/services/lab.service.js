@@ -1,7 +1,7 @@
-import { AppDataSource } from "../config/configDb.js"; // Asegúrate de que la ruta sea correcta
-import Labs from "../entity/lab.entity.js"; // Asegúrate de que la ruta sea correcta
+import { AppDataSource } from "../config/configDb.js"; 
+import Labs from "../entity/lab.entity.js"; 
 
-//Funciona NO TOCAR
+
 export async function getLabsService() {
     try {
         const labRepository = AppDataSource.getRepository(Labs);
@@ -15,7 +15,7 @@ export async function getLabsService() {
     }
 }
 
-//Funciona NO TOCAR
+
 export async function getLabService(id) {
     try {
         const labRepository = AppDataSource.getRepository(Labs);
@@ -31,7 +31,7 @@ export async function getLabService(id) {
     }
 }
 
-//Funciona NO TOCAR
+
 export async function createLabService(data) {
     try {
         const labRepository = AppDataSource.getRepository(Labs);
@@ -48,7 +48,6 @@ export async function createLabService(data) {
     }
 }
 
-//Funciona NO TOCAR
 export async function updateLabService(id_lab, data) {
     try {
         const labRepository = AppDataSource.getRepository(Labs);
@@ -67,7 +66,6 @@ export async function updateLabService(id_lab, data) {
     }
 }
 
-//Funciona NO TOCAR
 export async function deleteLabService(id_lab) {
     try {
         const labRepository = AppDataSource.getRepository(Labs);
