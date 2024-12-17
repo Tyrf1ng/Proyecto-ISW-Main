@@ -20,9 +20,9 @@ export async function createUsuario(data) {
   }
 }
 
-export async function updateUsuario(id, data) {
+export async function updateUsuario(rut, data) {
   try {
-    const response = await axios.put(`/usuarios/actualizar/${id}`, data);
+    const response = await axios.patch(`/usuarios/actualizar/${rut}`, data);
     return response.data;
   } catch (error) {
     console.error('Error al actualizar usuario:', error);

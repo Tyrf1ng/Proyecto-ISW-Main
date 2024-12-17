@@ -24,9 +24,8 @@ import Reservas from '@pages/Reservas';
 import Add_usuario from '@pages/Add_usuario';
 import Asignaturas from '@pages/Asignaturas';
 import Add_Reserva from '@pages/Add_reservas';
-import ReservasDocentes from '@pages/ReservasDocentes'; // Importar ReservasDocentes
+import ReservasDocentes from '@pages/ReservasDocentes';
 
-import Profile from './pages/Profile';
 import LabsDocente from './pages/LabsDocente';
 import RegisterAsistencia from './pages/RegisterAsistencias';
 import Add_docente from './pages/Add_docente';
@@ -42,7 +41,6 @@ const router = createBrowserRouter([
     children: [
       { path: 'inicio', element: <Inicio /> },
       { path: 'cursos', element: <Cursos /> },
-      { path: 'perfil', element: <Profile /> },
       { path: 'asignaturas', element: <Asignaturas /> },
       {
         path: 'asistencias',

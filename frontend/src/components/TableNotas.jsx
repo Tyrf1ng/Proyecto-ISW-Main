@@ -3,13 +3,14 @@ import { IconButton } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { getUsuarioByRut } from '@services/usuarios.service';
-import { prettifyRut } from "react-rut-formatter"; // Formatear RUT
+import { prettifyRut } from "react-rut-formatter"; // Formatear RUT cuando llegan en formato distinto
 
 const TableComponent = ({ notas, onEdit, onDelete, role }) => {
   const [sortOrder, setSortOrder] = useState('asc');
   const [usuarios, setUsuarios] = useState({});
   const [sortedNotas, setSortedNotas] = useState(notas);
 
+//Ordenar notas por nombre
   const sortNotasByNombre = () => {
     const sorted = [...sortedNotas].sort((a, b) => {
       const nombreA = usuarios[a.rut]?.nombre || '';
@@ -23,6 +24,7 @@ const TableComponent = ({ notas, onEdit, onDelete, role }) => {
     setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
   };
 
+//Ordenar notas por tipo
   const sortNotasByTipo = () => {
     const sorted = [...sortedNotas].sort((a, b) => {
       if (a.tipo > b.tipo) return sortOrder === 'asc' ? 1 : -1;
@@ -34,6 +36,7 @@ const TableComponent = ({ notas, onEdit, onDelete, role }) => {
     setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
   };
 
+//Cargar usuarios por rut
   useEffect(() => {
     const fetchUsuarios = async () => {
       const usuariosByRut = {};
@@ -63,6 +66,7 @@ const TableComponent = ({ notas, onEdit, onDelete, role }) => {
         <div className="overflow-hidden border border-gray-200 dark:border-gray-700 md:rounded-lg">
           <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
             <thead className="bg-gray-50 dark:bg-gray-800">
+                     {/* Para el resto (Alumno) */}
               <tr>
                 <th
                   className="p-4 text-left text-sm font-normal text-gray-500 dark:text-gray-400 cursor-pointer"
@@ -71,7 +75,8 @@ const TableComponent = ({ notas, onEdit, onDelete, role }) => {
                   Tipo {sortOrder === 'asc' ? '↑' : '↓'}
                 </th>
                 <th className="p-4 text-left text-sm font-normal text-gray-500 dark:text-gray-400">Valor</th>
-
+                
+                {/* Solo para docentes */}
                 {role === 'Docente' && (
                   <>
                     <th
@@ -106,7 +111,7 @@ const TableComponent = ({ notas, onEdit, onDelete, role }) => {
                         {nota.valor}
                       </div>
                     </td>
-
+                    {/* Solo para docentes mostrar nombre y apellido con botones */}
                     {role === 'Docente' && (
                       <>
                         <td className="p-4 text-sm whitespace-nowrap">

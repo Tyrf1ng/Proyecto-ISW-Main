@@ -5,7 +5,8 @@ import TableComponent from '../components/TableNotas';
 import useUsuario from '@hooks/useUsuario';
 import SuccessAlert from '@components/SuccessAlert';
 import ErrorAlert from '@components/ErrorAlert';
-import useAlert from '@hooks/useAlerts';
+import useAlert from '../hooks/useAlerts';
+import { AnimatePresence } from "framer-motion";
 
 
 const VerNotas = () => {
@@ -17,34 +18,38 @@ const VerNotas = () => {
   const [notaToDelete, setNotaToDelete] = useState(null);
   const [notaToEdit, setNotaToEdit] = useState(null);
 
+//Funcion De filtrado MAX 30 caracteres y solo letras
   const handleFilterChange = (e) => {
     const inputText = e.target.value;
-    if (/[^a-zA-Z\s]/.test(inputText) || inputText.length > 30) {
+    if (/[^a-zA-ZñÑ\s]/.test(inputText) || inputText.length > 30) {
       return;
     }
     setFilterText(inputText);
   };
 
+  //Funcion de eliminar nota
   const handleDelete = (id) => {
     setNotaToDelete(id);
     setConfirmDialogOpen(true);
   };
 
+//Funcion de confirmar eliminacion y mostrar alertas
   const handleConfirmDelete = async () => {
     try {
       if (notaToDelete) {
         await deleteNota(notaToDelete);
-        showAlert('success', 'Nota borrada correctamente');
+        showAlert( "Nota borrada correctamente","success");
         fetchNotas();
       }
     } catch (error) {
       console.error('Error al eliminar la nota:', error);
-      showAlert('error', 'Error al eliminar la nota');
+      showAlert("Error al eliminar la nota","error");
     } finally {
       setConfirmDialogOpen(false);
     }
   };
 
+//Funcion de editar nota
   const handleEdit = (nota) => {
     setNotaToEdit({
       id_nota: nota.id_nota,
@@ -53,35 +58,49 @@ const VerNotas = () => {
     });
   };
 
+  //Funcion de actualizar nota
   const handleUpdate = async (e) => {
     e.preventDefault();
     try {
       const { id_nota, valor, tipo } = notaToEdit;
       if (!id_nota || valor < 2.0 || valor > 7.0) {
-        showAlert('error', 'El valor de la nota debe estar entre 2.0 y 7.0.');
+        showAlert( "El valor de la nota debe estar entre 2.0 y 7.0.","error",);
         return;
       }
       await updateNota(id_nota, { valor, tipo });
-      showAlert('success', 'Nota actualizada correctamente');
+      showAlert( "Nota actualizada correctamente","success");
       fetchNotas();
       setNotaToEdit(null);
     } catch (error) {
       console.error('Error al actualizar la nota:', error);
-      showAlert('error', 'Hubo un problema al actualizar la nota.');
+      showAlert( "Hubo un problema al actualizar la nota.","error");
     }
   };
 
-  const normalizeText = (text) =>
+  //Funcion de normalizar texto para busqueda de Alumnos por nombre o apellido
+    const normalizeText = (text) =>
     text.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase();
 
-  const filteredNotas = notas.filter((nota) => {
+    const filteredNotas = notas.filter((nota) => {
     const usuario = nota.usuario || { nombre: '', apellido: '' };
     const sanitizedFilterText = normalizeText(filterText);
     return normalizeText(`${usuario.nombre} ${usuario.apellido}`).includes(sanitizedFilterText);
   });
 
+
   return (
     <div className="p-4 bg-gray-50 dark:bg-gray-800">
+      {/* Animaciones de alerta fuera de los modales */}
+      <AnimatePresence>
+        {alert.type === "success" && (
+          <SuccessAlert message={alert.message} key="success" />
+        )}
+        {alert.type === "error" && (
+          <ErrorAlert message={alert.message} key="error" />
+        )}
+      </AnimatePresence>
+  
+      {/* Barra de búsqueda */}
       <input
         type="text"
         value={filterText}
@@ -89,19 +108,25 @@ const VerNotas = () => {
         placeholder="Filtrar por nombre o apellido del alumno"
         className="w-96 p-2 mb-4 border rounded dark:text-gray-300 dark:bg-gray-900"
       />
-
-      {alert.type === 'success' && <SuccessAlert message={alert.message} />}
-      {alert.type === 'error' && <ErrorAlert message={alert.message} />}
-
+  
+      {/* Validación de usuario y mostrar tabla */}
       <TableComponent
         notas={filteredNotas}
         onEdit={handleEdit}
         onDelete={handleDelete}
         role={usuario?.rol}
       />
-
+  
+      {/* Diálogo de confirmación de eliminación */}
       {confirmDialogOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+        <div
+          className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              setConfirmDialogOpen(null);
+            }
+          }}
+        >
           <div className="p-8 rounded-lg shadow-xl bg-white text-black dark:bg-[#111827] dark:text-white w-96">
             <h2 className="text-lg font-bold mb-4">Confirmar Eliminación</h2>
             <p>¿Estás seguro de que deseas eliminar esta nota?</p>
@@ -122,7 +147,8 @@ const VerNotas = () => {
           </div>
         </div>
       )}
-
+  
+      {/* Diálogo de edición de nota */}
       {notaToEdit && (
         <div
           className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50"
@@ -136,14 +162,21 @@ const VerNotas = () => {
             <h2 className="text-lg font-bold mb-4">Editar Nota</h2>
             <form onSubmit={handleUpdate}>
               <div className="mb-4">
-                <label htmlFor="tipo" className="block text-sm text-gray-500 dark:text-gray-300">
+                {/* Campo de tipo de nota */}
+                <label
+                  htmlFor="tipo"
+                  className="block text-sm text-gray-500 dark:text-gray-300"
+                >
                   Tipo
                 </label>
                 <select
                   id="tipo"
                   value={notaToEdit.tipo}
                   onChange={(e) =>
-                    setNotaToEdit((prevState) => ({ ...prevState, tipo: e.target.value }))
+                    setNotaToEdit((prevState) => ({
+                      ...prevState,
+                      tipo: e.target.value,
+                    }))
                   }
                   className="mt-2 block w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300"
                 >
@@ -153,7 +186,8 @@ const VerNotas = () => {
                   <option value="Tarea">Tarea</option>
                 </select>
               </div>
-
+  
+              {/* Campo de valor de la nota */}
               <div className="mb-4">
                 <label htmlFor="valor" className="block text-sm font-medium">
                   Valor
@@ -163,7 +197,10 @@ const VerNotas = () => {
                   id="valor"
                   value={notaToEdit.valor}
                   onChange={(e) =>
-                    setNotaToEdit((prevState) => ({ ...prevState, valor: parseFloat(e.target.value) || 0 }))
+                    setNotaToEdit((prevState) => ({
+                      ...prevState,
+                      valor: parseFloat(e.target.value) || 0,
+                    }))
                   }
                   min="2.0"
                   max="7.0"
@@ -171,8 +208,12 @@ const VerNotas = () => {
                   className="mt-2 block w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 px-4 py-2 focus:ring focus:ring-blue-300"
                 />
               </div>
-
-              <button type="submit" className="w-full px-6 py-3 bg-blue-600 text-white rounded-lg">
+  
+              {/* Botones de confirmación y cancelación */}
+              <button
+                type="submit"
+                className="w-full px-6 py-3 bg-blue-600 text-white rounded-lg"
+              >
                 Actualizar
               </button>
               <button

@@ -10,7 +10,7 @@ import {
     getRutsDocentesService
 } from "../services/usuario.service.js";
 import { handleErrorClient, handleErrorServer, handleSuccess } from "../handlers/responseHandlers.js";
-
+import { usuarioCreateValidation, usuarioEditValidation } from "../validations/usuario.validation.js";
 
 export async function getUsuarios(req, res) {
     try {
@@ -53,11 +53,21 @@ export async function getUsuariosByNombre(req, res) {
 
 export async function createUsuario(req, res) {
     try {
-        const { rut, nombre, apellido, email, password, direccion, comuna, id_roles, telefono } = req.body;
-        const [usuario, errorUsuario] = await createUsuarioService({
-             rut, nombre, apellido, email, password, direccion, comuna, id_roles, telefono });
+        const { rut } = req.params;
+        const { nombre, apellido, email, direccion, comuna, id_roles, telefono } = req.body;
+        if (!rut){
+             return handleErrorClient(res, 400, "El rut es requerido");
+        }
+        const { error } = usuarioCreateValidation.validate(req.body);
+       if (error) {
+            return handleErrorClient(res, 400, error.message);
+        }
+        const [usuarioActualizado, errorUsuario] = await createUsuarioService({
+             rut, nombre, apellido, email, direccion, comuna, telefono });
+
         if (errorUsuario) return handleErrorClient(res, 404, errorUsuario);
-        handleSuccess(res, 201, "Usuario creado", usuario);
+        handleSuccess(res, 201, "Usuario creado", usuarioActualizado);
+
     } catch (error) {
         handleErrorServer(res, 500, error.message);
     }
@@ -67,9 +77,9 @@ export async function createUsuario(req, res) {
 export async function updateUsuario(req, res) {
     try {
         const { rut } = req.params;
-        const { nombre, apellido, email, direccion, comuna, id_roles, telefono } = req.body;
+        const { nombre, apellido, email, direccion, comuna, telefono, password } = req.body;
 
-        const datosActualizados = { nombre, apellido, email, direccion, comuna, id_roles, telefono };
+        const datosActualizados = { nombre, apellido, email, direccion, comuna,  telefono, password };
         const [usuario, errorUsuario] = await updateUsuarioService(rut, datosActualizados);
         if (errorUsuario) return handleErrorClient(res, 404, errorUsuario);
         handleSuccess(res, 200, "Usuario actualizado", usuario);

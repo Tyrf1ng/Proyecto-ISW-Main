@@ -3,6 +3,7 @@ import { getNotasPorAsignatura } from '@services/notas.service';
 import { AsignaturaContext } from '@context/AsignaturaContext';
 import { UsuarioContext } from '@context/UsuarioContext';
 
+// Hook para obtener las notas de un rut y asignatura ALUMNOS
 const useNotasAsignatura = () => {
   const { asignatura } = useContext(AsignaturaContext);
   const { usuario } = useContext(UsuarioContext);
@@ -17,16 +18,20 @@ const useNotasAsignatura = () => {
         setNotas([]);
         return;
       }
+      // Obtener las notas por asignatura y rut del usuario del Context
       const response = await getNotasPorAsignatura(usuario.rut, asignatura.idAsignatura);
+
       if (response.status === 'Success' && Array.isArray(response.data)) {
         setNotas(response.data);
       } else {
         setNotas([]);
       }
     } catch (error) {
+
       console.error("Error en obtener las notas: ", error);
       setError('Error al cargar las notas');
       setNotas([]);
+      
     } finally {
       setLoading(false);
     }
@@ -36,6 +41,7 @@ const useNotasAsignatura = () => {
     if (asignatura?.idAsignatura && usuario?.rut) {
       fetchNotas();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [asignatura?.idAsignatura, usuario?.rut]);
 
   return { notas, loading, error, fetchNotas };

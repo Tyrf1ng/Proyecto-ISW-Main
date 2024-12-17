@@ -16,7 +16,6 @@ function Inicio() {
 
   useEffect(() => {
     const usuarioGuardado = JSON.parse(sessionStorage.getItem('usuario'));
-    console.log('Usuario cargado desde sessionStorage:', usuarioGuardado);
 
     if (usuarioGuardado) {
       setUsuario({
@@ -29,7 +28,6 @@ function Inicio() {
       if (usuarioGuardado.rut && usuarioGuardado.rol === 'Docente') {
         getAsignaturasByProfesor(usuarioGuardado.rut)
           .then((asignaturas) => {
-            console.log('Asignaturas obtenidas:', asignaturas);
             if (asignaturas.length > 0) {
               setAsignaturas(asignaturas);
               setAsignatura(asignaturas[0] ? {
