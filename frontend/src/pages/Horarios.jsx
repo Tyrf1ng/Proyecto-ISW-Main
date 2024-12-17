@@ -3,6 +3,9 @@ import { useHorarios } from '@hooks/horarios/useHorarios';
 import TableHorarios from '../components/TableHorarios';
 import SuccessAlert from '../components/SuccessAlert';
 import ErrorAlert from '../components/ErrorAlert';
+import WarningAlert from '../components/WarningAlert';
+import useAlert from "../hooks/useAlerts.jsx";
+import { AnimatePresence } from "framer-motion";
 
 const Horarios = () => {
     const { horarios = [], fetchHorarios, addHorario, editHorario, removeHorario, isHorarioValid, error } = useHorarios();
@@ -20,8 +23,7 @@ const Horarios = () => {
     const [deleteSuccess, setDeleteSuccess] = useState(false);
     const [createSuccess, setCreateSuccess] = useState(false);
     const [validationError, setValidationError] = useState(null);
-    const [message, setMessage] = useState('');
-    const [messageType, setMessageType] = useState('');
+    const [alert, showAlert] = useAlert();
 
     const handleFilterChange = (e) => setFilterText(e.target.value);
     const handleOpen = () => {
@@ -66,8 +68,8 @@ const Horarios = () => {
             setValidationError("La hora de inicio debe ser menor que la hora de fin");
             return;
         }
-        if (newHorario.hora_inicio < "08:00" || newHorario.hora_fin > "22:00") {
-            setValidationError("Las horas deben estar entre las 08:00 y las 22:00");
+        if (newHorario.hora_inicio < "08:00" || newHorario.hora_fin > "18:00") {
+            setValidationError("Las horas deben estar entre las 08:00 y las 18:00");
             return;
         }
         if (!isHorarioValid(newHorario.hora_inicio, newHorario.hora_fin)) {
@@ -79,8 +81,7 @@ const Horarios = () => {
         setOpen(false);
         setNewHorario({ hora_inicio: '', hora_fin: '' });
         fetchHorarios();
-        setMessage('Horario creado con éxito');
-        setMessageType('success');
+        showAlert("Horario creado con éxito", "success");
     };
 
     const handleEditSubmit = async () => {
@@ -92,8 +93,8 @@ const Horarios = () => {
             setValidationError("La hora de inicio debe ser menor que la hora de fin");
             return;
         }
-        if (currentHorario.hora_inicio < "08:00" || currentHorario.hora_fin > "22:00") {
-            setValidationError("Las horas deben estar entre las 08:00 y las 22:00");
+        if (currentHorario.hora_inicio < "08:00" || currentHorario.hora_fin > "18:00") {
+            setValidationError("Las horas deben estar entre las 08:00 y las 18:00");
             return;
         }
         if (!isHorarioValid(currentHorario.hora_inicio, currentHorario.hora_fin, currentHorario.id_horario)) {
@@ -104,8 +105,7 @@ const Horarios = () => {
         setEditSuccess(true);
         setEditOpen(false);
         fetchHorarios();
-        setMessage('Horario editado con éxito');
-        setMessageType('success');
+        showAlert("Horario editado con éxito", "success");
     };
 
     const handleDelete = async () => {
@@ -115,18 +115,16 @@ const Horarios = () => {
         }
         try {
             const response = await removeHorario(currentHorario.id_horario);
-            if (response.error) {
-                throw new Error(response.error);
+            if (!response.success) {
+                throw new Error(response.error || "Hubo un error al eliminar el horario");
             }
             setDeleteSuccess(true);
             setDeleteOpen(false);
             fetchHorarios();
-            setMessage('Horario eliminado con éxito');
-            setMessageType('success');
+            showAlert("Horario eliminado con éxito", "success");
         } catch (error) {
             console.error('Error al eliminar el horario:', error);
-            setMessage('Hubo un error al eliminar el horario');
-            setMessageType('error');
+            showAlert(error.message || "Hubo un error al eliminar el horario", "error");
             setDeleteOpen(false);
             fetchHorarios(); 
         }
@@ -136,32 +134,9 @@ const Horarios = () => {
         fetchHorarios();
     }, []);
 
-    useEffect(() => {
-        if (message) {
-          const timer = setTimeout(() => {
-            setMessage("");
-            setMessageType("");
-          }, 3000);
-          return () => clearTimeout(timer);
-        }
-      }, [message]);
-
-    const renderMessage = () => {
-        if (messageType === 'success') {
-            return <SuccessAlert message={message} />;
-        }
-
-        if (messageType === 'error') {
-            return <ErrorAlert message={message} />;
-        }
-
-        return null;
-    };
-
     return (
         <div className="p-4 bg-gray-50 dark:bg-gray-800 min-h-screen">
             <h1 className="text-4xl text-center font-semibold text-blue-100 mb-4">Horarios</h1>
-            {error && <div className="text-red-500">{error}</div>}
             <div className="flex justify-between items-center mb-4">
                 <button onClick={handleOpen} className="ml-auto px-4 py-2 bg-blue-600 text-white rounded">Crear Horario</button>
             </div>
@@ -173,6 +148,18 @@ const Horarios = () => {
                 handleOpen={handleEditOpen}
                 handleDelete={handleDeleteOpen}
             />
+
+            <AnimatePresence>
+                {alert.type === "warning" && (
+                    <WarningAlert message={alert.message} key="warning" />
+                )}
+                {alert.type === "success" && (
+                    <SuccessAlert message={alert.message} key="success" />
+                )}
+                {alert.type === "error" && (
+                    <ErrorAlert message={alert.message} key="error" />
+                )}
+            </AnimatePresence>
 
             {open && (
                 <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50" onClick={handleClose}>
@@ -193,7 +180,10 @@ const Horarios = () => {
                             onChange={handleInputChange}
                             className="w-full p-2 mb-4 border rounded dark:bg-gray-700 dark:text-white"
                         />
-                        <button onClick={handleSubmit} className="w-full px-4 py-2 bg-blue-600 text-white rounded">Guardar</button>
+                        <div className="flex justify-between mt-4">
+                            <button onClick={handleSubmit} className="px-10 py-2 bg-blue-600 text-white rounded">Guardar</button>
+                            <button onClick={handleClose} className="px-10 py-2 bg-gray-400 text-white rounded">Cancelar</button>
+                        </div>
                     </div>
                 </div>
             )}
@@ -220,7 +210,7 @@ const Horarios = () => {
                         <div className="flex justify-between mt-4">
                             <button onClick={handleEditSubmit} className="px-10 py-2 bg-blue-600 text-white rounded">Guardar</button>
                             <button onClick={handleEditClose} className="px-10 py-2 bg-gray-400 text-white rounded">Cancelar</button>
-                    </div>
+                        </div>
                     </div>
                 </div>
             )}
@@ -237,8 +227,6 @@ const Horarios = () => {
                     </div>
                 </div>
             )}
-
-            {renderMessage()}
         </div>
     );
 };

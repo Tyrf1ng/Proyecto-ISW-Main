@@ -3,8 +3,12 @@ import useLabs from '../hooks/labs/useLabs';
 import TableLabs from '../components/TableLabs';
 import SuccessAlert from '../components/SuccessAlert';
 import ErrorAlert from '../components/ErrorAlert';
+import WarningAlert from '../components/WarningAlert';
+import useAlert from "../hooks/useAlerts.jsx";
+import { AnimatePresence } from "framer-motion";
+
 const Labs = () => {
-  const { labs = [], fetchLabs, addLab, editLab, removeLab, error } = useLabs();
+  const { labs = [], fetchLabs, addLab, editLab, removeLab } = useLabs();
   const [filterText, setFilterText] = useState('');
   const [open, setOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
@@ -14,12 +18,12 @@ const Labs = () => {
     capacidad: '',
   });
   const [currentLab, setCurrentLab] = useState(null);
+  const [deleteError, setDeleteError] = useState(null);
   const [editSuccess, setEditSuccess] = useState(false);
   const [deleteSuccess, setDeleteSuccess] = useState(false);
   const [createSuccess, setCreateSuccess] = useState(false);
   const [validationError, setValidationError] = useState(null);
-  const [message, setMessage] = useState('');
-  const [messageType, setMessageType] = useState('');
+  const [alert, showAlert] = useAlert();
   const [sortConfig, setSortConfig] = useState({ key: 'nombre', direction: 'asc' });
 
   const handleFilterChange = (e) => setFilterText(e.target.value);
@@ -57,71 +61,87 @@ const Labs = () => {
     setCurrentLab({ ...currentLab, [name]: value });
   };
 
+  const normalizeString = (str) => {
+    return (str || '').normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+  };
+
   const normalizeName = (name) => {
     return name.replace(/\s+/g, ' ').trim();
   };
 
   const handleSubmit = async () => {
     const normalizedNombre = normalizeName(newLab.nombre);
-    if (!Number.isInteger(Number(newLab.capacidad)) || newLab.capacidad <= 0 || newLab.capacidad >= 100) {
-        setValidationError('Capacidad debe ser un número entero mayor a 0 y menor a 100');
-        return;
+    if (!newLab.nombre || !newLab.capacidad) {
+      setValidationError('Todos los campos son obligatorios');
+      return;
+    }
+    if (normalizedNombre.length < 10 || normalizedNombre.length > 40) {
+      setValidationError('El nombre debe tener entre 10 y 40 caracteres');
+      return;
+    }
+    if (!Number.isInteger(Number(newLab.capacidad)) || newLab.capacidad <= 4 || newLab.capacidad >= 100) {
+      setValidationError('Capacidad debe ser un número entero mayor a 4 y menor a 100');
+      return;
     }
     if (labs.some(lab => normalizeName(lab.nombre).toLowerCase() === normalizedNombre.toLowerCase())) {
-        setValidationError('El nombre del laboratorio ya existe');
-        return;
+      setValidationError('El nombre del laboratorio ya existe');
+      return;
     }
     try {
-        await addLab({ ...newLab, nombre: normalizedNombre });
-        handleClose();
-        fetchLabs();
-        setCreateSuccess(true);
-        setMessage('Laboratorio creado con éxito');
-        setMessageType('success');
+      await addLab({ ...newLab, nombre: normalizedNombre });
+      handleClose();
+      fetchLabs();
+      setCreateSuccess(true);
+      showAlert('Laboratorio creado con éxito', 'success');
     } catch (error) {
-        console.error("Error al crear el laboratorio: ", error);
-        setValidationError(error.message || "Los valores ingresados no son válidos");
+      console.error("Error al crear el laboratorio: ", error);
+      setValidationError(error.message || "Los valores ingresados no son válidos");
     }
   };
 
   const handleEditSubmit = async () => {
     const normalizedNombre = normalizeName(currentLab.nombre);
-    if (!Number.isInteger(Number(currentLab.capacidad)) || currentLab.capacidad <= 0 || currentLab.capacidad >= 100) {
-        setValidationError('Capacidad debe ser un número entero mayor a 0 y menor a 100');
-        return;
+    if (!currentLab.nombre || !currentLab.capacidad) {
+      setValidationError('Todos los campos son obligatorios');
+      return;
+    }
+    if (normalizedNombre.length < 10 || normalizedNombre.length > 40) {
+      setValidationError('El nombre debe tener entre 10 y 40 caracteres');
+      return;
+    }
+    if (!Number.isInteger(Number(currentLab.capacidad)) || currentLab.capacidad <= 4 || currentLab.capacidad >= 100) {
+      setValidationError('Capacidad debe ser un número entero mayor a 4 y menor a 100');
+      return;
     }
     if (labs.some(lab => normalizeName(lab.nombre).toLowerCase() === normalizedNombre.toLowerCase() && lab.id_lab !== currentLab.id_lab)) {
-        setValidationError('El nombre del laboratorio ya existe');
-        return;
+      setValidationError('El nombre del laboratorio ya existe');
+      return;
     }
     try {
-        await editLab({ ...currentLab, nombre: normalizedNombre });
-        handleEditClose();
-        fetchLabs();
-        setEditSuccess(true);
-        setMessage('Laboratorio editado con éxito');
-        setMessageType('success');
+      await editLab({ ...currentLab, nombre: normalizedNombre });
+      handleEditClose();
+      fetchLabs();
+      setEditSuccess(true);
+      showAlert('Laboratorio editado con éxito', 'success');
     } catch (error) {
-        console.error("Error al actualizar el laboratorio: ", error);
-        setValidationError(error.message || "Los valores ingresados no son válidos");
+      console.error("Error al actualizar el laboratorio: ", error);
+      setValidationError(error.message || "Los valores ingresados no son válidos");
     }
   };
 
   const handleDelete = async () => {
     try {
       const response = await removeLab(currentLab.id_lab);
-      if (response && response.error) {
-        throw new Error(response.error);
+      if (!response.success) {
+        throw new Error(response.error || "Hubo un error al eliminar el laboratorio");
       }
       handleDeleteClose();
       fetchLabs();
       setDeleteSuccess(true);
-      setMessage('Laboratorio eliminado con éxito');
-      setMessageType('success');
+      showAlert('Laboratorio eliminado con éxito', 'success');
     } catch (error) {
       console.error("Error al eliminar el laboratorio: ", error);
-      setMessage('Hubo un error al eliminar el laboratorio');
-      setMessageType('error');
+      showAlert(error.message || 'Hubo un error al eliminar el laboratorio', 'error');
       setDeleteOpen(false);
       fetchLabs();
     }
@@ -149,32 +169,9 @@ const Labs = () => {
     return 0;
   });
 
-  useEffect(() => {
-    if (message) {
-      const timer = setTimeout(() => {
-        setMessage("");
-        setMessageType("");
-      }, 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [message]);
-
-  const renderMessage = () => {
-    if (messageType === 'success') {
-      return <SuccessAlert message={message} />;
-    }
-
-    if (messageType === 'error') {
-      return <ErrorAlert message={message} />;
-    }
-
-    return null;
-  };
-
   return (
     <div className="p-4 bg-gray-50 dark:bg-gray-800 min-h-screen">
       <h1 className="text-4xl text-center font-semibold text-blue-100 mb-4">Laboratorios</h1>
-      {error && <div className="text-red-500">{error}</div>}
       <div className="flex justify-between items-center mb-2 mt-6">
         <input
           type="text"
@@ -189,13 +186,25 @@ const Labs = () => {
 
       <TableLabs
         labs={sortedLabs.filter((lab) =>
-          lab.nombre && lab.nombre.toLowerCase().includes(filterText.toLowerCase())
+          normalizeString(lab.nombre).includes(normalizeString(filterText))
         )}
         handleOpen={handleEditOpen}
         handleDelete={handleDeleteOpen}
         handleSort={handleSort}
         sortConfig={sortConfig}
       />
+
+      <AnimatePresence>
+        {alert.type === "warning" && (
+          <WarningAlert message={alert.message} key="warning" />
+        )}
+        {alert.type === "success" && (
+          <SuccessAlert message={alert.message} key="success" />
+        )}
+        {alert.type === "error" && (
+          <ErrorAlert message={alert.message} key="error" />
+        )}
+      </AnimatePresence>
 
       {open && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50" onClick={handleClose}>
@@ -207,9 +216,11 @@ const Labs = () => {
               name="nombre"
               value={newLab.nombre}
               onChange={handleInputChange}
-              className="w-full p-2 mb-4 border rounded bg-gray-50 dark:bg-gray-700 dark:text-white"
+              className="w-full p-2 mb-1 border rounded bg-gray-50 dark:bg-gray-700 dark:text-white"
               placeholder="Nombre"
+              maxLength="40"
             />
+            <div className="text-sm text-gray-500 dark:text-gray-400 mb-4">{newLab.nombre.length}/40</div>
             <input
               type="number"
               name="capacidad"
@@ -218,7 +229,10 @@ const Labs = () => {
               className="w-full p-2 mb-4 border rounded bg-gray-50 dark:bg-gray-700 dark:text-white"
               placeholder="Capacidad"
             />
-            <button onClick={handleSubmit} className="w-full px-4 py-2 bg-blue-600 text-white rounded">Guardar</button>
+            <div className="flex justify-between mt-4">
+              <button onClick={handleSubmit} className="px-10 py-2 bg-blue-600 text-white rounded">Guardar</button>
+              <button onClick={handleClose} className="px-10 py-2 bg-gray-400 text-white rounded">Cancelar</button>
+            </div>
           </div>
         </div>
       )}
@@ -233,9 +247,11 @@ const Labs = () => {
               name="nombre"
               value={currentLab?.nombre || ''}
               onChange={handleEditInputChange}
-              className="w-full p-2 mb-4 border rounded bg-gray-50 dark:bg-gray-700 dark:text-white"
+              className="w-full p-2 mb-1 border rounded bg-gray-50 dark:bg-gray-700 dark:text-white"
               placeholder="Nombre"
+              maxLength="40"
             />
+            <div className="text-sm text-gray-500 dark:text-gray-400 mb-4">{currentLab?.nombre.length || 0}/40</div>
             <input
               type="number"
               name="capacidad"
@@ -264,8 +280,6 @@ const Labs = () => {
           </div>
         </div>
       )}
-
-      {renderMessage()}
     </div>
   );
 };

@@ -41,7 +41,6 @@ export async function createLabService(data) {
         if (existingLab) return [null, "El laboratorio ya existe"];
         const lab = labRepository.create(data);
         const savedLab = await labRepository.save(lab);
-        console.log("Laboratorio creado:", savedLab); // Agrega este log
         return [savedLab, null];
     } catch (error) {
         console.error("Error al crear el laboratorio:", error);

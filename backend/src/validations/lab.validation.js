@@ -21,12 +21,12 @@ export const labBodyValidation = Joi.object({
     }),
     capacidad: Joi.number()
     .integer()
-    .min(1)
+    .min(5)
     .max(99)
     .required()
     .messages({
         "number.base": "Capacidad debe ser un número entero",
-        "number.min": "Capacidad debe ser mayor a 0",
+        "number.min": "Capacidad debe ser mayor a 4",
         "number.max": "Capacidad debe ser menor a 100",
     }),
     id_lab: Joi.number()
