@@ -20,37 +20,19 @@ const NAVIGATION_BY_ROLE = {
   directivo: [
     {
       segment: "GestionUsuario",
-      title: "Gestión de Alumnos",
+      title: "Gestión Usuarios",
       icon: <SchoolIcon />,
       children: [
-        { segment: "add_usuario", title: "Añadir usuario", icon: <AddIcon /> },
+        { segment: "add_usuario", title: "Añadir Alumno", icon: <AddIcon /> },
         {
-          segment: "ver_usuarios",
-          title: "Ver todos los usuarios",
-          icon: <ManageSearchIcon />,
+          segment: "add_enc_lab", title: "Añadir Encargado de Laboratorio", icon: <AddIcon />,
         },
         { segment: "add_docente", title: "Añadir Docente", icon: <AddIcon /> },
         {
-          segment: "ver_docentes",
-          title: "Ver todos los docentes",
-          icon: <ManageSearchIcon />,
+          segment: "ver_docentes", title: "Ver todos los docentes", icon: <ManageSearchIcon />,
         },
         {
-          segment: "add_enc_lab",
-          title: "Añadir Encargado de Laboratorio",
-          icon: <AddIcon />,
-        },
-      ],
-    },
-    {
-      segment: "Estadisticas",
-      title: "Gestión de Usuarios",
-      icon: <SchoolIcon />,
-      children: [
-        {
-          segment: "estad_docentes",
-          title: "Estadisticas docente",
-          icon: <AddIcon />,
+          segment: "ver_usuarios",title: "Ver todos los usuarios", icon: <ManageSearchIcon />,
         },
       ],
     },
